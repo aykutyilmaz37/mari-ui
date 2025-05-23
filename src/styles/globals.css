@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: var(--primary-300);
+  --color-primary-light: var(--primary-100);
+  --color-primary-muted: var(--primary-200);
+
+  --color-secondary: var(--secondary-300);
+  --color-secondary-light: var(--secondary-100);
+  --color-secondary-muted: var(--secondary-200);
+
+  --color-accent: var(--accent-200);
+  --color-accent-light: var(--accent-100);
+
+  --color-foreground: var(--text-100);
+  --color-muted: var(--text-200);
+
+  --color-background: var(--bg-100);
+  --color-background-alt: var(--bg-200);
+  --color-border: var(--bg-300);
+
+  --color-success: var(--success-200);
+  --color-success-light: var(--success-100);
+  --color-success-muted: var(--success-300);
+  --color-success-hover: var(--success-400);
+
+  --color-error: var(--error-200);
+  --color-error-light: var(--error-100);
+  --color-error-muted: var(--error-300);
+  --color-error-hover: var(--error-400);
+
+  --color-warning: var(--warning-200);
+  --color-warning-light: var(--warning-100);
+  --color-warning-muted: var(--warning-300);
+  --color-warning-hover: var(--warning-400);
+
+  --color-info: var(--info-200);
+  --color-info-light: var(--info-100);
+  --color-info-muted: var(--info-300);
+  --color-info-hover: var(--info-400);
+}
+
+@layer base {
+  :root {
+    --primary-100: #d4eaf7;
+    --primary-200: #b6ccd8;
+    --primary-300: #3b3c3d;
+
+    --secondary-100: #f0f1f5;
+    --secondary-200: #c3c6d1;
+    --secondary-300: #6b7280;
+
+    --accent-100: #71c4ef;
+    --accent-200: #00668c;
+
+    --text-100: #1d1c1c;
+    --text-200: #313d44;
+
+    --bg-100: #fffefb;
+    --bg-200: #f5f4f1;
+    --bg-300: #cccbc8;
+
+    --success-100: var(--color-emerald-200);
+    --success-200: var(--color-emerald-400);
+    --success-300: var(--color-emerald-600);
+    --success-400: var(--color-emerald-800);
+
+    --error-100: var(--color-red-200);
+    --error-200: var(--color-red-400);
+    --error-300: var(--color-red-600);
+    --error-400: var(--color-red-800);
+
+    --warning-100: var(--color-amber-200);
+    --warning-200: var(--color-amber-400);
+    --warning-300: var(--color-amber-600);
+    --warning-400: var(--color-amber-800);
+
+    --info-100: var(--color-sky-200);
+    --info-200: var(--color-sky-400);
+    --info-300: var(--color-sky-600);
+    --info-400: var(--color-sky-800);
+  }
+
+  .dark {
+    --primary-100: #1f3a5f;
+    --primary-200: #4d648d;
+    --primary-300: #acc2ef;
+
+    --secondary-100: #232a3b;
+    --secondary-200: #3a4458;
+    --secondary-300: #94a3b8;
+
+    --accent-100: #3d5a80;
+    --accent-200: #cee8ff;
+
+    --text-100: #ffffff;
+    --text-200: #e0e0e0;
+
+    --bg-100: #0f1c2e;
+    --bg-200: #1f2b3e;
+    --bg-300: #374357;
+
+    --success-100: var(--color-emerald-200);
+    --success-200: var(--color-emerald-400);
+    --success-300: var(--color-emerald-600);
+    --success-400: var(--color-emerald-800);
+
+    --error-100: var(--color-red-200);
+    --error-200: var(--color-red-400);
+    --error-300: var(--color-red-600);
+    --error-400: var(--color-red-800);
+
+    --warning-100: var(--color-amber-200);
+    --warning-200: var(--color-amber-400);
+    --warning-300: var(--color-amber-600);
+    --warning-400: var(--color-amber-800);
+
+    --info-100: var(--color-sky-200);
+    --info-200: var(--color-sky-400);
+    --info-300: var(--color-sky-600);
+    --info-400: var(--color-sky-800);
+  }
+}
