@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Input } from "@/components/ui/input";
 import type { InputProps } from "@/components/ui/input";
-import { Search, X } from "lucide-react";
+import { EyeIcon, EyeOffIcon, PhoneIcon, Search, XIcon } from "lucide-react";
 import { useState } from "react";
 
 const meta: Meta<typeof Input> = {
@@ -22,29 +22,64 @@ const meta: Meta<typeof Input> = {
       control: "select",
       options: ["error", "warning"],
     },
+    mask: { control: "text" },
+    replacement: {
+      control: "object",
+    },
     disabled: { control: "boolean" },
     allowClear: { control: "boolean" },
     maxLength: { control: "number" },
     onChange: { action: "onChange" },
     onPressEnter: { action: "onPressEnter" },
     onClear: { action: "onClear" },
+    visibilityToggle: {
+      control: "boolean",
+    },
+    visibilityIconRender: {
+      control: false,
+    },
   },
 };
 export default meta;
 
-export const Playground: StoryObj<InputProps> = {
+export const Playground: StoryObj<InputProps & { enableMask: boolean }> = {
+  render: (args) => {
+    const { enableMask, mask, replacement, visibilityToggle, type, ...rest } =
+      args as InputProps & { enableMask?: boolean };
+
+    const resolvedType =
+      visibilityToggle === true
+        ? "password"
+        : type === "password"
+        ? "text"
+        : type;
+
+    return (
+      <Input
+        {...rest}
+        type={resolvedType}
+        {...(enableMask ? { mask, replacement } : {})}
+        visibilityToggle={visibilityToggle}
+      />
+    );
+  },
+  argTypes: {
+    enableMask: { control: "boolean" },
+  },
   args: {
     placeholder: "Type something...",
-    icon: <Search className="w-4 h-4 text-muted" />,
-    allowClear: {
-      clearIcon: <X className="w-4 h-4 text-muted" />,
-    },
-    showCount: true,
+    allowClear: false,
+    showCount: false,
     size: "middle",
     variant: "outlined",
-    status: undefined,
-    disabled: false,
     maxLength: 100,
+    enableMask: false,
+    mask: "0(5__) ___ __ __",
+    replacement: { _: /\d/ },
+    type: "text", // Başlangıç olarak text
+    visibilityToggle: false,
+    visibilityIconRender: (visible: boolean) =>
+      visible ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />,
   },
 };
 
@@ -70,9 +105,9 @@ export const AllVariants: StoryObj = {
                   size={size}
                   variant={variant}
                   placeholder={`${variant} - ${size}`}
-                  icon={<Search className="w-4 h-4 text-muted" />}
+                  icon={<Search size={16} />}
                   allowClear={{
-                    clearIcon: <X className="w-4 h-4 text-muted" />,
+                    clearIcon: <XIcon size={16} />,
                   }}
                   showCount
                   maxLength={30}
@@ -90,7 +125,7 @@ export const ErrorStatus: StoryObj<InputProps> = {
   args: {
     placeholder: "Error state...",
     status: "error",
-    icon: <Search className="w-4 h-4 text-muted" />,
+    icon: <Search size={16} />,
     allowClear: true,
   },
 };
@@ -131,7 +166,7 @@ const ControlledInputExample = () => {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onClear={() => setValue("")}
-        allowClear={{ clearIcon: <X className="w-4 h-4 text-muted" /> }}
+        allowClear={{ clearIcon: <XIcon size={16} /> }}
         placeholder="Controlled + Default"
       />
       <span className="text-sm text-muted">Current value: {value}</span>
@@ -141,4 +176,20 @@ const ControlledInputExample = () => {
 
 export const ControlledAndDefault: StoryObj = {
   render: () => <ControlledInputExample />,
+};
+
+export const MaskedInput: StoryObj<InputProps> = {
+  args: {
+    placeholder: "0(5__) ___ __ __",
+    mask: "0(5__) ___ __ __",
+    replacement: { _: /\d/ },
+    icon: <PhoneIcon size={16} />,
+    allowClear: {
+      clearIcon: <XIcon size={16} />,
+    },
+    showCount: true,
+    size: "middle",
+    variant: "outlined",
+    maxLength: 16,
+  },
 };

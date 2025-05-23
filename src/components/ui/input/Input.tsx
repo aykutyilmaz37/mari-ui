@@ -9,6 +9,8 @@ import {
   isClearable,
 } from "./utils";
 import { InputClassNames, InputSize, InputStatus, InputVariant } from "./types";
+import { InputMask } from "@react-input/mask";
+import { EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
 
 export type InputProps = {
   placeholder?: string;
@@ -37,6 +39,10 @@ export type InputProps = {
   id?: string;
   classNames?: InputClassNames;
   className?: string;
+  mask?: string;
+  replacement?: Record<string, RegExp>;
+  visibilityToggle?: boolean | { visible?: boolean };
+  visibilityIconRender?: (visible: boolean) => React.ReactNode;
 };
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -61,6 +67,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange,
       onPressEnter,
       onClear,
+      mask,
+      replacement = { _: /\d/ },
+      visibilityToggle,
+      visibilityIconRender,
       ...rest
     },
     ref
@@ -68,6 +78,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const [internalValue, setInternalValue] = useState<string>(
       value ?? defaultValue
     );
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const defaultIconRender = (visible: boolean) =>
+      visible ? <EyeIcon size={16} /> : <EyeOffIcon size={16} />;
+    const showPasswordToggle =
+      type === "password" && visibilityToggle !== false;
+
+    const inputType = showPasswordToggle
+      ? passwordVisible
+        ? "text"
+        : "password"
+      : type;
 
     const currentValue = value ?? internalValue;
     const charCount = currentValue.length;
@@ -115,21 +136,51 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <span className="mr-2">{icon}</span>
         )}
 
-        <input
-          ref={ref}
-          id={id}
-          disabled={disabled}
-          type={type}
-          maxLength={maxLength}
-          placeholder={placeholder}
-          value={currentValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          className={inputClass}
-          {...rest}
-        />
+        {mask ? (
+          <InputMask
+            ref={ref}
+            id={id}
+            mask={mask}
+            replacement={replacement}
+            disabled={disabled}
+            type={inputType}
+            maxLength={maxLength}
+            placeholder={placeholder}
+            value={currentValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            className={inputClass}
+            {...rest}
+          />
+        ) : (
+          <input
+            ref={ref}
+            id={id}
+            disabled={disabled}
+            type={inputType}
+            maxLength={maxLength}
+            placeholder={placeholder}
+            value={currentValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            className={inputClass}
+            {...rest}
+          />
+        )}
 
         {icon && iconPosition === "end" && <span className="ml-2">{icon}</span>}
+
+        {showPasswordToggle && (
+          <button
+            type="button"
+            onClick={() => setPasswordVisible((prev) => !prev)}
+            className="ml-2 cursor-pointer text-muted"
+          >
+            {visibilityIconRender
+              ? visibilityIconRender(passwordVisible)
+              : defaultIconRender(passwordVisible)}
+          </button>
+        )}
 
         {allowClear && (
           <button
@@ -145,9 +196,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               )
             )}
           >
-            {typeof allowClear === "object" && allowClear.clearIcon
-              ? allowClear.clearIcon
-              : "×"}
+            {typeof allowClear === "object" && allowClear.clearIcon ? (
+              allowClear.clearIcon
+            ) : (
+              <XIcon size={16} />
+            )}
           </button>
         )}
 

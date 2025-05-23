@@ -13,10 +13,12 @@ export default function Page() {
             <Button type="primary">Button</Button>
             <Input
               allowClear
-              placeholder="Text"
-              icon={<SearchIcon />}
+              placeholder="+90 (5__) ___ __ __"
+              icon={<SearchIcon size={16} />}
               onPressEnter={() => console.log("afsdf")}
+              mask="+90 (5__) ___ __ __"
             />
+            <Input type="password" visibilityToggle />
           </div>
         </section>
       </main>
