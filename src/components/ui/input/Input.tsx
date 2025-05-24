@@ -19,6 +19,9 @@ export type InputProps = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onClear?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   allowClear?: boolean | { clearIcon?: React.ReactNode };
   icon?: React.ReactNode;
   iconPosition?: "start" | "end";
@@ -67,6 +70,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onChange,
       onPressEnter,
       onClear,
+      onFocus,
+      onKeyDown,
+      onInput,
       mask,
       replacement = { _: /\d/ },
       visibilityToggle,
@@ -106,6 +112,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       if (e.key === "Enter") {
         onPressEnter?.(e);
       }
+      onKeyDown?.(e);
     };
 
     const handleClear = () => {
@@ -149,6 +156,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             value={currentValue}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onFocus={onFocus}
+            onInput={onInput}
             className={inputClass}
             {...rest}
           />
@@ -163,23 +172,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             value={currentValue}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onFocus={onFocus}
+            onInput={onInput}
             className={inputClass}
             {...rest}
           />
-        )}
-
-        {icon && iconPosition === "end" && <span className="ml-2">{icon}</span>}
-
-        {showPasswordToggle && (
-          <button
-            type="button"
-            onClick={() => setPasswordVisible((prev) => !prev)}
-            className="ml-2 cursor-pointer text-muted"
-          >
-            {visibilityIconRender
-              ? visibilityIconRender(passwordVisible)
-              : defaultIconRender(passwordVisible)}
-          </button>
         )}
 
         {allowClear && (
@@ -219,6 +216,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 })
               : `${charCount}${maxLength ? ` / ${maxLength}` : ""}`}
           </span>
+        )}
+
+        {icon && iconPosition === "end" && <span className="ml-2">{icon}</span>}
+
+        {showPasswordToggle && (
+          <button
+            type="button"
+            onClick={() => setPasswordVisible((prev) => !prev)}
+            className="ml-2 cursor-pointer text-muted"
+          >
+            {visibilityIconRender
+              ? visibilityIconRender(passwordVisible)
+              : defaultIconRender(passwordVisible)}
+          </button>
         )}
       </div>
     );

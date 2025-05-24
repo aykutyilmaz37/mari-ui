@@ -19,7 +19,15 @@ import { InputProps } from "./Input";
 
 export type TextareaProps = Omit<
   InputProps,
-  "type" | "onChange" | "onPressEnter" | "onClear" | "icon" | "iconPosition"
+  | "type"
+  | "onChange"
+  | "onPressEnter"
+  | "onClear"
+  | "icon"
+  | "iconPosition"
+  | "onKeyDown"
+  | "onFocus"
+  | "onInput"
 > & {
   autoSize?: TextareaAutoSize;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
