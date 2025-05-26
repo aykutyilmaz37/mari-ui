@@ -24,6 +24,10 @@ const meta: Meta<typeof OtpInput> = {
       control: "select",
       options: ["error", "warning", undefined],
     },
+    shape: {
+      control: "select",
+      options: ["default", "round", "sharp"],
+    },
     onChange: { action: "onChange" },
     onInput: { action: "onInput" },
   },

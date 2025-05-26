@@ -22,6 +22,10 @@ const meta: Meta<typeof Input> = {
       control: "select",
       options: ["error", "warning"],
     },
+    shape: {
+      control: "select",
+      options: ["default", "round", "sharp"],
+    },
     mask: { control: "text" },
     replacement: {
       control: "object",

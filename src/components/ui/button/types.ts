@@ -2,7 +2,7 @@ export type ButtonIconPosition = "start" | "end";
 
 export type ButtonSize = "large" | "middle" | "small";
 
-export type ButtonShape = "default" | "circle" | "round";
+export type ButtonShape = "default" | "circle" | "round" | "square";
 
 export type ButtonVariant = "outlined" | "filled";
 

@@ -9,6 +9,7 @@ import {
 
 export const getShapeClasses = (shape: ButtonShape): string => {
   return {
+    square: "rounded-none",
     circle: "rounded-full",
     round: "rounded-full px-4",
     default: "rounded-md",

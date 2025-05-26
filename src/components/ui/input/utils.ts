@@ -1,4 +1,4 @@
-import { InputSize, InputStatus, InputVariant } from "./types";
+import { InputShape, InputSize, InputStatus, InputVariant } from "./types";
 
 export const getSizeClasses = (size: InputSize = "middle"): string => {
   return {
@@ -36,6 +36,14 @@ export const getStatusClasses = (status?: InputStatus): string => {
     warning: "border-warning text-warning focus-within:border-warning-hover",
   };
   return status ? map[status] : "";
+};
+
+export const getShapeClasses = (shape: InputShape): string => {
+  return {
+    square: "rounded-none",
+    round: "rounded-full px-4",
+    default: "rounded-md",
+  }[shape];
 };
 
 export const isClearable = (

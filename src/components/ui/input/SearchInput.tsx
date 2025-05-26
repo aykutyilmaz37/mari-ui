@@ -25,6 +25,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       showCount,
       status,
       size = "middle",
+      shape = "default",
       type = "text",
       value,
       variant = "outlined",
@@ -81,6 +82,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         showCount={showCount}
         size={size}
         status={status}
+        shape={shape}
         type={type}
         variant={variant}
         onChange={onChange}

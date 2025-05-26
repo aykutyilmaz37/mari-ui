@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
 import { SearchIcon } from "lucide-react";
@@ -31,6 +32,7 @@ export default function Page() {
               onChange={(val) => setCode(val)}
               onInput={(valArr) => console.log("Her kutu:", valArr)}
               separator="-"
+              shape="square"
             />
             <p className="text-muted text-xs">
               Girilen kod: <strong>{code || "..."}</strong>
@@ -38,6 +40,15 @@ export default function Page() {
           </div>
           SEarch Input
           <SearchInput onSearch={(e) => console.log(e)} />
+          <div>
+            <Checkbox
+              label="Kampanyalardan haberdar olmak istiyorum"
+              description="E-posta veya SMS alabilirsiniz"
+              size="middle"
+              variant="primary"
+              shape="default"
+            />
+          </div>
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">

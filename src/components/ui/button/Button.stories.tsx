@@ -36,7 +36,7 @@ const meta: Meta<
     },
     shape: {
       control: "select",
-      options: ["default", "circle", "round"],
+      options: ["default", "circle", "round", "sharp"],
     },
     showIcon: {
       control: "boolean",

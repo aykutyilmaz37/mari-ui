@@ -20,6 +20,10 @@ const meta: Meta<typeof Textarea> = {
       control: "select",
       options: ["error", "warning"],
     },
+    shape: {
+      control: "select",
+      options: ["default", "round", "sharp"],
+    },
     disabled: { control: "boolean" },
     allowClear: { control: "boolean" },
     autoSize: { control: "boolean" },

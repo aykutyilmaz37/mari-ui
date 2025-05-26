@@ -7,8 +7,15 @@ import {
   getVariantClasses,
   getStatusClasses,
   isClearable,
+  getShapeClasses,
 } from "./utils";
-import { InputClassNames, InputSize, InputStatus, InputVariant } from "./types";
+import {
+  InputClassNames,
+  InputShape,
+  InputSize,
+  InputStatus,
+  InputVariant,
+} from "./types";
 import { InputMask } from "@react-input/mask";
 import { EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
 
@@ -27,6 +34,7 @@ export type InputProps = {
   iconPosition?: "start" | "end";
   disabled?: boolean;
   size?: InputSize;
+  shape?: InputShape;
   variant?: InputVariant;
   status?: InputStatus;
   maxLength?: number;
@@ -64,6 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       showCount,
       status,
       size = "middle",
+      shape = "default",
       type = "text",
       value,
       variant = "outlined",
@@ -126,6 +135,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         getSizeClasses(size),
         getVariantClasses(variant),
         getStatusClasses(status),
+        getShapeClasses(shape),
         disabled && "opacity-50 pointer-events-none",
         classNames.wrapper,
         className

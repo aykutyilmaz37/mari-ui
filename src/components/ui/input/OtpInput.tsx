@@ -5,20 +5,33 @@ import { Input, type InputProps } from "@/components/ui/input";
 import { twMerge } from "tailwind-merge";
 import clsx from "clsx";
 
-export type OtpInputProps = {
+export type OtpInputProps = Omit<
+  InputProps,
+  | "onChange"
+  | "onPressEnter"
+  | "onClear"
+  | "allowClear"
+  | "icon"
+  | "iconPosition"
+  | "showCount"
+  | "count"
+  | "type"
+  | "prefix"
+  | "suffix"
+  | "autoComplete"
+  | "visibilityToggle"
+  | "visibilityIconRender"
+  | "mask"
+  | "replacement"
+> & {
   length?: number;
   value?: string;
   defaultValue?: string;
-  disabled?: boolean;
-  size?: InputProps["size"];
-  variant?: InputProps["variant"];
-  status?: InputProps["status"];
   onChange?: (value: string) => void;
   onInput?: (value: string[]) => void;
   mask?: boolean;
   formatter?: (val: string) => string;
   separator?: React.ReactNode | ((i: number) => React.ReactNode);
-  className?: string;
 };
 
 export const OtpInput: React.FC<OtpInputProps> = ({
@@ -27,6 +40,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   defaultValue = "",
   disabled = false,
   size = "middle",
+  shape = "default",
   variant = "outlined",
   status,
   onChange,
@@ -136,6 +150,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({
             maxLength={1}
             disabled={disabled}
             size={size}
+            shape={shape}
             variant={variant}
             status={status}
             className={twMerge(

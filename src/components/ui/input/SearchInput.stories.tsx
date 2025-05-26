@@ -19,6 +19,10 @@ const meta: Meta<typeof SearchInput> = {
       control: "select",
       options: ["error", "warning", undefined],
     },
+    shape: {
+      control: "select",
+      options: ["default", "round", "sharp"],
+    },
     allowClear: { control: "boolean" },
     disabled: { control: "boolean" },
     maxLength: { control: "number" },

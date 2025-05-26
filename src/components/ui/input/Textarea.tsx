@@ -13,6 +13,7 @@ import {
   getVariantClasses,
   getStatusClasses,
   isClearable,
+  getShapeClasses,
 } from "./utils";
 import { TextareaAutoSize } from "./types";
 import { InputProps } from "./Input";
@@ -49,6 +50,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       showCount,
       status,
       size = "middle",
+      shape = "default",
       variant = "outlined",
       value,
       onChange,
@@ -93,6 +95,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         getTextareaSizeClasses(size),
         getVariantClasses(variant),
         getStatusClasses(status),
+        getShapeClasses(shape),
         disabled && "opacity-50 pointer-events-none",
         classNames.wrapper,
         className
