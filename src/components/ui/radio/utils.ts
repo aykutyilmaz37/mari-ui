@@ -60,3 +60,12 @@ export const getStatusClasses = (status?: RadioStatus) => {
   };
   return status ? map[status] : "";
 };
+
+export const getOptionTypeClasses = (
+  optionType: "default" | "button" = "default"
+) => {
+  if (optionType === "button") {
+    return "rounded-md px-3 py-1 bg-white hover:bg-gray-100 border transition";
+  }
+  return "rounded-full";
+};
