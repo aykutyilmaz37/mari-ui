@@ -14,11 +14,13 @@ import type {
   CheckboxShape,
   CheckboxSize,
   CheckboxStatus,
+  CheckboxType,
   CheckboxVariant,
 } from "./types";
 import {
   getShapeClasses,
   getSizeClasses,
+  getSizeIndeterminateClasses,
   getStatusClasses,
   getVariantClasses,
 } from "./utils";
@@ -42,6 +44,7 @@ export type CheckboxProps = {
   shape?: CheckboxShape;
   id?: string;
   variant?: CheckboxVariant;
+  type?: CheckboxType;
 };
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
@@ -59,7 +62,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       classNames = {},
       label,
       description,
-      variant = "primary",
+      variant = "outline",
+      type = "primary",
       size = "middle",
       shape = "default",
       status,
@@ -81,8 +85,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       getSizeClasses(size),
       getStatusClasses(status),
       getShapeClasses(shape),
-      !status && getVariantClasses(variant),
-      disabled && "opacity-50",
+      !status && getVariantClasses(variant, type),
+      disabled && "opacity-50 cursor-not-allowed",
       classNames.checkbox,
       className
     );
@@ -106,13 +110,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           classNames.wrapper
         )}
       >
-        <span className="inline-flex items-center gap-2">
+        <span className="inline-flex items-center gap-2 relative">
           <input
             ref={inputRef}
             id={id}
             type="checkbox"
             autoFocus={autoFocus}
-            checked={checked}
+            checked={typeof checked === "boolean" ? checked : isChecked}
             defaultChecked={defaultChecked}
             disabled={disabled}
             onChange={handleChange}
@@ -121,19 +125,36 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             className={baseClasses}
             {...rest}
           />
-          {isChecked && (
-            <CheckIcon
+          {(indeterminate ||
+            (typeof checked === "boolean" ? checked : isChecked)) && (
+            <span
               className={clsx(
-                "absolute text-white pointer-events-none",
-                getSizeClasses(size)
+                "absolute pointer-events-none",
+                getSizeClasses(size),
+                "flex items-center justify-center"
               )}
-            />
+            >
+              {indeterminate ? (
+                <span
+                  className={clsx(
+                    "rounded-sm",
+                    getSizeIndeterminateClasses(size),
+                    {
+                      "bg-primary": type === "primary",
+                      "bg-secondary": type === "secondary",
+                    }
+                  )}
+                />
+              ) : (
+                <CheckIcon className="text-white" size={16} />
+              )}
+            </span>
           )}
           {label && (
             <span
               className={clsx(
-                "select-none text-gray-800",
-                disabled && "text-gray-400",
+                "select-none text-base-color",
+                disabled && "text-disabled",
                 classNames.label
               )}
             >
@@ -147,7 +168,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               "text-xs",
               status === "error" && "text-error-light",
               status === "warning" && "text-warning-light",
-              !status && "text-gray-500"
+              !status && type === "primary" && "text-primary",
+              !status && type === "secondary" && "text-secondary"
             )}
           >
             {description}

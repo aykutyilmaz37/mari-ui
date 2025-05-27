@@ -99,11 +99,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const showPasswordToggle =
       type === "password" && visibilityToggle !== false;
 
-    const inputType = showPasswordToggle
-      ? passwordVisible
-        ? "text"
-        : "password"
-      : type;
+    let inputType = type;
+    if (showPasswordToggle) {
+      inputType = passwordVisible ? "text" : "password";
+    }
 
     const currentValue = value ?? internalValue;
     const charCount = currentValue.length;

@@ -129,50 +129,54 @@ export const OtpInput: React.FC<OtpInputProps> = ({
 
   return (
     <div className="flex items-center gap-2">
-      {Array.from({ length }).map((_, i) => (
-        <React.Fragment key={i}>
-          <Input
-            ref={(el) => {
-              inputsRef.current[i] = el;
-            }}
-            value={
-              formatter
-                ? formatter(otpValues[i])
-                : mask && otpValues[i]
-                ? "•"
-                : otpValues[i]
-            }
-            onInput={(e) =>
-              handleInput(i, (e.target as HTMLInputElement).value)
-            }
-            onKeyDown={(e) => handleKeyDown(e, i)}
-            onFocus={(e) => e.currentTarget.select()}
-            maxLength={1}
-            disabled={disabled}
-            size={size}
-            shape={shape}
-            variant={variant}
-            status={status}
-            className={twMerge(
-              clsx(
-                {
-                  "w-6 p-0": size === "small",
-                  "w-8 p-0": size === "middle",
-                  "w-10 p-0": size === "large",
-                },
-                className
-              )
+      {Array.from({ length }).map((_, i) => {
+        const rawValue = otpValues[i];
+        let displayValue = rawValue;
+        if (formatter) {
+          displayValue = formatter(rawValue);
+        } else if (mask && rawValue) {
+          displayValue = "•";
+        }
+
+        return (
+          <React.Fragment key={`otp-${i}-${rawValue}`}>
+            <Input
+              ref={(el) => {
+                inputsRef.current[i] = el;
+              }}
+              value={displayValue}
+              onInput={(e) =>
+                handleInput(i, (e.target as HTMLInputElement).value)
+              }
+              onKeyDown={(e) => handleKeyDown(e, i)}
+              onFocus={(e) => e.currentTarget.select()}
+              maxLength={1}
+              disabled={disabled}
+              size={size}
+              shape={shape}
+              variant={variant}
+              status={status}
+              className={twMerge(
+                clsx(
+                  {
+                    "w-6 p-0": size === "small",
+                    "w-8 p-0": size === "middle",
+                    "w-10 p-0": size === "large",
+                  },
+                  className
+                )
+              )}
+              classNames={{ input: "w-full text-center" }}
+              {...rest}
+            />
+            {separator && i < length - 1 && (
+              <span>
+                {typeof separator === "function" ? separator(i) : separator}
+              </span>
             )}
-            classNames={{ input: "w-full text-center" }}
-            {...rest}
-          />
-          {separator && i < length - 1 && (
-            <span>
-              {typeof separator === "function" ? separator(i) : separator}
-            </span>
-          )}
-        </React.Fragment>
-      ))}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 };

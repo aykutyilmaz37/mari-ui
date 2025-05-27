@@ -3,6 +3,7 @@ import type {
   CheckboxSize,
   CheckboxVariant,
   CheckboxShape,
+  CheckboxType,
 } from "./types";
 
 export const getStatusClasses = (status?: CheckboxStatus): string => {
@@ -21,18 +22,54 @@ export const getSizeClasses = (size: CheckboxSize = "middle"): string => {
   }[size];
 };
 
-export const getVariantClasses = (
-  variant: CheckboxVariant = "primary"
+export const getSizeIndeterminateClasses = (
+  size: CheckboxSize = "middle"
 ): string => {
-  const map: Record<CheckboxVariant, string> = {
-    primary:
-      "text-primary border-primary bg-white checked:bg-primary checked:text-white focus:ring-primary-hover",
-    secondary:
-      "text-secondary border-secondary bg-white checked:bg-secondary checked:text-white focus:ring-secondary-hover",
-    neutral:
-      "text-gray-600 border-gray-300 bg-white checked:bg-gray-600 checked:text-white focus:ring-gray-400",
+  return {
+    small: "h-1.5 w-1.5",
+    middle: "h-2.5 w-2.5",
+    large: "h-3 w-3",
+  }[size];
+};
+
+export const getVariantClasses = (
+  variant: CheckboxVariant = "outline",
+  type: CheckboxType = "primary"
+): string => {
+  const map: Record<CheckboxVariant, Record<CheckboxType, string>> = {
+    outline: {
+      primary:
+        "bg-white border-primary text-primary checked:bg-primary checked:text-white focus:ring-primary-hover",
+      secondary:
+        "bg-white border-secondary text-secondary checked:bg-secondary checked:text-white focus:ring-secondary-hover",
+    },
+    solid: {
+      primary:
+        "bg-primary border-primary text-white checked:bg-primary-dark focus:ring-primary-hover",
+      secondary:
+        "bg-secondary border-secondary text-white checked:bg-secondary-dark focus:ring-secondary-hover",
+    },
   };
-  return map[variant];
+
+  return map[variant]?.[type] ?? "";
+};
+
+export const getVariantIndeterminateClasses = (
+  variant: CheckboxVariant = "outline",
+  type: CheckboxType = "primary"
+): string => {
+  const map: Record<CheckboxVariant, Record<CheckboxType, string>> = {
+    outline: {
+      primary: "bg-primary",
+      secondary: "bg-secondary",
+    },
+    solid: {
+      primary: "bg-primary-dark",
+      secondary: "bg-secondary-dark",
+    },
+  };
+
+  return map[variant]?.[type] ?? "";
 };
 
 export const getShapeClasses = (shape: CheckboxShape): string => {
