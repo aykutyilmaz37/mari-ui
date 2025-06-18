@@ -6,14 +6,10 @@ const config: StorybookConfig = {
     "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   "addons": [
-    {
-      "name": "@storybook/addon-essentials",
-      "options": {
-        "docs": false
-      }
-    },
+    "@storybook/addon-essentials",
     "@storybook/addon-onboarding",
-    "@storybook/addon-interactions"
+    "@chromatic-com/storybook",
+    "@storybook/experimental-addon-test"
   ],
   "framework": {
     "name": "@storybook/nextjs",
