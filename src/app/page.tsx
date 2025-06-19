@@ -1,9 +1,10 @@
 "use client";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
-import { SearchIcon } from "lucide-react";
+import { HomeIcon, SearchIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function Page() {
@@ -31,7 +32,20 @@ export default function Page() {
   };
   return (
     <div className="group focus:border-primary grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <header>Header</header>
+      <header>
+        Header
+        <Breadcrumb
+          items={[
+            { title: <div className="flex items-center gap-1">
+            <HomeIcon size={16} />
+            <span>Home</span>
+            </div>, href: "/" },
+            { title: "Category", href: "/category" },
+            { title: "Product", path: "product" },
+          ]}
+          separator={'>'}
+        />
+      </header>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <section>
           <div className="flex gap-1">
