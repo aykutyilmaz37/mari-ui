@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
+import { Tag } from "@/components/ui/tag";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -88,6 +89,17 @@ export default function Page() {
               />
             ))}
           </div>
+          <Tag
+            color={"bg-blue-700 text-white"}
+            statu="success"
+            bordered={true}
+            icon={<SearchIcon size={12} />}
+            closeIcon={<SearchIcon size={12} />}
+            onClose={() => console.log("Tag closed")}
+            className="font-semibold"
+          >
+            Statü
+          </Tag>
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
