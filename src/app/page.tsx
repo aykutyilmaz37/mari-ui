@@ -1,5 +1,4 @@
 "use client";
-import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
@@ -35,9 +34,6 @@ export default function Page() {
       <header>Header</header>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <section>
-          <div>
-            <Avatar alt="Furkan Yılmaz" size='small' shape="square"  />
-          </div>
           <div className="flex gap-1">
             <Button type="primary">Button</Button>
             <Input
