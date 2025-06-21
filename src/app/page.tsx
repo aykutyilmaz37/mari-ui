@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
@@ -87,6 +88,11 @@ export default function Page() {
                 onChange={handleItemChange(item)}
               />
             ))}
+          </div>
+          <div>
+            <Card title='Card' size="big">
+              <span>merhaba</span>
+            </Card>
           </div>
         </section>
       </main>
