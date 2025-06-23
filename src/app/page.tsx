@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Carousel } from "@/components/ui/carousel";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
@@ -89,6 +90,26 @@ export default function Page() {
             ))}
           </div>
         </section>
+        <div>
+          <Carousel
+          draggable
+            arrows
+            autoplay
+            autoplaySpeed={2000}
+            infinite
+            effect="scrollx"
+          >
+            <div className="h-40 bg-red-200 flex items-center justify-center">
+              Slide 1
+            </div>
+            <div className="h-40 bg-green-200 flex items-center justify-center">
+              Slide 2
+            </div>
+            <div className="h-40 bg-blue-200 flex items-center justify-center">
+              Slide 3
+            </div>
+          </Carousel>
+        </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         Footer
