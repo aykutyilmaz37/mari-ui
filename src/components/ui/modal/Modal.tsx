@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { Button } from "../button";
-import { CloseButtonPositionType, SizeType, VariantType } from "./types";
+import { ButtonPositionType, SizeType, VariantType } from "./types";
 import { iconMap, sizeMap } from "./utils";
 import { X } from "lucide-react";
 
@@ -10,7 +10,8 @@ type ModalProps = {
   onClose: () => void;
   title: string;
   icon?: React.ReactNode;
-  closeButtonPosition?: CloseButtonPositionType;
+  closeButtonPosition?: ButtonPositionType;
+  footerButtonPosition?: ButtonPositionType;
   children: React.ReactNode;
   confirmButtonText?: string;
   cancelButtonText?: string;
@@ -33,6 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
   onCancel,
   variant = "default",
   size = "medium",
+  footerButtonPosition = "left",
 }) => {
   return (
     <div
@@ -76,7 +78,13 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
         <div className="px-4 py-4">{children}</div>
         {(confirmButtonText || cancelButtonText) && (
-          <div className="flex justify-end gap-2 px-4 py-3 border-t border-gray-300">
+          <div
+            className={clsx(
+              "flex gap-2 px-4 py-3 border-t border-gray-300",
+              footerButtonPosition === "right" && "justify-end ",
+              footerButtonPosition === "left" && "justify-start "
+            )}
+          >
             {cancelButtonText && (
               <Button
                 onClick={onCancel ?? onClose}

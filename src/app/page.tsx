@@ -92,10 +92,12 @@ export default function Page() {
           </div>
           <Button onClick={() => setIsModalOpen(true)}>Open Modal</Button>
           <Modal
-          variant="warning"
+            variant="warning"
             open={isModalOpen}
             title="Modal Title"
             onClose={() => setIsModalOpen(false)}
+            confirmButtonText="Ekle"
+            cancelButtonText="İptal"
           >
             <p>Modal Content</p>
           </Modal>
