@@ -15,6 +15,25 @@ const meta: Meta<typeof Modal> = {
     cancelButtonText: "Cancel",
     variant: "default",
     size: "medium",
+    footerButtonPosition: "left",
+  },
+  argTypes: {
+    variant: {
+      control: { type: "select" },
+      options: ["default", "confirm", "warning", "error", "info"],
+    },
+    size: {
+      control: { type: "select" },
+      options: ["small", "medium", "large"],
+    },
+    closeButtonPosition: {
+      control: { type: "select" },
+      options: ["left", "right"],
+    },
+    footerButtonPosition: {
+      control: { type: "select" },
+      options: ["left", "right"],
+    },
   },
 };
 
