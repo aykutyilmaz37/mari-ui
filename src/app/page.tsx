@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Drawer } from "@/components/ui/drawer";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
 import { SearchIcon } from "lucide-react";
@@ -9,6 +10,7 @@ import { useState } from "react";
 export default function Page() {
   const [code, setCode] = useState("");
   const fruits = ["Apple", "Pear", "Orange"];
+  const [open, setOpen] = useState(false);
   const [checkedItems, setCheckedItems] = useState<string[]>([
     "Apple",
     "Orange",
@@ -88,6 +90,15 @@ export default function Page() {
               />
             ))}
           </div>
+          <Button onClick={() => setOpen(true)}>Open Drawer</Button>
+          <Drawer
+            header={<div>Header</div>}
+            footer={<div>Footer</div>}
+            open={open}
+            onClose={() => setOpen(false)}
+          >
+            <div>Drawer Content</div>
+          </Drawer>
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
