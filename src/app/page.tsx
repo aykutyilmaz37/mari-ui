@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
+import { Modal } from "@/components/ui/modal";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -13,6 +14,7 @@ export default function Page() {
     "Apple",
     "Orange",
   ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const allChecked = checkedItems.length === fruits.length;
   const isIndeterminate =
@@ -88,6 +90,15 @@ export default function Page() {
               />
             ))}
           </div>
+          <Button onClick={() => setIsModalOpen(true)}>Open Modal</Button>
+          <Modal
+          variant="warning"
+            open={isModalOpen}
+            title="Modal Title"
+            onClose={() => setIsModalOpen(false)}
+          >
+            <p>Modal Content</p>
+          </Modal>
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
