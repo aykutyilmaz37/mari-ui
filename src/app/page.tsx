@@ -1,9 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Empty } from "@/components/ui/empty";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
-import { SearchIcon } from "lucide-react";
+import { RefreshCcw, SearchIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function Page() {
@@ -88,6 +89,13 @@ export default function Page() {
               />
             ))}
           </div>
+          <Empty
+            title="No items found"
+            description="Try adjusting your filters or search again."
+            buttonText="Retry"
+            buttonIcon={<RefreshCcw size={16} />}
+            onClick={() => console.log("Retry clicked")}
+          />
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
