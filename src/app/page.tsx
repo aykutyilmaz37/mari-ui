@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
+import { Pagination } from "@/components/ui/pagination";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -13,6 +14,7 @@ export default function Page() {
     "Apple",
     "Orange",
   ]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const allChecked = checkedItems.length === fruits.length;
   const isIndeterminate =
@@ -88,6 +90,12 @@ export default function Page() {
               />
             ))}
           </div>
+          <Pagination
+            currentPage={currentPage}
+            onPageChange={(page) => setCurrentPage(page)}
+            pageSize={10}
+            totalItems={500}
+          />
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
