@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
+import { Skeleton, SkeletonButton, SkeletonInput } from "@/components/ui/skeleton";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -88,6 +89,11 @@ export default function Page() {
               />
             ))}
           </div>
+          <Skeleton />
+          <br/>
+          <SkeletonButton />
+          <br />
+          <SkeletonInput />
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
