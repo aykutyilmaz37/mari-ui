@@ -10,6 +10,9 @@ interface TooltipProps {
   placement?: Placement;
   variant?: TooltipVariant;
   className?: string;
+  style?: React.CSSProperties;
+  alwaysVisible?: boolean;
+  disabled?: boolean;
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({
@@ -18,16 +21,18 @@ export const Tooltip: React.FC<TooltipProps> = ({
   placement = "top",
   variant = "default",
   className,
+  style,
+  alwaysVisible,
+  disabled = false,
 }) => {
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(alwaysVisible || false);
 
   const variantClasses = getVariantClasses(variant);
   const arrowClasses = getArrowClasses(variant);
   return (
     <div
-      className="relative inline-block"
       onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
+      onMouseLeave={() => !alwaysVisible && setVisible(false)}
     >
       {trigger}
       {visible && (
@@ -40,9 +45,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
               "left-full top-1/2 -translate-y-1/2 ml-2": placement === "right",
               "right-full top-1/2 -translate-y-1/2 mr-2": placement === "left",
             },
+            disabled && "hidden",
             variantClasses,
             className
           )}
+          style={{ ...style }}
         >
           {content}
           <Play
