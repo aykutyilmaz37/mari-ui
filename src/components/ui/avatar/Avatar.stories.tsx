@@ -3,6 +3,8 @@ import { Avatar } from "./Avatar";
 import type { AvatarProps } from "./Avatar";
 import { User2Icon } from "lucide-react";
 
+const AVATAR_URL = "/images/avatar.png";
+
 const meta: Meta<typeof Avatar> = {
   title: "Components/Avatar",
   component: Avatar,
@@ -15,9 +17,9 @@ const meta: Meta<typeof Avatar> = {
     },
     size: {
       control: "select",
-      options: ["small", "default", "large"],
+      options: ["small", "middle", "large"],
     },
-    src: { control: "text" },
+    src: { control: false },
     icon: { control: false },
     onError: { action: "onError" },
   },
@@ -29,8 +31,8 @@ export const Playground: StoryObj<AvatarProps> = {
   args: {
     alt: "User",
     shape: "circle",
-    size: "default",
-    src: "https://invalid-url/image.jpg",
+    size: "middle",
+    src: AVATAR_URL,
     onError: () => {
       return true;
     },
@@ -39,18 +41,28 @@ export const Playground: StoryObj<AvatarProps> = {
 
 export const WithIconFallback: StoryObj<AvatarProps> = {
   args: {
-    alt: "User",
+    alt: "User with Fallback",
     shape: "circle",
     size: "large",
-    src: "invalid-url",
-    icon: <User2Icon size={16} />,
+    src: "",
+    icon: <User2Icon size={24} />,
+  },
+};
+
+export const NoAvatar: StoryObj<AvatarProps> = {
+  args: {
+    alt: "Avatar",
+    shape: "circle",
+    size: "large",
+    src: "",
+    icon: "",
   },
 };
 
 export const AllShapesAndSizes: StoryObj = {
   render: () => {
     const shapes = ["circle", "square"] as const;
-    const sizes = ["small", "default", "large"] as const;
+    const sizes = ["small", "middle", "large"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">
@@ -63,8 +75,8 @@ export const AllShapesAndSizes: StoryObj = {
                   key={`${shape}-${size}`}
                   shape={shape}
                   size={size}
-                  alt="Example"
-                  src={`https://i.pravatar.cc/150?u=${shape}-${size}`}
+                  alt={`Avatar ${shape} ${size}`}
+                  src={AVATAR_URL}
                 />
               ))}
             </div>

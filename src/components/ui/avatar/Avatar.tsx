@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { AvatarShape, AvatarSize } from "./types";
-import { getSizeStyle, getShapeClasses, getNoUser } from "./utils";
-import clsx from "clsx";
 import React from "react";
+import clsx from "clsx";
+import Image from "next/image";
+import { AvatarShape, AvatarSize, GetAvatarContent } from "./types";
+import { getShapeClasses, getSizeStyle, getNoUser } from "./utils";
 
 export type AvatarProps = {
   alt?: string;
@@ -12,14 +12,52 @@ export type AvatarProps = {
   shape?: AvatarShape;
   size?: AvatarSize;
   src?: string | React.ReactNode;
+  width?: number;
+  height?: number;
   onError?: () => boolean;
 };
+
+const getAvatarContent = ({
+  src,
+  alt,
+  imgError,
+  handleImgError,
+  icon,
+  width = 40,
+  height = 40,
+  noUser = "No User",
+  ...rest
+}: GetAvatarContent): React.ReactNode => {
+  switch (true) {
+    case typeof src === "string" && !imgError:
+      return (
+        <Image
+          src={String(src)}
+          alt={alt}
+          onError={handleImgError}
+          width={width}
+          height={height}
+          className="w-full h-full object-cover"
+          {...rest}
+        />
+      );
+
+    case typeof src === "object" && src !== null:
+      return src;
+
+    default:
+      return icon || <span className="text-base font-medium">{noUser}</span>;
+  }
+};
+
 export const Avatar: React.FC<AvatarProps> = ({
   alt = "",
   icon,
   shape = "circle",
-  size = "default",
+  size = "middle",
   src,
+  width = 32,
+  height = 32,
   onError,
 }) => {
   const [imgError, setImgError] = React.useState(false);
@@ -31,24 +69,24 @@ export const Avatar: React.FC<AvatarProps> = ({
     }
   };
 
-  const sizeStyle = getSizeStyle(size);
   const shapeClassName = getShapeClasses(shape);
+  const sizeStyle = getSizeStyle(size);
   const noUser = getNoUser(alt);
+
+  const avatar = getAvatarContent({
+    src,
+    alt,
+    imgError,
+    handleImgError,
+    icon,
+    width,
+    height,
+    noUser,
+  });
 
   return (
     <div className={clsx(shapeClassName)} style={sizeStyle}>
-      {typeof src === "string" && !imgError ? (
-        <Image
-          src={src}
-          alt={alt}
-          onError={handleImgError}
-          className="w-full h-full object-cover"
-        />
-      ) : typeof src === "object" && src ? (
-        src
-      ) : (
-        icon || <span className="text-sm">{noUser}</span>
-      )}
+      {avatar}
     </div>
   );
 };

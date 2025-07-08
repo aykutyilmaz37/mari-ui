@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { AvatarShape, AvatarSize } from "./types";
+import React from "react";
 
 export const getSizeStyle = (size: AvatarSize): React.CSSProperties => {
   if (typeof size === "number") {
@@ -8,7 +9,7 @@ export const getSizeStyle = (size: AvatarSize): React.CSSProperties => {
 
   const sizeMap: Record<string, number> = {
     small: 24,
-    default: 32,
+    middle: 32,
     large: 40,
   };
 
@@ -17,8 +18,8 @@ export const getSizeStyle = (size: AvatarSize): React.CSSProperties => {
   }
 
   return {
-    width: size.md || 32,
-    height: size.md || 32,
+    width: 32,
+    height: 32,
   };
 };
 
