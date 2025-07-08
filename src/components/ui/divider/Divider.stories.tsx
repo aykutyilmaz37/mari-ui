@@ -49,10 +49,18 @@ export const Playground: StoryObj<DividerProps> = {
 };
 
 export const Vertical: StoryObj<DividerProps> = {
+  render: (args) => (
+    <div className="h-screen flex items-center justify-center gap-4 bg-gray-50">
+      <span>Left</span>
+      <Divider {...args} />
+      <span>Right</span>
+    </div>
+  ),
   args: {
     type: "vertical",
     variant: "dotted",
-    children: "`Lorem Ipsum is simply dummy text of the printing and typesetting\nindustry. Lorem Ipsum has been the industry's standard dummy text\never since the 1500s, when an unknown printer took a galley of\ntype and scrambled it to make a type specimen book. It has\nsurvived not only five centuries, but also the leap into\nelectronic typesetting, remaining essentially unchanged. It was\npopularised in the 1960s with the release of Letraset sheets\ncontaining Lorem Ipsum passages, and more recently with desktop\npublishing software like Aldus PageMaker including versions of\nLorem Ipsum.`,"
+    children: "Lorem",
+    height: "80%",
   },
 };
 

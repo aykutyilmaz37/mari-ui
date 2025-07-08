@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   DividerOrientation,
@@ -18,6 +20,7 @@ export type DividerProps = {
   style?: React.CSSProperties;
   size?: DividerSize;
   type?: DividerType;
+  height?: string | number;
 };
 
 export const Divider: React.FC<DividerProps> = ({
@@ -31,6 +34,7 @@ export const Divider: React.FC<DividerProps> = ({
   style,
   size,
   type = "horizontal",
+  height = "48px",
 }) => {
   const isHorizontal = type === "horizontal";
   const baseClass = getBaseClass(
@@ -48,7 +52,7 @@ export const Divider: React.FC<DividerProps> = ({
   );
 
   return (
-    <div className={baseClass} role="separator" style={style}>
+    <div className={baseClass} style={style}>
       {children && isHorizontal ? (
         <>
           <span className="flex-1 border-t border-inherit" />
@@ -58,7 +62,12 @@ export const Divider: React.FC<DividerProps> = ({
           <span className="flex-1 border-t border-inherit" />
         </>
       ) : (
-        <span className="border-l border-inherit h-full" />
+        <span
+          className="inline-block border-l border-inherit"
+          style={{
+            height: typeof height === "number" ? `${height}px` : height,
+          }}
+        />
       )}
     </div>
   );

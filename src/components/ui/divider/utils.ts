@@ -2,9 +2,9 @@ import clsx from "clsx";
 
 export const getBaseClass = (
   isHorizontal: boolean,
-  size: string | undefined,
-  variant: string | undefined,
-  dashed: boolean | undefined,
+  size?: string,
+  variant?: string,
+  dashed?: boolean,
   className?: string
 ) =>
   clsx(
@@ -14,8 +14,6 @@ export const getBaseClass = (
       "text-xs": size === "small",
       "text-sm": size === "middle",
       "text-base": size === "large",
-      "border-t": isHorizontal,
-      "border-l": !isHorizontal,
       "border-solid": variant === "solid",
       "border-dashed": variant === "dashed" || dashed,
       "border-dotted": variant === "dotted",
@@ -24,9 +22,9 @@ export const getBaseClass = (
   );
 
 export const getTitleClass = (
-  plain: boolean | undefined,
-  orientation: string | undefined,
-  isHorizontal: boolean
+  plain?: boolean,
+  orientation?: string,
+  isHorizontal?: boolean
 ) =>
   clsx("px-2 whitespace-nowrap", {
     "text-gray-500": plain,
@@ -35,17 +33,19 @@ export const getTitleClass = (
   });
 
 export const getMarginStyle = (
-  orientation: string | undefined,
-  orientationMargin: string | number | undefined,
-  isHorizontal: boolean
-): React.CSSProperties =>
-  orientation !== "center" && orientationMargin
-    ? isHorizontal
-      ? {
-          [orientation === "start" ? "marginRight" : "marginLeft"]:
-            typeof orientationMargin === "number"
-              ? `${orientationMargin}px`
-              : orientationMargin,
-        }
-      : {}
-    : {};
+  orientation?: string,
+  orientationMargin?: string | number,
+  isHorizontal?: boolean
+): React.CSSProperties => {
+  if (orientation === "center" || !orientationMargin || !isHorizontal) {
+    return {};
+  }
+  const marginValue =
+    typeof orientationMargin === "number"
+      ? `${orientationMargin}px`
+      : orientationMargin;
+
+  return orientation === "start"
+    ? { marginRight: marginValue }
+    : { marginLeft: marginValue };
+};
