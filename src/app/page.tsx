@@ -2,6 +2,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Divider } from "@/components/ui/divider";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
 import { SearchIcon } from "lucide-react";
@@ -91,6 +92,11 @@ export default function Page() {
                 onChange={handleItemChange(item)}
               />
             ))}
+          </div>
+          <div>
+            <Divider>
+              Lorem Ipsum.
+            </Divider>
           </div>
         </section>
       </main>
