@@ -3,10 +3,32 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
-import { SearchIcon } from "lucide-react";
+import { Steps } from "@/components/ui/steps";
+import { SearchIcon, TicketIcon, TimerIcon } from "lucide-react";
 import { useState } from "react";
 
+const stepData = [
+  {
+    icon: TicketIcon,
+    title: "Bilet",
+    description: "Bilet Seç",
+    step: 1,
+  },
+  {
+    icon: TimerIcon,
+    title: "Zaman",
+    description: "Zaman Seç",
+    step: 2,
+  },
+  {
+    title: "Onay",
+    description: "Onayla",
+    step: 3,
+  },
+];
 export default function Page() {
+  const [currentSteps, setCurrentStep] = useState(1);
+
   const [code, setCode] = useState("");
   const fruits = ["Apple", "Pear", "Orange"];
   const [checkedItems, setCheckedItems] = useState<string[]>([
@@ -29,6 +51,7 @@ export default function Page() {
   const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckedItems(e.target.checked ? [...fruits] : []);
   };
+
   return (
     <div className="group focus:border-primary grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header>Header</header>
@@ -89,6 +112,11 @@ export default function Page() {
             ))}
           </div>
         </section>
+        <Steps
+          data={stepData}
+          currentStep={currentSteps}
+          onChange={(step) => setCurrentStep(step)}
+        />
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         Footer
