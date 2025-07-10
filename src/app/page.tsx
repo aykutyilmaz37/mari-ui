@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Divider } from "@/components/ui/divider";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
+import { Switch } from "@/components/ui/switch";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -15,6 +16,8 @@ export default function Page() {
     "Apple",
     "Orange",
   ]);
+  const [switchOn, setSwitchOn] = useState(false);
+  console.log(switchOn);
 
   const allChecked = checkedItems.length === fruits.length;
   const isIndeterminate =
@@ -94,10 +97,16 @@ export default function Page() {
             ))}
           </div>
           <div>
-            <Divider>
-              Lorem Ipsum.
-            </Divider>
+            <Divider>Lorem Ipsum.</Divider>
           </div>
+          <Switch
+          disabled
+            label="Bildirimleri Aç"
+            checked={switchOn}
+            onChange={setSwitchOn}
+            switchTrueLabel="true"
+            switchFalseLabel="false"
+          />
         </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">

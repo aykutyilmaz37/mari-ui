@@ -69,7 +69,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       clsx(
         "inline-flex items-center justify-center font-medium transition-all duration-300 select-none cursor-pointer focus:ring-opacity-50 focus-visible:outline-0",
         block && "w-full",
-        disabled && "opacity-50 pointer-events-none",
+        disabled && "opacity-50 pointer-not-allowed",
         shapeClasses,
         sizeClasses,
         variantClasses,
