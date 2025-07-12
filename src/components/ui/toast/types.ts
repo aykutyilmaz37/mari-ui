@@ -6,4 +6,4 @@ export type PositionType =
   | "bottomLeft"
   | "bottomRight";
 
-export type ToastType = "success" | "info" | "error" | "warning" | 'none';
+export type ToastType = "success" | "info" | "error" | "warning" | "none";

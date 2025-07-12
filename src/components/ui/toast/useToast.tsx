@@ -3,7 +3,6 @@ import { ToastType } from "./types";
 import { Toast } from "./Toast";
 
 export const useToast = () => {
-  // Toast state'i
   const [toasts, setToasts] = React.useState<
     { id: number; title: string; description?: string; type?: ToastType }[]
   >([]);
@@ -11,7 +10,7 @@ export const useToast = () => {
   const removeToast = (id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
-  // Toast ekleme fonksiyonu
+
   const showToast = (toast: {
     title: string;
     description?: string;
@@ -24,7 +23,6 @@ export const useToast = () => {
     }, 4000);
   };
 
-  
   const ToastProvider = () => {
     return (
       <div className="static z-[9999]">
