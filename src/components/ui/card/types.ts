@@ -1,5 +1,5 @@
 export type CardVariant = "outlined" | "borderless";
-export type CardSize = "default" | "small" | "middle" | "big";
+export type CardSize = "default" | "small" | "middle" | "large";
 export type CardType = "inner" | undefined;
 export type SemanticDOM = "header" | "body" | "footer" | "cover";
 

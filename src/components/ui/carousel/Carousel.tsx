@@ -197,7 +197,6 @@ export const Carousel = ({
           );
         })}
       </div>
-
       {dots && (
         <div
           className={twMerge(
@@ -210,8 +209,8 @@ export const Carousel = ({
           {Array.from({ length: count }).map((_, index) => (
             <button
               key={index}
-              className={clsx("h-2 w-2 rounded-full bg-gray-400", {
-                "bg-gray-800": index === current,
+              className={clsx("h-2 w-2 rounded-full bg-border", {
+                "bg-foreground": index === current,
               })}
               onClick={() => goTo(index)}
             />

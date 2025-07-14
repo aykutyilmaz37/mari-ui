@@ -1,18 +1,18 @@
 import clsx from "clsx";
 
 export const statusColors: Record<string, string> = {
-  success: "bg-green-100 text-green-800",
-  processing: "bg-blue-100 text-blue-800",
-  error: "bg-red-100 text-red-800",
-  warning: "bg-yellow-100 text-yellow-800",
-  default: "bg-gray-100 text-gray-800",
+  success: "bg-success-light text-success-muted border-success",
+  processing: "bg-info-light text-info-muted border-info",
+  error: "bg-error-light text-error-muted border-error",
+  warning: "bg-warning-light text-warning-muted border-warning",
+  default: "bg-background-alt text-foreground",
 };
 
 export const getTagStatuClass = (color?: string): string => {
   const isPreset = color && statusColors[color];
   if (isPreset) return statusColors[color];
-  if (color) return `bg-[${color}] text-white`;
-  return "bg-gray-100 text-gray-800";
+  if (color) return `bg-[${color}] text-white`; // Özel renk desteği korunuyor
+  return "bg-background-alt text-foreground";
 };
 
 export const getTagClass = (
@@ -20,11 +20,10 @@ export const getTagClass = (
   bordered?: boolean,
   className?: string
 ): string => {
-  const tagClass = clsx(
+  return clsx(
     "inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-sm font-medium",
     baseColorClass,
-    bordered && "border",
+    bordered && "border-border border",
     className
   );
-  return tagClass;
 };

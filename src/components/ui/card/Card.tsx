@@ -45,7 +45,7 @@ export function Card({
           <div
             className={twMerge(
               clsx(
-                "p-4 flex items-center justify-between font-semibold",
+                "p-4 flex items-center justify-between font-semibold text-foreground",
                 classNames?.header
               )
             )}
@@ -53,13 +53,13 @@ export function Card({
             <div>{title}</div>
             <div>{extra}</div>
           </div>
-          <div className="h-[1px] bg-gray-300 min-w-full" />
+          <div className="h-[1px] bg-border min-w-full" />
         </div>
       )}
 
       <div className={twMerge(clsx("p-4", classNames?.body))}>
         {loading ? (
-          <div className="animate-pulse text-sm text-gray-500">Loading...</div>
+          <div className="animate-pulse text-sm text-muted">Loading...</div>
         ) : (
           children
         )}

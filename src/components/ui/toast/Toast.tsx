@@ -4,6 +4,7 @@ import { XIcon } from "lucide-react";
 import { getType } from "./useToastHook";
 import clsx from "clsx";
 import { getPositionInClass, getPositionOutClass } from "./utils";
+import { twMerge } from "tailwind-merge";
 
 type ToastProps = {
   title: string;
@@ -25,15 +26,15 @@ export const Toast: React.FC<ToastProps> = ({
   const TypeIcon = getType(type);
   const PositionInClass = getPositionInClass(position);
   const PositionOutClass = getPositionOutClass(position);
-  const [classNames, setClassName] = React.useState(PositionOutClass);
+  const [classNames, setClassNames] = React.useState(PositionOutClass);
 
   React.useEffect(() => {
     const enterTimeout = setTimeout(() => {
-      setClassName(PositionInClass);
+      setClassNames(PositionInClass);
     }, 10);
 
     const exitTimeout = setTimeout(() => {
-      setClassName(PositionOutClass);
+      setClassNames(PositionOutClass);
       setTimeout(() => {}, 500);
     }, 3000);
 
@@ -44,9 +45,11 @@ export const Toast: React.FC<ToastProps> = ({
   }, [PositionInClass, PositionOutClass]);
   return (
     <div
-      className={clsx(
-        "bg-white absolute transition-all duration-500 ease-out transform shadow-2xl p-5 min-w-2xs min-h-16 flex items-start justify-between",
-        classNames
+      className={twMerge(
+        clsx(
+          "bg-white absolute transition-all duration-500 ease-out transform shadow-2xl p-5 min-w-2xs min-h-16 flex items-start justify-between",
+          classNames
+        )
       )}
     >
       <div className="flex items-start gap-2">
