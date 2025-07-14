@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { BreadcrumbItemType } from "./types";
+import { twMerge } from "tailwind-merge";
 
 export type BreadcrumbProps = {
   items?: BreadcrumbItemType[];
@@ -25,7 +26,11 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   const paths: string[] = [];
 
   return (
-    <nav className={clsx("flex items-center text-sm text-gray-500", className)}>
+    <nav
+      className={twMerge(
+        clsx("flex items-center text-sm text-gray-500", className)
+      )}
+    >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
@@ -33,21 +38,31 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
           paths.push(item.path);
         }
 
-        const content = itemRender ? (
-          itemRender(item, params, items, paths)
-        ) : item.href ? (
-          <a
-            href={item.href}
-            className={clsx("hover:underline", item.className)}
-            onClick={item.onClick}
-          >
-            {item.title}
-          </a>
-        ) : (
-          <span className={clsx(item.className)} onClick={item.onClick}>
-            {item.title}
-          </span>
-        );
+        let content;
+
+        if (itemRender) {
+          content = itemRender(item, params, items, paths);
+        } else if (item.href) {
+          content = (
+            <a
+              href={item.href}
+              className={twMerge(clsx("hover:underline", item.className))}
+              onClick={item.onClick}
+            >
+              {item.title}
+            </a>
+          );
+        } else {
+          content = (
+            <span
+              className={twMerge(clsx(item.className))}
+              role="none"
+              onClick={item.onClick}
+            >
+              {item.title}
+            </span>
+          );
+        }
 
         return (
           <span key={index} className="flex items-center">
