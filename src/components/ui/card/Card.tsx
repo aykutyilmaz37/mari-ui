@@ -2,6 +2,7 @@ import { ReactNode, CSSProperties } from "react";
 import clsx from "clsx";
 import { CardSize, CardType, CardVariant, SemanticDOM } from "./types";
 import { getBaseClassname } from "./utils";
+import { twMerge } from "tailwind-merge";
 
 export type CardProps = {
   children: ReactNode;
@@ -30,23 +31,23 @@ export function Card({
   type,
   className,
   classNames,
-}: CardProps) {
+}: Readonly<CardProps>) {
   const base = getBaseClassname({ variant, hoverable, size, type, className });
 
   return (
     <div className={base}>
       {cover && (
-        <div className={clsx("mb-4", classNames?.cover)}>
-          {cover}
-        </div>
+        <div className={twMerge(clsx("mb-4", classNames?.cover))}>{cover}</div>
       )}
 
       {(title || extra) && (
         <div>
           <div
-            className={clsx(
-              "p-4 flex items-center justify-between font-semibold",
-              classNames?.header
+            className={twMerge(
+              clsx(
+                "p-4 flex items-center justify-between font-semibold",
+                classNames?.header
+              )
             )}
           >
             <div>{title}</div>
@@ -56,11 +57,9 @@ export function Card({
         </div>
       )}
 
-      <div className={clsx('p-4',classNames?.body)}>
+      <div className={twMerge(clsx("p-4", classNames?.body))}>
         {loading ? (
-          <div className="animate-pulse text-sm text-gray-500">
-            Loading...
-          </div>
+          <div className="animate-pulse text-sm text-gray-500">Loading...</div>
         ) : (
           children
         )}
