@@ -2,6 +2,8 @@ import React, { Children } from "react";
 import clsx from "clsx";
 import { dotPosition, effect } from "./types";
 import { getDotWrapperClass, getArrowClass } from "./utils";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
 export type CarouselProps = {
   children: React.ReactNode[];
@@ -111,7 +113,7 @@ export const Carousel = ({
     setDragDelta(dx);
   };
 
-  const handleMouseUp = () => {
+  const finalizeDrag = () => {
     if (!draggable) return;
     setIsDragging(false);
     setIsAnimating(true);
@@ -124,6 +126,8 @@ export const Carousel = ({
     }
     setDragDelta(0);
   };
+  const handleMouseUp = () => finalizeDrag();
+  const handleTouchEnd = () => finalizeDrag();
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!draggable) return;
@@ -139,23 +143,24 @@ export const Carousel = ({
     setDragDelta(dx);
   };
 
-  const handleTouchEnd = () => {
-    if (!draggable) return;
-    setIsDragging(false);
-    setIsAnimating(true);
-    if (Math.abs(dragDelta) > 50) {
-      if (dragDelta > 0) {
-        prev();
-      } else {
-        next();
-      }
-    }
-    setDragDelta(0);
+  let transformStyle: string | undefined;
+
+  if (effect === "scrollx") {
+    const offset = current * 100;
+    const delta = isDragging ? dragDelta : 0;
+    transformStyle = `translateX(calc(-${offset}% + ${delta}px))`;
+  }
+
+  const style = {
+    transform: transformStyle,
+    transitionDuration: isAnimating ? `${speed}ms` : "0ms",
+    transitionTimingFunction: easing,
   };
 
   return (
-    <div className={clsx("relative w-full overflow-hidden")}>
+    <div className={twMerge(clsx("relative w-full overflow-hidden"))}>
       <div
+        role="none"
         ref={wrapperRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -164,41 +169,42 @@ export const Carousel = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={clsx("flex transition-all ease-in-out", {
-          "duration-[500ms]": speed === 500 && isAnimating,
-          "select-none cursor-grabbing": draggable && isDragging,
-        })}
-        style={{
-          transform:
-            effect === "scrollx"
-              ? `translateX(calc(-${current * 100}% + ${isDragging ? dragDelta : 0}px))`
-              : undefined,
-          transitionDuration: isAnimating ? `${speed}ms` : "0ms",
-          transitionTimingFunction: easing,
-        }}
+        className={twMerge(
+          clsx("flex relative transition-all ease-in-out", {
+            "duration-[500ms]": speed === 500 && isAnimating,
+            "select-none cursor-grabbing": draggable && isDragging,
+          })
+        )}
+        style={style}
       >
-        {Children.map(children, (child, index) => (
-          <div
-            className={clsx("w-full shrink-0", {
-              "transition-opacity duration-500 ease-in-out": fade,
-              "opacity-0": fade && index !== current,
-              "opacity-100": fade && index === current,
-            })}
-            style={{
-              height: adaptiveHeight ? "auto" : undefined,
-              display: fade ? "block" : undefined,
-            }}
-          >
-            {child}
-          </div>
-        ))}
+        {Children.map(children, (child, index) => {
+          const isActive = index === current;
+          const offset = fade ? `translateX(-${current * 100}%)` : undefined;
+
+          return (
+            <div
+              className={twMerge(
+                "w-full shrink-0",
+                fade && "transition-opacity duration-500 ease-in-out",
+                fade &&
+                  (isActive ? "opacity-100 visible" : "opacity-0 invisible"),
+                !fade && adaptiveHeight && "h-auto"
+              )}
+              style={fade ? { transform: offset } : undefined}
+            >
+              {child}
+            </div>
+          );
+        })}
       </div>
 
       {dots && (
         <div
-          className={clsx(
-            getDotWrapperClass(dotPosition),
-            typeof dots === "object" && dots.className
+          className={twMerge(
+            clsx(
+              getDotWrapperClass(dotPosition),
+              typeof dots === "object" && dots.className
+            )
           )}
         >
           {Array.from({ length: count }).map((_, index) => (
@@ -222,7 +228,7 @@ export const Carousel = ({
               getArrowClass(dotPosition, "prev")
             )}
           >
-            {"<"}
+            <ChevronLeftIcon />
           </button>
           <button
             onClick={next}
@@ -231,7 +237,7 @@ export const Carousel = ({
               getArrowClass(dotPosition, "next")
             )}
           >
-            {">"}
+            <ChevronRightIcon />
           </button>
         </>
       )}
