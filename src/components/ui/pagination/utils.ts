@@ -4,43 +4,29 @@ export const getGeneratePageNumbers = (
   totalPages: number,
   currentPage: number
 ): PageItem[] => {
-  const pages: PageItem[] = [];
-
   if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  const showLeftEllipsis = currentPage > 4;
-  const showRightEllipsis = currentPage < totalPages - 3;
+  const pages: PageItem[] = [1];
 
-  pages.push(1);
+  const startPage = Math.max(2, currentPage - 2);
+  const endPage = Math.min(totalPages - 1, currentPage + 2);
 
-  if (showLeftEllipsis && !showRightEllipsis) {
+  if (startPage > 2) {
     pages.push({ type: "ellipsis", direction: "left" });
-    for (let i = totalPages - 4; i < totalPages; i++) {
-      pages.push(i);
-    }
-  } else if (!showLeftEllipsis && showRightEllipsis) {
-    for (let i = 2; i <= 4; i++) {
-      pages.push(i);
-    }
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+
+  if (endPage < totalPages - 1) {
     pages.push({ type: "ellipsis", direction: "right" });
-  } else if (showLeftEllipsis && showRightEllipsis) {
-    pages.push({ type: "ellipsis", direction: "left" });
-    for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-      pages.push(i);
-    }
-    pages.push({ type: "ellipsis", direction: "right" });
-  } else {
-    for (let i = 2; i < totalPages; i++) {
-      pages.push(i);
-    }
   }
 
   pages.push(totalPages);
+
   return pages;
 };
 
