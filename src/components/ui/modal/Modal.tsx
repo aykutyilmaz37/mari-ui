@@ -38,6 +38,7 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   return (
     <div
+      role="none"
       className={clsx(
         "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-opacity duration-300",
         open
@@ -47,48 +48,45 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={onClose}
     >
       <div
+        role="none"
         className={clsx(
-          "w-full rounded-lg shadow-lg transition-transform duration-300 bg-white transform",
+          "w-full rounded-lg shadow-lg transition-transform duration-300 transform bg-background text-foreground",
           sizeMap[size],
           open ? "scale-100" : "scale-95"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex  items-center justify-between px-4 py-3 border-b border-gray-300">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-gray-600">{icon ?? iconMap[variant]()}</span>
-            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+            <span className="text-muted">{icon ?? iconMap[variant]()}</span>
+            <h2 className="text-lg font-semibold">{title}</h2>
           </div>
           {closeButtonPosition === "right" && (
-            <Button
-              onClick={onClose}
-              className="text-gray-500 hover:text-red-500"
-            >
+            <Button onClick={onClose} className="text-muted">
               <X size={20} />
             </Button>
           )}
           {closeButtonPosition === "left" && (
-            <Button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 order-first"
-            >
+            <Button onClick={onClose} className="text-muted order-first">
               <X size={20} />
             </Button>
           )}
         </div>
+
         <div className="px-4 py-4">{children}</div>
+
         {(confirmButtonText || cancelButtonText) && (
           <div
             className={clsx(
-              "flex gap-2 px-4 py-3 border-t border-gray-300",
-              footerButtonPosition === "right" && "justify-end ",
-              footerButtonPosition === "left" && "justify-start "
+              "flex gap-2 px-4 py-3 border-t border-border",
+              footerButtonPosition === "right" && "justify-end",
+              footerButtonPosition === "left" && "justify-start"
             )}
           >
             {cancelButtonText && (
               <Button
                 onClick={onCancel ?? onClose}
-                className="px-4 py-2 text-sm bg-gray-100 rounded hover:bg-gray-200"
+                className="px-4 py-2 text-sm rounded bg-background-alt"
               >
                 {cancelButtonText}
               </Button>
@@ -96,7 +94,7 @@ export const Modal: React.FC<ModalProps> = ({
             {confirmButtonText && (
               <Button
                 onClick={onConfirm}
-                className="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+                className="px-4 py-2 text-sm text-background bg-primary rounded"
               >
                 {confirmButtonText}
               </Button>
@@ -107,3 +105,5 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
+
+export default Modal;
