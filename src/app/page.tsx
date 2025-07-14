@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Divider } from "@/components/ui/divider";
 import { Input, SearchInput } from "@/components/ui/input";
 import { OtpInput } from "@/components/ui/input/OtpInput";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/toast";
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
@@ -42,7 +43,6 @@ export default function Page() {
       type: "info",
     });
   };
-
   return (
     <>
       <ToastProvider />
@@ -116,6 +116,22 @@ export default function Page() {
               Toast
             </Button>
           </div>
+          <Tabs defaultActiveTab="tab1">
+            <TabsList>
+              <TabsTrigger value="tab1">Genel Bakış</TabsTrigger>
+              <TabsTrigger value="tab2">Detaylar</TabsTrigger>
+              <TabsTrigger value="tab3">Ayarlar</TabsTrigger>
+            </TabsList>
+            <TabsContent value="tab1">
+              <div>Genel bakış içeriği</div>
+            </TabsContent>
+            <TabsContent value="tab2">
+              <div>Detaylar içeriği</div>
+            </TabsContent>
+            <TabsContent value="tab3">
+              <div>Ayarlar içeriği</div>
+            </TabsContent>
+          </Tabs>
         </main>
         <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
           Footer
