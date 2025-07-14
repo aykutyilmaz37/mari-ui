@@ -48,16 +48,28 @@ export const Drawer: React.FC<DrawerProps> = ({
           : "opacity-0 pointer-events-none"
       )}
     >
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className={clsx(basePositionClass, dimensionClass, animationClass)}>
-        {/* Header */}
+      <div
+        className="absolute inset-0 bg-black/30"
+        role="none"
+        onClick={onClose}
+      />
+      <div
+        className={clsx(
+          basePositionClass,
+          dimensionClass,
+          animationClass,
+          "flex flex-col",
+          "bg-background",
+          "text-foreground"
+        )}
+      >
         {(header || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-4 border-b border-border">
             {closeButtonPosition === "left" && showCloseButton && (
               <button
                 onClick={onClose}
                 aria-label="Close drawer"
-                className="mr-2"
+                className="mr-2 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -67,7 +79,7 @@ export const Drawer: React.FC<DrawerProps> = ({
               <button
                 onClick={onClose}
                 aria-label="Close drawer"
-                className="ml-2 cursor-pointer hover:text-red-500"
+                className="ml-2 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -75,17 +87,15 @@ export const Drawer: React.FC<DrawerProps> = ({
           </div>
         )}
 
-        {/* Body */}
         <div className="p-4 flex-1 overflow-auto">
           {loading ? (
-            <p className="text-center text-gray-500">Loading...</p>
+            <p className="text-center text-base">Loading...</p>
           ) : (
             children
           )}
         </div>
 
-        {/* Footer */}
-        {footer && <div className="border-t border-gray-200 p-4">{footer}</div>}
+        {footer && <div className="border-t border-border p-4">{footer}</div>}
       </div>
     </div>
   );

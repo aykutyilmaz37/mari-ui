@@ -13,7 +13,7 @@ export const getDimensionClass = (size: DrawerSize, isHorizontal: boolean) =>
 
 export const getBasePositionClass = (position: DrawerPosition) =>
   clsx(
-    "fixed bg-white dark:bg-gray-800 shadow-lg z-50 transition-transform duration-300 ease-in-out flex flex-col",
+    "fixed bg-white shadow-lg z-50 transition-transform duration-300 ease-in-out flex flex-col",
     {
       "top-0 left-0 right-0": position === "top",
       "bottom-0 left-0 right-0": position === "bottom",
