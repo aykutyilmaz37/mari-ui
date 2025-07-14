@@ -10,7 +10,7 @@ export const statusColors: Record<string, string> = {
 
 export const getTagStatuClass = (color?: string): string => {
   const isPreset = color && statusColors[color];
-  if (isPreset) return statusColors[color as keyof typeof statusColors];
+  if (isPreset) return statusColors[color];
   if (color) return `bg-[${color}] text-white`;
   return "bg-gray-100 text-gray-800";
 };

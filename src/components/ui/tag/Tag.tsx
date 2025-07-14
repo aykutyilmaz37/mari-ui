@@ -1,13 +1,13 @@
 import { X } from "lucide-react";
-import { ReactNode } from "react";
 import { getTagClass, getTagStatuClass } from "./utils";
+import { StatusType } from "./types";
 
 export type TagProps = {
-  children: ReactNode;
-  statu?: "success" | "processing" | "error" | "default" | "warning" | string;
+  children: React.ReactNode;
+  statu?: StatusType;
   color?: string;
-  icon?: ReactNode;
-  closeIcon?: ReactNode | boolean;
+  icon?: React.ReactNode;
+  closeIcon?: React.ReactNode;
   bordered?: boolean;
   onClose?: () => void;
   className?: string;
@@ -20,7 +20,7 @@ export function Tag({
   bordered = true,
   onClose,
   className,
-}: TagProps) {
+}: Readonly<TagProps>) {
   const baseColorClass = getTagStatuClass(statu);
   const tagClass = getTagClass(baseColorClass, bordered, className);
 
