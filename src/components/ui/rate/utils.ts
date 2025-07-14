@@ -8,20 +8,40 @@ export function getIsHalf(
   return allowHalf && e.clientX - left < width / 2;
 }
 
+type HandleClickOptions = {
+  allowHalf: boolean;
+  allowClear: boolean;
+  displayValue: number;
+  isControlled: boolean;
+  setInternalValue: (v: number) => void;
+  onChange?: (v: number) => void;
+};
+
 export function handleClick(
   e: React.MouseEvent<HTMLSpanElement>,
   index: number,
-  allowHalf: boolean,
-  allowClear: boolean,
-  displayValue: number,
-  isControlled: boolean,
-  setInternalValue: (v: number) => void,
-  onChange?: (v: number) => void
+  options: HandleClickOptions
 ) {
+  const {
+    allowHalf,
+    allowClear,
+    displayValue,
+    isControlled,
+    setInternalValue,
+    onChange,
+  } = options;
+
   const isHalf = getIsHalf(e, allowHalf);
   let newValue = isHalf ? index + 0.5 : index + 1;
-  if (allowClear && displayValue === newValue) newValue = 0;
-  if (!isControlled) setInternalValue(newValue);
+
+  if (allowClear && displayValue === newValue) {
+    newValue = 0;
+  }
+
+  if (!isControlled) {
+    setInternalValue(newValue);
+  }
+
   onChange?.(newValue);
 }
 

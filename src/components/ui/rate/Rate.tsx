@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { Star } from "lucide-react";
 import { handleClick, handleMouseEnter, handleMouseLeave } from "./utils";
+import { twMerge } from "tailwind-merge";
 
 export interface RateProps {
   allowClear?: boolean;
@@ -59,31 +60,65 @@ export const Rate: React.FC<RateProps> = ({
     const currentValue = hoverValue ?? displayValue;
     const isFull = currentValue >= i + 1;
     const isHalf = !isFull && allowHalf && currentValue >= i + 0.5;
-    const icon =
-      typeof character === "function"
-        ? character({})
-        : character ?? (
-            <Star
-              fill="currentColor"
-              stroke="currentColor"
-              size={characterSize}
-            />
-          );
+
+    let icon: React.ReactNode;
+    if (typeof character === "function") {
+      icon = character({});
+    } else if (character) {
+      icon = character;
+    } else {
+      icon = (
+        <Star fill="currentColor" stroke="currentColor" size={characterSize} />
+      );
+    }
+
+    let starOverlay: React.ReactNode = null;
+    if (isFull) {
+      starOverlay = (
+        <span
+          className={twMerge(
+            clsx(
+              "absolute inset-0 w-full h-full pointer-events-none",
+              "text-yellow-400"
+            )
+          )}
+          style={{ color: characterColor }}
+          aria-hidden
+        >
+          {icon}
+        </span>
+      );
+    } else if (isHalf) {
+      starOverlay = (
+        <span
+          className={twMerge(
+            clsx(
+              "absolute inset-0 h-full w-1/2 overflow-hidden pointer-events-none",
+              "text-yellow-400"
+            )
+          )}
+          style={{ color: characterColor, left: 0 }}
+          aria-hidden
+        >
+          {icon}
+        </span>
+      );
+    }
+
     return (
       <span
         key={i}
+        role="none"
         onClick={(e) => {
           if (!disabled) {
-            handleClick(
-              e,
-              i,
+            handleClick(e, i, {
               allowHalf,
               allowClear,
               displayValue,
               isControlled,
               setInternalValue,
-              onChange
-            );
+              onChange,
+            });
           }
         }}
         onMouseEnter={(e) => {
@@ -101,14 +136,17 @@ export const Rate: React.FC<RateProps> = ({
             handleMouseLeave(setHoverValue, onHoverChange);
           }
         }}
-        className={clsx(
-          "relative inline-flex items-center justify-center  select-none",
-          {
-            "text-gray-300": !isFull && !isHalf,
-            "text-yellow-400": isFull || isHalf,
-             'cursor-not-allowed': disabled, 'cursor-pointer': !disabled,
-          },
-          className
+        className={twMerge(
+          clsx(
+            "relative inline-flex items-center justify-center select-none",
+            {
+              "text-gray-300": !isFull && !isHalf,
+              "text-yellow-400": isFull || isHalf,
+              "cursor-not-allowed": disabled,
+              "cursor-pointer": !disabled,
+            },
+            className
+          )
         )}
         style={{ fontSize: characterSize }}
       >
@@ -118,30 +156,9 @@ export const Rate: React.FC<RateProps> = ({
         >
           {icon}
         </span>
-        {/* Dolu yıldız veya yarım yıldız */}
-        {isFull ? (
-          <span
-            className={clsx(
-              "absolute inset-0 w-full h-full  pointer-events-none",
-              characterColor || "text-yellow-400"
-            )}
-            aria-hidden
-          >
-            {icon}
-          </span>
-        ) : isHalf ? (
-          <span
-            className={clsx(
-              "absolute inset-0 h-full w-1/2 overflow-hidden pointer-events-none",
-              characterColor || "text-yellow-400"
-            )}
-            aria-hidden
-            style={{ left: 0 }}
-          >
-            {icon}
-          </span>
-        ) : null}
-        {/* Tıklanabilir alan (görseli hizalamak için) */}
+
+        {starOverlay}
+
         <span className="invisible" aria-hidden>
           {icon}
         </span>
@@ -152,11 +169,12 @@ export const Rate: React.FC<RateProps> = ({
   return (
     <div
       ref={rootRef}
-      className={clsx("flex gap-1 outline-none", className)}
+      className={twMerge(clsx("flex gap-1 outline-none", className))}
       tabIndex={disabled ? -1 : 0}
       onFocus={onFocus}
       onBlur={onBlur}
       onKeyDown={onKeyDown}
+      role="none"
     >
       {stars}
     </div>
