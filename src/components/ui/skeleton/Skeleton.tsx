@@ -6,6 +6,7 @@ import {
   SkeletonTitleProps,
 } from "./types";
 import { getSizeClassSkeleton } from "./utils";
+import { twMerge } from "tailwind-merge";
 
 export interface SkeletonProps {
   active?: boolean;
@@ -38,11 +39,13 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     typeof paragraph === "boolean" ? {} : paragraph;
 
   const rows = paragraphProps.rows ?? 3;
-  const paragraphWidths = Array.isArray(paragraphProps.width)
-    ? paragraphProps.width
-    : typeof paragraphProps.width !== "undefined"
-    ? [...Array(rows - 1).fill("100%"), paragraphProps.width]
-    : [];
+  let paragraphWidths: (string | number)[] = [];
+
+  if (Array.isArray(paragraphProps.width)) {
+    paragraphWidths = paragraphProps.width;
+  } else if (typeof paragraphProps.width !== "undefined") {
+    paragraphWidths = [...Array(rows - 1).fill("100%"), paragraphProps.width];
+  }
 
   return (
     <div
@@ -51,50 +54,66 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       <div className="flex gap-4">
         {avatar && (
           <div
-            className={clsx(
-              "bg-gray-300",
-              avatarProps.shape === "circle" && "rounded-full",
-              avatarProps.shape === "square" && "rounded-none",
-              (!avatarProps.shape || avatarProps.shape === undefined) &&
-                "rounded-md",
-              getSizeClassSkeleton(avatarProps.size ?? "default", "w"),
-              getSizeClassSkeleton(avatarProps.size ?? "default", "h")
+            className={twMerge(
+              clsx(
+                "bg-border",
+                avatarProps.shape === "circle" && "rounded-full",
+                avatarProps.shape === "square" && "rounded-none",
+                (!avatarProps.shape || avatarProps.shape === undefined) &&
+                  "rounded-md",
+                getSizeClassSkeleton(avatarProps.size ?? "default", "w"),
+                getSizeClassSkeleton(avatarProps.size ?? "default", "h")
+              )
             )}
           />
         )}
         <div className="flex-1 space-y-2">
           {title && (
             <div
-              className={clsx(
-                "bg-gray-300 h-4",
-                round && "rounded-full",
-                !round && "rounded",
-                typeof titleProps.width === "number" ||
-                  typeof titleProps.width === "string"
-                  ? `w-[${titleProps.width}]`
-                  : "w-1/2"
+              className={twMerge(
+                clsx(
+                  "bg-border h-4",
+                  round ? "rounded-full" : "rounded",
+                  typeof titleProps.width === "number" ||
+                    typeof titleProps.width === "string"
+                    ? `w-[${titleProps.width}]`
+                    : "w-1/2"
+                )
               )}
             />
           )}
           {paragraph &&
-            Array.from({ length: rows }).map((_, i) => (
-              <div
-                key={i}
-                className={clsx(
-                  "bg-gray-300 h-3",
-                  round && "rounded-full",
-                  !round && "rounded",
-                  typeof paragraphWidths[i] === "number" ||
-                    typeof paragraphWidths[i] === "string"
-                    ? `w-[${paragraphWidths[i]}]`
-                    : i === rows - 1
-                    ? "w-4/5"
-                    : "w-full"
-                )}
-              />
-            ))}
+            Array.from({ length: rows }).map((_, i) => {
+              let widthClass: string;
+
+              if (
+                typeof paragraphWidths[i] === "number" ||
+                typeof paragraphWidths[i] === "string"
+              ) {
+                widthClass = `w-[${paragraphWidths[i]}]`;
+              } else if (i === rows - 1) {
+                widthClass = "w-4/5";
+              } else {
+                widthClass = "w-full";
+              }
+
+              return (
+                <div
+                  key={i}
+                  className={twMerge(
+                    clsx(
+                      "bg-border h-3",
+                      round ? "rounded-full" : "rounded",
+                      widthClass
+                    )
+                  )}
+                />
+              );
+            })}
         </div>
       </div>
     </div>
   );
 };
+
+export default Skeleton;

@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { SizeType } from "./types";
 import { getSizeClassInput } from "./utils";
+import { twMerge } from "tailwind-merge";
 
 interface SkeletonInputProps {
   active?: boolean;
@@ -16,11 +17,13 @@ export const SkeletonInput: React.FC<SkeletonInputProps> = ({
 }) => {
   return (
     <div
-      className={clsx(
-        "bg-gray-300 rounded transition-colors duration-300",
-        active && "animate-pulse",
-        getSizeClassInput(size),
-        className
+      className={twMerge(
+        clsx(
+          "bg-border rounded transition-colors duration-300",
+          active && "animate-pulse",
+          getSizeClassInput(size),
+          className
+        )
       )}
     />
   );
