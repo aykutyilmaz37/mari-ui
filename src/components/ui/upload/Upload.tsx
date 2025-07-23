@@ -9,11 +9,13 @@ type UploadProps = {
   dragDrop?: boolean;
   fileSize?: number;
   fileType?: string;
+  max?: number;
 };
 export const Upload: React.FC<UploadProps> = ({
   dragDrop,
   fileSize = 5 * 1024 * 1024,
   fileType,
+  max= 1,
 }) => {
   const { showToast } = useToast();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -41,6 +43,12 @@ export const Upload: React.FC<UploadProps> = ({
           description: "Dosya boyutu çok büyük",
           type: "error",
         });
+      } else if (fileList.length >= max) {
+        showToast({
+          title: "Hata",
+          description: `En fazla ${max} dosya yükleyebilirsiniz.`,
+          type: "error",
+        });
       } else {
         setFileList((prev) => [...prev, file]);
       }
@@ -58,8 +66,22 @@ export const Upload: React.FC<UploadProps> = ({
     const droppedFiles = event.dataTransfer.files;
 
     if (droppedFiles && droppedFiles.length > 0) {
-      const newFiles = Array.from(droppedFiles);
-      setFileList((prev) => [...prev, ...newFiles]);
+      const newFiles = Array.from(droppedFiles).filter(
+        () => fileList.length < max
+      );
+
+      if (newFiles.length === 0) {
+        showToast({
+          title: "Hata",
+          description: `En fazla ${max} dosya yükleyebilirsiniz.`,
+          type: "error",
+        });
+      } else {
+        setFileList((prev) => {
+          const remainingSlots = max - prev.length;
+          return [...prev, ...newFiles.slice(0, remainingSlots)];
+        });
+      }
     }
   };
 
