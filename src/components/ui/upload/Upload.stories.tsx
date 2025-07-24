@@ -1,5 +1,4 @@
-import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from "@storybook/react";
 import { Upload } from "./Upload";
 import { ToastProvider } from "../toast/useToast";
 
@@ -26,7 +25,23 @@ export const Basic: Story = {
 
 export const WithDragDrop: Story = {
   args: {
-    dragDrop: true,
+    inputType: "dragDrop",
+  },
+};
+
+export const WithReviewListSquare: Story = {
+  args: {
+    listType: "review",
+    inputType: "review",
+    reviewType: "square",
+  },
+};
+
+export const WithReviewListCircle: Story = {
+  args: {
+    listType: "review",
+    inputType: "review",
+    reviewType: "circle",
   },
 };
 
@@ -39,5 +54,11 @@ export const WithCustomFileSize: Story = {
 export const WithCustomFileType: Story = {
   args: {
     fileType: "image/png",
+  },
+};
+
+export const MaxFilesLimit: Story = {
+  args: {
+    max: 2,
   },
 };

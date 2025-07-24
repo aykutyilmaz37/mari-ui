@@ -1,151 +1,103 @@
 import React from "react";
-import { CircleXIcon, PaperclipIcon, UploadIcon } from "lucide-react";
-import { Button } from "../button";
 import { Input } from "../input";
-import { formatBytes } from "./utils";
-import { useToast } from "../toast";
+import { InputType, ListType, ReviewType } from "./types";
+import { twMerge } from "tailwind-merge";
+import { ReviewList } from "./components/ReviewList";
+import { UploadList } from "./components/List";
+import { UploadListButton } from "./components/UploadListButton";
+import { UploadDragDropButton } from "./components/UploadDragDropButton";
+import { UploadReviewButton } from "./components/UploadReviewButton";
+import { useUpload } from "./useUpload";
 
 type UploadProps = {
-  dragDrop?: boolean;
+  inputType?: InputType;
   fileSize?: number;
   fileType?: string;
   max?: number;
+  listType?: ListType;
+  reviewType?: ReviewType;
 };
 export const Upload: React.FC<UploadProps> = ({
-  dragDrop,
+  inputType = "button",
   fileSize = 5 * 1024 * 1024,
   fileType,
-  max= 1,
+  max = 5,
+  listType = "list",
+  reviewType = "square",
 }) => {
-  const { showToast } = useToast();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [fileList, setFileList] = React.useState<File[]>([]);
+  const { fileList, addFile, deleteFile, addFiles } = useUpload({
+    fileSize,
+    fileType,
+    max,
+  });
 
-  const handleClick = () => {
+  const handleClick = React.useCallback(() => {
     fileInputRef.current?.click();
-  };
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-
-    if (fileType && file && file.type !== fileType) {
-      showToast({
-        title: "Hata",
-        description: "Geçersiz dosya türü",
-        type: "error",
-      });
-      return;
-    }
-    if (file) {
-      if (file.size > fileSize) {
-        showToast({
-          title: "Hata",
-          description: "Dosya boyutu çok büyük",
-          type: "error",
-        });
-      } else if (fileList.length >= max) {
-        showToast({
-          title: "Hata",
-          description: `En fazla ${max} dosya yükleyebilirsiniz.`,
-          type: "error",
-        });
-      } else {
-        setFileList((prev) => [...prev, file]);
-      }
-    } else {
-      console.warn("Herhangi bir dosya seçilmedi.");
-    }
+    if (!file) return console.warn("Herhangi bir dosya seçilmedi.");
+    addFile(file);
   };
 
-  const handleDelete = (fileToDelete: File) => {
-    setFileList((prev) => prev.filter((file) => file !== fileToDelete));
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLElement>) => {
-    event.preventDefault();
-    const droppedFiles = event.dataTransfer.files;
-
-    if (droppedFiles && droppedFiles.length > 0) {
-      const newFiles = Array.from(droppedFiles).filter(
-        () => fileList.length < max
+  const renderFilePreview = (fileItem: File, listType: ListType) => {
+    if (listType === "review") {
+      return (
+        <ReviewList
+          fileItem={fileItem}
+          reviewType={reviewType}
+          handleDelete={deleteFile}
+        />
       );
-
-      if (newFiles.length === 0) {
-        showToast({
-          title: "Hata",
-          description: `En fazla ${max} dosya yükleyebilirsiniz.`,
-          type: "error",
-        });
-      } else {
-        setFileList((prev) => {
-          const remainingSlots = max - prev.length;
-          return [...prev, ...newFiles.slice(0, remainingSlots)];
-        });
-      }
+    } else {
+      return <UploadList fileItem={fileItem} handleDelete={deleteFile} />;
     }
   };
 
-  const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
-    event.preventDefault();
+  const renderUploadButton = (inputType: InputType) => {
+    switch (inputType) {
+      case "button": {
+        return <UploadListButton handleClick={handleClick} />;
+      }
+      case "dragDrop": {
+        return (
+          <UploadDragDropButton addFiles={addFiles} handleClick={handleClick} />
+        );
+      }
+      case "review": {
+        return (
+          <UploadReviewButton
+            handleClick={handleClick}
+            reviewType={reviewType}
+          />
+        );
+      }
+    }
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      {dragDrop ? (
-        <Button
-          onClick={handleClick}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          className="min-w-xl min-h-72 border-2 border-secondary border-dashed bg-secondary-light p-2 rounded-lg hover:border-info hover:text-info"
-        >
-          <span className="flex flex-col items-center !justify-center">
-            <UploadIcon />
-            <span>Click to Upload or Drag&Drop</span>
-          </span>
-        </Button>
-      ) : (
-        <Button
-          onClick={handleClick}
-          className="flex justify-between items-center"
-          variant="outlined"
-          type="primary"
-          icon={<UploadIcon size={16} />}
-        >
-          Click to Upload
-        </Button>
+    <div
+      className={twMerge(
+        "flex gap-2",
+        listType === "review" ? "flex-row" : "flex-col"
       )}
+    >
+      {renderUploadButton(inputType)}
       <Input
         ref={fileInputRef}
         className="hidden"
         type="file"
         onChange={handleFileChange}
       />
-      <ul>
-        {fileList.map((fileItem) => {
-          const fileSizeInReadableFormat = formatBytes(fileItem.size); // örnek: "132.89 KB" veya "1.3 MB"
-
-          return (
-            <li
-              key={fileItem.lastModified}
-              className="flex justify-between items-center text-xs hover:bg-secondary-light rounded px-2"
-            >
-              <span className="flex gap-1 items-center">
-                <PaperclipIcon size={14} />
-                {fileItem?.name}
-                <span className="text-secondary-muted">
-                  {`(${fileSizeInReadableFormat})`}
-                </span>
-              </span>
-              <Button
-                onClick={() => handleDelete(fileItem)}
-                className="p-0 hover:text-error"
-              >
-                <CircleXIcon size={14} />
-              </Button>
-            </li>
-          );
-        })}
-      </ul>
+      {listType === "review" ? (
+        <div className="grid grid-cols-5 gap-1 shrink-0">
+          {fileList.map((file) => renderFilePreview(file, listType))}
+        </div>
+      ) : (
+        <ul>{fileList.map((file) => renderFilePreview(file, listType))}</ul>
+      )}
     </div>
   );
 };
