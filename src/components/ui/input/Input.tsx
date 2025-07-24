@@ -54,6 +54,8 @@ export type InputProps = {
   replacement?: Record<string, RegExp>;
   visibilityToggle?: boolean | { visible?: boolean };
   visibilityIconRender?: (visible: boolean) => React.ReactNode;
+  max?: number;
+  min?: number;
 };
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -77,7 +79,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       value,
       variant = "outlined",
       onChange,
-      onPressEnter,
+      onPressEnter,  
       onClear,
       onFocus,
       onKeyDown,
@@ -86,6 +88,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       replacement = { _: /\d/ },
       visibilityToggle,
       visibilityIconRender,
+      max,
+      min,
       ...rest
     },
     ref
@@ -184,6 +188,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onFocus={onFocus}
             onInput={onInput}
             className={inputClass}
+            max={max}
+            min={min}
             {...rest}
           />
         )}
