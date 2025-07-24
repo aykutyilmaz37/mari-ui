@@ -1,2 +1,2 @@
-export { default } from './Typography';
-export * from './types';
+export { Title, Text, Paragraph } from "./Typography";
+export * from "./types";
