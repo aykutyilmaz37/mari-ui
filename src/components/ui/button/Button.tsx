@@ -34,6 +34,8 @@ export type ButtonProps = {
   type?: ButtonType;
   variant?: ButtonVariant;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  onDrop?: (event: React.DragEvent<HTMLElement>) => void;
+  onDragOver?: (event: React.DragEvent<HTMLElement>) => void;
   children?: React.ReactNode;
 };
 
@@ -55,6 +57,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       type = "text",
       variant = "filled",
       onClick,
+      onDragOver,
+      onDrop,
       children,
     } = props;
 
@@ -98,6 +102,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const commonProps = {
       className: baseClasses,
       onClick,
+      onDragOver,
+      onDrop,
     };
 
     if (href) {
