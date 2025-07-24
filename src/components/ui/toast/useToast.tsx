@@ -23,6 +23,10 @@ export const useToast = () => {
     }, 4000);
   };
 
+  const handleClose = (id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   const ToastProvider = () => {
     return (
       <div className="static z-[9999]">
@@ -32,9 +36,7 @@ export const useToast = () => {
             title={toast.title}
             description={toast.description}
             type={toast.type}
-            onClose={() =>
-              setToasts((prev) => prev.filter((t) => t.id !== toast.id))
-            }
+            onClose={() => handleClose(toast.id)}
           />
         ))}
       </div>

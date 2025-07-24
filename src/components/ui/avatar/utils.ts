@@ -24,10 +24,13 @@ export const getSizeStyle = (size: AvatarSize): React.CSSProperties => {
 };
 
 export const getShapeClasses = (shape: AvatarShape) => {
-  return clsx("flex items-center justify-center overflow-hidden bg-gray-200 ", {
-    "rounded-full": shape === "circle",
-    "rounded-sm": shape === "square",
-  });
+  return clsx(
+    "flex items-center justify-center overflow-hidden bg-background-alt",
+    {
+      "rounded-full": shape === "circle",
+      "rounded-sm": shape === "square",
+    }
+  );
 };
 
 export const getNoUser = (alt: string) => {
