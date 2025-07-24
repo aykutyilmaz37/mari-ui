@@ -19,7 +19,6 @@ export interface SliderProps {
   size?: RangeSize;
   min?: number;
   max?: number;
-  range?: boolean;
   vertical?: boolean;
   disabled?: boolean;
   tooltipVisible?: boolean;
@@ -63,12 +62,12 @@ export const Slider: React.FC<SliderProps> = ({
         <Tooltip
           content={
             <div className={clsx(vertical && "transform rotate-90")}>
-                {internalValue}
+              {internalValue}
             </div>
           }
           disabled={tooltipVisible}
           alwaysVisible={tooltipAlwaysVisible}
-          placement={iconPosition === 'top' ? 'bottom' : 'top'}
+          placement={iconPosition === "top" ? "bottom" : "top"}
           variant="default"
           className={"absolute"}
           style={{ left: `${internalValue}%` }}
