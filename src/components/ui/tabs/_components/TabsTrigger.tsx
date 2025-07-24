@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
-import { Button } from "../../button";
-import { useTabs } from "../useTabs";
+import { Button } from "@/components/ui/button";
+import { useTabs } from "@/components/ui/tabs/useTabs";
 import clsx from "clsx";
 import { getTabsTriggerClassNames } from "../utils";
 

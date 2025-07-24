@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useMemo } from "react";
 
 type TabsContextType = {
   activeTab: string;
@@ -16,11 +16,10 @@ export const TabsProvider = ({
   children: React.ReactNode;
 }) => {
   const [activeTab, setActiveTab] = useState(defaultActiveTab);
-  return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      {children}
-    </TabsContext.Provider>
-  );
+
+  const value = useMemo(() => ({ activeTab, setActiveTab }), [activeTab]);
+
+  return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;
 };
 
 export const useTabs = () => {

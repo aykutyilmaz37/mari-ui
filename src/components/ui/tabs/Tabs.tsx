@@ -1,6 +1,6 @@
 import React from "react";
-import { TabsList } from "./components/TabsList";
-import { TabsContent } from "./components/TabsContent";
+import { TabsList } from "./_components/TabsList";
+import { TabsContent } from "./_components/TabsContent";
 import { TabsProvider } from "./useTabs";
 
 type TabsProps = {

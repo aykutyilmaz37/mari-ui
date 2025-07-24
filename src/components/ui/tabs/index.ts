@@ -1,4 +1,4 @@
 export { Tabs } from "./Tabs";
-export { TabsContent } from "./components/TabsContent";
-export { TabsTrigger } from "./components/TabsTrigger";
-export { TabsList } from "./components/TabsList";
+export { TabsContent } from "./_components/TabsContent";
+export { TabsTrigger } from "./_components/TabsTrigger";
+export { TabsList } from "./_components/TabsList";

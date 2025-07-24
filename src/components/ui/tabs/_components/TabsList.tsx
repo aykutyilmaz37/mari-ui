@@ -1,8 +1,11 @@
 import React from "react";
 import { TabsTrigger, TriggerProps } from "./TabsTrigger";
 import clsx from "clsx";
-import { useTabs } from "../useTabs";
-import { cloneWithRef, calculateUnderlinePosition } from "../utils";
+import { useTabs } from "@/components/ui/tabs/useTabs";
+import {
+  cloneWithRef,
+  calculateUnderlinePosition,
+} from "@/components/ui/tabs/utils";
 
 type TabListProps = {
   children: React.ReactElement<typeof TabsTrigger>[];

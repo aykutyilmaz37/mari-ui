@@ -1,5 +1,5 @@
 import React from "react";
-import { useTabs } from "../useTabs";
+import { useTabs } from "@/components/ui/tabs/useTabs";
 
 type TabsContentProps = {
   children: React.ReactNode;
