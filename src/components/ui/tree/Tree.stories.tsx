@@ -21,6 +21,16 @@ const treeData: TreeData[] = [
       {
         title: "Alt Bilet 1",
         key: "ticket-1",
+        children: [
+          {
+            title: "Alt Bilet 1-1",
+            key: "ticket-1-1",
+          },
+          {
+            title: "Alt Bilet 1-2",
+            key: "ticket-1-2",
+          },
+        ],
       },
       {
         title: "Alt Bilet 2",
