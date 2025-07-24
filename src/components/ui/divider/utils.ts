@@ -27,7 +27,7 @@ export const getTitleClass = (
   isHorizontal?: boolean
 ) =>
   clsx("px-2 whitespace-nowrap", {
-    "text-gray-500": plain,
+    "text-muted-500": plain,
     "ml-auto": orientation === "end" && isHorizontal,
     "mr-auto": orientation === "start" && isHorizontal,
   });
