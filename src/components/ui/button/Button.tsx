@@ -34,6 +34,8 @@ export type ButtonProps = {
   type?: ButtonType;
   variant?: ButtonVariant;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  onDrop?: (event: React.DragEvent<HTMLElement>) => void;
+  onDragOver?: (event: React.DragEvent<HTMLElement>) => void;
   children?: React.ReactNode;
   onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
   onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -59,6 +61,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick,
       onMouseEnter,
       onMouseLeave,
+      onDragOver,
+      onDrop,
       children,
     } = props;
 
@@ -73,7 +77,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       clsx(
         "inline-flex items-center justify-center font-medium transition-all duration-300 select-none cursor-pointer focus:ring-opacity-50 focus-visible:outline-0",
         block && "w-full",
-        disabled && "opacity-50 pointer-events-none",
+        disabled && "opacity-50 pointer-not-allowed",
         shapeClasses,
         sizeClasses,
         variantClasses,
@@ -104,6 +108,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick,
       onMouseEnter,
       onMouseLeave,
+      onDragOver,
+      onDrop,
     };
 
     if (href) {
