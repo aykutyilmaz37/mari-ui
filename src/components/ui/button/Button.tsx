@@ -37,6 +37,8 @@ export type ButtonProps = {
   onDrop?: (event: React.DragEvent<HTMLElement>) => void;
   onDragOver?: (event: React.DragEvent<HTMLElement>) => void;
   children?: React.ReactNode;
+  onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
+  onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -57,6 +59,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       type = "text",
       variant = "filled",
       onClick,
+      onMouseEnter,
+      onMouseLeave,
       onDragOver,
       onDrop,
       children,
@@ -102,6 +106,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const commonProps = {
       className: baseClasses,
       onClick,
+      onMouseEnter,
+      onMouseLeave,
       onDragOver,
       onDrop,
     };
