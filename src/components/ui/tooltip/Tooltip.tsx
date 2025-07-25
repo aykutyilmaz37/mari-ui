@@ -3,6 +3,8 @@ import clsx from "clsx";
 import { Placement, TooltipVariant } from "./types";
 import { getArrowClasses, getVariantClasses } from "./utils";
 import { Play } from "lucide-react";
+import { Button } from "../button";
+import { twMerge } from "tailwind-merge";
 
 interface TooltipProps {
   content: React.ReactNode;
@@ -10,6 +12,7 @@ interface TooltipProps {
   placement?: Placement;
   variant?: TooltipVariant;
   className?: string;
+  triggerClassName?: string;
   style?: React.CSSProperties;
   alwaysVisible?: boolean;
   disabled?: boolean;
@@ -24,17 +27,21 @@ export const Tooltip: React.FC<TooltipProps> = ({
   style,
   alwaysVisible,
   disabled = false,
+  triggerClassName,
 }) => {
   const [visible, setVisible] = React.useState(alwaysVisible || false);
 
   const variantClasses = getVariantClasses(variant);
   const arrowClasses = getArrowClasses(variant);
   return (
-    <div
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => !alwaysVisible && setVisible(false)}
-    >
-      {trigger}
+    <div className="relative inline-block">
+      <Button
+        className={twMerge(triggerClassName)}
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => !alwaysVisible && setVisible(false)}
+      >
+        {trigger}
+      </Button>
       {visible && (
         <div
           className={clsx(
