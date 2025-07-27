@@ -1,34 +1,55 @@
-import React from "react";
+const TOAST_TIMEOUT = 5000;
+
+const generateToastId = () => Date.now();
+
+const removeToastAfterDelay = (
+  id: number,
+  setToasts: React.Dispatch<React.SetStateAction<ToastData[]>>
+) => {
+  setTimeout(() => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, TOAST_TIMEOUT);
+};
+
+const handleClose = (
+  id: number,
+  setToasts: React.Dispatch<React.SetStateAction<ToastData[]>>
+) => {
+  setToasts((prev) => prev.filter((t) => t.id !== id));
+};
+import React, { createContext, useContext, useState } from "react";
 import { ToastType } from "./types";
 import { Toast } from "./Toast";
 
-export const useToast = () => {
-  const [toasts, setToasts] = React.useState<
-    { id: number; title: string; description?: string; type?: ToastType }[]
-  >([]);
+type ToastData = {
+  id: number;
+  title: string;
+  description?: string;
+  type?: ToastType;
+};
 
-  const removeToast = (id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+type ToastContextType = {
+  showToast: (t: Omit<ToastData, "id">) => void;
+};
 
-  const showToast = (toast: {
-    title: string;
-    description?: string;
-    type?: ToastType;
-  }) => {
-    const id = Date.now();
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [toasts, setToasts] = useState<ToastData[]>([]);
+
+  const showToast = React.useCallback((toast: Omit<ToastData, "id">) => {
+    const id = generateToastId();
     setToasts((prev) => [...prev, { ...toast, id }]);
-    setTimeout(() => {
-      removeToast(id);
-    }, 4000);
-  };
+    removeToastAfterDelay(id, setToasts);
+  }, []);
 
-  const handleClose = (id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  const contextValue = React.useMemo(() => ({ showToast }), [showToast]);
 
-  const ToastProvider = () => {
-    return (
+  return (
+    <ToastContext.Provider value={contextValue}>
+      {children}
       <div className="static z-[9999]">
         {toasts.map((toast) => (
           <Toast
@@ -36,12 +57,18 @@ export const useToast = () => {
             title={toast.title}
             description={toast.description}
             type={toast.type}
-            onClose={() => handleClose(toast.id)}
+            onClose={() => handleClose(toast.id, setToasts)}
           />
         ))}
       </div>
-    );
-  };
+    </ToastContext.Provider>
+  );
+};
 
-  return { showToast, ToastProvider };
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error("useToast must be used within a ToastProvider");
+  }
+  return context;
 };
