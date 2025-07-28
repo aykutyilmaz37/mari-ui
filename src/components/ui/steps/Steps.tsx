@@ -13,6 +13,7 @@ type StepProps = {
   vertical?: boolean;
   dot?: boolean;
   dotColor?: string;
+  content?: React.ReactNode;
 };
 
 export const Steps: React.FC<StepProps> = ({
@@ -23,6 +24,7 @@ export const Steps: React.FC<StepProps> = ({
   vertical,
   dot,
   dotColor = "text-info",
+  content,
 }) => {
   const renderStepIcon = (item: StepData[0], i: number): React.ReactNode => {
     if (dot) {
@@ -173,9 +175,12 @@ export const Steps: React.FC<StepProps> = ({
   return (
     <div className="w-full h-full space-y-2">
       {vertical ? renderVerticalSteps() : renderHorizontalSteps()}
+      {/* content */}
+
+      {content}
 
       {/* next & previous buttons */}
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-start gap-4">
         <Button
           type="primary"
           disabled={currentStep === 1}

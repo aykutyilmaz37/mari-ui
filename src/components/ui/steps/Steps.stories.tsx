@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Steps } from "./Steps";
 import { TicketIcon, TimerIcon, CheckCheckIcon } from "lucide-react";
 import { useState } from "react";
+import { StepsContent } from "./_components/StepsContent";
 
 const meta: Meta<typeof Steps> = {
   title: "Components/Steps",
@@ -70,6 +71,30 @@ const VerticalWithDotsStory = () => {
   );
 };
 
+const WithContentStory = () => {
+  const [current, setCurrent] = useState(1);
+  return (
+    <Steps
+      data={stepData}
+      currentStep={current}
+      onChange={setCurrent}
+      content={
+        <>
+          <StepsContent value={1} currentSteps={current}>
+            1. adım içeriği
+          </StepsContent>
+          <StepsContent value={2} currentSteps={current}>
+            2. adım içeriği
+          </StepsContent>
+          <StepsContent value={3} currentSteps={current}>
+            3. adım içeriği
+          </StepsContent>
+        </>
+      }
+    />
+  );
+};
+
 export const Horizontal: Story = {
   render: () => <HorizontalStory />,
 };
@@ -84,4 +109,8 @@ export const WithDots: Story = {
 
 export const VerticalWithDots: Story = {
   render: () => <VerticalWithDotsStory />,
+};
+
+export const WithContent: Story = {
+  render: () => <WithContentStory />,
 };
