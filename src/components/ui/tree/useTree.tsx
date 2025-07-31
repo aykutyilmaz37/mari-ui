@@ -74,6 +74,21 @@ export const useTree = ({
           const isExpanded = expandedKeys.includes(tree.key);
           const hasChildren = tree.children && tree.children.length > 0;
           const childSelected = hasAnyCheckedChild(tree, checkedKeys);
+
+          const allChildSelected =
+            tree.children &&
+            tree.children.length > 0 &&
+            tree.children.every((child) => checkedKeys.includes(child.key));
+
+          let checkboxOpacity: string | undefined;
+          if (allChildSelected) {
+            checkboxOpacity = "opacity-100";
+          } else if (childSelected) {
+            checkboxOpacity = "opacity-50";
+          } else {
+            checkboxOpacity = undefined;
+          }
+
           return (
             <li
               key={tree.key}
@@ -86,7 +101,7 @@ export const useTree = ({
                   disabled={tree.disabled}
                   checked={checkedKeys.includes(tree.key)}
                   onChange={() => onCheck(tree.key)}
-                  className={childSelected ? "opacity-50" : undefined}
+                  className={checkboxOpacity}
                 />
                 <Button
                   onClick={() => hasChildren && handleExpand(tree.key)}

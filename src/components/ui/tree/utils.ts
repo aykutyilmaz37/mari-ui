@@ -68,7 +68,10 @@ export const removeUnneededParents = (
 };
 
 // Bir parent'ın herhangi bir child'ı checkedKeys içinde mi?
-export const hasAnyCheckedChild = (node: import("./types").TreeData, checkedKeys: string[]): boolean => {
+export const hasAnyCheckedChild = (
+  node: import("./types").TreeData,
+  checkedKeys: string[]
+): boolean => {
   if (!node.children) return false;
   return node.children.some(
     (child) =>
