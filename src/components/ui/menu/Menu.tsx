@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { MenuItem } from "./types";
 import {
@@ -8,10 +9,11 @@ import {
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { Button } from "../button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type MenuProps = {
   data: MenuItem[];
-  mode: "horizontal" | "vertical";
 };
 
 const iconMap: Record<string, React.ComponentType> = {
@@ -21,8 +23,17 @@ const iconMap: Record<string, React.ComponentType> = {
   DatabaseIcon,
 };
 
-export const Menu: React.FC<MenuProps> = ({ mode, data }) => {
+export const Menu: React.FC<MenuProps> = ({ data }) => {
   const [activeKey, setActiveKey] = React.useState<string | null>(null);
+  const navigate = useRouter();
+
+  const handleNavigateMain = () => {
+    navigate.push("/");
+  };
+  const handleNavigate = (route: string | undefined, key: string) => {
+    navigate.push(route || '/');
+    setActiveKey(key);
+  };
 
   React.useEffect(() => {
     if (data.length > 0 && !activeKey) {
@@ -30,40 +41,37 @@ export const Menu: React.FC<MenuProps> = ({ mode, data }) => {
     }
   }, [data, activeKey]);
 
-  const renderMenuItems = (items: MenuItem[]) => {
-    return items.map((item) => {
-      const IconComponent = item.iconName ? iconMap[item.iconName] : null;
-
-      return (
-        <Button
-        size="large"
-          key={item.key}
-          onClick={() => setActiveKey(item.key)}
-          className={twMerge(
-            "cursor-pointer px-3 py-2 rounded-b-none transition",
-            activeKey === item.key
-              ? "bg-secondary-light text-primary border-b-2 border-info "
-              : "hover:bg-secondary-light hover:border-b-2 hover:border-info"
-          )}
-        >
-          <span className="flex items-center gap-2">
-            {IconComponent && <IconComponent />}
-            <span>{item.label}</span>
-          </span>
-        </Button>
-      );
-    });
-  };
-
   return (
-    <div
-      className={twMerge(
-        "flex flex-row gap-1",
-        mode === "vertical" && "flex-col",
-        mode === "horizontal" && "flex-row "
-      )}
-    >
-      {renderMenuItems(data)}
+    <div className="flex flex-row gap-4 bg-white sticky top-0 p-2 shadow-md">
+      <Image
+        className="cursor-pointer"
+        onClick={handleNavigateMain}
+        width={48}
+        height={72}
+        src="/images/fb.png"
+        alt="fb"
+      />
+      {data.map((item) => {
+        const IconComponent = item.iconName ? iconMap[item.iconName] : null;
+
+        return (
+          <Button
+            key={item.key}
+            onClick={() => handleNavigate(item.route, item.key)}
+            className={twMerge(
+              "cursor-pointer px-3 py-2 rounded-b-none transition justify-start",
+              activeKey === item.key
+                ? " text-primary border-b-2 border-info "
+                : " hover:border-b-2 hover:border-info"
+            )}
+          >
+            <div className="flex items-center gap-2">
+              {IconComponent && <IconComponent />}
+              <div>{item.label}</div>
+            </div>
+          </Button>
+        );
+      })}
     </div>
   );
 };

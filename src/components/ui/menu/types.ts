@@ -3,6 +3,8 @@ export type MenuItem = {
   key: string;
   iconName?: string;
   disabled?: boolean;
+  direction?: "top" | "bottom" | "right" | "left";
+  route?: string
   children?: MenuItem[];
 };
 

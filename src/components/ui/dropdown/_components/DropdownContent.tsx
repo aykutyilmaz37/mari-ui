@@ -2,19 +2,19 @@ import { twMerge } from "tailwind-merge";
 import { getPlacementClass } from "../utils";
 import { Placement } from "../types";
 import React from "react";
+import { useDropdown } from "../useDropdown";
 
 type DropdownContentProps = {
   placement?: Placement;
-  visible: boolean;
   className?: string;
   children: React.ReactNode;
 };
 export const DropdownContent: React.FC<DropdownContentProps> = ({
-  placement = 'bottom',
-  visible,
+  placement = "bottom",
   children,
   className,
 }) => {
+  const { visible } = useDropdown();
   return (
     <div className="p-1">
       <div
