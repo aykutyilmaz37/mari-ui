@@ -2,12 +2,11 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { MenuItemType } from "../types";
-import { iconMap } from "../mockIconData";
 import { DropdownProvider } from "../../dropdown/useDropdown";
 import { Dropdown, DropdownContent, DropdownTrigger } from "../../dropdown";
-import { MenuItem } from "./MenuItem";
+import { BasicMenuItem } from "./BasicMenuItem";
 import { twMerge } from "tailwind-merge";
-import { getClass } from "../utils";
+import { getClass, resolveIconComponent } from "../utils";
 
 type MenuItemProps = {
   item: MenuItemType;
@@ -16,14 +15,14 @@ type MenuItemProps = {
   onClick?: () => void;
 };
 
-export const SubMenuItemWithDropdown: React.FC<MenuItemProps> = ({
+export const DropdownSubMenu: React.FC<MenuItemProps> = ({
   item,
   activeKey,
   setActiveKey,
   onClick,
 }) => {
   const navigate = useRouter();
-  const IconComponent = item.iconName ? iconMap[item.iconName] : null;
+  const IconComponent = resolveIconComponent(item.iconName);
 
   return item.children ? (
     <DropdownProvider>
@@ -35,14 +34,25 @@ export const SubMenuItemWithDropdown: React.FC<MenuItemProps> = ({
             getClass(item, activeKey)
           )}
         >
-          <div onClick={onClick} className="flex items-center gap-2">
+          <div
+            role="menu"
+            tabIndex={0}
+            onClick={onClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick?.();
+              }
+            }}
+            className="flex items-center gap-2"
+          >
             {IconComponent && <IconComponent />}
-            <div>{item.label}</div>
+            <div>{item.title}</div>
           </div>
         </DropdownTrigger>
         <DropdownContent className="bg-white w-full">
           {item.children.map((child) => (
-            <SubMenuItemWithDropdown
+            <DropdownSubMenu
               onClick={() => {
                 if (child.route) navigate.push(child.route);
                 setActiveKey(child.key);
@@ -58,7 +68,7 @@ export const SubMenuItemWithDropdown: React.FC<MenuItemProps> = ({
     </DropdownProvider>
   ) : (
     <div className="flex flex-col gap-1">
-      <MenuItem
+      <BasicMenuItem
         className="rounded-b-none"
         key={item.key}
         item={item}

@@ -5,15 +5,15 @@ import { twMerge } from "tailwind-merge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getMenuItemPosition } from "./utils";
-import { MenuItem } from "./_components/MenuItem";
-import { SubMenuItemWithDropdown } from "./_components/SubMenuItemWithDropdown";
+import { BasicMenuItem } from "./_components/BasicMenuItem";
+import { DropdownSubMenu } from "./_components/DropdownSubMenu";
 
 type MenuProps = {
   data: MenuItemType[];
   menuItemPosition?: MenuItemPosition;
 };
 
-export const Menu: React.FC<MenuProps> = ({
+export const BasicMenu: React.FC<MenuProps> = ({
   data,
   menuItemPosition = "left",
 }) => {
@@ -33,7 +33,7 @@ export const Menu: React.FC<MenuProps> = ({
   return (
     <div
       className={twMerge(
-        "flex flex-row gap-4 bg-white sticky top-0 p-2 shadow-md",
+        "flex flex-row gap-4 items-center bg-white sticky top-0 p-2 shadow-md",
         getMenuItemPosition(menuItemPosition)
       )}
     >
@@ -47,14 +47,14 @@ export const Menu: React.FC<MenuProps> = ({
       />
       {data.map((item) => {
         return item.children ? (
-          <SubMenuItemWithDropdown
+          <DropdownSubMenu
             key={item.key}
             item={item}
             activeKey={activeKey}
             setActiveKey={setActiveKey}
           />
         ) : (
-          <MenuItem
+          <BasicMenuItem
             key={item.key}
             item={item}
             activeKey={activeKey}

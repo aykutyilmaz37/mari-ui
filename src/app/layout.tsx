@@ -1,8 +1,8 @@
 'use client'
 import type { Metadata } from "next";
 import "@/styles/globals.css";
-import { Menu } from "@/components/ui/menu";
-import { items } from "@/components/ui/menu/mockData";
+import { menuMockData } from "@/components/ui/menu/mockdata/mockData";
+import { MegaMenu } from "@/components/ui/menu";
 
 // export const metadata: Metadata = {
 //   title: "Mergen Next",
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-      <Menu mode="vertical" data={items} />
+      <MegaMenu data={menuMockData} />
       {children}</body>
     </html>
   );

@@ -1,4 +1,5 @@
 import { MenuItemPosition, MenuItemType } from "./types";
+import { iconMap } from "./mockdata/mockIconData";
 
 export const getMenuItemPosition = (menuItemPosition: MenuItemPosition) => {
   return {
@@ -35,4 +36,8 @@ export const getClass = (item: MenuItemType, activeKey: string | null) => {
   return isActive
     ? "text-primary rounded-b-none border-b-2 border-info"
     : "rounded-b-none hover:border-b-2 hover:border-info";
+};
+
+export const resolveIconComponent = (iconName?: string) => {
+  return iconName ? iconMap[iconName] : null;
 };

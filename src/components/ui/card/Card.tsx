@@ -17,6 +17,7 @@ export type CardProps = {
   className?: string;
   classNames?: Partial<Record<SemanticDOM, string>>;
   styles?: Partial<Record<SemanticDOM, CSSProperties>>;
+  onClick?: () => void;
 };
 
 export function Card({
@@ -31,11 +32,12 @@ export function Card({
   type,
   className,
   classNames,
+  onClick,
 }: Readonly<CardProps>) {
   const base = getBaseClassname({ variant, hoverable, size, type, className });
 
   return (
-    <div className={base}>
+    <div className={base} onClick={onClick}>
       {cover && (
         <div className={twMerge(clsx("mb-4", classNames?.cover))}>{cover}</div>
       )}

@@ -2,10 +2,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { MenuItemType } from "../types";
-import { iconMap } from "../mockIconData";
 import { Button } from "../../button";
 import { twMerge } from "tailwind-merge";
-import { getClass } from "../utils";
+import { getClass, resolveIconComponent } from "../utils";
 
 type MenuItemProps = {
   item: MenuItemType;
@@ -14,14 +13,14 @@ type MenuItemProps = {
   className?: string;
 };
 
-export const MenuItem: React.FC<MenuItemProps> = ({
+export const BasicMenuItem: React.FC<MenuItemProps> = ({
   item,
   activeKey,
   setActiveKey,
   className,
 }) => {
   const navigate = useRouter();
-  const IconComponent = item.iconName ? iconMap[item.iconName] : null;
+  const IconComponent = resolveIconComponent(item.iconName);
 
   const handleClick = (item: MenuItemType) => {
     if (item.route) {
@@ -46,7 +45,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
       >
         <div className="flex items-center gap-2">
           {IconComponent && <IconComponent />}
-          <div>{item.label}</div>
+          <div>{item.title}</div>
         </div>
       </Button>
     </div>
