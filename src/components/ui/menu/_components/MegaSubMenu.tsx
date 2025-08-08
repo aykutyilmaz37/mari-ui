@@ -7,13 +7,11 @@ import { resolveIconComponent } from "../utils";
 
 type MegaSubMenuProps = {
   subItem?: MenuItemType[];
-  visible: boolean;
   setVisible: (val: boolean) => void;
   setSubItem: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
 };
 export const MegaSubMenu: React.FC<MegaSubMenuProps> = ({
   subItem,
-  visible,
   setVisible,
   setSubItem,
 }) => {
@@ -40,10 +38,7 @@ export const MegaSubMenu: React.FC<MegaSubMenuProps> = ({
         }
       }}
       className={twMerge(
-        "absolute grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center left-0 top-full z-50 w-full py-8 px-24 bg-secondary-light transition-all duration-300 origin-top transform",
-        visible
-          ? "opacity-100 scale-100 pointer-events-auto"
-          : "opacity-0 scale-95 pointer-events-none"
+        "absolute grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center left-0 top-full z-50 w-full py-8 px-24 bg-secondary-light"
       )}
     >
       {subItem?.map((subMenuItem) => {

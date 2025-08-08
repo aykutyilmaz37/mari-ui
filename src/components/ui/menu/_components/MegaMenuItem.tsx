@@ -9,6 +9,7 @@ import { resolveIconComponent } from "../utils";
 type MegaMenuItemProps = {
   item: MenuItemType;
   className?: string;
+  visible: boolean;
   setVisible: (val: boolean) => void;
   setSubItem: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
   subKey: string | undefined;
@@ -18,12 +19,13 @@ export const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
   item,
   className,
   setVisible,
+  visible,
   setSubItem,
   subKey,
 }) => {
   const navigate = useRouter();
   const IconComponent = resolveIconComponent(item.iconName);
-  const isActive = subKey?.slice(0, 1) === item.key;
+  const isActive = subKey?.slice(0, 1) === item.key && visible;
 
   const handleClick = (item: MenuItemType) => {
     if (!item.disabled && item.route) {

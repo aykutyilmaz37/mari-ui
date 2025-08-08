@@ -46,6 +46,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
             <MegaMenuItem
               key={menu.key}
               item={menu}
+              visible={visible}
               subKey={subItem?.[0].key}
               setVisible={setVisible}
               setSubItem={setSubItem}
@@ -53,14 +54,22 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
           );
         })}
       </div>
-      {subItem && (
-        <MegaSubMenu
-          subItem={subItem}
-          visible={visible}
-          setVisible={setVisible}
-          setSubItem={setSubItem}
-        />
-      )}
+      <div
+        className={twMerge(
+          "transition-all duration-300 origin-top transform",
+          visible
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 scale-95 pointer-events-none"
+        )}
+      >
+        {subItem && (
+          <MegaSubMenu
+            subItem={subItem}
+            setVisible={setVisible}
+            setSubItem={setSubItem}
+          />
+        )}
+      </div>
     </div>
   );
 };
