@@ -23,13 +23,13 @@ export const BasicMenuItem: React.FC<MenuItemProps> = ({
   const IconComponent = resolveIconComponent(item.iconName);
 
   const handleClick = (item: MenuItemType) => {
-    if (item.route) {
+    if (!item.disabled && item.route) {
       navigate.push(item.route);
       setActiveKey(item.key);
     }
   };
 
- 
+  console.log(item);
 
   return (
     <div>
@@ -37,10 +37,12 @@ export const BasicMenuItem: React.FC<MenuItemProps> = ({
         size="large"
         key={item.key}
         onClick={() => handleClick(item)}
+        disabled={item.disabled}
         className={twMerge(
-          "w-full cursor-pointer px-3 py-2 transition justify-start",
+          "w-full px-3 py-2 transition justify-start",
+          item.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
           className,
-          getClass(item, activeKey)
+          !item.disabled && getClass(item, activeKey)
         )}
       >
         <div className="flex items-center gap-2">

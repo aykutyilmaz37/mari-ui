@@ -1,21 +1,23 @@
 "use client";
 import React from "react";
-import { MenuItemType, MenuItemPosition } from "./types";
+import { MenuItemType, MenuItemJustify, MenuPosition } from "./types";
 import { twMerge } from "tailwind-merge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getMenuItemPosition } from "./utils";
+import { getMenuItemJustify, getMenuPosition } from "./utils";
 import { BasicMenuItem } from "./_components/BasicMenuItem";
 import { DropdownSubMenu } from "./_components/DropdownSubMenu";
 
 type MenuProps = {
   data: MenuItemType[];
-  menuItemPosition?: MenuItemPosition;
+  menuItemJustify?: MenuItemJustify;
+  menuPosition?: MenuPosition;
 };
 
 export const BasicMenu: React.FC<MenuProps> = ({
   data,
-  menuItemPosition = "left",
+  menuItemJustify = "left",
+  menuPosition = "default",
 }) => {
   const [activeKey, setActiveKey] = React.useState<string | null>(null);
   const navigate = useRouter();
@@ -33,8 +35,9 @@ export const BasicMenu: React.FC<MenuProps> = ({
   return (
     <div
       className={twMerge(
-        "flex flex-row gap-4 items-center bg-white sticky top-0 p-2 shadow-md",
-        getMenuItemPosition(menuItemPosition)
+        "flex flex-row gap-4 items-center bg-white shadow-md",
+        getMenuPosition(menuPosition),
+        getMenuItemJustify(menuItemJustify)
       )}
     >
       <Image

@@ -1,18 +1,21 @@
-import { MenuItemPosition, MenuItemType } from "./types";
+import { MenuItemJustify, MenuItemType, MenuPosition } from "./types";
 import { iconMap } from "./mockdata/mockIconData";
 
-export const getMenuItemPosition = (menuItemPosition: MenuItemPosition) => {
+export const getMenuItemJustify = (MenuItemJustify: MenuItemJustify) => {
   return {
     left: "justify-start",
     right: "justify-end",
     center: "justify-center",
-  }[menuItemPosition];
+  }[MenuItemJustify];
+};
+export const getMenuPosition = (MenuPosition: MenuPosition) => {
+  return {
+    default: "",
+    sticky: "sticky top-0",
+    fixed: "fixed top-0 w-full",
+  }[MenuPosition];
 };
 
-/**
- * Recursive olarak bir menü öğesinin aktif olup olmadığını kontrol eder
- * Eğer bir child aktifse, parent'ı da aktif sayılır
- */
 export const isMenuItemActive = (
   item: MenuItemType,
   activeKey: string | null
@@ -33,9 +36,9 @@ export const isMenuItemActive = (
 export const getClass = (item: MenuItemType, activeKey: string | null) => {
   const isActive = isMenuItemActive(item, activeKey);
 
-  return isActive
-    ? "text-primary rounded-b-none border-b-2 border-info"
-    : "rounded-b-none hover:border-b-2 hover:border-info";
+  return isActive && !item.disabled
+    ? "text-primary rounded-b-none border-b-2 border-info transition-all duration-50"
+    : "rounded-b-none hover:border-b-2 hover:border-info transition-all duration-50";
 };
 
 export const resolveIconComponent = (iconName?: string) => {

@@ -14,6 +14,8 @@ export type MenuItemIcon = {
   children?: MenuItemIcon[];
 };
 
-export type MenuItemPosition = "left" | "center" | "right";
+export type MenuItemJustify = "left" | "center" | "right";
+
+export type MenuPosition = "default" | "sticky" | "fixed";
 
 export type mode = "vertical" | "horizontal";

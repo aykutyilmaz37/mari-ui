@@ -1,19 +1,21 @@
 import React from "react";
-import { MenuItemPosition, MenuItemType } from "./types";
+import { MenuItemJustify, MenuItemType, MenuPosition } from "./types";
 import Image from "next/image";
-import { getMenuItemPosition } from "./utils";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
 import { MegaMenuItem } from "./_components/MegaMenuItem";
 import { MegaSubMenu } from "./_components/MegaSubMenu";
+import { getMenuItemJustify, getMenuPosition } from "./utils";
 
 type MegaMenuProps = {
   data: MenuItemType[];
-  menuItemPosition?: MenuItemPosition;
+  menuItemPosition?: MenuItemJustify;
+  menuPosition?: MenuPosition;
 };
 export const MegaMenu: React.FC<MegaMenuProps> = ({
   data,
   menuItemPosition = "center",
+  menuPosition = "default",
 }) => {
   const navigate = useRouter();
   const [visible, setVisible] = React.useState(false);
@@ -24,11 +26,11 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
   };
 
   return (
-    <div className="relative">
+    <div className={twMerge("relative", getMenuPosition(menuPosition))}>
       <div
         className={twMerge(
           "flex flex-row items-center bg-white shadow-md",
-          getMenuItemPosition(menuItemPosition)
+          getMenuItemJustify(menuItemPosition)
         )}
       >
         <Image

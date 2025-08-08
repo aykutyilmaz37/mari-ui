@@ -1,4 +1,3 @@
-// MenuItemComponent.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
 import { MenuItemType } from "../types";
@@ -27,7 +26,7 @@ export const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
   const isActive = subKey?.slice(0, 1) === item.key;
 
   const handleClick = (item: MenuItemType) => {
-    if (item.route) {
+    if (!item.disabled && item.route) {
       navigate.push(item.route);
     }
   };
@@ -50,7 +49,7 @@ export const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
       tabIndex={0}
       className={twMerge(
         "hover:bg-secondary-light h-full",
-        isActive && "bg-secondary-light"
+        isActive && "bg-secondary-light",
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -58,9 +57,11 @@ export const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
       <Button
         size="large"
         key={item.key}
+        disabled={item.disabled}
         onClick={() => handleClick(item)}
         className={twMerge(
-          "w-full cursor-pointer px-3 p-4 transition justify-start",
+          "w-full px-3 p-4 transition justify-start",
+          !item.disabled ? 'cursor-pointer' : 'cursor-not-allowed',
           className
         )}
       >
