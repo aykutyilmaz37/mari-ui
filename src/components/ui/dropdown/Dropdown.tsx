@@ -4,10 +4,12 @@ import { DropdownContent } from "./_components/DropdownContent";
 import { useDropdown } from "./useDropdown";
 
 type DropdownProps = {
-  children: [
-    React.ReactElement<typeof DropdownTrigger>,
-    React.ReactElement<typeof DropdownContent>
-  ];
+  children:
+    | [
+        React.ReactElement<typeof DropdownTrigger>,
+        React.ReactElement<typeof DropdownContent>
+      ]
+    | React.ReactElement<typeof DropdownContent>;
   hover?: boolean;
 };
 export const Dropdown: React.FC<DropdownProps> = ({

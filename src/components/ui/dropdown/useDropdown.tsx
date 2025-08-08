@@ -26,7 +26,7 @@ export const DropdownProvider = ({
 export const useDropdown = () => {
   const context = useContext(DropdownContext);
   if (!context) {
-    throw new Error("useTabs must be used inside a <DropdownContext>");
+    throw new Error("useDropdown must be used inside a <DropdownContext>");
   }
   return context;
 };

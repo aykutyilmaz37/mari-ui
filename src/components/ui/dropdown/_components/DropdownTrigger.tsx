@@ -12,7 +12,6 @@ type DropdownTriggerProps = {
 
 export const DropdownTrigger: React.FC<DropdownTriggerProps> = ({
   children,
-
   className,
   variant = "none",
 }) => {
