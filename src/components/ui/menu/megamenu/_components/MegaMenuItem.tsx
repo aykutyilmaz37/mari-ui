@@ -1,10 +1,10 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import { MenuItemType } from "../types";
-import { Button } from "../../button";
 import { twMerge } from "tailwind-merge";
 import { ChevronDownIcon } from "lucide-react";
-import { resolveIconComponent } from "../utils";
+import { MenuItemType } from "../../types";
+import { resolveIconComponent } from "../../utils";
+import { Button } from "@/components/ui/button";
 
 type MegaMenuItemProps = {
   item: MenuItemType;
@@ -51,7 +51,7 @@ export const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
       tabIndex={0}
       className={twMerge(
         "hover:bg-secondary-light h-full",
-        isActive && "bg-secondary-light",
+        isActive && "bg-secondary-light"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -63,7 +63,7 @@ export const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
         onClick={() => handleClick(item)}
         className={twMerge(
           "w-full px-3 p-4 transition justify-start",
-          !item.disabled ? 'cursor-pointer' : 'cursor-not-allowed',
+          !item.disabled ? "cursor-pointer" : "cursor-not-allowed",
           className
         )}
       >

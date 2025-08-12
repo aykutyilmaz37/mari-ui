@@ -1,9 +1,9 @@
 import React from "react";
-import { MenuItemType } from "../types";
-import { Card } from "../../card";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
-import { resolveIconComponent } from "../utils";
+import { MenuItemType } from "../../types";
+import { resolveIconComponent } from "../../utils";
+import { Card } from "@/components/ui/card";
 
 type MegaSubMenuProps = {
   subItem?: MenuItemType[];

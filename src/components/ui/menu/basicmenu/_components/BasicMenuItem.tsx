@@ -1,10 +1,11 @@
 // MenuItemComponent.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
-import { MenuItemType } from "../types";
-import { Button } from "../../button";
+
 import { twMerge } from "tailwind-merge";
-import { getClass, resolveIconComponent } from "../utils";
+import { MenuItemType } from "../../types";
+import { getClass, resolveIconComponent } from "../../utils";
+import { Button } from "@/components/ui/button";
 
 type MenuItemProps = {
   item: MenuItemType;

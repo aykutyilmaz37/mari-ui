@@ -1,12 +1,16 @@
 // MenuItemComponent.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
-import { MenuItemType } from "../types";
-import { DropdownProvider } from "../../dropdown/useDropdown";
-import { Dropdown, DropdownContent, DropdownTrigger } from "../../dropdown";
 import { BasicMenuItem } from "./BasicMenuItem";
 import { twMerge } from "tailwind-merge";
-import { getClass, resolveIconComponent } from "../utils";
+import { MenuItemType } from "../../types";
+import { getClass, resolveIconComponent } from "../../utils";
+import { DropdownProvider } from "@/components/ui/dropdown/useDropdown";
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownTrigger,
+} from "@/components/ui/dropdown";
 
 type MenuItemProps = {
   item: MenuItemType;
@@ -39,7 +43,7 @@ export const DropdownSubMenu: React.FC<MenuItemProps> = ({
             tabIndex={0}
             onClick={onClick}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 onClick?.();
               }

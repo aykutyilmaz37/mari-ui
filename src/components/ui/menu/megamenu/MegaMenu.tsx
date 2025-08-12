@@ -1,11 +1,11 @@
 import React from "react";
-import { MenuItemJustify, MenuItemType, MenuPosition } from "./types";
+import { MenuItemJustify, MenuItemType, MenuPosition } from "../types";
 import Image from "next/image";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
 import { MegaMenuItem } from "./_components/MegaMenuItem";
 import { MegaSubMenu } from "./_components/MegaSubMenu";
-import { getMenuItemJustify, getMenuPosition } from "./utils";
+import { getMenuItemJustify, getMenuPosition } from "../utils";
 
 type MegaMenuProps = {
   data: MenuItemType[];
@@ -40,7 +40,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
           height={48}
           src="/images/fb.png"
           alt="fb"
-        />{" "}
+        />
         {data.map((menu) => {
           return (
             <MegaMenuItem

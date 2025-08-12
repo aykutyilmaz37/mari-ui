@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from "@storybook/react";
-import { BasicMenu } from "./BasicMenu";
-import { MenuItemType } from "./types";
+import type { Meta, StoryObj } from "@storybook/react";
+import { MegaMenu } from "./MegaMenu";
+import { MenuItemType } from "../types";
 
 const mockData: MenuItemType[] = [
   {
@@ -21,11 +21,13 @@ const mockData: MenuItemType[] = [
         key: "web-dev",
         title: "Web Development",
         route: "/services/web",
+        description: "Frontend and backend solutions.",
       },
       {
         key: "design",
         title: "Design",
         route: "/services/design",
+        description: "UI/UX and graphic design services.",
       },
     ],
   },
@@ -36,14 +38,14 @@ const mockData: MenuItemType[] = [
   },
 ];
 
-const meta: Meta<typeof BasicMenu> = {
-  component: BasicMenu,
-  title: "Components/BasicMenu",
+const meta: Meta<typeof MegaMenu> = {
+  component: MegaMenu,
+  title: "Components/MegaMenu",
 };
 
 export default meta;
 
-type Story = StoryObj<typeof BasicMenu>;
+type Story = StoryObj<typeof MegaMenu>;
 
 export const Default: Story = {
   args: {
@@ -54,14 +56,14 @@ export const Default: Story = {
 export const LeftAligned: Story = {
   args: {
     data: mockData,
-    menuItemJustify: "left",
+    menuItemPosition: "left",
   },
 };
 
 export const RightAligned: Story = {
   args: {
     data: mockData,
-    menuItemJustify: "right",
+    menuItemPosition: "right",
   },
 };
 

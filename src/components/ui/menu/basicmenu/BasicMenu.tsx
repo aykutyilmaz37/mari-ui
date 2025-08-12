@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
-import { MenuItemType, MenuItemJustify, MenuPosition } from "./types";
+import { MenuItemType, MenuItemJustify, MenuPosition } from "../types";
 import { twMerge } from "tailwind-merge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getMenuItemJustify, getMenuPosition } from "./utils";
+import { getMenuItemJustify, getMenuPosition } from "../utils";
 import { BasicMenuItem } from "./_components/BasicMenuItem";
 import { DropdownSubMenu } from "./_components/DropdownSubMenu";
 
