@@ -19,3 +19,7 @@ export type MenuItemJustify = "left" | "center" | "right";
 export type MenuPosition = "default" | "sticky" | "fixed";
 
 export type mode = "vertical" | "horizontal";
+
+export type SidebarVariant = "hover" | "click";
+
+export type SidebarPosition = "left" | "right";

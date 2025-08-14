@@ -1,4 +1,9 @@
-import { MenuItemJustify, MenuItemType, MenuPosition } from "./types";
+import {
+  MenuItemJustify,
+  MenuItemType,
+  MenuPosition,
+  SidebarVariant,
+} from "./types";
 import { iconMap } from "./mockdata/mockIconData";
 
 export const getMenuItemJustify = (MenuItemJustify: MenuItemJustify) => {
@@ -43,4 +48,39 @@ export const getClass = (item: MenuItemType, activeKey: string | null) => {
 
 export const resolveIconComponent = (iconName?: string) => {
   return iconName ? iconMap[iconName] : null;
+};
+
+export const getWidthClass = (variant: SidebarVariant, visible: boolean) => {
+  if (variant === "hover") {
+    if (visible) {
+      return "w-2xs";
+    } else {
+      return "w-12";
+    }
+  }
+  if (variant === "click") {
+    if (visible) {
+      return "w-2xs";
+    } else {
+      return "w-0";
+    }
+  }
+};
+
+export const findActiveKeyByRoute = (
+  items: MenuItemType[],
+  route: string
+): string | null => {
+  for (const item of items) {
+    if (item.route === route) {
+      return item.key;
+    }
+    if (item.children) {
+      const found = findActiveKeyByRoute(item.children, route);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return null;
 };
