@@ -71,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             alt="fb"
           />
         </div>
-        <span className="block min-h-0.5 w-full bg-secondary-light" />
+        <div className="min-h-0.5 w-full bg-secondary-light" />
         <nav>
           <ul>
             {data?.map((item) => {
@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <PlayIcon
             className={twMerge(
-              "transition-transform duration-300 fill-secondary ",
+              "transition-transform duration-300 fill-secondary-light stroke-secondary ",
               visible && position === "right" ? "rotate-0" : "rotate-180",
               visible && position === "left" ? "rotate-180" : "rotate-0"
             )}

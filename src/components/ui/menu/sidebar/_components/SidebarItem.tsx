@@ -32,12 +32,17 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     >
       <Button
         size="large"
-        className="text-nowrap overflow-hidden cursor-pointer hover:text-info px-3"
+        className={
+          (twMerge(
+            "overflow-hidden cursor-pointer hover:text-info px-3"
+          ),
+          activeKey === item.key ? " text-info" : "")
+        }
         htmlType="button"
         onClick={() => handleNavigateRoute(item)}
         icon={IconComponent && <IconComponent />}
       >
-        <span className="ml-1">{item.title}</span>
+        <span className="ml-1 text-nowrap">{item.title}</span>
       </Button>
     </li>
   );
