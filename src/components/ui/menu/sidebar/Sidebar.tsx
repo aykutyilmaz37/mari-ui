@@ -1,12 +1,11 @@
 import React from "react";
 import { MenuItemType, SidebarPosition, SidebarVariant } from "../types";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
-import { getWidthClass, findActiveKeyByRoute } from "../utils";
+import { useRouter } from "next/navigation";
+import { getWidthClass } from "../utils";
 import { twMerge } from "tailwind-merge";
-import { Button } from "../../button";
-import { PlayIcon } from "lucide-react";
-import { SidebarItem } from "./_components/SidebarItem";
+import { SidebarButton } from "./_components/SidebarButton";
+import { SidebarMenu } from "./_components/SidebarMenu";
 
 type SidebarProps = {
   data: MenuItemType[];
@@ -18,18 +17,11 @@ type SidebarProps = {
 export const Sidebar: React.FC<SidebarProps> = ({
   data,
   variant = "click",
-  position = "left",
+  position = "right",
   logo = "/images/fb.png",
 }) => {
   const navigate = useRouter();
-  const pathname = usePathname();
   const [visible, setVisible] = React.useState(false);
-  const [activeKey, setActiveKey] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const key = findActiveKeyByRoute(data, pathname);
-    setActiveKey(key);
-  }, [pathname, data]);
 
   const handleNavigateMain = () => {
     navigate.push("/");
@@ -73,37 +65,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
         <div className="min-h-0.5 w-full bg-secondary-light" />
         <nav>
-          <ul>
-            {data?.map((item) => {
-              return (
-                <SidebarItem
-                  key={item.key}
-                  item={item}
-                  activeKey={activeKey}
-                  setActiveKey={setActiveKey}
-                />
-              );
-            })}
-          </ul>
+            <SidebarMenu data={data} />
         </nav>
       </aside>
       {variant === "click" && (
-        <Button
-          className={twMerge(
-            "bg-secondary-light transition-all duration-500 ease-in-out w-8 h-8",
-            position === "right" && "rounded-r-none ",
-            position === "left" && "rounded-l-none "
-          )}
-          onClick={() => setVisible(!visible)}
-        >
-          <PlayIcon
-            className={twMerge(
-              "transition-transform duration-300 fill-secondary-light stroke-secondary ",
-              visible && position === "right" ? "rotate-0" : "rotate-180",
-              visible && position === "left" ? "rotate-180" : "rotate-0"
-            )}
-          />
-        </Button>
+        <SidebarButton
+          visible={visible}
+          setVisible={setVisible}
+          position={position}
+        />
       )}
     </div>
   );

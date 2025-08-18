@@ -41,9 +41,14 @@ export const isMenuItemActive = (
 export const getClass = (item: MenuItemType, activeKey: string | null) => {
   const isActive = isMenuItemActive(item, activeKey);
 
-  return isActive && !item.disabled
+  return isActive
     ? "text-primary rounded-b-none border-b-2 border-info transition-all duration-50"
     : "rounded-b-none hover:border-b-2 hover:border-info transition-all duration-50";
+};
+export const getClassSidebar = (item: MenuItemType, activeKey: string | null) => {
+  const isActive = isMenuItemActive(item, activeKey);
+
+  return isActive ? "text-info" : "";
 };
 
 export const resolveIconComponent = (iconName?: string) => {

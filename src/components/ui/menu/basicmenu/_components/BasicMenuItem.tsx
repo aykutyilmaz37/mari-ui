@@ -30,7 +30,6 @@ export const BasicMenuItem: React.FC<MenuItemProps> = ({
     }
   };
 
-  console.log(item);
 
   return (
     <div>
