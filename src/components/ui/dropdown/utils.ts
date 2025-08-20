@@ -7,9 +7,9 @@ export function getPlacementClass(placement: Placement): string {
     case "top":
       return "bottom-full left-1/2 -translate-x-1/2";
     case "right":
-      return "left-full top-1/2 -translate-y-1/2";
+      return "left-full top-0 -translate-y-10";
     case "left":
-      return "right-full top-1/2 -translate-y-1/2";
+      return "right-full top-0 -translate-y-10";
     default:
       return "";
   }

@@ -15,7 +15,6 @@ export const SidebarButton: React.FC<SidebarButtonProps> = ({
   setVisible,
   visible,
 }) => {
-  console.log(position);
 
   return (
     <Button

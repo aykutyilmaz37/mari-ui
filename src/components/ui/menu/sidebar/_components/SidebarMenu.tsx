@@ -2,14 +2,27 @@ import React from "react";
 import { SidebarItem } from "./SidebarItem";
 import { findActiveKeyByRoute } from "../../utils";
 import { usePathname } from "next/navigation";
-import { MenuItemType } from "../../types";
+import { MenuItemType, SidebarPosition } from "../../types";
 import { twMerge } from "tailwind-merge";
 
 type SidebarMenuProps = {
   data: MenuItemType[];
-  className?:string
+  className?: string;
+  setSubItem?: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
+  setSubVisible: (value: boolean) => void;
+  mega?: boolean;
+  dropdown?: boolean;
+  position: SidebarPosition;
 };
-export const SidebarMenu: React.FC<SidebarMenuProps> = ({ data,className }) => {
+export const SidebarMenu: React.FC<SidebarMenuProps> = ({
+  data,
+  className,
+  setSubItem,
+  setSubVisible,
+  mega,
+  dropdown,
+  position,
+}) => {
   const pathname = usePathname();
 
   const [activeKey, setActiveKey] = React.useState<string | null>(null);
@@ -28,6 +41,11 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({ data,className }) => {
             item={item}
             activeKey={activeKey}
             setActiveKey={setActiveKey}
+            setSubItem={setSubItem}
+            setSubVisible={setSubVisible}
+            mega={mega}
+            dropdown={dropdown}
+            position={position}
           />
         );
       })}

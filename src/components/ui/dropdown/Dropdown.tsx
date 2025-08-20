@@ -20,6 +20,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <div
+      role="menu"
+      tabIndex={0}
       className="relative"
       onMouseEnter={hover ? () => setVisible(true) : undefined}
       onMouseLeave={hover ? () => setVisible(false) : undefined}
