@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { MenuItemType, SidebarPosition } from "../../types";
 import { DropdownSub } from "./DropdownSub";
 import { AccordionSub } from "./AccordionSub";
+import { ChevronRightIcon } from "lucide-react";
 
 type SidebarItemProps = {
   item: MenuItemType;
@@ -19,7 +20,8 @@ type SidebarItemProps = {
   mega?: boolean;
   setSubItem?: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
   setSubVisible: (value: boolean) => void;
-  position: SidebarPosition;
+  visible: boolean;
+  position?: SidebarPosition;
 };
 export const SidebarItem: React.FC<SidebarItemProps> = ({
   item,
@@ -29,6 +31,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   mega,
   setSubItem,
   setSubVisible,
+  visible,
   position,
 }) => {
   const navigate = useRouter();
@@ -38,8 +41,6 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleNavigateRoute = (item: MenuItemType) => {
-    console.log(item);
-
     if (item.route) {
       navigate.push(item.route);
       setActiveKey(item.key);
@@ -106,7 +107,10 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         onClick={handleClick}
         icon={IconComponent && <IconComponent />}
       >
-        <span className="ml-1 text-nowrap">{item.title}</span>
+        <div className="w-full flex items-center justify-between">
+          <span className="ml-1 text-nowrap">{item.title}</span>
+          {!dropdown && !mega && item.children && <ChevronRightIcon />}
+        </div>
       </Button>
       {dropdown ? (
         <DropdownSub
@@ -119,7 +123,8 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         <AccordionSub
           item={item}
           subVisible={isOpen}
-          setSubVisible={setIsOpen}
+          setSubVisible={setSubVisible}
+          visible={visible}
         />
       )}
     </li>

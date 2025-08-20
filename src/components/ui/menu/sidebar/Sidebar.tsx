@@ -42,6 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleMouseLeave = () => {
     setVisible(false);
+    setSubVisible(false);
   };
 
   return (
@@ -83,6 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             data={data}
             setSubItem={setSubItem}
             setSubVisible={setSubVisible}
+            visible={visible}
             mega={mega}
             dropdown={dropdown}
             position={position}

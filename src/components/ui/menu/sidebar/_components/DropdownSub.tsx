@@ -8,13 +8,13 @@ type DropdownSubProps = {
   item: MenuItemType;
   setSubVisible: (value: boolean) => void;
   subVisible: boolean;
-  position: SidebarPosition;
+  position?: SidebarPosition;
 };
 export const DropdownSub: React.FC<DropdownSubProps> = ({
   item,
   setSubVisible,
   subVisible,
-  position,
+  position = 'left',
 }) => {
   return (
     item.children && (

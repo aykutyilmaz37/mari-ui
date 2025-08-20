@@ -10,15 +10,17 @@ type SidebarMenuProps = {
   className?: string;
   setSubItem?: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
   setSubVisible: (value: boolean) => void;
+  visible: boolean;
   mega?: boolean;
   dropdown?: boolean;
-  position: SidebarPosition;
+  position?: SidebarPosition;
 };
 export const SidebarMenu: React.FC<SidebarMenuProps> = ({
   data,
   className,
   setSubItem,
   setSubVisible,
+  visible,
   mega,
   dropdown,
   position,
@@ -43,6 +45,7 @@ export const SidebarMenu: React.FC<SidebarMenuProps> = ({
             setActiveKey={setActiveKey}
             setSubItem={setSubItem}
             setSubVisible={setSubVisible}
+            visible={visible}
             mega={mega}
             dropdown={dropdown}
             position={position}
