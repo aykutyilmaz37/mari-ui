@@ -4,7 +4,7 @@ import {
   MenuPosition,
   SidebarVariant,
 } from "./types";
-import { iconMap } from "./mockdata/mockIconData";
+import { iconMap } from "./mock-data/mockIconData";
 
 export const getMenuItemJustify = (MenuItemJustify: MenuItemJustify) => {
   return {
@@ -45,7 +45,10 @@ export const getClass = (item: MenuItemType, activeKey: string | null) => {
     ? "text-primary rounded-b-none border-b-2 border-info transition-all duration-50"
     : "rounded-b-none hover:border-b-2 hover:border-info transition-all duration-50";
 };
-export const getClassSidebar = (item: MenuItemType, activeKey: string | null) => {
+export const getClassSidebar = (
+  item: MenuItemType,
+  activeKey: string | null
+) => {
   const isActive = isMenuItemActive(item, activeKey);
 
   return isActive ? "text-info" : "";
