@@ -28,6 +28,7 @@ export type InputProps = {
   onClear?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onFocus?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FormEvent<HTMLInputElement>) => void;
   onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   allowClear?: boolean | { clearIcon?: React.ReactNode };
   icon?: React.ReactNode;
@@ -79,9 +80,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       value,
       variant = "outlined",
       onChange,
-      onPressEnter,  
+      onPressEnter,
       onClear,
       onFocus,
+      onBlur,
       onKeyDown,
       onInput,
       mask,
@@ -170,6 +172,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onFocus={onFocus}
+            onBlur={onBlur}
             onInput={onInput}
             className={inputClass}
             {...rest}
@@ -186,6 +189,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onFocus={onFocus}
+            onBlur={onBlur}
             onInput={onInput}
             className={inputClass}
             max={max}
