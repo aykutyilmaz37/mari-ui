@@ -17,10 +17,22 @@ const config: StorybookConfig = {
   ],
   "framework": {
     "name": "@storybook/nextjs",
-    "options": {}
+    "options": {
+      "nextConfigPath": "../next.config.ts"
+    }
   },
   "staticDirs": [
     "../public"
-  ]
+  ],
+  "webpackFinal": async (config) => {
+    // Next.js App Router için gerekli konfigürasyon
+    if (config.resolve) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': '/src',
+      };
+    }
+    return config;
+  },
 };
 export default config;
