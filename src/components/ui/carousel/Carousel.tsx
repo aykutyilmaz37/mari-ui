@@ -27,6 +27,9 @@ type ResponsiveItem = {
 export type CarouselProps = {
   children: React.ReactNode[];
   className?: string;
+  containerClassName?: string;
+  itemClassName?: string;
+  viewportClassName?: string;
 
   /** Core */
   loop?: boolean; // infinite karşılığı
@@ -111,6 +114,9 @@ const useResponsiveSlides = (
 export const Carousel: FC<CarouselProps> = ({
   children,
   className,
+  containerClassName,
+  itemClassName,
+  viewportClassName,
 
   loop = true,
   draggable = true,
@@ -260,14 +266,18 @@ export const Carousel: FC<CarouselProps> = ({
   return (
     <div className={twMerge(clsx("relative w-full", className))}>
       {/* Viewport */}
-      <div className="overflow-hidden" ref={emblaRef}>
+      <div
+        className={twMerge(clsx("overflow-hidden", viewportClassName))}
+        ref={emblaRef}
+      >
         {/* Container */}
         <div
-          className="
-            flex
-            will-change-transform
-            select-none
-          "
+          className={twMerge(
+            clsx(
+              "flex w-full will-change-transform select-none",
+              containerClassName
+            )
+          )}
           style={
             {
               // Tailwind ile desteklemek için CSS var:
@@ -287,7 +297,9 @@ export const Carousel: FC<CarouselProps> = ({
             return (
               <div
                 key={key}
-                className="embla__slide shrink-0"
+                className={twMerge(
+                  clsx("embla__slide shrink-0", itemClassName)
+                )}
                 style={{ flex: "0 0 var(--slide-basis)" }}
               >
                 {child}
