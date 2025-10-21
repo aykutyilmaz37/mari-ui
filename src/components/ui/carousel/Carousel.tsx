@@ -1,244 +1,345 @@
-import React, { Children } from "react";
+"use client";
+
+import React, {
+  FC,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import clsx from "clsx";
-import { dotPosition, effect } from "./types";
-import { getDotWrapperClass, getArrowClass } from "./utils";
+import Autoplay from "embla-carousel-autoplay";
+import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-export type CarouselProps = {
-  children: React.ReactNode[];
-  arrows?: boolean;
-  autoplay?: boolean | { dotDuration?: boolean };
-  autoplaySpeed?: number;
-  adaptiveHeight?: boolean;
-  dotPosition?: dotPosition;
-  dots?: boolean | { className?: string };
-  fade?: boolean;
-  infinite?: boolean;
-  speed?: number;
-  easing?: string;
-  effect?: effect;
-  afterChange?: (current: number) => void;
-  beforeChange?: (current: number, next: number) => void;
-  waitForAnimate?: boolean;
-  draggable?: boolean;
+import { DotPosition } from "./types";
+
+type ResponsiveItem = {
+  breakpoint: number;
+  slidesToShow: number;
+  slidesToScroll?: number;
 };
 
-export const Carousel = ({
-  children,
-  arrows = false,
-  autoplay = false,
-  autoplaySpeed = 3000,
-  adaptiveHeight = false,
-  dotPosition = "bottom",
-  dots = true,
-  fade = false,
-  infinite = true,
-  speed = 500,
-  easing = "linear",
-  effect = "scrollx",
-  afterChange,
-  beforeChange,
-  waitForAnimate = false,
-  draggable = false,
-}: CarouselProps) => {
-  const [current, setCurrent] = React.useState(0);
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const wrapperRef = React.useRef<HTMLDivElement>(null);
+export type CarouselProps = {
+  children: React.ReactNode[];
+  className?: string;
 
-  const [isDragging, setIsDragging] = React.useState(false);
-  const [startX, setStartX] = React.useState(0);
-  const [dragDelta, setDragDelta] = React.useState(0);
-  const [isAnimating, setIsAnimating] = React.useState(true);
+  /** Core */
+  loop?: boolean; // infinite karşılığı
+  draggable?: boolean;
+  speed?: number; // ms
 
-  const count = Children.count(children);
+  /** Viewport ayarları */
+  slidesToShow?: number; // default 1
+  slidesToScroll?: number; // default slidesToShow
+  align?: "start" | "center" | "end"; // Embla align
+  containScroll?: "trimSnaps" | "keepSnaps"; // overscroll davranışı
 
-  const goTo = React.useCallback(
-    (index: number, dontAnimate = false) => {
-      if (beforeChange) beforeChange(current, index);
-      if (dontAnimate) {
-        wrapperRef.current?.style.setProperty("transition", "none");
+  /** Oto oynatma */
+  autoplay?: boolean;
+  autoplayDelay?: number; // ms, default 3000
+  autoplayStopOnInteraction?: boolean;
+
+  /** UI */
+  arrows?: boolean;
+  dots?: boolean | { className?: string };
+  dotPosition?: DotPosition;
+
+  /** Responsive */
+  responsive?: ResponsiveItem[];
+
+  /** Callbacks */
+  beforeChange?: (current: number, next: number) => void;
+  afterChange?: (current: number) => void;
+};
+
+/** Basit responsive slidesToShow/slidesToScroll hook'u */
+const useResponsiveSlides = (
+  baseShow: number,
+  baseScroll: number,
+  responsive?: ResponsiveItem[]
+) => {
+  const [state, setState] = useState({
+    slidesToShow: Math.max(1, baseShow),
+    slidesToScroll: Math.max(1, baseScroll || baseShow),
+  });
+
+  useEffect(() => {
+    if (!responsive?.length) {
+      setState({
+        slidesToShow: Math.max(1, baseShow),
+        slidesToScroll: Math.max(1, baseScroll || baseShow),
+      });
+      return;
+    }
+
+    const onResize = () => {
+      const width = window.innerWidth;
+      const sorted = [...responsive].sort(
+        (a, b) => a.breakpoint - b.breakpoint
+      );
+      let appliedShow = baseShow;
+      let appliedScroll = baseScroll || baseShow;
+
+      for (const r of sorted) {
+        if (width <= r.breakpoint) {
+          appliedShow = r.slidesToShow;
+          appliedScroll = r.slidesToScroll ?? r.slidesToShow;
+          break;
+        }
       }
-      setCurrent(index);
-      if (afterChange) afterChange(index);
-    },
-    [beforeChange, afterChange, current]
+
+      setState({
+        slidesToShow: Math.max(1, appliedShow),
+        slidesToScroll: Math.max(1, appliedScroll),
+      });
+    };
+
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseShow, baseScroll, JSON.stringify(responsive || [])]);
+
+  return state;
+};
+
+export const Carousel: FC<CarouselProps> = ({
+  children,
+  className,
+
+  loop = true,
+  draggable = true,
+  speed = 20, // Embla hız birimi ~ px/step (ms değil). Daha yavaş animasyon için düşür, daha hızlı için artır.
+
+  slidesToShow: baseSlidesToShow = 1,
+  slidesToScroll: baseSlidesToScroll,
+  align = "start",
+  containScroll = "trimSnaps",
+
+  autoplay = false,
+  autoplayDelay = 3000,
+  autoplayStopOnInteraction = true,
+
+  arrows = true,
+  dots = true,
+  dotPosition = "bottom",
+
+  responsive,
+
+  beforeChange,
+  afterChange,
+}) => {
+  const items = React.Children.toArray(children);
+  const count = items.length;
+
+  // Responsive derive
+  const { slidesToShow, slidesToScroll } = useResponsiveSlides(
+    baseSlidesToShow,
+    baseSlidesToScroll ?? baseSlidesToShow,
+    responsive
   );
 
-  const next = React.useCallback(() => {
-    const nextIndex = current + 1;
-    if (!infinite && nextIndex >= count) return;
-    goTo(nextIndex % count);
-  }, [current, count, goTo, infinite]);
+  // Slide genişliği için CSS değişkeni kullanıyoruz (Tailwind ile kolay)
+  const slideBasis = useMemo(
+    () => `calc(100% / ${slidesToShow})`,
+    [slidesToShow]
+  );
 
-  const prev = React.useCallback(() => {
-    const prevIndex = current - 1;
-    if (!infinite && prevIndex < 0) return;
-    goTo((prevIndex + count) % count);
-  }, [current, count, goTo, infinite]);
+  /** Embla Options */
+  const emblaOptions = useMemo(
+    () => ({
+      loop,
+      align,
+      dragFree: false,
+      draggable,
+      containScroll,
+      slidesToScroll, // önemli: çoklu scroll
+      inViewThreshold: 0.6,
+      duration: speed, // animasyon hızı: Embla'da ms değil; deneyerek ayarla
+      watchDrag: true,
+    }),
+    [loop, align, draggable, containScroll, slidesToScroll, speed]
+  );
 
-  React.useEffect(() => {
-    if (!autoplay) return;
+  /** Autoplay plugin */
+  const autoplayPluginRef = useRef(
+    Autoplay({
+      delay: autoplayDelay,
+      stopOnInteraction: autoplayStopOnInteraction,
+      // İKİNCİ ARGÜMAN YERİNE BURAYA:
+      rootNode: (emblaRoot) => emblaRoot.parentElement as HTMLElement,
+    })
+  );
 
-    timeoutRef.current = setTimeout(() => {
-      if (!waitForAnimate || typeof requestAnimationFrame === "undefined") {
-        next();
-      } else {
-        requestAnimationFrame(next);
-      }
-    }, autoplaySpeed);
+  /** Embla init */
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    emblaOptions,
+    autoplay ? [autoplayPluginRef.current] : []
+  );
+
+  /** Seçili index & sayfa/dot hesapları */
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    const idx = emblaApi.selectedScrollSnap();
+    setSelectedIndex(idx);
+    afterChange?.(idx);
+  }, [emblaApi, afterChange]);
+
+  const onBeforeScroll = useCallback(() => {
+    if (!emblaApi) return;
+    const from = emblaApi.selectedScrollSnap();
+    // targetSnap index'ini yakalamak için hack: emblaApi.internalEngine().target.get() olabilir,
+    // ama public API’de yok. Yaklaşık olarak afterChange ile yetiniyoruz.
+    // Dilersen beforeChange’i prev/next handler’larında manuel çağırabiliriz.
+    // Burada sadece mevcut index'i geçiyoruz.
+    beforeChange?.(from, from);
+  }, [emblaApi, beforeChange]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    setScrollSnaps(emblaApi.scrollSnapList());
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+
+    emblaApi
+      .on("select", onSelect)
+      .on("reInit", () => {
+        setScrollSnaps(emblaApi.scrollSnapList());
+        setSelectedIndex(emblaApi.selectedScrollSnap());
+      })
+      .on("pointerDown", () => {
+        // Kullanıcı dokunduysa autoplay’i durdur (opsiyon)
+        if (autoplay && autoplayStopOnInteraction) {
+          autoplayPluginRef.current.stop();
+        }
+      })
+      .on("scroll", onBeforeScroll);
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      emblaApi.off("select", onSelect).off("scroll", onBeforeScroll);
     };
-  }, [current, autoplay, autoplaySpeed, next, waitForAnimate]);
+  }, [emblaApi, onSelect, onBeforeScroll, autoplay, autoplayStopOnInteraction]);
 
-  React.useEffect(() => {
-    if (wrapperRef.current) {
-      wrapperRef.current.style.removeProperty("transition");
+  /** slidesToShow değişince yeniden init gerekmez; Embla "reInit" ile handle ediyor.
+   *  Ancak slide genişliğini CSS ile verdiğimiz için dependents yok.
+   */
+
+  /** Prev/Next */
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  /** Dot click */
+  const scrollTo = useCallback(
+    (index: number) => emblaApi?.scrollTo(index),
+    [emblaApi]
+  );
+
+  /** Dot wrapper pos */
+  const dotWrapperPos = useMemo(() => {
+    switch (dotPosition) {
+      case "top":
+        return "top-2 left-1/2 -translate-x-1/2";
+      case "left":
+        return "left-2 top-1/2 -translate-y-1/2";
+      case "right":
+        return "right-2 top-1/2 -translate-y-1/2";
+      case "bottom":
+      default:
+        return "bottom-2 left-1/2 -translate-x-1/2";
     }
-  }, [current]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!draggable) return;
-    setIsDragging(true);
-    setStartX(e.clientX);
-    setDragDelta(0);
-    setIsAnimating(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !draggable) return;
-    const dx = e.clientX - startX;
-    setDragDelta(dx);
-  };
-
-  const finalizeDrag = () => {
-    if (!draggable) return;
-    setIsDragging(false);
-    setIsAnimating(true);
-    if (Math.abs(dragDelta) > 50) {
-      if (dragDelta > 0) {
-        prev();
-      } else {
-        next();
-      }
-    }
-    setDragDelta(0);
-  };
-  const handleMouseUp = () => finalizeDrag();
-  const handleTouchEnd = () => finalizeDrag();
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!draggable) return;
-    setIsDragging(true);
-    setStartX(e.touches[0].clientX);
-    setDragDelta(0);
-    setIsAnimating(false);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !draggable) return;
-    const dx = e.touches[0].clientX - startX;
-    setDragDelta(dx);
-  };
-
-  let transformStyle: string | undefined;
-
-  if (effect === "scrollx") {
-    const offset = current * 100;
-    const delta = isDragging ? dragDelta : 0;
-    transformStyle = `translateX(calc(-${offset}% + ${delta}px))`;
-  }
-
-  const style = {
-    transform: transformStyle,
-    transitionDuration: isAnimating ? `${speed}ms` : "0ms",
-    transitionTimingFunction: easing,
-  };
+  }, [dotPosition]);
 
   return (
-    <div className={twMerge(clsx("relative w-full overflow-hidden"))}>
-      <div
-        role="none"
-        ref={wrapperRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className={twMerge(
-          clsx("flex relative transition-all ease-in-out", {
-            "duration-[500ms]": speed === 500 && isAnimating,
-            "select-none cursor-grabbing": draggable && isDragging,
-          })
-        )}
-        style={style}
-      >
-        {Children.map(children, (child, index) => {
-          const isActive = index === current;
-          const offset = fade ? `translateX(-${current * 100}%)` : undefined;
+    <div className={twMerge(clsx("relative w-full", className))}>
+      {/* Viewport */}
+      <div className="overflow-hidden" ref={emblaRef}>
+        {/* Container */}
+        <div
+          className="
+            flex
+            will-change-transform
+            select-none
+          "
+          style={
+            {
+              // Tailwind ile desteklemek için CSS var:
+              // .embla__slide { flex: 0 0 var(--slide-basis) }
+              // burada inline veriyoruz:
+              "--slide-basis": slideBasis,
+            } as React.CSSProperties
+          }
+        >
+          {items.map((child, i) => {
+            // Eğer child bir ReactElement ise key okunabilir
+            const key =
+              isValidElement(child) && child.key != null
+                ? child.key
+                : `slide-${i}`;
 
-          return (
-            <div
-              className={twMerge(
-                "w-full shrink-0",
-                fade && "transition-opacity duration-500 ease-in-out",
-                fade &&
-                  (isActive ? "opacity-100 visible" : "opacity-0 invisible"),
-                !fade && adaptiveHeight && "h-auto"
-              )}
-              style={fade ? { transform: offset } : undefined}
-            >
-              {child}
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={key}
+                className="embla__slide shrink-0"
+                style={{ flex: "0 0 var(--slide-basis)" }}
+              >
+                {child}
+              </div>
+            );
+          })}
+        </div>
       </div>
-      {dots && (
+
+      {/* Arrows */}
+      {arrows && count > slidesToShow && (
+        <>
+          <button
+            onClick={scrollPrev}
+            className="bg-background/70 hover:bg-background absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 shadow"
+            aria-label="Previous"
+          >
+            <ChevronLeftIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={scrollNext}
+            className="bg-background/70 hover:bg-background absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 shadow"
+            aria-label="Next"
+          >
+            <ChevronRightIcon className="h-5 w-5" />
+          </button>
+        </>
+      )}
+
+      {/* Dots */}
+      {dots && scrollSnaps.length > 1 && (
         <div
           className={twMerge(
-            clsx(
-              getDotWrapperClass(dotPosition),
-              typeof dots === "object" && dots.className
-            )
+            "pointer-events-none absolute z-10 flex gap-2",
+            dotPosition === "left" || dotPosition === "right"
+              ? "flex-col"
+              : "flex-row",
+            dotWrapperPos
           )}
         >
-          {Array.from({ length: count }).map((_, index) => (
+          {scrollSnaps.map((snap) => (
             <button
-              key={index}
-              className={clsx("h-2 w-2 rounded-full bg-border", {
-                "bg-foreground": index === current,
-              })}
-              onClick={() => goTo(index)}
+              key={`snap-${snap}`}
+              className={clsx(
+                "bg-border pointer-events-auto h-2 w-2 rounded-full transition-colors",
+                scrollSnaps[selectedIndex] === snap && "bg-foreground"
+              )}
+              onClick={() => scrollTo(scrollSnaps.indexOf(snap))}
+              aria-label={`Go to slide ${snap}`}
             />
           ))}
         </div>
-      )}
-
-      {arrows && (
-        <>
-          <button
-            onClick={prev}
-            className={clsx(
-              "absolute cursor-pointer",
-              getArrowClass(dotPosition, "prev")
-            )}
-          >
-            <ChevronLeftIcon />
-          </button>
-          <button
-            onClick={next}
-            className={clsx(
-              "absolute cursor-pointer",
-              getArrowClass(dotPosition, "next")
-            )}
-          >
-            <ChevronRightIcon />
-          </button>
-        </>
       )}
     </div>
   );
