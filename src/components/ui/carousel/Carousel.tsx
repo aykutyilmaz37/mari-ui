@@ -16,13 +16,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-import { DotPosition } from "./types";
-
-type ResponsiveItem = {
-  breakpoint: number;
-  slidesToShow: number;
-  slidesToScroll?: number;
-};
+import { CarouselControls, DotPosition, ResponsiveItem } from "./types";
 
 export type CarouselProps = {
   children: React.ReactNode[];
@@ -32,25 +26,26 @@ export type CarouselProps = {
   viewportClassName?: string;
 
   /** Core */
-  loop?: boolean; // infinite karşılığı
+  loop?: boolean;
   draggable?: boolean;
-  speed?: number; // ms
+  speed?: number;
 
-  /** Viewport ayarları */
-  slidesToShow?: number; // default 1
-  slidesToScroll?: number; // default slidesToShow
-  align?: "start" | "center" | "end"; // Embla align
-  containScroll?: "trimSnaps" | "keepSnaps"; // overscroll davranışı
+  /** Viewport */
+  slidesToShow?: number;
+  slidesToScroll?: number;
+  align?: "start" | "center" | "end";
+  containScroll?: "trimSnaps" | "keepSnaps";
 
-  /** Oto oynatma */
+  /** Autoplay */
   autoplay?: boolean;
-  autoplayDelay?: number; // ms, default 3000
+  autoplayDelay?: number;
   autoplayStopOnInteraction?: boolean;
 
   /** UI */
   arrows?: boolean;
   dots?: boolean | { className?: string };
   dotPosition?: DotPosition;
+  controlsRef?: React.RefObject<CarouselControls | null>;
 
   /** Responsive */
   responsive?: ResponsiveItem[];
@@ -58,9 +53,12 @@ export type CarouselProps = {
   /** Callbacks */
   beforeChange?: (current: number, next: number) => void;
   afterChange?: (current: number) => void;
+
+  /** 🔹 NEW: External state mirror */
+  onStateChange?: (state: CarouselControls) => void;
 };
 
-/** Basit responsive slidesToShow/slidesToScroll hook'u */
+/* ========== Responsive Slides Hook ========== */
 const useResponsiveSlides = (
   baseShow: number,
   baseScroll: number,
@@ -85,6 +83,7 @@ const useResponsiveSlides = (
       const sorted = [...responsive].sort(
         (a, b) => a.breakpoint - b.breakpoint
       );
+
       let appliedShow = baseShow;
       let appliedScroll = baseScroll || baseShow;
 
@@ -105,12 +104,12 @@ const useResponsiveSlides = (
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseShow, baseScroll, JSON.stringify(responsive || [])]);
+  }, [baseShow, baseScroll, responsive]);
 
   return state;
 };
 
+/* ========== Carousel Component ========== */
 export const Carousel: FC<CarouselProps> = ({
   children,
   className,
@@ -120,7 +119,7 @@ export const Carousel: FC<CarouselProps> = ({
 
   loop = true,
   draggable = true,
-  speed = 20, // Embla hız birimi ~ px/step (ms değil). Daha yavaş animasyon için düşür, daha hızlı için artır.
+  speed = 20,
 
   slidesToShow: baseSlidesToShow = 1,
   slidesToScroll: baseSlidesToScroll,
@@ -134,121 +133,147 @@ export const Carousel: FC<CarouselProps> = ({
   arrows = true,
   dots = true,
   dotPosition = "bottom",
-
+  controlsRef,
   responsive,
-
   beforeChange,
   afterChange,
+  onStateChange, // 🔹 added
 }) => {
   const items = React.Children.toArray(children);
   const count = items.length;
 
-  // Responsive derive
   const { slidesToShow, slidesToScroll } = useResponsiveSlides(
     baseSlidesToShow,
     baseSlidesToScroll ?? baseSlidesToShow,
     responsive
   );
 
-  // Slide genişliği için CSS değişkeni kullanıyoruz (Tailwind ile kolay)
   const slideBasis = useMemo(
     () => `calc(100% / ${slidesToShow})`,
     [slidesToShow]
   );
 
-  /** Embla Options */
+  /* Embla setup */
   const emblaOptions = useMemo(
     () => ({
       loop,
       align,
-      dragFree: false,
       draggable,
       containScroll,
-      slidesToScroll, // önemli: çoklu scroll
-      inViewThreshold: 0.6,
-      duration: speed, // animasyon hızı: Embla'da ms değil; deneyerek ayarla
+      slidesToScroll,
+      duration: speed,
       watchDrag: true,
     }),
     [loop, align, draggable, containScroll, slidesToScroll, speed]
   );
 
-  /** Autoplay plugin */
   const autoplayPluginRef = useRef(
     Autoplay({
       delay: autoplayDelay,
       stopOnInteraction: autoplayStopOnInteraction,
-      // İKİNCİ ARGÜMAN YERİNE BURAYA:
       rootNode: (emblaRoot) => emblaRoot.parentElement as HTMLElement,
     })
   );
 
-  /** Embla init */
   const [emblaRef, emblaApi] = useEmblaCarousel(
     emblaOptions,
     autoplay ? [autoplayPluginRef.current] : []
   );
 
-  /** Seçili index & sayfa/dot hesapları */
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback(
+    (index: number) => emblaApi?.scrollTo(index),
+    [emblaApi]
+  );
+
+  const updateCanScroll = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     const idx = emblaApi.selectedScrollSnap();
     setSelectedIndex(idx);
+    updateCanScroll();
     afterChange?.(idx);
-  }, [emblaApi, afterChange]);
+  }, [emblaApi, updateCanScroll, afterChange]);
 
   const onBeforeScroll = useCallback(() => {
     if (!emblaApi) return;
     const from = emblaApi.selectedScrollSnap();
-    // targetSnap index'ini yakalamak için hack: emblaApi.internalEngine().target.get() olabilir,
-    // ama public API’de yok. Yaklaşık olarak afterChange ile yetiniyoruz.
-    // Dilersen beforeChange’i prev/next handler’larında manuel çağırabiliriz.
-    // Burada sadece mevcut index'i geçiyoruz.
     beforeChange?.(from, from);
   }, [emblaApi, beforeChange]);
 
   useEffect(() => {
     if (!emblaApi) return;
-
     setScrollSnaps(emblaApi.scrollSnapList());
     setSelectedIndex(emblaApi.selectedScrollSnap());
+    updateCanScroll();
 
     emblaApi
       .on("select", onSelect)
       .on("reInit", () => {
         setScrollSnaps(emblaApi.scrollSnapList());
         setSelectedIndex(emblaApi.selectedScrollSnap());
+        updateCanScroll();
+        afterChange?.(emblaApi.selectedScrollSnap());
       })
       .on("pointerDown", () => {
-        // Kullanıcı dokunduysa autoplay’i durdur (opsiyon)
-        if (autoplay && autoplayStopOnInteraction) {
+        if (autoplay && autoplayStopOnInteraction)
           autoplayPluginRef.current.stop();
-        }
       })
       .on("scroll", onBeforeScroll);
 
     return () => {
-      emblaApi.off("select", onSelect).off("scroll", onBeforeScroll);
+      emblaApi
+        .off("select", onSelect)
+        .off("scroll", onBeforeScroll)
+        .off("reInit", updateCanScroll);
     };
-  }, [emblaApi, onSelect, onBeforeScroll, autoplay, autoplayStopOnInteraction]);
+  }, [
+    emblaApi,
+    onSelect,
+    onBeforeScroll,
+    updateCanScroll,
+    autoplay,
+    autoplayStopOnInteraction,
+    afterChange,
+  ]);
 
-  /** slidesToShow değişince yeniden init gerekmez; Embla "reInit" ile handle ediyor.
-   *  Ancak slide genişliğini CSS ile verdiğimiz için dependents yok.
-   */
+  /* 🔹 Expose state via ref + callback */
+  useEffect(() => {
+    const state: CarouselControls = {
+      selectedIndex,
+      scrollSnaps,
+      canScrollPrev,
+      canScrollNext,
+      scrollPrev,
+      scrollNext,
+      scrollTo,
+    };
+    if (controlsRef) controlsRef.current = state;
+    if (onStateChange) onStateChange(state);
+  }, [
+    controlsRef,
+    onStateChange,
+    selectedIndex,
+    scrollSnaps,
+    canScrollPrev,
+    canScrollNext,
+    scrollPrev,
+    scrollNext,
+    scrollTo,
+  ]);
 
-  /** Prev/Next */
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
-  /** Dot click */
-  const scrollTo = useCallback(
-    (index: number) => emblaApi?.scrollTo(index),
-    [emblaApi]
-  );
-
-  /** Dot wrapper pos */
+  /* Dot position helper */
   const dotWrapperPos = useMemo(() => {
     switch (dotPosition) {
       case "top":
@@ -257,7 +282,6 @@ export const Carousel: FC<CarouselProps> = ({
         return "left-2 top-1/2 -translate-y-1/2";
       case "right":
         return "right-2 top-1/2 -translate-y-1/2";
-      case "bottom":
       default:
         return "bottom-2 left-1/2 -translate-x-1/2";
     }
@@ -265,12 +289,10 @@ export const Carousel: FC<CarouselProps> = ({
 
   return (
     <div className={twMerge(clsx("relative w-full", className))}>
-      {/* Viewport */}
       <div
         className={twMerge(clsx("overflow-hidden", viewportClassName))}
         ref={emblaRef}
       >
-        {/* Container */}
         <div
           className={twMerge(
             clsx(
@@ -278,22 +300,13 @@ export const Carousel: FC<CarouselProps> = ({
               containerClassName
             )
           )}
-          style={
-            {
-              // Tailwind ile desteklemek için CSS var:
-              // .embla__slide { flex: 0 0 var(--slide-basis) }
-              // burada inline veriyoruz:
-              "--slide-basis": slideBasis,
-            } as React.CSSProperties
-          }
+          style={{ "--slide-basis": slideBasis } as React.CSSProperties}
         >
           {items.map((child, i) => {
-            // Eğer child bir ReactElement ise key okunabilir
             const key =
               isValidElement(child) && child.key != null
                 ? child.key
                 : `slide-${i}`;
-
             return (
               <div
                 key={key}
@@ -309,27 +322,26 @@ export const Carousel: FC<CarouselProps> = ({
         </div>
       </div>
 
-      {/* Arrows */}
+      {/* Default UI */}
       {arrows && count > slidesToShow && (
         <>
           <button
             onClick={scrollPrev}
-            className="bg-background/70 hover:bg-background absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 shadow"
-            aria-label="Previous"
+            disabled={!canScrollPrev}
+            className="bg-background/70 text-foreground hover:bg-background absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </button>
           <button
             onClick={scrollNext}
-            className="bg-background/70 hover:bg-background absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 shadow"
-            aria-label="Next"
+            disabled={!canScrollNext}
+            className="bg-background/70 text-foreground hover:bg-background absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
           >
             <ChevronRightIcon className="h-5 w-5" />
           </button>
         </>
       )}
 
-      {/* Dots */}
       {dots && scrollSnaps.length > 1 && (
         <div
           className={twMerge(
@@ -337,20 +349,25 @@ export const Carousel: FC<CarouselProps> = ({
             dotPosition === "left" || dotPosition === "right"
               ? "flex-col"
               : "flex-row",
-            dotWrapperPos
+            dotWrapperPos,
+            typeof dots === "object" ? dots.className : undefined
           )}
         >
-          {scrollSnaps.map((snap) => (
-            <button
-              key={`snap-${snap}`}
-              className={clsx(
-                "bg-border pointer-events-auto h-2 w-2 rounded-full transition-colors",
-                scrollSnaps[selectedIndex] === snap && "bg-foreground"
-              )}
-              onClick={() => scrollTo(scrollSnaps.indexOf(snap))}
-              aria-label={`Go to slide ${snap}`}
-            />
-          ))}
+          {scrollSnaps.map((_, idx) => {
+            const active = selectedIndex === idx;
+            return (
+              <button
+                key={`snap-${idx}`}
+                onClick={() => scrollTo(idx)}
+                className={clsx(
+                  "pointer-events-auto h-2 w-2 rounded-full transition-all",
+                  active
+                    ? "bg-foreground w-6"
+                    : "bg-foreground/30 hover:bg-foreground/60"
+                )}
+              />
+            );
+          })}
         </div>
       )}
     </div>
