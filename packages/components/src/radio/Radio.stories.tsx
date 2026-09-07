@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Radio } from "@/components/ui/radio";
-import type { RadioProps } from "@/components/ui/radio";
+import { Radio } from "./index";
+import type { RadioProps } from "./index";
 import { useState } from "react";
 
 const meta: Meta<typeof Radio> = {
@@ -14,7 +14,7 @@ const meta: Meta<typeof Radio> = {
     disabled: { control: "boolean" },
     size: {
       control: "select",
-      options: ["small", "middle", "large"],
+      options: ["sm", "md", "lg"],
     },
     status: {
       control: "select",
@@ -42,7 +42,7 @@ export const Playground: StoryObj<RadioProps> = {
     label: "Radio Seçeneği",
     defaultChecked: false,
     disabled: false,
-    size: "middle",
+    size: "md",
     status: undefined,
     variant: "outline",
     type: "primary",
@@ -54,7 +54,7 @@ export const AllVariants: StoryObj = {
   render: () => {
     const types = ["primary", "secondary"] as const;
     const variants = ["outline", "solid"] as const;
-    const sizes = ["small", "middle", "large"] as const;
+    const sizes = ["sm", "md", "lg"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">
@@ -73,7 +73,7 @@ export const AllVariants: StoryObj = {
                       variant={variant}
                       size={size}
                       value={`${type}-${variant}-${size}`}
-                      defaultChecked={size === "middle"}
+                      defaultChecked={size === "md"}
                     />
                   ))}
                 </div>

@@ -39,14 +39,14 @@ const SizesStory = () => {
   const [value, setValue] = useState(true);
   return (
     <div className="flex flex-col gap-4">
-      <Switch checked={value} onChange={setValue} size="small" label="Small" />
+      <Switch checked={value} onChange={setValue} size="sm" label="Small" />
       <Switch
         checked={value}
         onChange={setValue}
-        size="middle"
+        size="md"
         label="Middle"
       />
-      <Switch checked={value} onChange={setValue} size="large" label="Large" />
+      <Switch checked={value} onChange={setValue} size="lg" label="Large" />
     </div>
   );
 };

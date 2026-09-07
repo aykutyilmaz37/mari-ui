@@ -1,11 +1,16 @@
-export type SwitchSize = "large" | "middle" | "small";
+import type { ColorRole, Size } from "@mari-ui/core";
 
-export type SwitchColor =
-  | "primary"
-  | "secondary"
-  | "link"
-  | "text"
-  | "success"
-  | "error"
-  | "warning"
-  | "info";
+export interface SwitchProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onChange?: (value: boolean) => void;
+  disabled?: boolean;
+  label?: string;
+  switchTrueLabel?: string;
+  switchFalseLabel?: string;
+  size?: Size;
+  /** Varsayılan: `primary`. */
+  color?: ColorRole;
+  loading?: boolean;
+  className?: string;
+}

@@ -1,92 +1,76 @@
 "use client";
 
-import React from "react";
-import clsx from "clsx";
-import { Button } from "../button";
-import { getSizeBallClasses, getSizeClasses } from "./utils";
-import { SwitchColor, SwitchSize } from "./types";
+import React, { useEffect, useRef } from "react";
 import { Loader2Icon } from "lucide-react";
+import { cn, useControllableState } from "@mari-ui/core";
+import type { SwitchProps } from "./types";
+import { getBallClass, getTrackClass } from "./utils";
 
-interface SwitchProps {
-  checked: boolean;
-  onChange: (value: boolean) => void;
-  disabled?: boolean;
-  label?: string;
-  switchTrueLabel?: string;
-  switchFalseLabel?: string;
-  size?: SwitchSize;
-  color?: SwitchColor;
-  loading?: boolean;
-  className?: string;
-}
+export type { SwitchProps };
 
-export const Switch: React.FC<SwitchProps> = ({
+/**
+ * Eskiden `Button` component'inin üzerine `!p-0.5` gibi `!important`
+ * override'larla bindiriliyordu (bkz. plan Faz 3 denetimi: "Switch,
+ * Button'ın kendi boyut class'larıyla savaşmak için `!important`
+ * kullanıyor"). Switch, Button'la aynı boyut/dolgu sözleşmesini
+ * paylaşmadığı için (track genişliği Button'ın skalasında yok) bu hack
+ * gerekiyordu. Artık bağımsız bir `<button>` render ediyor — override
+ * savaşı ortadan kalktı.
+ */
+export function Switch({
   checked,
+  defaultChecked = false,
   onChange,
   disabled = false,
   label,
   switchTrueLabel,
   switchFalseLabel,
-  size = "middle",
+  size = "md",
   color = "primary",
   loading,
   className,
-}) => {
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
+}: SwitchProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked, onChange });
 
-  React.useEffect(() => {
-    if (buttonRef.current) {
-      buttonRef.current.blur();
-    }
-  }, [checked]);
-
-  const switchSize = getSizeClasses(size);
-  const switchBallSize = getSizeBallClasses(size, checked);
+  useEffect(() => {
+    buttonRef.current?.blur();
+  }, [isChecked]);
 
   return (
     <div className="flex items-center w-full gap-2">
       {label && <span className="text-sm">{label}</span>}
-      <Button
+      <button
+        type="button"
         ref={buttonRef}
-        type={color}
-        onClick={() => !disabled && onChange(!checked)}
-        className={clsx(
-          "relative inline-flex items-center justify-start !p-0.5 rounded-full focus:ring-0 duration-300 overflow-hidden hover:opacity-50 group",
-          disabled && "opacity-50 cursor-not-allowed",
-          loading && "opacity-50 cursor-not-allowed",
-          !checked && "opacity-70",
-          switchSize,
+        onClick={() => !disabled && !loading && setIsChecked(!isChecked)}
+        disabled={disabled || loading}
+        aria-checked={isChecked}
+        role="switch"
+        className={cn(
+          "relative inline-flex items-center justify-start rounded-full focus:ring-0 duration-300 overflow-hidden transition-opacity hover:opacity-80 group",
+          (disabled || loading) && "opacity-50 cursor-not-allowed",
+          !isChecked && !disabled && "opacity-70",
+          getTrackClass(size, color, isChecked),
           className
         )}
-        disabled={disabled || loading}
       >
         <span
-          className={clsx(
+          className={cn(
             "inline-block rounded-full absolute bg-white transform transition-all duration-300",
-            checked && "group-focus:scale-x-[1.166] group-focus:origin-right",
-            !checked && "group-focus:scale-x-[1.166] group-focus:origin-left",
-            switchBallSize
+            isChecked ? "group-focus:scale-x-[1.166] group-focus:origin-right" : "group-focus:scale-x-[1.166] group-focus:origin-left",
+            getBallClass(size, isChecked)
           )}
         >
-          {loading && <Loader2Icon className="animate-spin" color="black" />}
+          {loading && <Loader2Icon className="animate-spin text-black" />}
         </span>
-        <span
-          className={clsx(
-            "inline-block absolute transform transition-all duration-300",
-            checked ? "top-1 left-1" : "top-1 -left-20"
-          )}
-        >
+        <span className={cn("inline-block absolute transform transition-all duration-300", isChecked ? "top-1 left-1" : "top-1 -left-20")}>
           {switchTrueLabel}
         </span>
-        <span
-          className={clsx(
-            "inline-block absolute transform transition-all duration-300",
-            !checked ? "top-1 right-1" : "top-1 -right-20"
-          )}
-        >
+        <span className={cn("inline-block absolute transform transition-all duration-300", !isChecked ? "top-1 right-1" : "top-1 -right-20")}>
           {switchFalseLabel}
         </span>
-      </Button>
+      </button>
     </div>
   );
-};
+}

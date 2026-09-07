@@ -1,33 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import clsx from "clsx";
+import React from "react";
+import { cn, useControllableState } from "@mari-ui/core";
 import { Radio } from "./Radio";
-import type { RadioVariant, RadioType, RadioSize } from "./types";
+import type { RadioGroupProps, RadioOption } from "./types";
 
-export type RadioGroupProps = {
-  name?: string;
-  value?: string | number;
-  defaultValue?: string | number;
-  disabled?: boolean;
-  options?: (
-    | string
-    | number
-    | {
-        label: React.ReactNode;
-        value: string | number;
-        disabled?: boolean;
-      }
-  )[];
-  onChange?: (value: string | number) => void;
-  variant?: RadioVariant;
-  type?: RadioType;
-  size?: RadioSize;
-  block?: boolean;
-  className?: string;
-};
+export type { RadioGroupProps };
 
-export const RadioGroup: React.FC<RadioGroupProps> = ({
+export function RadioGroup({
   name,
   value,
   defaultValue,
@@ -35,26 +15,24 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   options = [],
   onChange,
   variant = "outline",
-  type = "primary",
-  size = "middle",
+  color,
+  type,
+  size = "md",
   block = false,
   className,
-}) => {
-  const [selectedValue, setSelectedValue] = useState(value ?? defaultValue);
+}: RadioGroupProps) {
+  const [selectedValue, setSelectedValue] = useControllableState<string | number | undefined>({
+    value,
+    defaultValue,
+    onChange: (v) => v !== undefined && onChange?.(v),
+  });
 
-  const handleChange = (val: string | number) => {
-    setSelectedValue(val);
-    onChange?.(val);
-  };
-
-  const parsedOptions = options.map((opt) =>
-    typeof opt === "string" || typeof opt === "number"
-      ? { label: opt, value: opt }
-      : opt
+  const parsedOptions: RadioOption[] = options.map((opt) =>
+    typeof opt === "string" || typeof opt === "number" ? { label: opt, value: opt } : opt
   );
 
   return (
-    <div className={clsx("flex gap-2 flex-wrap", block && "w-full", className)}>
+    <div className={cn("flex gap-2 flex-wrap", block && "w-full", className)}>
       {parsedOptions.map((opt) => (
         <Radio
           key={opt.value}
@@ -63,14 +41,15 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
           label={opt.label}
           disabled={disabled || opt.disabled}
           checked={selectedValue === opt.value}
-          onChange={() => handleChange(opt.value)}
+          onChange={() => setSelectedValue(opt.value)}
           size={size}
           variant={variant}
+          color={color}
           type={type}
         />
       ))}
     </div>
   );
-};
+}
 
 RadioGroup.displayName = "RadioGroup";

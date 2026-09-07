@@ -15,6 +15,9 @@
     "src/loading",
     "src/pagination",
     "src/steps",
+    "src/checkbox",
+    "src/radio",
+    "src/switch",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

@@ -1,55 +1,25 @@
 "use client";
 
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
-import clsx from "clsx";
-import type {
-  RadioClassNames,
-  RadioSize,
-  RadioStatus,
-  RadioVariant,
-  RadioType,
-} from "./types";
-import {
-  getSizeClasses,
-  getSizeDotClasses,
-  getStatusClasses,
-  getVariantClasses,
-  getVariantDotClasses,
-} from "./utils";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import { cn, useControllableState } from "@mari-ui/core";
+import type { RadioChangeEvent, RadioProps } from "./types";
+import { getDotSizeClasses, getSizeClasses, getVariantClasses, getVariantDotClasses, resolveRadioColor } from "./utils";
 
-export type RadioProps = {
-  autoFocus?: boolean;
-  checked?: boolean;
-  defaultChecked?: boolean;
-  disabled?: boolean;
-  value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  className?: string;
-  classNames?: RadioClassNames;
-  label?: React.ReactNode;
-  description?: React.ReactNode;
-  size?: RadioSize;
-  status?: RadioStatus;
-  id?: string;
-  variant?: RadioVariant;
-  type?: RadioType;
-  name?: string;
-};
+export type { RadioProps };
 
+/**
+ * Eskiden `isChecked` sadece İLK render'da `defaultChecked ?? checked ?? false`
+ * ile kuruluyor, sonra `checked` prop'u değiştiğinde bir `useEffect` ile
+ * SENKRONİZE edilmeye çalışılıyordu — ama JSX zaten `checked ?? isChecked`
+ * kullandığı için bu effect'in render üzerinde hiçbir etkisi yoktu (ölü
+ * senkronizasyon). `useControllableState` bunu tek, doğru bir mekanizmaya indirger.
+ */
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
   (
     {
       autoFocus = false,
       checked,
-      defaultChecked,
+      defaultChecked = false,
       disabled = false,
       onChange,
       onBlur,
@@ -59,51 +29,38 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       label,
       description,
       variant = "outline",
-      type = "primary",
-      size = "middle",
+      color,
       status,
+      type,
+      size = "md",
       id,
       value,
       name,
-      ...rest
     },
     ref
   ) => {
+    const resolvedColor = resolveRadioColor({ color, status, type });
     const inputRef = useRef<HTMLInputElement>(null);
-    const [isChecked, setIsChecked] = useState(
-      defaultChecked ?? checked ?? false
-    );
-
     useImperativeHandle(ref, () => inputRef.current!, []);
 
-    const baseClasses = clsx(
+    const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked });
+
+    const handleChange = (e: RadioChangeEvent) => {
+      setIsChecked(e.target.checked);
+      onChange?.(e);
+    };
+
+    const baseClasses = cn(
       "relative appearance-none border outline-none rounded-full",
-      getStatusClasses(status),
       getSizeClasses(size),
-      !status && getVariantClasses(variant, type),
+      getVariantClasses(variant, resolvedColor),
       disabled && "opacity-50",
       classNames.radio,
       className
     );
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsChecked(e.target.checked);
-      onChange?.(e);
-    };
-
-    useEffect(() => {
-      if (typeof checked === "boolean") {
-        setIsChecked(checked);
-      }
-    }, [checked]);
     return (
-      <label
-        className={clsx(
-          "inline-flex flex-col gap-1 cursor-pointer",
-          disabled && "cursor-not-allowed",
-          classNames.wrapper
-        )}
-      >
+      <label className={cn("inline-flex flex-col gap-1 cursor-pointer", disabled && "cursor-not-allowed", classNames.wrapper)}>
         <span className="inline-flex items-center gap-2">
           <span className="relative inline-flex items-center justify-center">
             <input
@@ -111,8 +68,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               id={id}
               type="radio"
               autoFocus={autoFocus}
-              checked={checked ?? isChecked}
-              defaultChecked={defaultChecked}
+              checked={isChecked}
               disabled={disabled}
               value={value}
               name={name}
@@ -120,45 +76,16 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               onBlur={onBlur}
               onFocus={onFocus}
               className={baseClasses}
-              {...rest}
             />
-            {(checked ?? isChecked) && (
-              <span
-                className={clsx(
-                  "absolute rounded-full",
-                  getSizeDotClasses(size),
-                  "pointer-events-none",
-                  getVariantDotClasses(variant, type)
-                )}
-              />
+            {isChecked && (
+              <span className={cn("absolute rounded-full pointer-events-none", getDotSizeClasses(size), getVariantDotClasses(variant, resolvedColor))} />
             )}
           </span>
-
           {label && (
-            <span
-              className={clsx(
-                "select-none text-base-color",
-                disabled && "text-disabled",
-                classNames.label
-              )}
-            >
-              {label}
-            </span>
+            <span className={cn("select-none text-mari-foreground", disabled && "text-mari-disabled", classNames.label)}>{label}</span>
           )}
         </span>
-
-        {description && (
-          <span
-            className={clsx(
-              "text-xs",
-              status === "error" && "text-error-light",
-              status === "warning" && "text-warning-light",
-              !status && "text-base-color"
-            )}
-          >
-            {description}
-          </span>
-        )}
+        {description && <span className="text-xs text-mari-muted">{description}</span>}
       </label>
     );
   }

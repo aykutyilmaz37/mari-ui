@@ -1,7 +1,7 @@
 // RadioGroup.stories.tsx
 import type { Meta, StoryObj } from "@storybook/react";
-import { RadioGroup } from "@/components/ui/radio";
-import type { RadioGroupProps } from "@/components/ui/radio";
+import { RadioGroup } from "./index";
+import type { RadioGroupProps } from "./index";
 import { useState } from "react";
 
 const meta: Meta<typeof RadioGroup> = {
@@ -19,7 +19,7 @@ const meta: Meta<typeof RadioGroup> = {
     },
     size: {
       control: "select",
-      options: ["small", "middle", "large"],
+      options: ["sm", "md", "lg"],
     },
     block: { control: "boolean" },
     disabled: { control: "boolean" },
@@ -37,7 +37,7 @@ export const Playground: StoryObj<RadioGroupProps> = {
     defaultValue: "Orange",
     variant: "outline",
     type: "primary",
-    size: "middle",
+    size: "md",
     block: false,
     disabled: false,
   },
@@ -47,7 +47,7 @@ export const AllVariants: StoryObj = {
   render: () => {
     const variants = ["outline", "solid"] as const;
     const types = ["primary", "secondary"] as const;
-    const sizes = ["small", "middle", "large"] as const;
+    const sizes = ["sm", "md", "lg"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">

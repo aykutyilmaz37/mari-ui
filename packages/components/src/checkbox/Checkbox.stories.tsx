@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Checkbox } from "@/components/ui/checkbox";
-import type { CheckboxProps } from "@/components/ui/checkbox";
+import { Checkbox } from "./index";
+import type { CheckboxProps } from "./index";
 import { useState } from "react";
 
 const meta: Meta<typeof Checkbox> = {
@@ -15,11 +15,11 @@ const meta: Meta<typeof Checkbox> = {
     indeterminate: { control: "boolean" },
     size: {
       control: "select",
-      options: ["small", "middle", "large"],
+      options: ["sm", "md", "lg"],
     },
     shape: {
       control: "select",
-      options: ["default", "round", "sharp"],
+      options: ["default", "pill", "square"],
     },
     status: {
       control: "select",
@@ -49,7 +49,7 @@ export const Playground: StoryObj<CheckboxProps & { type: string }> = {
     defaultChecked: false,
     disabled: false,
     indeterminate: false,
-    size: "middle",
+    size: "md",
     shape: "default",
     status: undefined,
     variant: "outline",
@@ -62,7 +62,7 @@ export const AllVariants: StoryObj = {
   render: () => {
     const types = ["primary", "secondary"] as const;
     const variants = ["outline", "solid"] as const;
-    const sizes = ["small", "middle", "large"] as const;
+    const sizes = ["sm", "md", "lg"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">
@@ -80,7 +80,7 @@ export const AllVariants: StoryObj = {
                       type={type}
                       variant={variant}
                       size={size}
-                      defaultChecked={size === "middle"}
+                      defaultChecked={size === "md"}
                     />
                   ))}
                 </div>

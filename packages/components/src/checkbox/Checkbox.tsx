@@ -1,58 +1,26 @@
 "use client";
 
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import clsx from "clsx";
-import type {
-  CheckboxChangeEvent,
-  CheckboxClassNames,
-  CheckboxShape,
-  CheckboxSize,
-  CheckboxStatus,
-  CheckboxType,
-  CheckboxVariant,
-} from "./types";
-import {
-  getShapeClasses,
-  getSizeClasses,
-  getSizeIndeterminateClasses,
-  getStatusClasses,
-  getVariantClasses,
-} from "./utils";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CheckIcon } from "lucide-react";
+import { cn, useControllableState } from "@mari-ui/core";
+import { textClass, textSolidContrastClass } from "../lib/colorClasses";
+import type { CheckboxChangeEvent, CheckboxProps } from "./types";
+import { getIndeterminateSizeClasses, getShapeClasses, getSizeClasses, getVariantClasses, resolveCheckboxColor } from "./utils";
 
-export type CheckboxProps = {
-  autoFocus?: boolean;
-  checked?: boolean;
-  defaultChecked?: boolean;
-  disabled?: boolean;
-  indeterminate?: boolean;
-  onChange?: (e: CheckboxChangeEvent) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  className?: string;
-  classNames?: CheckboxClassNames;
-  label?: React.ReactNode;
-  description?: React.ReactNode;
-  size?: CheckboxSize;
-  status?: CheckboxStatus;
-  shape?: CheckboxShape;
-  id?: string;
-  variant?: CheckboxVariant;
-  type?: CheckboxType;
-};
+export type { CheckboxProps };
 
+/**
+ * `useControllableState` ile controlled/uncontrolled ayrımı artık burada
+ * elle yazılmıyor (eskiden `useState(defaultChecked ?? checked ?? false)`
+ * ile başlatılıp `checked={typeof checked === "boolean" ? checked :
+ * isChecked}` şeklinde ayrıca kontrol ediliyordu — iki yerde aynı mantık).
+ */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
       autoFocus = false,
       checked,
-      defaultChecked,
+      defaultChecked = false,
       disabled = false,
       indeterminate = false,
       onChange,
@@ -63,118 +31,69 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       label,
       description,
       variant = "outline",
-      type = "primary",
-      size = "middle",
-      shape = "default",
+      color,
       status,
+      type,
+      size = "md",
+      shape = "default",
       id,
-      ...rest
     },
     ref
   ) => {
-    const [isChecked, setIsChecked] = useState(
-      defaultChecked ?? checked ?? false
-    );
+    const resolvedColor = resolveCheckboxColor({ color, status, type });
+    const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked });
 
     const inputRef = useRef<HTMLInputElement>(null);
-
     useImperativeHandle(ref, () => inputRef.current!, []);
 
-    const baseClasses = clsx(
-      "appearance-none border outline-none focus:outline-none",
-      getSizeClasses(size),
-      getStatusClasses(status),
-      getShapeClasses(shape),
-      !status && getVariantClasses(variant, type),
-      disabled && "opacity-50 cursor-not-allowed",
-      classNames.checkbox,
-      className
-    );
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: CheckboxChangeEvent) => {
       setIsChecked(e.target.checked);
       onChange?.(e);
     };
 
     useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.indeterminate = indeterminate;
-      }
+      if (inputRef.current) inputRef.current.indeterminate = indeterminate;
     }, [indeterminate]);
 
+    const baseClasses = cn(
+      "appearance-none border outline-none focus:outline-none",
+      getSizeClasses(size),
+      getShapeClasses(shape),
+      getVariantClasses(variant, resolvedColor),
+      disabled && "opacity-50 cursor-not-allowed",
+      classNames.checkbox,
+      className
+    );
+
     return (
-      <label
-        className={clsx(
-          "inline-flex flex-col gap-1 cursor-pointer",
-          disabled && "cursor-not-allowed",
-          classNames.wrapper
-        )}
-      >
+      <label className={cn("inline-flex flex-col gap-1 cursor-pointer", disabled && "cursor-not-allowed", classNames.wrapper)}>
         <span className="inline-flex items-center gap-2 relative">
           <input
             ref={inputRef}
             id={id}
             type="checkbox"
             autoFocus={autoFocus}
-            checked={typeof checked === "boolean" ? checked : isChecked}
-            defaultChecked={defaultChecked}
+            checked={isChecked}
             disabled={disabled}
             onChange={handleChange}
             onBlur={onBlur}
             onFocus={onFocus}
             className={baseClasses}
-            {...rest}
           />
-          {(indeterminate ||
-            (typeof checked === "boolean" ? checked : isChecked)) && (
-            <span
-              className={clsx(
-                "absolute pointer-events-none",
-                getSizeClasses(size),
-                "flex items-center justify-center"
-              )}
-            >
+          {(indeterminate || isChecked) && (
+            <span className={cn("absolute pointer-events-none", getSizeClasses(size), "flex items-center justify-center")}>
               {indeterminate ? (
-                <span
-                  className={clsx(
-                    "rounded-sm",
-                    getSizeIndeterminateClasses(size),
-                    {
-                      "bg-primary": type === "primary",
-                      "bg-secondary": type === "secondary",
-                    }
-                  )}
-                />
+                <span className={cn("rounded-sm bg-mari-surface", getIndeterminateSizeClasses(size))} />
               ) : (
-                <CheckIcon className="text-white" size={16} />
+                <CheckIcon className={textSolidContrastClass[resolvedColor]} size={16} />
               )}
             </span>
           )}
           {label && (
-            <span
-              className={clsx(
-                "select-none text-base-color",
-                disabled && "text-disabled",
-                classNames.label
-              )}
-            >
-              {label}
-            </span>
+            <span className={cn("select-none text-mari-foreground", disabled && "text-mari-disabled", classNames.label)}>{label}</span>
           )}
         </span>
-        {description && (
-          <span
-            className={clsx(
-              "text-xs",
-              status === "error" && "text-error-light",
-              status === "warning" && "text-warning-light",
-              !status && type === "primary" && "text-primary",
-              !status && type === "secondary" && "text-secondary"
-            )}
-          >
-            {description}
-          </span>
-        )}
+        {description && <span className={cn("text-xs", textClass[resolvedColor])}>{description}</span>}
       </label>
     );
   }
