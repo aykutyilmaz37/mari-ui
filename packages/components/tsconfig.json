@@ -29,6 +29,7 @@
     "src/toast",
     "src/upload",
     "src/autocomplete",
+    "src/carousel",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

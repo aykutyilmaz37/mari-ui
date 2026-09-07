@@ -10,13 +10,13 @@ import React, {
   useState,
 } from "react";
 
-import clsx from "clsx";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { twMerge } from "tailwind-merge";
+import { cn, type ColorRole } from "@mari-ui/core";
 
 import { CarouselControls, DotPosition, ResponsiveItem } from "./types";
+import { getDotClass } from "./utils";
 
 export type CarouselProps = {
   children: React.ReactNode[];
@@ -24,6 +24,8 @@ export type CarouselProps = {
   containerClassName?: string;
   itemClassName?: string;
   viewportClassName?: string;
+  /** Ok ve nokta göstergelerinin aktif rengi. Varsayılan: `neutral`. */
+  color?: ColorRole;
 
   /** Core */
   loop?: boolean;
@@ -116,6 +118,7 @@ export const Carousel: FC<CarouselProps> = ({
   containerClassName,
   itemClassName,
   viewportClassName,
+  color = "neutral",
 
   loop = true,
   draggable = true,
@@ -288,33 +291,16 @@ export const Carousel: FC<CarouselProps> = ({
   }, [dotPosition]);
 
   return (
-    <div className={twMerge(clsx("relative w-full", className))}>
-      <div
-        className={twMerge(clsx("overflow-hidden", viewportClassName))}
-        ref={emblaRef}
-      >
+    <div className={cn("relative w-full", className)}>
+      <div className={cn("overflow-hidden", viewportClassName)} ref={emblaRef}>
         <div
-          className={twMerge(
-            clsx(
-              "flex w-full will-change-transform select-none",
-              containerClassName
-            )
-          )}
+          className={cn("flex w-full will-change-transform select-none", containerClassName)}
           style={{ "--slide-basis": slideBasis } as React.CSSProperties}
         >
           {items.map((child, i) => {
-            const key =
-              isValidElement(child) && child.key != null
-                ? child.key
-                : `slide-${i}`;
+            const key = isValidElement(child) && child.key != null ? child.key : `slide-${i}`;
             return (
-              <div
-                key={key}
-                className={twMerge(
-                  clsx("embla__slide shrink-0", itemClassName)
-                )}
-                style={{ flex: "0 0 var(--slide-basis)" }}
-              >
+              <div key={key} className={cn("embla__slide shrink-0", itemClassName)} style={{ flex: "0 0 var(--slide-basis)" }}>
                 {child}
               </div>
             );
@@ -328,14 +314,14 @@ export const Carousel: FC<CarouselProps> = ({
           <button
             onClick={scrollPrev}
             disabled={!canScrollPrev}
-            className="bg-background/70 text-foreground hover:bg-background absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
+            className="bg-mari-surface/70 text-mari-foreground hover:bg-mari-surface absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </button>
           <button
             onClick={scrollNext}
             disabled={!canScrollNext}
-            className="bg-background/70 text-foreground hover:bg-background absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
+            className="bg-mari-surface/70 text-mari-foreground hover:bg-mari-surface absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
           >
             <ChevronRightIcon className="h-5 w-5" />
           </button>
@@ -344,30 +330,16 @@ export const Carousel: FC<CarouselProps> = ({
 
       {dots && scrollSnaps.length > 1 && (
         <div
-          className={twMerge(
+          className={cn(
             "pointer-events-none absolute z-10 flex gap-2",
-            dotPosition === "left" || dotPosition === "right"
-              ? "flex-col"
-              : "flex-row",
+            dotPosition === "left" || dotPosition === "right" ? "flex-col" : "flex-row",
             dotWrapperPos,
             typeof dots === "object" ? dots.className : undefined
           )}
         >
-          {scrollSnaps.map((_, idx) => {
-            const active = selectedIndex === idx;
-            return (
-              <button
-                key={`snap-${idx}`}
-                onClick={() => scrollTo(idx)}
-                className={clsx(
-                  "pointer-events-auto h-2 w-2 rounded-full transition-all",
-                  active
-                    ? "bg-foreground w-6"
-                    : "bg-foreground/30 hover:bg-foreground/60"
-                )}
-              />
-            );
-          })}
+          {scrollSnaps.map((_, idx) => (
+            <button key={`snap-${idx}`} onClick={() => scrollTo(idx)} className={getDotClass(selectedIndex === idx, color)} />
+          ))}
         </div>
       )}
     </div>

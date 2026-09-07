@@ -1,28 +1,12 @@
-import clsx from "clsx";
+import { cn, type ColorRole } from "@mari-ui/core";
+import { bgSolidClass } from "../lib/colorClasses";
 
-export function getDotWrapperClass(dotPosition: string): string {
-  return clsx(
-    "absolute flex gap-2",
-    dotPosition === "top" && "top-2 left-1/2 transform -translate-x-1/2",
-    dotPosition === "bottom" && "bottom-2 left-1/2 transform -translate-x-1/2",
-    dotPosition === "left" &&
-      "left-2 top-1/2 flex-col transform -translate-y-1/2",
-    dotPosition === "right" &&
-      "right-2 top-1/2 flex-col transform -translate-y-1/2"
-  );
-}
+// Not: eskiden burada `getDotWrapperClass`/`getArrowClass` diye iki
+// fonksiyon vardı ama HİÇBİR YERDE import edilmiyorlardı — Carousel.tsx
+// kendi (neredeyse birebir aynı) mantığını inline tutuyordu. Ölü kod
+// silindi; buraya bunun yerine gerçekten kullanılan, token'a bağlı renk
+// yardımcıları eklendi.
 
-export function getArrowClass(
-  dotPosition: string,
-  direction: "prev" | "next"
-): string {
-  if (dotPosition === "left" || dotPosition === "right") {
-    return direction === "prev"
-      ? "top-2 left-1/2 -translate-x-1/2 rotate-90"
-      : "bottom-2 left-1/2 -translate-x-1/2 rotate-90";
-  } else {
-    return direction === "prev"
-      ? "left-2 top-1/2 -translate-y-1/2"
-      : "right-2 top-1/2 -translate-y-1/2";
-  }
+export function getDotClass(active: boolean, color: ColorRole): string {
+  return cn("pointer-events-auto h-2 w-2 rounded-full transition-all", active ? cn(bgSolidClass[color], "w-6") : "bg-mari-border hover:bg-mari-muted");
 }

@@ -11,10 +11,33 @@
     "dist"
   ],
   "exports": {
-    "./button": {
-      "types": "./dist/button.d.ts",
-      "import": "./dist/button.js"
-    },
+    "./button": { "types": "./dist/button.d.ts", "import": "./dist/button.js" },
+    "./divider": { "types": "./dist/divider.d.ts", "import": "./dist/divider.js" },
+    "./typography": { "types": "./dist/typography.d.ts", "import": "./dist/typography.js" },
+    "./empty": { "types": "./dist/empty.d.ts", "import": "./dist/empty.js" },
+    "./tag": { "types": "./dist/tag.d.ts", "import": "./dist/tag.js" },
+    "./card": { "types": "./dist/card.d.ts", "import": "./dist/card.js" },
+    "./avatar": { "types": "./dist/avatar.d.ts", "import": "./dist/avatar.js" },
+    "./breadcrumb": { "types": "./dist/breadcrumb.d.ts", "import": "./dist/breadcrumb.js" },
+    "./skeleton": { "types": "./dist/skeleton.d.ts", "import": "./dist/skeleton.js" },
+    "./loading": { "types": "./dist/loading.d.ts", "import": "./dist/loading.js" },
+    "./pagination": { "types": "./dist/pagination.d.ts", "import": "./dist/pagination.js" },
+    "./steps": { "types": "./dist/steps.d.ts", "import": "./dist/steps.js" },
+    "./checkbox": { "types": "./dist/checkbox.d.ts", "import": "./dist/checkbox.js" },
+    "./radio": { "types": "./dist/radio.d.ts", "import": "./dist/radio.js" },
+    "./switch": { "types": "./dist/switch.d.ts", "import": "./dist/switch.js" },
+    "./tooltip": { "types": "./dist/tooltip.d.ts", "import": "./dist/tooltip.js" },
+    "./rate": { "types": "./dist/rate.d.ts", "import": "./dist/rate.js" },
+    "./input": { "types": "./dist/input.d.ts", "import": "./dist/input.js" },
+    "./slider": { "types": "./dist/slider.d.ts", "import": "./dist/slider.js" },
+    "./dropdown": { "types": "./dist/dropdown.d.ts", "import": "./dist/dropdown.js" },
+    "./modal": { "types": "./dist/modal.d.ts", "import": "./dist/modal.js" },
+    "./drawer": { "types": "./dist/drawer.d.ts", "import": "./dist/drawer.js" },
+    "./tabs": { "types": "./dist/tabs.d.ts", "import": "./dist/tabs.js" },
+    "./toast": { "types": "./dist/toast.d.ts", "import": "./dist/toast.js" },
+    "./upload": { "types": "./dist/upload.d.ts", "import": "./dist/upload.js" },
+    "./autocomplete": { "types": "./dist/autocomplete.d.ts", "import": "./dist/autocomplete.js" },
+    "./carousel": { "types": "./dist/carousel.d.ts", "import": "./dist/carousel.js" },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
@@ -30,7 +53,9 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "embla-carousel-react": "^8.0.0",
+    "embla-carousel-autoplay": "^8.0.0"
   },
   "peerDependenciesMeta": {
     "embla-carousel-react": {
