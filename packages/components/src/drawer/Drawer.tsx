@@ -1,27 +1,13 @@
-import { X } from "lucide-react";
-import clsx from "clsx";
 import React from "react";
-import {
-  getDimensionClass,
-  getBasePositionClass,
-  getAnimationClass,
-} from "./utils";
-import { DrawerPosition, DrawerSize } from "./types";
+import { X } from "lucide-react";
+import { cn } from "@mari-ui/core";
+import type { DrawerProps } from "./types";
+import { getAnimationClass, getBasePositionClass, getDimensionClass } from "./utils";
 
-type DrawerProps = {
-  position?: DrawerPosition;
-  size?: DrawerSize;
-  open: boolean;
-  onClose: () => void;
-  showCloseButton?: boolean;
-  closeButtonPosition?: "left" | "right";
-  loading?: boolean;
-  header?: React.ReactNode;
-  footer?: React.ReactNode;
-  children?: React.ReactNode;
-};
+export type { DrawerProps };
 
-export const Drawer: React.FC<DrawerProps> = ({
+// Tamamen `open`/`onClose` prop'larıyla kontrol edilir, hook yok — "use client" gerekmiyor.
+export function Drawer({
   position = "right",
   size = "md",
   open,
@@ -32,55 +18,23 @@ export const Drawer: React.FC<DrawerProps> = ({
   header,
   footer,
   children,
-}) => {
+}: DrawerProps) {
   const isHorizontal = position === "left" || position === "right";
 
-  const dimensionClass = getDimensionClass(size, isHorizontal);
-  const basePositionClass = getBasePositionClass(position);
-  const animationClass = getAnimationClass(open, position);
-
   return (
-    <div
-      className={clsx(
-        "fixed inset-0 z-40 transition-opacity duration-300",
-        open
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-      )}
-    >
-      <div
-        className="absolute inset-0 bg-black/30"
-        role="none"
-        onClick={onClose}
-      />
-      <div
-        className={clsx(
-          basePositionClass,
-          dimensionClass,
-          animationClass,
-          "flex flex-col",
-          "bg-background",
-          "text-foreground"
-        )}
-      >
+    <div className={cn("fixed inset-0 z-mari-drawer transition-opacity duration-300", open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none")}>
+      <div className="absolute inset-0 bg-black/30" role="none" onClick={onClose} />
+      <div className={cn(getBasePositionClass(position), getDimensionClass(size, isHorizontal), getAnimationClass(open, position), "flex flex-col text-mari-foreground")}>
         {(header || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex items-center justify-between p-4 border-b border-mari-border">
             {closeButtonPosition === "left" && showCloseButton && (
-              <button
-                onClick={onClose}
-                aria-label="Close drawer"
-                className="mr-2 cursor-pointer"
-              >
+              <button onClick={onClose} aria-label="Çekmeceyi kapat" className="mr-2 cursor-pointer">
                 <X className="h-5 w-5" />
               </button>
             )}
             <div className="flex-1 text-center">{header}</div>
             {closeButtonPosition === "right" && showCloseButton && (
-              <button
-                onClick={onClose}
-                aria-label="Close drawer"
-                className="ml-2 cursor-pointer"
-              >
+              <button onClick={onClose} aria-label="Çekmeceyi kapat" className="ml-2 cursor-pointer">
                 <X className="h-5 w-5" />
               </button>
             )}
@@ -88,17 +42,11 @@ export const Drawer: React.FC<DrawerProps> = ({
         )}
 
         <div className="p-4 flex-1 overflow-auto">
-          {loading ? (
-            <p className="text-center text-base">Loading...</p>
-          ) : (
-            children
-          )}
+          {loading ? <p className="text-center text-base text-mari-muted">Yükleniyor...</p> : children}
         </div>
 
-        {footer && <div className="border-t border-border p-4">{footer}</div>}
+        {footer && <div className="border-t border-mari-border p-4">{footer}</div>}
       </div>
     </div>
   );
-};
-
-export default Drawer;
+}

@@ -23,6 +23,8 @@
     "src/input",
     "src/slider",
     "src/dropdown",
+    "src/modal",
+    "src/drawer",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

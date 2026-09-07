@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Modal } from "./Modal";
 import { Info } from "lucide-react";
+import { Modal } from "./Modal";
 
 const meta: Meta<typeof Modal> = {
   title: "Components/Modal",
@@ -13,18 +13,18 @@ const meta: Meta<typeof Modal> = {
     closeButtonPosition: "right",
     confirmButtonText: "Confirm",
     cancelButtonText: "Cancel",
-    variant: "default",
-    size: "medium",
+    color: "info",
+    size: "md",
     footerButtonPosition: "left",
   },
   argTypes: {
-    variant: {
+    color: {
       control: { type: "select" },
-      options: ["default", "confirm", "warning", "error", "info"],
+      options: ["primary", "accent", "success", "error", "warning", "info", "neutral"],
     },
     size: {
       control: { type: "select" },
-      options: ["small", "medium", "large"],
+      options: ["sm", "md", "lg"],
     },
     closeButtonPosition: {
       control: { type: "select" },
@@ -45,10 +45,7 @@ const ModalStory = (args: typeof meta.args) => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-      >
+      <button onClick={() => setOpen(true)} className="mb-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
         Open Modal
       </button>
       <Modal
