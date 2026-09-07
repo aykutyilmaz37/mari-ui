@@ -1,39 +1,28 @@
 import React from "react";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@mari-ui/core";
 import { Loading } from "../loading";
 import { TableBody } from "./_components/TableBody";
 import { TableHeader } from "./_components/TableHeader";
-import { ColumnProps } from "./types";
+import type { TableProps } from "./types";
 
-type TableProps<T> = {
-  data: T[];
-  tableHeader: string[];
-  tableBody: ColumnProps<T>[];
-  loading: boolean;
-  className?: string;
-};
+export type { TableProps };
 
-export const Table = <T extends { id: string }>({
-  data,
-  tableHeader,
-  tableBody,
-  loading = false,
-  className,
-}: TableProps<T>) => {
+/**
+ * Eskiden `tableHeader: string[]` ve `tableBody: ColumnProps<T>[]` İKİ AYRI
+ * paralel diziydi, elle senkron tutuluyordu (bkz. plan denetimi ve
+ * types.ts'teki not). Artık tek bir `columns` dizisi.
+ */
+export function Table<T extends { id: string }>({ data, columns, loading = false, className }: TableProps<T>) {
   if (loading) {
     return <Loading />;
   }
+
   return (
-    <div
-      className={twMerge(
-        "border-primary/15 rounded-md border",
-        className
-      )}
-    >
+    <div className={cn("border border-mari-border rounded-md overflow-hidden", className)}>
       <table className="table-fixed w-full">
-        <TableHeader data={tableHeader} />
-        <TableBody data={data} columns={tableBody} />
+        <TableHeader columns={columns} />
+        <TableBody data={data} columns={columns} />
       </table>
     </div>
   );
-};
+}

@@ -38,6 +38,7 @@
     "./upload": { "types": "./dist/upload.d.ts", "import": "./dist/upload.js" },
     "./autocomplete": { "types": "./dist/autocomplete.d.ts", "import": "./dist/autocomplete.js" },
     "./carousel": { "types": "./dist/carousel.d.ts", "import": "./dist/carousel.js" },
+    "./table": { "types": "./dist/table.d.ts", "import": "./dist/table.js" },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },

@@ -30,6 +30,7 @@
     "src/upload",
     "src/autocomplete",
     "src/carousel",
+    "src/table",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"
