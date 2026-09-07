@@ -44,3 +44,6 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tokens package build script cache
+.vite

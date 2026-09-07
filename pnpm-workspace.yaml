@@ -1,3 +1,9 @@
 packages:
   - "apps/*"
   - "packages/*"
+# Metro (React Native) monorepo çözümlemesiyle uyum için "hoisted" node-linker.
+# pnpm v10+ bu ayarı .npmrc yerine pnpm-workspace.yaml'da bekliyor.
+# Bkz: https://docs.expo.dev/guides/monorepos/
+nodeLinker: hoisted
+allowBuilds:
+  esbuild: true
