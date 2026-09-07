@@ -1,112 +1,71 @@
 "use client";
 
-import React from "react";
-import { MenuItemType, SidebarPosition, SidebarVariant } from "../types";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { getWidthClass } from "../utils";
-import { twMerge } from "tailwind-merge";
+import React, { useState } from "react";
+import { cn } from "@mari-ui/core";
+import type { MenuColorProps, MenuItemType, MenuNavigationProps, SidebarPosition, SidebarVariant } from "../types";
+import { getSidebarWidthClass } from "../utils";
 import { SidebarButton } from "./_components/SidebarButton";
 import { SidebarMenu } from "./_components/SidebarMenu";
 import { MegaSub } from "./_components/MegaSub";
 
-type SidebarProps = {
+export interface SidebarProps extends MenuNavigationProps, MenuColorProps {
   data: MenuItemType[];
   variant?: SidebarVariant;
   position?: SidebarPosition;
   onlyIcon?: boolean;
   dropdown?: boolean;
   mega?: boolean;
-  logo?: string;
-};
+  /** Eskiden varsayılan değeri hardcoded `/images/fb.png` idi — bir
+   * kütüphanenin varsayılanı olarak marka varlığı barındırmak yanlıştı
+   * (bkz. plan denetimi). Artık verilmezse hiç logo render edilmez. */
+  logo?: React.ReactNode;
+  onLogoClick?: () => void;
+}
 
-export const Sidebar: React.FC<SidebarProps> = ({
-  data,
-  variant = "hover",
-  position = "left",
-  onlyIcon = false,
-  dropdown = false,
-  mega = false,
-  logo = "/images/fb.png",
-}) => {
-  const navigate = useRouter();
-  const [visible, setVisible] = React.useState(false);
-  const [subItem, setSubItem] = React.useState<MenuItemType[] | undefined>();
-  const [subVisible, setSubVisible] = React.useState(false);
+/**
+ * Eskiden `types.ts`'te `SidebarProps` `export` edilmeden tanımlanmıştı ama
+ * `sidebar/index.ts` onu `export type { SidebarProps }` ile dışa aktarmaya
+ * çalışıyordu — gerçek bir derleme hatasıydı (bkz. plan denetimi). Artık
+ * doğrudan burada, export edilerek tanımlanıyor.
+ */
+export function Sidebar({ data, variant = "hover", position = "left", onlyIcon = false, dropdown = false, mega = false, logo, onLogoClick, color = "primary", onNavigate, currentPath }: SidebarProps) {
+  const [visible, setVisible] = useState(false);
+  const [subItem, setSubItem] = useState<MenuItemType[] | undefined>();
+  const [subVisible, setSubVisible] = useState(false);
 
-  const handleNavigateMain = () => {
-    navigate.push("/");
-  };
-
-  const handleMouseEnter = () => {
-    setVisible(true);
-  };
-
+  const handleMouseEnter = () => setVisible(true);
   const handleMouseLeave = () => {
     setVisible(false);
     setSubVisible(false);
   };
 
   return (
-    <div
-      className={twMerge(
-        "fixed flex top-0 z-50 h-full w-full overflow-auto border-secondary-light transition-all duration-500",
-        position === "right" && "right-0 flex-row-reverse",
-        position === "left" && "left-0"
-      )}
-    >
+    <div className={cn("fixed flex top-0 z-mari-drawer h-full w-full overflow-auto transition-all duration-500", position === "right" && "right-0 flex-row-reverse", position === "left" && "left-0")}>
       <aside
-        onMouseEnter={
-          variant === "hover" && !onlyIcon ? handleMouseEnter : undefined
-        }
-        onMouseLeave={
-          variant === "hover" && !onlyIcon ? handleMouseLeave : undefined
-        }
-        className={twMerge(
-          "h-full max-w-5xl bg-white border-secondary-light transition-all duration-500 py-4",
-          position === "right" && "border-l-2",
-          position === "left" && "border-r-2",
-          dropdown && visible ? "overflow-visible" : "overflow-auto ",
-          getWidthClass(variant, visible)
+        onMouseEnter={variant === "hover" && !onlyIcon ? handleMouseEnter : undefined}
+        onMouseLeave={variant === "hover" && !onlyIcon ? handleMouseLeave : undefined}
+        className={cn(
+          "h-full max-w-5xl bg-mari-surface transition-all duration-500 py-4",
+          position === "right" && "border-l-2 border-mari-border",
+          position === "left" && "border-r-2 border-mari-border",
+          dropdown && visible ? "overflow-visible" : "overflow-auto",
+          getSidebarWidthClass(variant, visible)
         )}
       >
-        <div className="w-12 flex-col items-center justify-center h-12">
-          <Image
-            className="cursor-pointer"
-            onClick={handleNavigateMain}
-            width={48}
-            height={48}
-            src={logo}
-            alt="fb"
-          />
-        </div>
-        <div className="min-h-0.5 w-full bg-secondary-light" />
+        {logo && (
+          <div className="w-12 flex-col items-center justify-center h-12">
+            <button type="button" className="cursor-pointer" onClick={onLogoClick}>
+              {logo}
+            </button>
+          </div>
+        )}
+        <div className="min-h-0.5 w-full bg-mari-border" />
         <nav>
-          <SidebarMenu
-            data={data}
-            setSubItem={setSubItem}
-            setSubVisible={setSubVisible}
-            visible={visible}
-            mega={mega}
-            dropdown={dropdown}
-            position={position}
-          />
+          <SidebarMenu data={data} setSubItem={setSubItem} setSubVisible={setSubVisible} visible={visible} mega={mega} dropdown={dropdown} position={position} color={color} onNavigate={onNavigate} currentPath={currentPath} />
         </nav>
       </aside>
-      {subItem && (
-        <MegaSub
-          setSubVisible={setSubVisible}
-          subVisible={subVisible}
-          subItem={subItem}
-        />
-      )}
-      {variant === "click" && (
-        <SidebarButton
-          visible={visible}
-          setVisible={setVisible}
-          position={position}
-        />
-      )}
+      {subItem && <MegaSub setSubVisible={setSubVisible} subVisible={subVisible} subItem={subItem} color={color} onNavigate={onNavigate} />}
+      {variant === "click" && <SidebarButton visible={visible} setVisible={setVisible} position={position} />}
     </div>
   );
-};
+}

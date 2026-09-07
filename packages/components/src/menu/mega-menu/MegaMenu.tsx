@@ -1,77 +1,39 @@
 "use client";
 
-import React from "react";
-import { MenuItemJustify, MenuItemType, MenuPosition } from "../types";
-import Image from "next/image";
-import { twMerge } from "tailwind-merge";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { cn } from "@mari-ui/core";
+import type { MenuColorProps, MenuItemJustify, MenuItemType, MenuNavigationProps, MenuPosition } from "../types";
+import { getMenuItemJustify, getMenuPosition } from "../utils";
 import { MegaMenuItem } from "./_components/MegaMenuItem";
 import { MegaSubMenu } from "./_components/MegaSubMenu";
-import { getMenuItemJustify, getMenuPosition } from "../utils";
 
-type MegaMenuProps = {
+export interface MegaMenuProps extends MenuNavigationProps, MenuColorProps {
   data: MenuItemType[];
+  logo?: React.ReactNode;
+  onLogoClick?: () => void;
   menuItemPosition?: MenuItemJustify;
   menuPosition?: MenuPosition;
-};
-export const MegaMenu: React.FC<MegaMenuProps> = ({
-  data,
-  menuItemPosition = "center",
-  menuPosition = "default",
-}) => {
-  const navigate = useRouter();
-  const [visible, setVisible] = React.useState(false);
-  const [subItem, setSubItem] = React.useState<MenuItemType[] | undefined>();
+}
 
-  const handleNavigateMain = () => {
-    navigate.push("/");
-  };
+export function MegaMenu({ data, logo, onLogoClick, menuItemPosition = "center", menuPosition = "default", color = "primary", onNavigate }: MegaMenuProps) {
+  const [visible, setVisible] = useState(false);
+  const [subItem, setSubItem] = useState<MenuItemType[] | undefined>();
 
   return (
-    <div className={twMerge("relative", getMenuPosition(menuPosition))}>
-      <div
-        className={twMerge(
-          "flex flex-row items-center bg-white shadow-md",
-          getMenuItemJustify(menuItemPosition)
+    <div className={cn("relative", getMenuPosition(menuPosition))}>
+      <div className={cn("flex flex-row items-center bg-mari-surface shadow-md", getMenuItemJustify(menuItemPosition))}>
+        {logo && (
+          <button type="button" className="cursor-pointer" onClick={onLogoClick}>
+            {logo}
+          </button>
         )}
-      >
-        <Image
-          className="cursor-pointer"
-          onClick={handleNavigateMain}
-          width={48}
-          height={48}
-          src="/images/fb.png"
-          alt="fb"
-        />
-        {data.map((menu) => {
-          return (
-            <MegaMenuItem
-              key={menu.key}
-              item={menu}
-              visible={visible}
-              subKey={subItem?.[0].key}
-              setVisible={setVisible}
-              setSubItem={setSubItem}
-            />
-          );
-        })}
+        {data.map((menu) => (
+          <MegaMenuItem key={menu.key} item={menu} visible={visible} subKey={subItem?.[0]?.key} setVisible={setVisible} setSubItem={setSubItem} color={color} onNavigate={onNavigate} />
+        ))}
       </div>
-      <div
-        className={twMerge(
-          "transition-all duration-300 origin-top transform",
-          visible
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 scale-95 pointer-events-none"
-        )}
-      >
-        {subItem && (
-          <MegaSubMenu
-            subItem={subItem}
-            setVisible={setVisible}
-            setSubItem={setSubItem}
-          />
-        )}
+      <div className={cn("transition-all duration-300 origin-top transform", visible ? "opacity-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none")}>
+        {subItem && <MegaSubMenu subItem={subItem} setVisible={setVisible} setSubItem={setSubItem} color={color} onNavigate={onNavigate} />}
       </div>
     </div>
   );
-};
+}

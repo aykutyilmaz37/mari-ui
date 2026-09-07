@@ -1,59 +1,52 @@
 "use client";
 
-import React from "react";
-import { SidebarItem } from "./SidebarItem";
+import React, { useEffect, useState } from "react";
+import { cn, type ColorRole } from "@mari-ui/core";
+import type { MenuItemType, MenuNavigationProps, SidebarPosition } from "../../types";
 import { findActiveKeyByRoute } from "../../utils";
-import { usePathname } from "next/navigation";
-import { MenuItemType, SidebarPosition } from "../../types";
-import { twMerge } from "tailwind-merge";
+import { SidebarItem } from "./SidebarItem";
 
-type SidebarMenuProps = {
+export interface SidebarMenuProps extends MenuNavigationProps {
   data: MenuItemType[];
   className?: string;
   setSubItem?: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
-  setSubVisible: (value: boolean) => void;
-  visible: boolean;
+  /** Eskiden zorunluydu, ama `DropdownSub`'ın kendi çağrısı bunu HİÇ
+   * geçmiyordu — gerçek bir TS hatasıydı (bkz. plan denetimi). Bu
+   * bağlamda "görünürlük" kavramı anlamlı olmadığı için artık opsiyonel. */
+  setSubVisible?: (value: boolean) => void;
+  visible?: boolean;
   mega?: boolean;
   dropdown?: boolean;
   position?: SidebarPosition;
-};
-export const SidebarMenu: React.FC<SidebarMenuProps> = ({
-  data,
-  className,
-  setSubItem,
-  setSubVisible,
-  visible,
-  mega,
-  dropdown,
-  position,
-}) => {
-  const pathname = usePathname();
+  color?: ColorRole;
+}
 
-  const [activeKey, setActiveKey] = React.useState<string | null>(null);
+export function SidebarMenu({ data, className, setSubItem, setSubVisible, visible = true, mega, dropdown, position, color = "primary", onNavigate, currentPath }: SidebarMenuProps) {
+  const [activeKey, setActiveKey] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    const key = findActiveKeyByRoute(data, pathname);
-    setActiveKey(key);
-  }, [pathname, data]);
+  useEffect(() => {
+    setActiveKey(findActiveKeyByRoute(data, currentPath));
+  }, [currentPath, data]);
 
   return (
-    <ul className={twMerge(className)}>
-      {data?.map((item) => {
-        return (
-          <SidebarItem
-            key={item.key}
-            item={item}
-            activeKey={activeKey}
-            setActiveKey={setActiveKey}
-            setSubItem={setSubItem}
-            setSubVisible={setSubVisible}
-            visible={visible}
-            mega={mega}
-            dropdown={dropdown}
-            position={position}
-          />
-        );
-      })}
+    <ul className={cn(className)}>
+      {data.map((item) => (
+        <SidebarItem
+          key={item.key}
+          item={item}
+          activeKey={activeKey}
+          setActiveKey={setActiveKey}
+          setSubItem={setSubItem}
+          setSubVisible={setSubVisible ?? (() => {})}
+          visible={visible}
+          mega={mega}
+          dropdown={dropdown}
+          position={position}
+          color={color}
+          onNavigate={onNavigate}
+          currentPath={currentPath}
+        />
+      ))}
     </ul>
   );
-};
+}

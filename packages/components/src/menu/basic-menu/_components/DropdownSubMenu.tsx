@@ -1,86 +1,70 @@
 "use client";
 
-// MenuItemComponent.tsx
 import React from "react";
-import { useRouter } from "next/navigation";
+import { cn, type ColorRole } from "@mari-ui/core";
+import { Dropdown, DropdownContent, DropdownTrigger } from "../../../dropdown";
+import type { MenuItemType, MenuNavigationProps } from "../../types";
+import { getItemClass } from "../../utils";
 import { BasicMenuItem } from "./BasicMenuItem";
-import { twMerge } from "tailwind-merge";
-import { MenuItemType } from "../../types";
-import { getClass, resolveIconComponent } from "../../utils";
-import { DropdownProvider } from "@/components/ui/dropdown/useDropdown";
-import {
-  Dropdown,
-  DropdownContent,
-  DropdownTrigger,
-} from "@/components/ui/dropdown";
 
-type MenuItemProps = {
+export interface DropdownSubMenuProps extends MenuNavigationProps {
   item: MenuItemType;
   activeKey: string | null;
   setActiveKey: (key: string) => void;
-  onClick?: () => void;
-};
+  color: ColorRole;
+  onItemClick?: () => void;
+}
 
-export const DropdownSubMenu: React.FC<MenuItemProps> = ({
-  item,
-  activeKey,
-  setActiveKey,
-  onClick,
-}) => {
-  const navigate = useRouter();
-  const IconComponent = resolveIconComponent(item.iconName);
+/** `Dropdown` artık kendi `DropdownProvider`ını içinde barındırıyor — eskiden
+ * burada AYRICA bir `<DropdownProvider>` sarmalayıcısı vardı, gereksizdi. */
+export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNavigate, currentPath, onItemClick }: DropdownSubMenuProps) {
+  if (!item.children) {
+    return (
+      <div className="flex flex-col gap-1">
+        <BasicMenuItem className="rounded-b-none" item={item} activeKey={activeKey} setActiveKey={setActiveKey} color={color} onNavigate={onNavigate} />
+      </div>
+    );
+  }
 
-  return item.children ? (
-    <DropdownProvider>
-      <Dropdown hover>
-        <DropdownTrigger
-          key={item.key}
-          className={twMerge(
-            "w-full cursor-pointer px-3 py-2 rounded-b-none transition justify-start flex items-center gap-2",
-            getClass(item, activeKey)
-          )}
+  return (
+    <Dropdown hover>
+      <DropdownTrigger className={cn("w-full cursor-pointer px-3 py-2 rounded-b-none transition justify-start flex items-center gap-2", getItemClass(item, activeKey, color))}>
+        <div
+          role="menuitem"
+          tabIndex={0}
+          onClick={onItemClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onItemClick?.();
+            }
+          }}
+          className="flex items-center gap-2"
         >
-          <div
-            role="menu"
-            tabIndex={0}
-            onClick={onClick}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onClick?.();
+          {item.icon}
+          <div>{item.title}</div>
+        </div>
+      </DropdownTrigger>
+      <DropdownContent className="w-full">
+        {item.children.map((child) => (
+          <DropdownSubMenu
+            key={child.key}
+            item={child}
+            activeKey={activeKey}
+            setActiveKey={setActiveKey}
+            color={color}
+            onNavigate={onNavigate}
+            currentPath={currentPath}
+            onItemClick={() => {
+              if (child.route) {
+                if (onNavigate) onNavigate(child.route);
+                else window.location.href = child.route;
               }
+              setActiveKey(child.key);
             }}
-            className="flex items-center gap-2"
-          >
-            {IconComponent && <IconComponent />}
-            <div>{item.title}</div>
-          </div>
-        </DropdownTrigger>
-        <DropdownContent className="bg-white w-full">
-          {item.children.map((child) => (
-            <DropdownSubMenu
-              onClick={() => {
-                if (child.route) navigate.push(child.route);
-                setActiveKey(child.key);
-              }}
-              key={child.key}
-              item={child}
-              activeKey={activeKey}
-              setActiveKey={setActiveKey}
-            />
-          ))}
-        </DropdownContent>
-      </Dropdown>
-    </DropdownProvider>
-  ) : (
-    <div className="flex flex-col gap-1">
-      <BasicMenuItem
-        className="rounded-b-none"
-        key={item.key}
-        item={item}
-        activeKey={activeKey}
-        setActiveKey={setActiveKey}
-      />
-    </div>
+          />
+        ))}
+      </DropdownContent>
+    </Dropdown>
   );
-};
+}

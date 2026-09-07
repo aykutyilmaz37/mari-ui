@@ -1,20 +1,15 @@
 "use client";
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import {
-  getClassSidebar,
-  isMenuItemActive,
-  resolveIconComponent,
-} from "../../utils";
-import { twMerge } from "tailwind-merge";
-import { useRouter } from "next/navigation";
-import { MenuItemType, SidebarPosition } from "../../types";
-import { DropdownSub } from "./DropdownSub";
-import { AccordionSub } from "./AccordionSub";
+import React, { useEffect, useState } from "react";
 import { ChevronRightIcon } from "lucide-react";
+import { cn, type ColorRole } from "@mari-ui/core";
+import { Button } from "../../../button";
+import type { MenuItemType, MenuNavigationProps, SidebarPosition } from "../../types";
+import { getSidebarItemClass, isMenuItemActive } from "../../utils";
+import { AccordionSub } from "./AccordionSub";
+import { DropdownSub } from "./DropdownSub";
 
-type SidebarItemProps = {
+export interface SidebarItemProps extends MenuNavigationProps {
   item: MenuItemType;
   activeKey: string | null;
   setActiveKey: (value: string) => void;
@@ -24,60 +19,33 @@ type SidebarItemProps = {
   setSubVisible: (value: boolean) => void;
   visible: boolean;
   position?: SidebarPosition;
-};
-export const SidebarItem: React.FC<SidebarItemProps> = ({
-  item,
-  activeKey,
-  setActiveKey,
-  dropdown,
-  mega,
-  setSubItem,
-  setSubVisible,
-  visible,
-  position,
-}) => {
-  const navigate = useRouter();
+  color: ColorRole;
+}
 
-  const IconComponent = resolveIconComponent(item.iconName);
+export function SidebarItem({ item, activeKey, setActiveKey, dropdown, mega, setSubItem, setSubVisible, visible, position, color, onNavigate, currentPath }: SidebarItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const activeClass = getSidebarItemClass(item, activeKey, color);
 
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const handleNavigateRoute = (item: MenuItemType) => {
-    if (item.route) {
-      navigate.push(item.route);
-      setActiveKey(item.key);
-    }
-  };
-
-  const activeClass = getClassSidebar(item, activeKey);
-
-  React.useEffect(() => {
-    if (item.children) {
-      setIsOpen(isMenuItemActive(item, activeKey));
-    }
+  useEffect(() => {
+    if (item.children) setIsOpen(isMenuItemActive(item, activeKey));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeKey]);
 
+  const handleNavigateRoute = () => {
+    if (!item.route) return;
+    if (onNavigate) onNavigate(item.route);
+    else window.location.href = item.route;
+    setActiveKey(item.key);
+  };
+
   const handleMouseEnter = () => {
-    if (mega) {
-      setSubVisible(true);
-    }
-    if (dropdown) {
-      setIsOpen(true);
-    }
-    if (mega && item.children && item.children.length > 0) {
-      setSubItem?.(item.children);
-    } else {
-      setSubItem?.(undefined);
-    }
+    if (mega) setSubVisible(true);
+    if (dropdown) setIsOpen(true);
+    if (mega) setSubItem?.(item.children && item.children.length > 0 ? item.children : undefined);
   };
   const handleMouseLeave = () => {
-    if (mega) {
-      setSubVisible(false);
-    }
-    if (dropdown) {
-      setIsOpen(false);
-    }
+    if (mega) setSubVisible(false);
+    if (dropdown) setIsOpen(false);
   };
 
   const handleClick = () => {
@@ -86,28 +54,20 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
       setIsOpen((prev) => !prev);
       return;
     }
-    handleNavigateRoute(item);
+    handleNavigateRoute();
   };
+
   return (
-    <li
-      className={twMerge(
-        "text-primary cursor-pointer transition-all ease-in-out duration-300",
-        activeClass
-      )}
-    >
+    <li className={cn("cursor-pointer transition-all ease-in-out duration-300", activeClass)}>
       <Button
-        size="large"
+        size="lg"
         disabled={item.disabled}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={twMerge(
-          "w-full justify-start overflow-hidden hover:text-info px-3 hover:bg-secondary-light",
-          item.disabled ? "cursor-not-allowed" : "cursor-pointer",
-          !item.disabled && isMenuItemActive(item, activeKey) && " text-info"
-        )}
+        className={cn("w-full justify-start overflow-hidden px-3", item.disabled ? "cursor-not-allowed" : "cursor-pointer", !item.disabled && activeClass)}
         htmlType="button"
         onClick={handleClick}
-        icon={IconComponent && <IconComponent />}
+        icon={item.icon}
       >
         <div className="w-full flex items-center justify-between">
           <span className="ml-1 text-nowrap">{item.title}</span>
@@ -115,20 +75,10 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         </div>
       </Button>
       {dropdown ? (
-        <DropdownSub
-          item={item}
-          subVisible={isOpen}
-          setSubVisible={setIsOpen}
-          position={position}
-        />
+        <DropdownSub item={item} subVisible={isOpen} setSubVisible={setIsOpen} position={position} color={color} onNavigate={onNavigate} currentPath={currentPath} />
       ) : (
-        <AccordionSub
-          item={item}
-          subVisible={isOpen}
-          setSubVisible={setSubVisible}
-          visible={visible}
-        />
+        <AccordionSub item={item} subVisible={isOpen} setSubVisible={setSubVisible} visible={visible} color={color} onNavigate={onNavigate} currentPath={currentPath} />
       )}
     </li>
   );
-};
+}

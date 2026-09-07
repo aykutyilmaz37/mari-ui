@@ -1,61 +1,46 @@
 "use client";
 
 import React from "react";
-import { twMerge } from "tailwind-merge";
-import { MenuItemType } from "../../types";
-import { Card } from "@/components/ui/card";
-import { resolveIconComponent } from "../../utils";
-import { useRouter } from "next/navigation";
+import { cn, type ColorRole } from "@mari-ui/core";
+import { Card } from "../../../card";
+import { textClass } from "../../../lib/colorClasses";
+import type { MenuItemType, MenuNavigationProps } from "../../types";
 
-type MegaSubProps = {
+export interface MegaSubProps extends MenuNavigationProps {
   setSubVisible: (value: boolean) => void;
   subVisible: boolean;
   subItem: MenuItemType[];
-  cardClassname?: string;
-};
+  cardClassName?: string;
+  color: ColorRole;
+}
 
-export const MegaSub: React.FC<MegaSubProps> = ({
-  setSubVisible,
-  subVisible,
-  subItem,
-  cardClassname,
-}) => {
-  const navigate = useRouter();
-
+export function MegaSub({ setSubVisible, subVisible, subItem, cardClassName, color, onNavigate }: MegaSubProps) {
   return (
     <div
       role="menu"
       tabIndex={0}
       onMouseEnter={() => setSubVisible(true)}
       onMouseLeave={() => setSubVisible(false)}
-      className={twMerge(
-        "bg-secondary-light h-full overflow-hidden transition-all duration-300 ease-in-out",
-        subVisible ? "w-6xl opacity-100" : "w-0 opacity-0"
-      )}
+      className={cn("bg-mari-surface-alt h-full overflow-hidden transition-all duration-300 ease-in-out", subVisible ? "w-full max-w-3xl opacity-100" : "w-0 opacity-0")}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 h-full w-full">
-        {subItem?.map((item) => {
-          const IconComponent = resolveIconComponent(item.iconName);
-
-          return (
-            <Card
-              className={twMerge(
-                "flex flex-col w-full group hover:scale-101 transition-all duration-500 h-72",
-                cardClassname
-              )}
-              key={item.key}
-              onClick={() => navigate.push(item.route ?? "/")}
-            >
-              <span className="flex items-center gap-4 text-lg text-primary group-hover:text-info transition-all duration-500">
-                {IconComponent && <IconComponent />} {item.title}
-              </span>
-              <span className="text-sm text-secondary group-hover:text-info transition-all duration-500">
-                {item.description}
-              </span>
-            </Card>
-          );
-        })}
+        {subItem.map((item) => (
+          <Card
+            key={item.key}
+            className={cn("flex flex-col w-full group hover:scale-101 transition-all duration-500 h-72", cardClassName)}
+            onClick={() => {
+              const route = item.route ?? "/";
+              if (onNavigate) onNavigate(route);
+              else window.location.href = route;
+            }}
+          >
+            <span className={cn("flex items-center gap-4 text-lg transition-all duration-500", textClass[color])}>
+              {item.icon} {item.title}
+            </span>
+            <span className="text-sm text-mari-muted transition-all duration-500">{item.description}</span>
+          </Card>
+        ))}
       </div>
     </div>
   );
-};
+}

@@ -1,80 +1,54 @@
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import { BasicMenu } from "./BasicMenu";
-import { MenuItemType } from "../types";
+import type { MenuItemType } from "../types";
 
 const mockData: MenuItemType[] = [
-  {
-    key: "home",
-    title: "Home",
-    route: "/home",
-  },
-  {
-    key: "about",
-    title: "About",
-    route: "/about",
-  },
+  { key: "home", title: "Ana Sayfa", route: "/home" },
+  { key: "about", title: "Hakkımızda", route: "/about" },
   {
     key: "services",
-    title: "Services",
+    title: "Hizmetler",
     children: [
-      {
-        key: "web-dev",
-        title: "Web Development",
-        route: "/services/web",
-      },
-      {
-        key: "design",
-        title: "Design",
-        route: "/services/design",
-      },
+      { key: "web-dev", title: "Web Geliştirme", route: "/services/web" },
+      { key: "design", title: "Tasarım", route: "/services/design" },
     ],
   },
-  {
-    key: "contact",
-    title: "Contact",
-    route: "/contact",
-  },
+  { key: "contact", title: "İletişim", route: "/contact" },
 ];
 
+/**
+ * Not: `onNavigate` verilmediğinde bu component `window.location.href`
+ * ile tam sayfa geçişi yapar. Storybook'ta gerçek navigasyonu önlemek için
+ * her story burada bir no-op `onNavigate` geçiyor.
+ */
 const meta: Meta<typeof BasicMenu> = {
   component: BasicMenu,
   title: "Components/BasicMenu",
+  tags: ["autodocs"],
+  args: {
+    data: mockData,
+    onNavigate: () => {},
+  },
 };
 
 export default meta;
 
 type Story = StoryObj<typeof BasicMenu>;
 
-export const Default: Story = {
-  args: {
-    data: mockData,
-  },
-};
+export const Default: Story = {};
 
 export const LeftAligned: Story = {
-  args: {
-    data: mockData,
-    menuItemJustify: "left",
-  },
+  args: { menuItemJustify: "left" },
 };
 
 export const RightAligned: Story = {
-  args: {
-    data: mockData,
-    menuItemJustify: "right",
-  },
+  args: { menuItemJustify: "right" },
 };
 
 export const StickyPosition: Story = {
-  args: {
-    data: mockData,
-    menuPosition: "sticky",
-  },
+  args: { menuPosition: "sticky" },
 };
 
 export const FixedPosition: Story = {
-  args: {
-    data: mockData,
-    menuPosition: "fixed",
-  },
+  args: { menuPosition: "fixed" },
 };
