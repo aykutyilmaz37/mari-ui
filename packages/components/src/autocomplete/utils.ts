@@ -1,8 +1,5 @@
-import { Option } from "./types";
+import type { Option } from "./types";
 
-export const getFilteredOption = (options: Option[], searchText: string) => {
-  const filteredOptions = options.filter((option) =>
-    option.value.toLowerCase().includes(searchText.toLowerCase())
-  );
-  return filteredOptions;
-};
+export function getFilteredOption(options: Option[], searchText: string): Option[] {
+  return options.filter((option) => option.value.toLowerCase().includes(searchText.toLowerCase()));
+}

@@ -28,6 +28,7 @@
     "src/tabs",
     "src/toast",
     "src/upload",
+    "src/autocomplete",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

@@ -1,30 +1,30 @@
 "use client";
 
-import React from "react";
-import { Input } from "../input";
-import { twMerge } from "tailwind-merge";
-import { Option } from "./types";
-import { getFilteredOption } from "./utils";
+import React, { useState } from "react";
 import { XIcon } from "lucide-react";
+import { cn, useControllableState } from "@mari-ui/core";
+import { Input } from "../input";
+import type { AutoCompleteProps } from "./types";
+import { getFilteredOption } from "./utils";
 
-type AutoCompleteProps = {
-  options: Option[];
-  onBlur?: boolean;
-};
+export type { AutoCompleteProps };
 
-export const AutoComplete: React.FC<AutoCompleteProps> = ({
-  options,
-  onBlur = true,
-}) => {
-  const [searchText, setSearchText] = React.useState("");
-  const [isFocused, setIsFocused] = React.useState(false);
+/**
+ * Eskiden `handleSelect` sadece dahili state'i güncelliyordu — ebeveyn
+ * component'in bir seçenek seçildiğinde HABERDAR OLMASININ hiçbir yolu
+ * yoktu (gerçek bir eksiklik, yeni tasarım değil). `onSelect` eklendi.
+ * Ayrıca liste `opacity-0` iken hâlâ `pointer-events` etkindi — görünmez
+ * durumdayken bile tıklanabilir/hover edilebilirdi; düzeltildi.
+ */
+export function AutoComplete({ options, value, defaultValue = "", onSearch, onSelect, placeholder = "Ara", onBlur, closeOnBlur }: AutoCompleteProps) {
+  const [searchText, setSearchText] = useControllableState<string>({ value, defaultValue, onChange: onSearch });
+  const [isFocused, setIsFocused] = useState(false);
+  const shouldCloseOnBlur = closeOnBlur ?? onBlur ?? true;
 
-  const handleSearch = (searchText: string) => {
-    setSearchText(searchText);
-  };
-
-  const handleSelect = (value: string) => {
-    setSearchText(value);
+  const handleSelect = (optionValue: string) => {
+    setSearchText(optionValue);
+    onSelect?.(optionValue);
+    setIsFocused(false);
   };
 
   const filteredOptions = getFilteredOption(options, searchText);
@@ -33,31 +33,29 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
     <div className="relative">
       <Input
         value={searchText}
-        placeholder="Search"
-        onChange={(e) => handleSearch(e.target.value)}
+        placeholder={placeholder}
+        onChange={(e) => setSearchText(e.target.value)}
         onFocus={() => setIsFocused(true)}
-        onBlur={onBlur ? () => setIsFocused(false) : undefined}
-        icon={
-          <XIcon
-            size={14}
-            className="hover:text-error cursor-pointer"
-            onClick={() => setSearchText("")}
-          />
-        }
+        onBlur={shouldCloseOnBlur ? () => setIsFocused(false) : undefined}
+        icon={<XIcon size={14} className="hover:text-mari-error cursor-pointer" onClick={() => setSearchText("")} />}
         iconPosition="end"
       />
       <ul
-        className={twMerge(
-          "absolute top-full left-0 w-full bg-white shadow-xl border border-secondary-light rounded-md p-2 mt-1 z-10 transition-all duration-300",
-          isFocused ? "opacity-100" : "opacity-0"
+        className={cn(
+          "absolute top-full left-0 w-full bg-mari-surface shadow-xl border border-mari-border rounded-md p-2 mt-1 z-mari-dropdown transition-opacity duration-300",
+          isFocused ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
       >
         {filteredOptions.map((option) => (
-          <li key={option.value}>
+          <li key={option.id}>
             <button
               type="button"
+              // onMouseDown (blur'dan ÖNCE tetiklenir) kullanılıyor — aksi
+              // halde Input'un onBlur'u bu tıklamadan önce listeyi
+              // gizleyip tıklamayı iptal ederdi.
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleSelect(option.value)}
-              className="w-full text-left p-1 hover:bg-secondary-light cursor-pointer rounded-md"
+              className="w-full text-left p-1 hover:bg-mari-surface-alt cursor-pointer rounded-md"
             >
               {option.value}
             </button>
@@ -66,4 +64,4 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
       </ul>
     </div>
   );
-};
+}
