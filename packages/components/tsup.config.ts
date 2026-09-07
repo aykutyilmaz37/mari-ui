@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from "node:fs";
+import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { preserveDirectivesPlugin } from "esbuild-plugin-preserve-directives";
 import { defineConfig } from "tsup";
@@ -8,21 +8,26 @@ import { defineConfig } from "tsup";
  * dist/card.js, ...) — bu, `@mari-ui/components/button` gibi subpath
  * export'ların gerçek, ayrı dosyalar olmasını sağlar.
  *
- * Entry listesi `migrated.json`'dan okunur (src/ altını taramaz): henüz
- * migrate edilmemiş 28 component hâlâ eski `@/` path alias'ına ve
- * Next.js paketlerine (next/navigation, next/image) bağımlı — bunları
- * bundle etmeye çalışmak build'i kırar. Bir component migrate edildikçe
- * `migrated.json`'a eklenir.
+ * Faz 3 tamamlandı (29/29 component migrate edildi) — artık `src/`
+ * altındaki HER klasör gerçek, derlenebilir bir component. Önceki
+ * `migrated.json` allowlist'i (henüz migrate edilmemiş component'leri
+ * build dışında tutmak için) kaldırıldı; yeni bir component eklendiğinde
+ * bu dosyaya dokunmaya gerek yok.
  */
 const SRC_DIR = join(__dirname, "src");
-const MIGRATED = JSON.parse(readFileSync(join(__dirname, "migrated.json"), "utf8")).components as string[];
 
 function findComponentEntries(): Record<string, string> {
   const entries: Record<string, string> = {};
-  for (const name of MIGRATED) {
-    const indexPath = join(SRC_DIR, name, "index.ts");
-    if (statSync(indexPath).isFile()) {
-      entries[name] = indexPath;
+  for (const name of readdirSync(SRC_DIR)) {
+    const dir = join(SRC_DIR, name);
+    if (!statSync(dir).isDirectory()) continue;
+    const indexPath = join(dir, "index.ts");
+    try {
+      if (statSync(indexPath).isFile()) {
+        entries[name] = indexPath;
+      }
+    } catch {
+      // index.ts yoksa (örn. src/lib) atla.
     }
   }
   return entries;
@@ -40,9 +45,6 @@ export default defineConfig({
   // direktifini sessizce siler (bkz. @mari-ui/core'da fiilen doğrulanan
   // regresyon). Bu plugin her chunk'ın başına doğru direktifi geri yazar.
   esbuildPlugins: [
-    // `as never`: tsup kendi iç `esbuild` kopyasını taşıyor, bu monorepo'daki
-    // ayrı `esbuild` kurulumuyla type-level'da (yapısal olarak aynı,
-    // isimsel olarak farklı) çakışıyor — zararsız bir sürüm-gölgeleme sorunu.
     preserveDirectivesPlugin({
       directives: ["use client", "use server"],
       include: /\.(js|ts|jsx|tsx)$/,
