@@ -1,51 +1,42 @@
-import clsx from "clsx";
+import type React from "react";
+import { cn, type Size } from "@mari-ui/core";
+import { fontSizeClass } from "../lib/sizeClasses";
+import type { DividerLabelAlign, DividerLineStyle } from "./types";
 
-export const getBaseClass = (
+export function getBaseClass(
   isHorizontal: boolean,
-  size?: string,
-  variant?: string,
-  dashed?: boolean,
+  size: Size | undefined,
+  lineStyle: DividerLineStyle | undefined,
   className?: string
-) =>
-  clsx(
+): string {
+  return cn(
     "flex",
     isHorizontal ? "w-full items-center" : "h-full flex-col justify-center",
-    {
-      "text-xs": size === "small",
-      "text-sm": size === "middle",
-      "text-base": size === "large",
-      "border-solid": variant === "solid",
-      "border-dashed": variant === "dashed" || dashed,
-      "border-dotted": variant === "dotted",
-    },
+    size && fontSizeClass[size],
+    lineStyle === "solid" && "border-solid",
+    lineStyle === "dashed" && "border-dashed",
+    lineStyle === "dotted" && "border-dotted",
     className
   );
+}
 
-export const getTitleClass = (
-  plain?: boolean,
-  orientation?: string,
-  isHorizontal?: boolean
-) =>
-  clsx("px-2 whitespace-nowrap", {
-    "text-muted-500": plain,
-    "ml-auto": orientation === "end" && isHorizontal,
-    "mr-auto": orientation === "start" && isHorizontal,
-  });
+export function getLabelClass(plain: boolean | undefined, labelAlign: DividerLabelAlign | undefined, isHorizontal: boolean): string {
+  return cn(
+    "px-2 whitespace-nowrap",
+    // "text-muted-500" -> gerçek bir token değildi (tema'da hiç yoktu, sessizce
+    // no-op'tu). Nötr rolün `text` slotu bunun yerine geçiyor.
+    plain && "text-mari-neutral",
+    labelAlign === "end" && isHorizontal && "ml-auto",
+    labelAlign === "start" && isHorizontal && "mr-auto"
+  );
+}
 
-export const getMarginStyle = (
-  orientation?: string,
-  orientationMargin?: string | number,
-  isHorizontal?: boolean
-): React.CSSProperties => {
-  if (orientation === "center" || !orientationMargin || !isHorizontal) {
-    return {};
-  }
-  const marginValue =
-    typeof orientationMargin === "number"
-      ? `${orientationMargin}px`
-      : orientationMargin;
-
-  return orientation === "start"
-    ? { marginRight: marginValue }
-    : { marginLeft: marginValue };
-};
+export function getLabelMarginStyle(
+  labelAlign: DividerLabelAlign | undefined,
+  labelMargin: string | number | undefined,
+  isHorizontal: boolean
+): React.CSSProperties {
+  if (labelAlign === "center" || !labelMargin || !isHorizontal) return {};
+  const marginValue = typeof labelMargin === "number" ? `${labelMargin}px` : labelMargin;
+  return labelAlign === "start" ? { marginRight: marginValue } : { marginLeft: marginValue };
+}

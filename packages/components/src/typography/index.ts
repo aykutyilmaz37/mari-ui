@@ -1,2 +1,2 @@
 export { Title, Text, Paragraph } from "./Typography";
-export * from "./types";
+export type { TitleProps, TextProps, ParagraphProps, TitleLevel, TextWeight } from "./types";

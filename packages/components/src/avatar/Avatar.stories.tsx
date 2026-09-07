@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Avatar } from "./Avatar";
-import type { AvatarProps } from "./Avatar";
+import type { AvatarProps } from "./types";
 import { User2Icon } from "lucide-react";
 
 const AVATAR_URL = "/images/avatar.png";
@@ -17,7 +17,7 @@ const meta: Meta<typeof Avatar> = {
     },
     size: {
       control: "select",
-      options: ["small", "middle", "large"],
+      options: ["sm", "md", "lg"],
     },
     src: { control: false },
     icon: { control: false },
@@ -31,7 +31,7 @@ export const Playground: StoryObj<AvatarProps> = {
   args: {
     alt: "User",
     shape: "circle",
-    size: "middle",
+    size: "md",
     src: AVATAR_URL,
     onError: () => {
       return true;
@@ -43,7 +43,7 @@ export const WithIconFallback: StoryObj<AvatarProps> = {
   args: {
     alt: "User with Fallback",
     shape: "circle",
-    size: "large",
+    size: "lg",
     src: "",
     icon: <User2Icon size={24} />,
   },
@@ -53,7 +53,7 @@ export const NoAvatar: StoryObj<AvatarProps> = {
   args: {
     alt: "Avatar",
     shape: "circle",
-    size: "large",
+    size: "lg",
     src: "",
     icon: "",
   },
@@ -62,7 +62,7 @@ export const NoAvatar: StoryObj<AvatarProps> = {
 export const AllShapesAndSizes: StoryObj = {
   render: () => {
     const shapes = ["circle", "square"] as const;
-    const sizes = ["small", "middle", "large"] as const;
+    const sizes = ["sm", "md", "lg"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">

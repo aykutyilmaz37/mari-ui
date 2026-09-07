@@ -1,62 +1,34 @@
-"use client";
-
 import React from "react";
-import {
-  DividerOrientation,
-  DividerSize,
-  DividerType,
-  DividerVariant,
-} from "./types";
-import { getBaseClass, getTitleClass, getMarginStyle } from "./utils";
+import type { DividerProps } from "./types";
+import { getBaseClass, getLabelClass, getLabelMarginStyle } from "./utils";
 
-export type DividerProps = {
-  children?: React.ReactNode;
-  className?: string;
-  dashed?: boolean;
-  variant?: DividerVariant;
-  orientation?: DividerOrientation;
-  orientationMargin?: string | number;
-  plain?: boolean;
-  style?: React.CSSProperties;
-  size?: DividerSize;
-  type?: DividerType;
-  height?: string | number;
-};
-
-export const Divider: React.FC<DividerProps> = ({
+/**
+ * Hook yok, browser API yok — saf sunum. Eski kodda gereksiz yere
+ * `"use client"` taşıyordu (bkz. plan Faz 3 denetimi); kaldırıldı.
+ */
+export function Divider({
   children,
   className,
-  dashed,
-  variant = "solid",
-  orientation = "center",
-  orientationMargin,
+  lineStyle = "solid",
+  orientation = "horizontal",
+  labelAlign = "center",
+  labelMargin,
   plain = true,
   style,
   size,
-  type = "horizontal",
   height = "48px",
-}) => {
-  const isHorizontal = type === "horizontal";
-  const baseClass = getBaseClass(
-    isHorizontal,
-    size,
-    variant,
-    dashed,
-    className
-  );
-  const titleClass = getTitleClass(plain, orientation, isHorizontal);
-  const marginStyle = getMarginStyle(
-    orientation,
-    orientationMargin,
-    isHorizontal
-  );
+}: DividerProps) {
+  const isHorizontal = orientation === "horizontal";
+  const baseClass = getBaseClass(isHorizontal, size, lineStyle, className);
+  const labelClass = getLabelClass(plain, labelAlign, isHorizontal);
+  const marginStyle = getLabelMarginStyle(labelAlign, labelMargin, isHorizontal);
 
   return (
     <div className={baseClass} style={style}>
       {children && isHorizontal ? (
         <>
           <span className="flex-1 border-t border-inherit" />
-          <span className={titleClass} style={marginStyle}>
+          <span className={labelClass} style={marginStyle}>
             {children}
           </span>
           <span className="flex-1 border-t border-inherit" />
@@ -64,13 +36,9 @@ export const Divider: React.FC<DividerProps> = ({
       ) : (
         <span
           className="inline-block border-l border-inherit"
-          style={{
-            height: typeof height === "number" ? `${height}px` : height,
-          }}
+          style={{ height: typeof height === "number" ? `${height}px` : height }}
         />
       )}
     </div>
   );
-};
-
-export default Divider;
+}

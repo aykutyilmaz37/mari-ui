@@ -1,30 +1,16 @@
 import React from "react";
-import clsx from "clsx";
-import { SizeType } from "./types";
-import { getSizeClassInput } from "./utils";
-import { twMerge } from "tailwind-merge";
+import { cn, type Size } from "@mari-ui/core";
+import { INPUT_SIZE_CLASS } from "./utils";
 
-interface SkeletonInputProps {
+export interface SkeletonInputProps {
   active?: boolean;
-  size?: SizeType;
+  size?: Size;
   className?: string;
 }
 
-export const SkeletonInput: React.FC<SkeletonInputProps> = ({
-  active = false,
-  size = "default",
-  className,
-}) => {
+// Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
+export function SkeletonInput({ active = false, size = "md", className }: SkeletonInputProps) {
   return (
-    <div
-      className={twMerge(
-        clsx(
-          "bg-border rounded transition-colors duration-300",
-          active && "animate-pulse",
-          getSizeClassInput(size),
-          className
-        )
-      )}
-    />
+    <div className={cn("bg-mari-border rounded transition-colors duration-300", active && "animate-pulse", INPUT_SIZE_CLASS[size], className)} />
   );
-};
+}

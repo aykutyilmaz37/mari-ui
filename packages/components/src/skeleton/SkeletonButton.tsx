@@ -1,41 +1,31 @@
 import React from "react";
-import clsx from "clsx";
-import { ButtonShape, SizeType } from "./types";
-import { getSizeClassInput } from "./utils";
-import { twMerge } from "tailwind-merge";
+import { cn, type Size } from "@mari-ui/core";
+import type { SkeletonButtonShape } from "./types";
+import { INPUT_SIZE_CLASS } from "./utils";
 
-interface SkeletonButtonProps {
+export interface SkeletonButtonProps {
   active?: boolean;
   block?: boolean;
-  shape?: ButtonShape;
-  size?: SizeType;
+  shape?: SkeletonButtonShape;
+  size?: Size;
   className?: string;
 }
 
-export const SkeletonButton: React.FC<SkeletonButtonProps> = ({
-  active = false,
-  block = false,
-  shape = "default",
-  size = "default",
-  className,
-}) => {
+// Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
+export function SkeletonButton({ active = false, block = false, shape = "default", size = "md", className }: SkeletonButtonProps) {
   return (
     <div
-      className={twMerge(
-        clsx(
-          "bg-border transition-colors duration-300",
-          active && "animate-pulse",
-          getSizeClassInput(size),
-          {
-            "rounded-full": shape === "circle",
-            "rounded-lg": shape === "round",
-            "rounded-none": shape === "square",
-            "rounded-md": shape === "default",
-            "w-full": block,
-          },
-          className
-        )
+      className={cn(
+        "bg-mari-border transition-colors duration-300",
+        active && "animate-pulse",
+        INPUT_SIZE_CLASS[size],
+        shape === "circle" && "rounded-full",
+        shape === "round" && "rounded-lg",
+        shape === "square" && "rounded-none",
+        shape === "default" && "rounded-md",
+        block && "w-full",
+        className
       )}
     />
   );
-};
+}

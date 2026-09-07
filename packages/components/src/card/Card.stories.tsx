@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Image from "next/image";
 import { Card } from "./Card";
 
 const meta: Meta<typeof Card> = {
@@ -19,22 +18,16 @@ export const Basic: Story = {
   args: {
     title: "Card Title",
     className: "w-[400px]",
-    extra: <button className="text-sm text-blue-500">More</button>,
+    extra: <button className="text-sm text-mari-primary">More</button>,
   },
 };
 
-export const WithCover: Story = {
+export const WithCoverAndFooter: Story = {
   args: {
     title: "Card with Cover",
     className: "w-[400px]",
-    cover: (
-      <Image
-        width={400}
-        height={400}
-        src="https://placehold.co/400x400"
-        alt="cover"
-      />
-    ),
+    cover: <img width={400} height={200} src="https://placehold.co/400x200" alt="cover" />,
+    footer: <span className="text-sm text-mari-muted">Son güncelleme: bugün</span>,
   },
 };
 
@@ -42,7 +35,7 @@ export const Borderless: Story = {
   args: {
     className: "w-[400px]",
     title: "Borderless Card",
-    variant: "borderless",
+    bordered: false,
   },
 };
 
@@ -65,23 +58,23 @@ export const Loading: Story = {
 export const Sizes: Story = {
   render: () => (
     <div className="flex gap-4">
-      <Card className="w-[400px]" title="Small" size="small">
+      <Card className="w-[400px]" title="Small" size="sm">
         Small card content
       </Card>
-      <Card className="w-[400px]" title="Middle" size="middle">
-        Middle card content
+      <Card className="w-[400px]" title="Medium" size="md">
+        Medium card content
       </Card>
-      <Card className="w-[400px]" title="Big" size="large">
-        Big card content
+      <Card className="w-[400px]" title="Large" size="lg">
+        Large card content
       </Card>
     </div>
   ),
 };
 
-export const InnerType: Story = {
+export const Inset: Story = {
   args: {
     className: "w-[400px]",
-    title: "Inner Card",
-    type: "inner",
+    title: "Inset Card",
+    inset: true,
   },
 };

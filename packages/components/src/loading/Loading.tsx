@@ -1,24 +1,19 @@
 import React from "react";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@mari-ui/core";
+import type { LoadingProps } from "./types";
+import { fillClass, textColorClass } from "./utils";
 
-type LoadingProps = {
-  line?: string;
-  circle?: string;
-};
+export type { LoadingProps };
 
-export const Loading: React.FC<LoadingProps> = ({
-  line = "info",
-  circle = "secondary-muted",
-}) => {
+// Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
+// Tam ekran overlay z-index'i artık paylaşılan skaladan (bkz. @mari-ui/tokens
+// zIndex.modal) — eskiden hiçbir z-index tanımlı değildi.
+export function Loading({ color = "info", trackColor = "neutral" }: LoadingProps) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-opacity-50">
+    <div className="fixed inset-0 z-mari-modal flex items-center justify-center">
       <svg
         aria-hidden="true"
-        className={twMerge(
-          "w-8 h-8 animate-spin dark:text-primary",
-          line && `fill-${line}`,
-          circle && `text-${circle}`
-        )}
+        className={cn("w-8 h-8 animate-spin", fillClass[color], textColorClass[trackColor])}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +27,7 @@ export const Loading: React.FC<LoadingProps> = ({
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">Yükleniyor...</span>
     </div>
   );
-};
+}

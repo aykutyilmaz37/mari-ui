@@ -1,40 +1,30 @@
 import React from "react";
-import { ParagraphProps, TextProps, TitleProps } from "./types";
+import type { ParagraphProps, TextProps, TitleProps } from "./types";
+import { getParagraphClass, getTextClass, getTitleClass } from "./utils";
 
-export const Text: React.FC<TextProps> = ({
-  children,
-  className,
-  ...props
-}) => {
+// Hook yok, browser API yok — üçü de saf sunum, "use client" gerekmiyor.
+
+export function Text({ children, className, color, weight, muted, ...props }: TextProps) {
   return (
-    <span className={className} {...props}>
+    <span className={getTextClass(color, weight, muted, className)} {...props}>
       {children}
     </span>
   );
-};
+}
 
-export const Paragraph: React.FC<ParagraphProps> = ({
-  children,
-  className,
-  ...props
-}) => {
+export function Paragraph({ children, className, color, muted, ...props }: ParagraphProps) {
   return (
-    <p className={className} {...props}>
+    <p className={getParagraphClass(color, muted, className)} {...props}>
       {children}
     </p>
   );
-};
+}
 
-export const Title: React.FC<TitleProps> = ({
-  level = 1,
-  children,
-  className,
-  ...props
-}) => {
-  const Title = `h${level}` as React.ElementType;
+export function Title({ level = 1, children, className, color, ...props }: TitleProps) {
+  const Heading = `h${level}` as React.ElementType;
   return (
-    <Title className={className} {...props}>
+    <Heading className={getTitleClass(level, color, className)} {...props}>
       {children}
-    </Title>
+    </Heading>
   );
-};
+}

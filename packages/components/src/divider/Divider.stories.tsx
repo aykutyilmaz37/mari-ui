@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Divider } from "./Divider";
-import type { DividerProps } from "./Divider";
+import type { DividerProps } from "./types";
 
 const meta: Meta<typeof Divider> = {
   title: "Components/Divider",
@@ -9,26 +9,13 @@ const meta: Meta<typeof Divider> = {
   argTypes: {
     children: { control: "text" },
     className: { control: false },
-    dashed: { control: "boolean" },
-    variant: {
-      control: "select",
-      options: ["solid", "dashed", "dotted"],
-    },
-    orientation: {
-      control: "select",
-      options: ["start", "center", "end"],
-    },
-    orientationMargin: { control: "text" },
+    lineStyle: { control: "select", options: ["solid", "dashed", "dotted"] },
+    orientation: { control: "select", options: ["horizontal", "vertical"] },
+    labelAlign: { control: "select", options: ["start", "center", "end"] },
+    labelMargin: { control: "text" },
     plain: { control: "boolean" },
     style: { control: false },
-    size: {
-      control: "select",
-      options: ["small", "middle", "large"],
-    },
-    type: {
-      control: "select",
-      options: ["horizontal", "vertical"],
-    },
+    size: { control: "select", options: ["sm", "md", "lg"] },
   },
 };
 
@@ -36,40 +23,37 @@ export default meta;
 
 export const Playground: StoryObj<DividerProps> = {
   args: {
-    children: `
-    Lorem Ipsum.`,
-    dashed: false,
-    variant: "solid",
-    orientation: "center",
-    orientationMargin: "12px",
+    children: "Lorem Ipsum.",
+    lineStyle: "solid",
+    orientation: "horizontal",
+    labelAlign: "center",
+    labelMargin: "12px",
     plain: true,
-    size: "middle",
-    type: "horizontal",
+    size: "md",
   },
 };
 
 export const Vertical: StoryObj<DividerProps> = {
   render: (args) => (
-    <div className="h-screen flex items-center justify-center gap-4 bg-gray-50">
-      <span>Left</span>
+    <div className="h-40 flex items-center justify-center gap-4">
+      <span>Sol</span>
       <Divider {...args} />
-      <span>Right</span>
+      <span>Sağ</span>
     </div>
   ),
   args: {
-    type: "vertical",
-    variant: "dotted",
-    children: "Lorem",
+    orientation: "vertical",
+    lineStyle: "dotted",
     height: "80%",
   },
 };
 
 export const DashedEndWithMargin: StoryObj<DividerProps> = {
   args: {
-    children: "End Aligned",
-    dashed: true,
-    orientation: "end",
-    orientationMargin: 20,
-    type: "horizontal",
+    children: "Sona Hizalı",
+    lineStyle: "dashed",
+    labelAlign: "end",
+    labelMargin: 20,
+    orientation: "horizontal",
   },
 };

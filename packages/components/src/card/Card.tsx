@@ -1,73 +1,78 @@
-import { ReactNode, CSSProperties } from "react";
-import clsx from "clsx";
-import { CardSize, CardType, CardVariant, SemanticDOM } from "./types";
+import React, { forwardRef } from "react";
+import { cn } from "@mari-ui/core";
+import type { CardProps } from "./types";
 import { getBaseClassname } from "./utils";
-import { twMerge } from "tailwind-merge";
 
-export type CardProps = {
-  children: ReactNode;
-  title?: ReactNode;
-  extra?: ReactNode;
-  cover?: ReactNode;
-  variant?: CardVariant;
-  hoverable?: boolean;
-  loading?: boolean;
-  size?: CardSize;
-  type?: CardType;
-  className?: string;
-  classNames?: Partial<Record<SemanticDOM, string>>;
-  styles?: Partial<Record<SemanticDOM, CSSProperties>>;
-  onClick?: () => void;
-};
+export type { CardProps };
 
-export function Card({
-  children,
-  title,
-  extra,
-  cover,
-  variant = "outlined",
-  hoverable = false,
-  loading = false,
-  size = "middle",
-  type,
-  className,
-  classNames,
-  onClick,
-}: Readonly<CardProps>) {
-  const base = getBaseClassname({ variant, hoverable, size, type, className });
+/**
+ * Hook yok, browser API yok (`onClick` bir PROP, çağrılması tüketicinin
+ * sorumluluğu) — saf sunum, "use client" gerekmiyor. Eskiden `forwardRef`
+ * değildi; artık diğer component'lerle tutarlı.
+ */
+export const Card = forwardRef<HTMLDivElement, CardProps>(
+  (
+    {
+      children,
+      title,
+      extra,
+      cover,
+      footer,
+      bordered = true,
+      hoverable = false,
+      loading = false,
+      size,
+      inset,
+      className,
+      classNames,
+      styles,
+      onClick,
+    },
+    ref
+  ) => {
+    if (process.env.NODE_ENV !== "production" && styles) {
+      console.warn(
+        "[@mari-ui/components] Card: `styles` prop'u kaldırıldı (eskiden de gerçekte hiç uygulanmıyordu). " +
+          "Stil için `classNames` kullanın."
+      );
+    }
 
-  return (
-    <div className={base} onClick={onClick}>
-      {cover && (
-        <div className={twMerge(clsx("mb-4", classNames?.cover))}>{cover}</div>
-      )}
+    const base = getBaseClassname({ bordered, hoverable, size, inset, className });
 
-      {(title || extra) && (
-        <div>
-          <div
-            className={twMerge(
-              clsx(
-                "p-4 flex items-center justify-between font-semibold text-foreground",
-                classNames?.header
-              )
-            )}
-          >
-            <div>{title}</div>
-            <div>{extra}</div>
+    return (
+      <div ref={ref} className={base} onClick={onClick}>
+        {cover && <div className={cn("mb-4", classNames?.cover)}>{cover}</div>}
+
+        {(title || extra) && (
+          <div>
+            <div className={cn("p-4 flex items-center justify-between font-semibold text-mari-foreground", classNames?.header)}>
+              <div>{title}</div>
+              <div>{extra}</div>
+            </div>
+            <div className="h-px bg-mari-border min-w-full" />
           </div>
-          <div className="h-[1px] bg-border min-w-full" />
-        </div>
-      )}
+        )}
 
-      <div className={twMerge(clsx("p-4", classNames?.body))}>
-        {loading ? (
-          <div className="animate-pulse text-sm text-muted">Loading...</div>
-        ) : (
-          children
+        <div className={cn("p-4", classNames?.body)}>
+          {loading ? (
+            <div className="space-y-2 animate-pulse" aria-hidden>
+              <div className="h-3 w-3/4 rounded bg-mari-surface-alt" />
+              <div className="h-3 w-1/2 rounded bg-mari-surface-alt" />
+            </div>
+          ) : (
+            children
+          )}
+        </div>
+
+        {footer && (
+          <>
+            <div className="h-px bg-mari-border min-w-full" />
+            <div className={cn("p-4", classNames?.footer)}>{footer}</div>
+          </>
         )}
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
 
-export default Card;
+Card.displayName = "Card";

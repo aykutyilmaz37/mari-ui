@@ -1,11 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Tag } from "./Tag";
 import { CheckCircle, Info, XCircle } from "lucide-react";
+import { Tag } from "./Tag";
 
 const meta: Meta<typeof Tag> = {
   title: "Components/Tag",
   component: Tag,
   tags: ["autodocs"],
+  argTypes: {
+    color: {
+      control: "select",
+      options: ["primary", "accent", "success", "error", "warning", "info", "neutral"],
+    },
+    variant: { control: "select", options: ["solid", "soft", "outline"] },
+  },
   args: {
     children: "Tag Label",
   },
@@ -18,62 +25,41 @@ type Story = StoryObj<typeof Tag>;
 export const Default: Story = {};
 
 export const WithIcon: Story = {
-  args: {
-    icon: <Info size={14} />,
-  },
+  args: { icon: <Info size={14} /> },
 };
 
 export const Closable: Story = {
-  args: {
-    closeIcon: true,
-  },
+  args: { onClose: () => {} },
 };
 
 export const CustomCloseIcon: Story = {
-  args: {
-    closeIcon: <XCircle size={14} />,
-  },
+  args: { onClose: () => {}, closeIcon: <XCircle size={14} /> },
 };
 
-export const WithoutBorder: Story = {
-  args: {
-    bordered: false,
-  },
+export const Bordered: Story = {
+  args: { bordered: true },
 };
 
-export const StatusTags: Story = {
+export const AllColors: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
-      <Tag statu="success" icon={<CheckCircle size={14} />}>
-        Success
-      </Tag>
-      <Tag statu="processing">Processing</Tag>
-      <Tag statu="error">Error</Tag>
-      <Tag statu="warning">Warning</Tag>
-      <Tag statu="default">Default</Tag>
+      {(["primary", "accent", "success", "error", "warning", "info", "neutral"] as const).map((color) => (
+        <Tag key={color} color={color} icon={color === "success" ? <CheckCircle size={14} /> : undefined}>
+          {color}
+        </Tag>
+      ))}
     </div>
   ),
 };
 
-export const CustomHexColor: Story = {
-  args: {
-    color: "#db2777",
-  },
-};
-
-export const MixedUsage: Story = {
+export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
-      <Tag statu="success" icon={<CheckCircle size={14} />} closeIcon>
-        Success Tag
-      </Tag>
-      <Tag
-        color="#eab308"
-        icon={<Info size={14} />}
-        closeIcon={<XCircle size={14} />}
-      >
-        Custom Color
-      </Tag>
+      {(["solid", "soft", "outline"] as const).map((variant) => (
+        <Tag key={variant} color="primary" variant={variant}>
+          {variant}
+        </Tag>
+      ))}
     </div>
   ),
 };

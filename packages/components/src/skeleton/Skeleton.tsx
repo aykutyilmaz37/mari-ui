@@ -1,25 +1,12 @@
 import React from "react";
-import clsx from "clsx";
-import {
-  SkeletonAvatarProps,
-  SkeletonParagraphProps,
-  SkeletonTitleProps,
-} from "./types";
-import { getSizeClassSkeleton } from "./utils";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@mari-ui/core";
+import type { SkeletonAvatarProps, SkeletonParagraphProps, SkeletonProps, SkeletonTitleProps } from "./types";
+import { getAvatarShapeClass, getAvatarSizeStyleOrClass, getLineClass, widthToStyle } from "./utils";
 
-export interface SkeletonProps {
-  active?: boolean;
-  avatar?: boolean | SkeletonAvatarProps;
-  loading?: boolean;
-  paragraph?: boolean | SkeletonParagraphProps;
-  round?: boolean;
-  title?: boolean | SkeletonTitleProps;
-  className?: string;
-  children?: React.ReactNode;
-}
+export type { SkeletonProps };
 
-export const Skeleton: React.FC<SkeletonProps> = ({
+// Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
+export function Skeleton({
   active = false,
   avatar = false,
   loading,
@@ -28,85 +15,47 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   title = true,
   className,
   children,
-}) => {
+}: SkeletonProps) {
   if (loading === false) return <>{children}</>;
 
-  const avatarProps: SkeletonAvatarProps =
-    typeof avatar === "boolean" ? {} : avatar;
-  const titleProps: SkeletonTitleProps =
-    typeof title === "boolean" ? {} : title;
-  const paragraphProps: SkeletonParagraphProps =
-    typeof paragraph === "boolean" ? {} : paragraph;
+  const avatarProps: SkeletonAvatarProps = typeof avatar === "boolean" ? {} : avatar;
+  const titleProps: SkeletonTitleProps = typeof title === "boolean" ? {} : title;
+  const paragraphProps: SkeletonParagraphProps = typeof paragraph === "boolean" ? {} : paragraph;
 
   const rows = paragraphProps.rows ?? 3;
-  let paragraphWidths: (string | number)[] = [];
+  const paragraphWidths: (string | number | undefined)[] = Array.isArray(paragraphProps.width)
+    ? paragraphProps.width
+    : paragraphProps.width !== undefined
+      ? [...Array(rows - 1).fill(undefined), paragraphProps.width]
+      : [];
 
-  if (Array.isArray(paragraphProps.width)) {
-    paragraphWidths = paragraphProps.width;
-  } else if (typeof paragraphProps.width !== "undefined") {
-    paragraphWidths = [...Array(rows - 1).fill("100%"), paragraphProps.width];
-  }
+  const avatarSize = getAvatarSizeStyleOrClass(avatarProps.size);
 
   return (
-    <div
-      className={clsx("animate-pulse", active && "animate-pulse", className)}
-    >
+    <div className={cn("animate-pulse", active && "animate-pulse", className)}>
       <div className="flex gap-4">
         {avatar && (
           <div
-            className={twMerge(
-              clsx(
-                "bg-border",
-                avatarProps.shape === "circle" && "rounded-full",
-                avatarProps.shape === "square" && "rounded-none",
-                (!avatarProps.shape || avatarProps.shape === undefined) &&
-                  "rounded-md",
-                getSizeClassSkeleton(avatarProps.size ?? "default", "w"),
-                getSizeClassSkeleton(avatarProps.size ?? "default", "h")
-              )
-            )}
+            className={cn("bg-mari-border shrink-0", getAvatarShapeClass(avatarProps.shape), avatarSize.className)}
+            style={avatarSize.style}
           />
         )}
         <div className="flex-1 space-y-2">
           {title && (
             <div
-              className={twMerge(
-                clsx(
-                  "bg-border h-4",
-                  round ? "rounded-full" : "rounded",
-                  typeof titleProps.width === "number" ||
-                    typeof titleProps.width === "string"
-                    ? `w-[${titleProps.width}]`
-                    : "w-1/2"
-                )
-              )}
+              className={getLineClass(round, cn("h-4", titleProps.width === undefined && "w-1/2"))}
+              style={widthToStyle(titleProps.width)}
             />
           )}
           {paragraph &&
             Array.from({ length: rows }).map((_, i) => {
-              let widthClass: string;
-
-              if (
-                typeof paragraphWidths[i] === "number" ||
-                typeof paragraphWidths[i] === "string"
-              ) {
-                widthClass = `w-[${paragraphWidths[i]}]`;
-              } else if (i === rows - 1) {
-                widthClass = "w-4/5";
-              } else {
-                widthClass = "w-full";
-              }
-
+              const explicitWidth = paragraphWidths[i];
+              const fallbackWidthClass = explicitWidth === undefined ? (i === rows - 1 ? "w-4/5" : "w-full") : undefined;
               return (
                 <div
                   key={i}
-                  className={twMerge(
-                    clsx(
-                      "bg-border h-3",
-                      round ? "rounded-full" : "rounded",
-                      widthClass
-                    )
-                  )}
+                  className={getLineClass(round, cn("h-3", fallbackWidthClass))}
+                  style={widthToStyle(explicitWidth)}
                 />
               );
             })}
@@ -114,6 +63,4 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       </div>
     </div>
   );
-};
-
-export default Skeleton;
+}

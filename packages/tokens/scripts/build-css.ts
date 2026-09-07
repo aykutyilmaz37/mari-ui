@@ -106,7 +106,12 @@ function buildThemeInlineBlock(): string {
   const radiusLines = Object.keys(lightTheme.radius).map(
     (key) => `  --radius-mari-${key}: var(--mari-radius-${key});`
   );
-  return ["@theme inline {", ...colorLines, ...spacingLines, ...radiusLines, "}"].join("\n");
+  // z-index skalası da namespace'lenir: `z-mari-modal` gibi utility'ler
+  // üretilsin diye. Bugün `z-50`, `z-40`, `z-[999]`, `z-[9999]` rastgele
+  // dağılmıştı (Modal/Drawer/Toast/Tooltip/Dropdown hepsi kendi katmanını
+  // seçiyordu) — artık hepsi bu tek skaladan okur.
+  const zIndexLines = Object.keys(lightTheme.zIndex).map((key) => `  --z-mari-${key}: var(--mari-z-${key});`);
+  return ["@theme inline {", ...colorLines, ...spacingLines, ...radiusLines, ...zIndexLines, "}"].join("\n");
 }
 
 const GENERATED_HEADER = [

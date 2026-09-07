@@ -1,71 +1,38 @@
 import React from "react";
-import clsx from "clsx";
-import { BreadcrumbItemType } from "./types";
-import { twMerge } from "tailwind-merge";
+import type { BreadcrumbProps } from "./types";
+import { getItemClass, getNavClass } from "./utils";
 
-export type BreadcrumbProps = {
-  items?: BreadcrumbItemType[];
-  separator?: React.ReactNode;
-  className?: string;
-  itemRender?: (
-    route: BreadcrumbItemType,
-    params: Record<string, unknown>,
-    routes: BreadcrumbItemType[],
-    paths: string[]
-  ) => React.ReactNode;
-  params?: Record<string, unknown>;
-};
+export type { BreadcrumbProps };
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({
-  items = [],
-  separator = "/",
-  className,
-  itemRender,
-  params = {},
-}) => {
+// Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
+export function Breadcrumb({ items = [], separator = "/", className, itemRender, params = {} }: BreadcrumbProps) {
   const paths: string[] = [];
 
   return (
-    <nav
-      className={twMerge(
-        clsx("flex items-center text-sm text-gray-500", className)
-      )}
-    >
+    <nav className={getNavClass(className)}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
+        if (item.path) paths.push(item.path);
 
-        if (item.path) {
-          paths.push(item.path);
-        }
-
-        let content;
-
+        let content: React.ReactNode;
         if (itemRender) {
           content = itemRender(item, params, items, paths);
         } else if (item.href) {
           content = (
-            <a
-              href={item.href}
-              className={twMerge(clsx("hover:underline", item.className))}
-              onClick={item.onClick}
-            >
+            <a href={item.href} className={getItemClass(item.className)} onClick={item.onClick}>
               {item.title}
             </a>
           );
         } else {
           content = (
-            <span
-              className={twMerge(clsx(item.className))}
-              role="none"
-              onClick={item.onClick}
-            >
+            <span className={item.className} role="none" onClick={item.onClick}>
               {item.title}
             </span>
           );
         }
 
         return (
-          <span key={index} className="flex items-center">
+          <span key={item.path ?? item.href ?? index} className="flex items-center">
             {content}
             {!isLast && <span className="mx-2">{separator}</span>}
           </span>
@@ -73,6 +40,4 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
       })}
     </nav>
   );
-};
-
-export default Breadcrumb;
+}

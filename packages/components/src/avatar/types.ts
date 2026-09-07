@@ -1,12 +1,14 @@
-export type AvatarSize = number | "large" | "small" | "middle";
+import type React from "react";
+import type { Size } from "@mari-ui/core";
+
+export type AvatarSize = number | Size;
 export type AvatarShape = "circle" | "square";
-export type GetAvatarContent = {
-  src: string | React.ReactNode | null | undefined;
-  alt: string;
-  imgError: boolean;
-  handleImgError: () => void;
+
+export interface AvatarProps {
+  alt?: string;
   icon?: React.ReactNode;
-  noUser?: string;
-  width: number;
-  height: number;
-};
+  shape?: AvatarShape;
+  size?: AvatarSize;
+  src?: string | React.ReactNode;
+  onError?: () => boolean;
+}
