@@ -21,6 +21,7 @@
     "src/tooltip",
     "src/rate",
     "src/input",
+    "src/slider",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"
