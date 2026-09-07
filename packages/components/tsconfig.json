@@ -27,6 +27,7 @@
     "src/drawer",
     "src/tabs",
     "src/toast",
+    "src/upload",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

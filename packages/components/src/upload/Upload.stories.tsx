@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 import { Upload } from "./Upload";
-import { ToastProvider } from "../toast/useToast";
+import { ToastProvider } from "../toast";
 
 const meta: Meta<typeof Upload> = {
   title: "Components/Upload",
