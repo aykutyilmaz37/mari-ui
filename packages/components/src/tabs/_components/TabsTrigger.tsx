@@ -1,35 +1,21 @@
 "use client";
 
 import React, { forwardRef } from "react";
-import { Button } from "@/components/ui/button";
-import { useTabs } from "@/components/ui/tabs/useTabs";
-import clsx from "clsx";
+import { cn } from "@mari-ui/core";
+import { Button } from "../../button";
+import { useTabs } from "../useTabs";
 import { getTabsTriggerClassNames } from "../utils";
+import type { TabsTriggerProps } from "../types";
 
-export type TriggerProps = {
-  children: React.ReactNode;
-  value: string;
-  cardTabs?: boolean;
-};
+export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ children, value, cardTabs = false }, ref) => {
+  const { activeTab, setActiveTab, color } = useTabs();
+  const active = activeTab === value;
 
-const TabsTriggerComponent = forwardRef<HTMLButtonElement, TriggerProps>(
-  ({ children, value, cardTabs = false }, ref) => {
-    const { activeTab, setActiveTab } = useTabs();
-    const active = activeTab === value;
-    const handleTrigger = (value: string) => setActiveTab(value);
+  return (
+    <Button ref={ref} variant="ghost" className={cn(getTabsTriggerClassNames(active, cardTabs, color))} data-value={value} onClick={() => setActiveTab(value)}>
+      {children}
+    </Button>
+  );
+});
 
-    return (
-      <Button
-        ref={ref}
-        className={clsx(getTabsTriggerClassNames(active, cardTabs))}
-        data-value={value}
-        onClick={() => handleTrigger(value)}
-      >
-        {children}
-      </Button>
-    );
-  }
-);
-TabsTriggerComponent.displayName = "TabsTrigger";
-
-export const TabsTrigger = TabsTriggerComponent;
+TabsTrigger.displayName = "TabsTrigger";

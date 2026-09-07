@@ -1,19 +1,13 @@
 import React from "react";
-import { TabsList } from "./_components/TabsList";
-import { TabsContent } from "./_components/TabsContent";
+import type { TabsProps } from "./types";
 import { TabsProvider } from "./useTabs";
 
-type TabsProps = {
-  defaultActiveTab: string;
-  children: [
-    React.ReactElement<typeof TabsList>,
-    ...React.ReactElement<typeof TabsContent>[]
-  ];
-};
-export const Tabs: React.FC<TabsProps> = ({ defaultActiveTab, children }) => {
+export type { TabsProps };
+
+export function Tabs({ defaultActiveTab, activeTab, onChange, color, children }: TabsProps) {
   return (
-    <TabsProvider defaultActiveTab={defaultActiveTab}>
+    <TabsProvider defaultActiveTab={defaultActiveTab} activeTab={activeTab} onChange={onChange} color={color}>
       <div className="min-w-full">{children}</div>
     </TabsProvider>
   );
-};
+}

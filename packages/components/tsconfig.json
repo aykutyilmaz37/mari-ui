@@ -25,6 +25,7 @@
     "src/dropdown",
     "src/modal",
     "src/drawer",
+    "src/tabs",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

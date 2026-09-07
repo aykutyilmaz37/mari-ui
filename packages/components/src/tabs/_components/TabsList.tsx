@@ -1,35 +1,23 @@
 "use client";
 
-import React from "react";
-import { TabsTrigger, TriggerProps } from "./TabsTrigger";
-import clsx from "clsx";
-import { useTabs } from "@/components/ui/tabs/useTabs";
-import {
-  cloneWithRef,
-  calculateUnderlinePosition,
-} from "@/components/ui/tabs/utils";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import { cn } from "@mari-ui/core";
+import { useTabs } from "../useTabs";
+import { calculateUnderlinePosition, cloneWithRef, getUnderlineClass } from "../utils";
+import { TabsTrigger } from "./TabsTrigger";
+import type { TabsListProps, TabsTriggerProps } from "../types";
 
-type TabListProps = {
-  children: React.ReactElement<typeof TabsTrigger>[];
-  cardTabs?: boolean;
-};
+export function TabsList({ children, cardTabs = false }: TabsListProps) {
+  const { activeTab, color } = useTabs();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [underline, setUnderline] = useState({ width: 0, left: 0 });
+  const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-export const TabsList: React.FC<TabListProps> = ({
-  children,
-  cardTabs = false,
-}) => {
-  const { activeTab } = useTabs();
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const [underline, setUnderline] = React.useState({ width: 0, left: 0 });
-  const triggerRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
-
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     const childArray = React.Children.toArray(children);
     const idx = childArray.findIndex(
-      (child): child is React.ReactElement<TriggerProps> =>
-        React.isValidElement<TriggerProps>(child) &&
-        child.type === TabsTrigger &&
-        child.props.value === activeTab
+      (child): child is React.ReactElement<TabsTriggerProps> =>
+        React.isValidElement<TabsTriggerProps>(child) && child.type === TabsTrigger && child.props.value === activeTab
     );
     const button = triggerRefs.current[idx];
     if (button && containerRef.current) {
@@ -40,36 +28,20 @@ export const TabsList: React.FC<TabListProps> = ({
   }, [activeTab, children]);
 
   return (
-    <div
-      ref={containerRef}
-      className={clsx("w-full flex gap-1 items-center justify-start relative")}
-    >
+    <div ref={containerRef} className="w-full flex gap-1 items-center justify-start relative">
       {React.Children.map(children, (child, idx) => {
-        if (
-          React.isValidElement<TriggerProps>(child) &&
-          child.type === TabsTrigger
-        ) {
+        if (React.isValidElement<TabsTriggerProps>(child) && child.type === TabsTrigger) {
           return cloneWithRef(child, (el: HTMLButtonElement | null): void => {
             triggerRefs.current[idx] = el;
           });
         }
         return child;
       })}
-      <div
-        className={clsx(
-          "absolute bottom-0 h-[1px] z-50 transition-all duration-300",
-          cardTabs ? "bg-white" : "bg-info"
-        )}
-        style={{
-          width: `${underline.width}px`,
-          left: `${underline.left}px`,
-        }}
-      />
-      <div
-        className={clsx(
-          "absolute bottom-0 w-full h-[1px] bg-secondary transition-all duration-300"
-        )}
-      />
+      {/* Aktif tab göstergesi — lokal bir vurgu, sayfa genelindeki overlay
+          katmanlarından (dropdown/modal/toast) bağımsız olduğu için `z-10`
+          yeterli; `z-mari-*` namespace'i global katmanlar içindir. */}
+      <div className={cn("absolute bottom-0 h-[1px] z-10 transition-all duration-300", getUnderlineClass(cardTabs, color))} style={{ width: `${underline.width}px`, left: `${underline.left}px` }} />
+      <div className="absolute bottom-0 w-full h-[1px] bg-mari-border transition-all duration-300" />
     </div>
   );
-};
+}

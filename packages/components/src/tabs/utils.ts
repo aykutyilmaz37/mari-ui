@@ -1,33 +1,27 @@
 import React from "react";
+import { cn, type ColorRole } from "@mari-ui/core";
+import { bgSolidClass, bgSubtleClass, borderColorClass, textClass } from "../lib/colorClasses";
 
-export function cloneWithRef<T extends HTMLElement = HTMLElement>(
-  element: React.ReactElement,
-  ref: React.Ref<T>
-) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return React.cloneElement(element, { ref } as any);
+export function cloneWithRef<T extends HTMLElement = HTMLElement>(element: React.ReactElement, ref: React.Ref<T>) {
+  return React.cloneElement(element as React.ReactElement<{ ref?: React.Ref<T> }>, { ref });
 }
 
-export function calculateUnderlinePosition(
-  button: HTMLButtonElement,
-  container: HTMLDivElement
-): { width: number; left: number } {
+export function calculateUnderlinePosition(button: HTMLButtonElement, container: HTMLDivElement): { width: number; left: number } {
   const buttonRect = button.getBoundingClientRect();
   const containerRect = container.getBoundingClientRect();
-  return {
-    width: buttonRect.width,
-    left: buttonRect.left - containerRect.left,
-  };
+  return { width: buttonRect.width, left: buttonRect.left - containerRect.left };
 }
 
-export function getTabsTriggerClassNames(active: boolean, cardTabs: boolean) {
+export function getTabsTriggerClassNames(active: boolean, cardTabs: boolean, color: ColorRole): string {
   if (cardTabs && active) {
-    return "bg-white text-info border border-secondary border-b-0 rounded-b-none rounded-t-lg";
+    return cn("bg-mari-surface border border-b-0 rounded-b-none rounded-t-lg", borderColorClass[color], textClass[color]);
   }
-
   if (cardTabs && !active) {
-    return "border border-secondary border-b-0 rounded-b-none rounded-t-lg bg-secondary/20 text-secondary";
+    return cn("border border-b-0 rounded-b-none rounded-t-lg", borderColorClass[color], bgSubtleClass[color], textClass[color]);
   }
+  return active ? cn(textClass[color], "bg-mari-surface") : "text-mari-muted bg-mari-surface";
+}
 
-  return active ? "text-info bg-white" : "text-secondary bg-white";
+export function getUnderlineClass(cardTabs: boolean, color: ColorRole): string {
+  return cardTabs ? "bg-mari-surface" : bgSolidClass[color];
 }
