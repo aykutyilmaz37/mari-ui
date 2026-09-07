@@ -1,6 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toast } from "./Toast";
+import { ToastProvider, useToast } from "./useToast";
+import type { ToastPosition, ToastType } from "./types";
 
+/**
+ * Not: eskiden `Toast`'un kendisi `position` prop'u alıp kendi konumunu
+ * (`absolute` + translate) taşıyordu. Artık konum/istifleme
+ * `ToastProvider`ın işi (bkz. useToast.tsx) — `Toast`, `useToast()`
+ * aracılığıyla tetiklenen bir bildirimin GÖVDESİ. Bu story hem tekil
+ * görünümü hem gerçek `useToast()` akışını gösteriyor.
+ */
 const meta: Meta<typeof Toast> = {
   title: "Components/Toast",
   component: Toast,
@@ -8,45 +17,16 @@ const meta: Meta<typeof Toast> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Toast bileşeni, kullanıcılara bildirim göstermek için kullanılır. Farklı pozisyonlarda ve tiplerde görüntülenebilir.",
+        component: "Toast bileşeni, kullanıcılara bildirim göstermek için kullanılır. Gerçek kullanımda `useToast()` + `<ToastProvider>` ile tetiklenir.",
       },
     },
   },
   argTypes: {
-    title: {
-      description: "Toast başlığı",
-      control: { type: "text" },
-    },
-    description: {
-      description: "Toast açıklaması (opsiyonel)",
-      control: { type: "text" },
-    },
-    type: {
-      description: "Toast tipi",
-      control: { type: "select" },
-      options: ["success", "info", "error", "warning", "none"],
-    },
-    position: {
-      description: "Toast pozisyonu",
-      control: { type: "select" },
-      options: [
-        "top",
-        "bottom",
-        "topRight",
-        "topLeft",
-        "bottomLeft",
-        "bottomRight",
-      ],
-    },
-    closeIcon: {
-      description: "Kapatma ikonu gösterilsin mi?",
-      control: { type: "boolean" },
-    },
-    onClose: {
-      description: "Kapatma fonksiyonu",
-      action: "closed",
-    },
+    title: { description: "Toast başlığı", control: { type: "text" } },
+    description: { description: "Toast açıklaması (opsiyonel)", control: { type: "text" } },
+    type: { description: "Toast tipi", control: { type: "select" }, options: ["success", "info", "error", "warning", "none"] },
+    closeIcon: { description: "Kapatma ikonu gösterilsin mi?", control: { type: "boolean" } },
+    onClose: { description: "Kapatma fonksiyonu", action: "closed" },
   },
   tags: ["autodocs"],
 };
@@ -54,168 +34,66 @@ const meta: Meta<typeof Toast> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Varsayılan Toast
-export const Default: Story = {
-  args: {
-    title: "Başarılı!",
-    description: "İşleminiz başarıyla tamamlandı.",
-    type: "success",
-    position: "bottomRight",
-    closeIcon: true,
-  },
-};
-
-// Başarı Toast'u
 export const Success: Story = {
-  args: {
-    title: "Başarılı!",
-    description: "Verileriniz başarıyla kaydedildi.",
-    type: "success",
-    position: "bottomRight",
-  },
+  args: { title: "Başarılı!", description: "Verileriniz başarıyla kaydedildi.", type: "success" },
 };
 
-// Hata Toast'u
 export const Error: Story = {
-  args: {
-    title: "Hata!",
-    description: "Bir hata oluştu. Lütfen tekrar deneyin.",
-    type: "error",
-    position: "bottomRight",
-  },
+  args: { title: "Hata!", description: "Bir hata oluştu. Lütfen tekrar deneyin.", type: "error" },
 };
 
-// Uyarı Toast'u
 export const Warning: Story = {
-  args: {
-    title: "Uyarı!",
-    description: "Bu işlem geri alınamaz.",
-    type: "warning",
-    position: "bottomRight",
-  },
+  args: { title: "Uyarı!", description: "Bu işlem geri alınamaz.", type: "warning" },
 };
 
-// Bilgi Toast'u
 export const Info: Story = {
-  args: {
-    title: "Bilgi",
-    description: "Yeni bir güncelleme mevcut.",
-    type: "info",
-    position: "bottomRight",
-  },
+  args: { title: "Bilgi", description: "Yeni bir güncelleme mevcut.", type: "info" },
 };
 
-// Sadece Başlık
 export const TitleOnly: Story = {
-  args: {
-    title: "Sadece başlık",
-    type: "none",
-    position: "bottomRight",
-  },
+  args: { title: "Sadece başlık", type: "none" },
 };
 
-// Farklı Pozisyonlar
-export const TopRight: Story = {
-  args: {
-    title: "Sağ Üst",
-    description: "Bu toast sağ üst köşede görünür.",
-    type: "info",
-    position: "topRight",
-  },
-};
-
-export const TopLeft: Story = {
-  args: {
-    title: "Sol Üst",
-    description: "Bu toast sol üst köşede görünür.",
-    type: "info",
-    position: "topLeft",
-  },
-};
-
-export const BottomLeft: Story = {
-  args: {
-    title: "Sol Alt",
-    description: "Bu toast sol alt köşede görünür.",
-    type: "info",
-    position: "bottomLeft",
-  },
-};
-
-export const Top: Story = {
-  args: {
-    title: "Üst Orta",
-    description: "Bu toast üst orta kısımda görünür.",
-    type: "info",
-    position: "top",
-  },
-};
-
-export const Bottom: Story = {
-  args: {
-    title: "Alt Orta",
-    description: "Bu toast alt orta kısımda görünür.",
-    type: "info",
-    position: "bottom",
-  },
-};
-
-// Kapatma İkonu Olmadan
 export const WithoutCloseIcon: Story = {
-  args: {
-    title: "Kapatma İkonu Yok",
-    description: "Bu toast'ta kapatma ikonu bulunmuyor.",
-    type: "warning",
-    position: "bottomRight",
-    closeIcon: false,
-  },
+  args: { title: "Kapatma İkonu Yok", description: "Bu toast'ta kapatma ikonu bulunmuyor.", type: "warning", closeIcon: false },
 };
 
-// Uzun İçerik
-export const LongContent: Story = {
-  args: {
-    title: "Çok Uzun Başlık Bu Toast'un Başlığı Gerçekten Çok Uzun",
-    description:
-      "Bu toast'un açıklaması da oldukça uzun. Kullanıcıya detaylı bilgi vermek için yazılmış bir açıklama metni. Bu metin çok uzun olabilir ve toast bileşeni bu durumu nasıl handle ediyor görmek istiyoruz.",
-    type: "info",
-    position: "bottomRight",
-  },
-};
-
-// Tüm Toast Tipleri
 export const AllTypes: Story = {
   render: () => (
     <div className="space-y-4">
-      <Toast
-        title="Başarılı"
-        description="İşlem başarıyla tamamlandı"
-        type="success"
-        position="topRight"
-      />
-      <Toast
-        title="Hata"
-        description="Bir hata oluştu"
-        type="error"
-        position="topRight"
-      />
-      <Toast
-        title="Uyarı"
-        description="Dikkatli olun"
-        type="warning"
-        position="topRight"
-      />
-      <Toast
-        title="Bilgi"
-        description="Bilgilendirme mesajı"
-        type="info"
-        position="topRight"
-      />
-      <Toast
-        title="Varsayılan"
-        description="Tip belirtilmemiş"
-        type="none"
-        position="topRight"
-      />
+      <Toast title="Başarılı" description="İşlem başarıyla tamamlandı" type="success" />
+      <Toast title="Hata" description="Bir hata oluştu" type="error" />
+      <Toast title="Uyarı" description="Dikkatli olun" type="warning" />
+      <Toast title="Bilgi" description="Bilgilendirme mesajı" type="info" />
+      <Toast title="Varsayılan" description="Tip belirtilmemiş" type="none" />
     </div>
+  ),
+};
+
+const DemoTrigger = ({ position, type }: { position: ToastPosition; type: ToastType }) => {
+  const { showToast } = useToast();
+  return (
+    <button
+      className="px-4 py-2 rounded bg-mari-primary-solid text-mari-primary-solid-contrast"
+      onClick={() => showToast({ title: "Bildirim", description: `Konum: ${position}`, type, position })}
+    >
+      Toast Göster ({position})
+    </button>
+  );
+};
+
+export const LiveWithProvider: Story = {
+  parameters: { layout: "fullscreen" },
+  render: () => (
+    <ToastProvider>
+      <div className="grid grid-cols-3 gap-4 p-10">
+        <DemoTrigger position="topLeft" type="info" />
+        <DemoTrigger position="top" type="success" />
+        <DemoTrigger position="topRight" type="warning" />
+        <DemoTrigger position="bottomLeft" type="error" />
+        <DemoTrigger position="bottom" type="none" />
+        <DemoTrigger position="bottomRight" type="success" />
+      </div>
+    </ToastProvider>
   ),
 };

@@ -1,73 +1,45 @@
 "use client";
 
-import React from "react";
-import { PositionType, ToastType } from "./types";
+import React, { useEffect, useState } from "react";
 import { XIcon } from "lucide-react";
-import { getType } from "./useToastHook";
-import clsx from "clsx";
-import { getPositionInClass, getPositionOutClass } from "./utils";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@mari-ui/core";
+import type { ToastProps } from "./types";
+import { getToastIcon } from "./utils";
 
-type ToastProps = {
-  title: string;
-  description?: string;
-  closeIcon?: boolean;
-  position?: PositionType;
-  type?: ToastType;
-  onClose?: () => void;
-};
+export type { ToastProps };
 
-export const Toast: React.FC<ToastProps> = ({
-  title,
-  description,
-  type = "none",
-  onClose,
-  position = "bottomRight",
-  closeIcon = true,
-}) => {
-  const TypeIcon = getType(type);
-  const PositionInClass = getPositionInClass(position);
-  const PositionOutClass = getPositionOutClass(position);
-  const [classNames, setClassNames] = React.useState(PositionOutClass);
+/**
+ * Eskiden konumunu (top/bottom/.../translate/opacity) KENDİSİ taşıyordu —
+ * bu yüzden aynı köşede aynı anda birden fazla toast render edildiğinde
+ * hepsi TAM AYNI koordinata `absolute` konumlanıp birbirinin üstüne
+ * biniyordu (bkz. plan denetimi ve utils.ts'teki not). Artık Toast sadece
+ * kendi giriş animasyonundan (fade+scale) sorumlu; konum/istifleme işini
+ * `ToastContainer` (bkz. useToast.tsx) flexbox ile yapıyor.
+ */
+export function Toast({ title, description, type = "none", onClose, closeIcon = true }: ToastProps) {
+  const [visible, setVisible] = useState(false);
+  const icon = getToastIcon(type);
 
-  React.useEffect(() => {
-    const enterTimeout = setTimeout(() => {
-      setClassNames(PositionInClass);
-    }, 10);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 10);
+    return () => clearTimeout(t);
+  }, []);
 
-    const exitTimeout = setTimeout(() => {
-      setClassNames(PositionOutClass);
-      setTimeout(() => {}, 500);
-    }, 3000);
-
-    return () => {
-      clearTimeout(enterTimeout);
-      clearTimeout(exitTimeout);
-    };
-  }, [PositionInClass, PositionOutClass]);
   return (
     <div
-      className={twMerge(
-        clsx(
-          "bg-white absolute transition-all duration-500 ease-out transform shadow-2xl p-5 min-w-2xs min-h-16 flex items-start justify-between",
-          classNames
-        )
+      className={cn(
+        "pointer-events-auto bg-mari-surface transition-all duration-300 ease-out transform shadow-2xl p-5 min-w-2xs min-h-16 flex items-start justify-between gap-3 rounded-lg border border-mari-border",
+        visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
       )}
     >
       <div className="flex items-start gap-2">
-        <span className="mt-1">{TypeIcon}</span>
+        {icon && <span className="mt-1">{icon}</span>}
         <div className="flex flex-col items-start gap-1">
-          <h1 className="text-2xl font-bold text-primary">{title}</h1>
-          <h6 className="text-sm text-secondary">{description}</h6>
+          <h1 className="text-lg font-bold text-mari-foreground">{title}</h1>
+          {description && <h6 className="text-sm text-mari-muted">{description}</h6>}
         </div>
       </div>
-      {closeIcon && (
-        <XIcon
-          className="cursor-pointer hover:text-error"
-          size={16}
-          onClick={onClose}
-        />
-      )}
+      {closeIcon && <XIcon className="cursor-pointer text-mari-muted hover:text-mari-error shrink-0" size={16} onClick={onClose} />}
     </div>
   );
-};
+}

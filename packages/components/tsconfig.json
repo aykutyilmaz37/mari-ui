@@ -26,6 +26,7 @@
     "src/modal",
     "src/drawer",
     "src/tabs",
+    "src/toast",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"
