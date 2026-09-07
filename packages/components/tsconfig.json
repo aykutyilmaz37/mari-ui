@@ -1,0 +1,12 @@
+{
+  "extends": "@mari-ui/tsconfig/react-library.json",
+  "include": [
+    "src/lib",
+    "src/styles.css",
+    "src/button",
+    "vitest.config.ts",
+    "vitest.setup.ts",
+    "tsup.config.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}

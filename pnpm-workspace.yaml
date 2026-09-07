@@ -6,4 +6,5 @@ packages:
 # Bkz: https://docs.expo.dev/guides/monorepos/
 nodeLinker: hoisted
 allowBuilds:
+  '@parcel/watcher': true
   esbuild: true

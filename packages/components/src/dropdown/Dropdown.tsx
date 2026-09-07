@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { DropdownTrigger } from "./_components/DropdownTrigger";
 import { DropdownContent } from "./_components/DropdownContent";

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { JSX } from "react";
 import { twMerge } from "tailwind-merge";
 import { getColumnClass } from "../utils";

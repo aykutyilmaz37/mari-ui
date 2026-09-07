@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { formatBytes, getFileExtension, isFileValid } from "./utils";
 import { useToast } from "../toast";

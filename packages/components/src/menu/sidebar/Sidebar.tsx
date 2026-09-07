@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { MenuItemType, SidebarPosition, SidebarVariant } from "../types";
 import Image from "next/image";

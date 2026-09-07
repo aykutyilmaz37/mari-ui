@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useTabs } from "@/components/ui/tabs/useTabs";

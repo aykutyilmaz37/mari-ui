@@ -1,3 +1,5 @@
+"use client";
+
 const TOAST_TIMEOUT = 5000;
 
 const generateToastId = () => Date.now();

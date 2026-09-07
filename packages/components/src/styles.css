@@ -1,0 +1,14 @@
+/**
+ * @mari-ui/components'in KENDİ derleme zamanı Tailwind girişi. Bu dosya
+ * tüketiciye ship edilmez; `tailwindcss` CLI bunu derleyip `dist/styles.css`
+ * üretir. Tüketici projede Tailwind kurulu olması gerekmez — onlar sadece
+ * derlenmiş `dist/styles.css`'i import eder.
+ *
+ * `@source` burada KASITLI olarak açık yazıldı: `@mari-ui/tokens/
+ * tailwind-theme.css` içindeki `@import "tailwindcss"` node_modules
+ * altında olduğu için Tailwind'in otomatik içerik taraması oradan başlar,
+ * bizim `src/**\/*.tsx` dosyalarımızı bulamaz. `@source` bunu açıkça
+ * düzeltir.
+ */
+@import "@mari-ui/tokens/tailwind-theme.css";
+@source "./**/*.{ts,tsx}";

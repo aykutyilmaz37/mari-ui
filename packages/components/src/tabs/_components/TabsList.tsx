@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { TabsTrigger, TriggerProps } from "./TabsTrigger";
 import clsx from "clsx";

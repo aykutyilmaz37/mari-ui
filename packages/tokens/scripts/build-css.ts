@@ -23,6 +23,17 @@ import type { SemanticColorRole } from "../src/semantic/deriveColorRole";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = resolve(__dirname, "../dist");
 
+/**
+ * CSS custom property adları noktalı olabilir (`--mari-space-0.5`) ama
+ * bazı minifier/optimizer'lar (bu build'de fiilen görüldü: Tailwind'in
+ * lightningcss tabanlı optimize adımı) noktayı sayı token'ı sanıp uyarı
+ * veriyor. `spacing` skalasındaki `0.5`/`1.5`/`2.5` gibi kesirli anahtarlar
+ * için noktayı alt çizgiye çeviriyoruz — değer değişmiyor, sadece adı.
+ */
+function cssSafeKey(key: string): string {
+  return key.replace(".", "_");
+}
+
 function colorRoleToVars(prefix: string, role: SemanticColorRole): string[] {
   return [
     `  --mari-color-${prefix}: ${role.text};`,
@@ -54,7 +65,8 @@ function themeToVarLines(theme: Theme): string[] {
 
 function nonColorVarLines(theme: Theme): string[] {
   const lines: string[] = [];
-  for (const [key, value] of Object.entries(theme.spacing)) lines.push(`  --mari-space-${key}: ${value};`);
+  for (const [key, value] of Object.entries(theme.spacing))
+    lines.push(`  --mari-space-${cssSafeKey(key)}: ${value};`);
   for (const [key, value] of Object.entries(theme.radius)) lines.push(`  --mari-radius-${key}: ${value};`);
   for (const [key, value] of Object.entries(theme.fontSize)) lines.push(`  --mari-font-size-${key}: ${value};`);
   for (const [key, value] of Object.entries(theme.fontWeight)) lines.push(`  --mari-font-weight-${key}: ${value};`);
@@ -89,7 +101,7 @@ const THEME_TOKEN_KEYS = [
 function buildThemeInlineBlock(): string {
   const colorLines = THEME_TOKEN_KEYS.map((key) => `  --color-mari-${key}: var(--mari-color-${key});`);
   const spacingLines = Object.keys(lightTheme.spacing).map(
-    (key) => `  --spacing-mari-${key}: var(--mari-space-${key});`
+    (key) => `  --spacing-mari-${cssSafeKey(key)}: var(--mari-space-${cssSafeKey(key)});`
   );
   const radiusLines = Object.keys(lightTheme.radius).map(
     (key) => `  --radius-mari-${key}: var(--mari-radius-${key});`

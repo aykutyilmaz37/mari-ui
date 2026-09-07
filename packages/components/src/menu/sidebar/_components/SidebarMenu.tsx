@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { SidebarItem } from "./SidebarItem";
 import { findActiveKeyByRoute } from "../../utils";

@@ -1,0 +1,72 @@
+{
+  "name": "@mari-ui/components",
+  "version": "0.1.0",
+  "description": "mari-ui'ın web / React Server Components uyumlu bileşen kütüphanesi.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/button.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsup && pnpm build:css",
+    "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "embla-carousel-react": {
+      "optional": true
+    },
+    "embla-carousel-autoplay": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@mari-ui/core": "workspace:*",
+    "@mari-ui/tokens": "workspace:*",
+    "@react-input/mask": "^2.0.4",
+    "lucide-react": "^0.511.0"
+  },
+  "devDependencies": {
+    "@mari-ui/eslint-config": "workspace:*",
+    "@mari-ui/tsconfig": "workspace:*",
+    "@storybook/react": "^8.6.14",
+    "@tailwindcss/cli": "^4.1.7",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
+    "esbuild-plugin-preserve-directives": "^0.0.11",
+    "eslint": "^9.17.0",
+    "jsdom": "^25.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.7",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.8"
+  }
+}

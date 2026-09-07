@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { useTabs } from "@/components/ui/tabs/useTabs";
 

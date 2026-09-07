@@ -1,3 +1,5 @@
+"use client";
+
 import { twMerge } from "tailwind-merge";
 import { getPlacementClass } from "../utils";
 import { Placement } from "../types";
