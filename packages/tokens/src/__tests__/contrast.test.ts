@@ -11,14 +11,7 @@ import type { ColorRole } from "../semantic/colors";
  * regresyonun sessizce geri gelmesini engeller.
  */
 
-const ROLES: Exclude<ColorRole, "neutral">[] = [
-  "primary",
-  "accent",
-  "success",
-  "error",
-  "warning",
-  "info",
-];
+const ROLES: ColorRole[] = ["primary", "accent", "success", "error", "warning", "info", "neutral"];
 
 function expectAA(label: string, bg: string, fg: string) {
   const ratio = contrastRatio(bg as `#${string}`, fg as `#${string}`);
@@ -40,21 +33,21 @@ function testTheme(theme: Theme, name: string) {
         expectAA(`${role}.subtle`, colorRole.subtle, colorRole.subtleContrast);
       });
 
-      it(`${role}.text sayfa yüzeyinde (${theme.color.neutral.surface}) AA'yı geçer`, () => {
-        expectAA(`${role}.text on surface`, theme.color.neutral.surface, colorRole.text);
+      it(`${role}.text sayfa yüzeyinde (${theme.color.canvas.surface}) AA'yı geçer`, () => {
+        expectAA(`${role}.text on surface`, theme.color.canvas.surface, colorRole.text);
       });
     }
 
     it("foreground sayfa yüzeyinde AAA'yı geçer (gövde metni)", () => {
       const ratio = contrastRatio(
-        theme.color.neutral.surface as `#${string}`,
-        theme.color.neutral.foreground as `#${string}`
+        theme.color.canvas.surface as `#${string}`,
+        theme.color.canvas.foreground as `#${string}`
       );
       expect(ratio).toBeGreaterThanOrEqual(7);
     });
 
     it("muted metin sayfa yüzeyinde AA'yı geçer (ikincil metin)", () => {
-      expectAA("muted on surface", theme.color.neutral.surface, theme.color.neutral.muted);
+      expectAA("muted on surface", theme.color.canvas.surface, theme.color.canvas.muted);
     });
   });
 }

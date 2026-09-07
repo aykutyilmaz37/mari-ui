@@ -37,17 +37,17 @@ function colorRoleToVars(prefix: string, role: SemanticColorRole): string[] {
 
 function themeToVarLines(theme: Theme): string[] {
   const lines: string[] = [];
-  for (const role of ["primary", "accent", "success", "error", "warning", "info"] as const) {
+  for (const role of ["primary", "accent", "success", "error", "warning", "info", "neutral"] as const) {
     lines.push(...colorRoleToVars(role, theme.color[role]));
   }
-  const n = theme.color.neutral;
+  const c = theme.color.canvas;
   lines.push(
-    `  --mari-color-surface: ${n.surface};`,
-    `  --mari-color-surface-alt: ${n.surfaceAlt};`,
-    `  --mari-color-border: ${n.border};`,
-    `  --mari-color-foreground: ${n.foreground};`,
-    `  --mari-color-muted: ${n.muted};`,
-    `  --mari-color-disabled: ${n.disabled};`
+    `  --mari-color-surface: ${c.surface};`,
+    `  --mari-color-surface-alt: ${c.surfaceAlt};`,
+    `  --mari-color-border: ${c.border};`,
+    `  --mari-color-foreground: ${c.foreground};`,
+    `  --mari-color-muted: ${c.muted};`,
+    `  --mari-color-disabled: ${c.disabled};`
   );
   return lines;
 }
@@ -69,7 +69,7 @@ function nonColorVarLines(theme: Theme): string[] {
 }
 
 const THEME_TOKEN_KEYS = [
-  ...["primary", "accent", "success", "error", "warning", "info"].flatMap((role) => [
+  ...["primary", "accent", "success", "error", "warning", "info", "neutral"].flatMap((role) => [
     `${role}`,
     `${role}-solid`,
     `${role}-solid-contrast`,
