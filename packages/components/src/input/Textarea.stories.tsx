@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Textarea } from "@/components/ui/input";
-import type { TextareaProps } from "@/components/ui/input";
+import { Textarea } from "./index";
+import type { TextareaProps } from "./index";
 import { useState } from "react";
 
 const meta: Meta<typeof Textarea> = {
@@ -10,7 +10,7 @@ const meta: Meta<typeof Textarea> = {
   argTypes: {
     size: {
       control: "select",
-      options: ["large", "middle", "small"],
+      options: ["lg", "md", "sm"],
     },
     variant: {
       control: "select",
@@ -39,7 +39,7 @@ export const Playground: StoryObj<TextareaProps> = {
     placeholder: "Type your message...",
     allowClear: true,
     showCount: true,
-    size: "middle",
+    size: "md",
     variant: "outlined",
     status: undefined,
     disabled: false,
@@ -56,7 +56,7 @@ export const AllVariants: StoryObj = {
       "borderless",
       "underlined",
     ] as const;
-    const sizes = ["large", "middle", "small"] as const;
+    const sizes = ["lg", "md", "sm"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">

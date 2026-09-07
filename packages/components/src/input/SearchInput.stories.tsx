@@ -9,7 +9,7 @@ const meta: Meta<typeof SearchInput> = {
     placeholder: { control: "text" },
     size: {
       control: "select",
-      options: ["large", "middle", "small"],
+      options: ["lg", "md", "sm"],
     },
     variant: {
       control: "select",
@@ -39,7 +39,7 @@ export const Playground: Story = {
   args: {
     placeholder: "Search...",
     allowClear: true,
-    size: "middle",
+    size: "md",
     variant: "outlined",
     showCount: false,
     maxLength: 50,

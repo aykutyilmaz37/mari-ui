@@ -1,47 +1,40 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Input, type InputProps } from "@/components/ui/input";
-import { twMerge } from "tailwind-merge";
-import clsx from "clsx";
+import { cn, type ColorRole, type Size } from "@mari-ui/core";
+import { Input } from "./Input";
+import type { InputShape, InputVariant } from "./types";
 
-export type OtpInputProps = Omit<
-  InputProps,
-  | "onChange"
-  | "onPressEnter"
-  | "onClear"
-  | "allowClear"
-  | "icon"
-  | "iconPosition"
-  | "showCount"
-  | "count"
-  | "type"
-  | "prefix"
-  | "suffix"
-  | "autoComplete"
-  | "visibilityToggle"
-  | "visibilityIconRender"
-  | "mask"
-  | "replacement"
-> & {
+export interface OtpInputProps {
   length?: number;
   value?: string;
   defaultValue?: string;
+  disabled?: boolean;
+  size?: Size;
+  shape?: InputShape;
+  variant?: InputVariant | "outlined" | "filled" | "borderless";
+  color?: ColorRole;
+  /** @deprecated `color` kullanın. */
+  status?: "error" | "warning";
   onChange?: (value: string) => void;
   onInput?: (value: string[]) => void;
   mask?: boolean;
   formatter?: (val: string) => string;
   separator?: React.ReactNode | ((i: number) => React.ReactNode);
-};
+  className?: string;
+}
 
-export const OtpInput: React.FC<OtpInputProps> = ({
+const WIDTH_CLASS: Record<Size, string> = { sm: "w-6 p-0", md: "w-8 p-0", lg: "w-10 p-0" };
+
+export function OtpInput({
   length = 6,
   value,
   defaultValue = "",
   disabled = false,
-  size = "middle",
+  size = "md",
   shape = "default",
-  variant = "outlined",
+  variant,
+  color,
   status,
   onChange,
   onInput,
@@ -49,12 +42,8 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   formatter,
   separator,
   className,
-  ...rest
-}) => {
-  const [otpValues, setOtpValues] = useState<string[]>(
-    Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? "")
-  );
-
+}: OtpInputProps) {
+  const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   const focusInput = (index: number) => {
@@ -68,25 +57,16 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   const handleInput = (i: number, rawValue: string) => {
     const chars = rawValue.replace(/\s/g, "").split("");
     const updated = [...otpValues];
-
     for (let j = 0; j < chars.length; j++) {
-      if (i + j < length) {
-        updated[i + j] = chars[j];
-      }
+      if (i + j < length) updated[i + j] = chars[j] ?? "";
     }
-
     setOtpValues(updated);
     onInput?.(updated);
     if (!updated.includes("")) onChange?.(updated.join(""));
-
-    const nextIndex = Math.min(i + chars.length, length - 1);
-    focusInput(nextIndex);
+    focusInput(Math.min(i + chars.length, length - 1));
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    i: number
-  ) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, i: number) => {
     const input = e.currentTarget;
     const cursorAtStart = input.selectionStart === 0;
     const cursorAtEnd = input.selectionStart === input.value.length;
@@ -106,12 +86,10 @@ export const OtpInput: React.FC<OtpInputProps> = ({
         focusInput(i - 1);
       }
     }
-
     if (e.key === "ArrowLeft" && cursorAtStart && i > 0) {
       e.preventDefault();
       focusInput(i - 1);
     }
-
     if (e.key === "ArrowRight" && cursorAtEnd && i < length - 1) {
       e.preventDefault();
       focusInput(i + 1);
@@ -121,33 +99,24 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   useEffect(() => {
     if (value !== undefined) {
       const split = value.split("").slice(0, length);
-      setOtpValues((prev) =>
-        Array.from({ length }, (_, i) => split[i] ?? prev[i] ?? "")
-      );
+      setOtpValues((prev) => Array.from({ length }, (_, i) => split[i] ?? prev[i] ?? ""));
     }
   }, [value, length]);
 
   return (
     <div className="flex items-center gap-2">
       {Array.from({ length }).map((_, i) => {
-        const rawValue = otpValues[i];
-        let displayValue = rawValue;
-        if (formatter) {
-          displayValue = formatter(rawValue);
-        } else if (mask && rawValue) {
-          displayValue = "•";
-        }
+        const rawValue = otpValues[i] ?? "";
+        const displayValue = formatter ? formatter(rawValue) : mask && rawValue ? "•" : rawValue;
 
         return (
-          <React.Fragment key={`otp-${i}-${rawValue}`}>
+          <React.Fragment key={`otp-${i}`}>
             <Input
               ref={(el) => {
                 inputsRef.current[i] = el;
               }}
               value={displayValue}
-              onInput={(e) =>
-                handleInput(i, (e.target as HTMLInputElement).value)
-              }
+              onInput={(e) => handleInput(i, (e.target as HTMLInputElement).value)}
               onKeyDown={(e) => handleKeyDown(e, i)}
               onFocus={(e) => e.currentTarget.select()}
               maxLength={1}
@@ -155,28 +124,15 @@ export const OtpInput: React.FC<OtpInputProps> = ({
               size={size}
               shape={shape}
               variant={variant}
+              color={color}
               status={status}
-              className={twMerge(
-                clsx(
-                  {
-                    "w-6 p-0": size === "small",
-                    "w-8 p-0": size === "middle",
-                    "w-10 p-0": size === "large",
-                  },
-                  className
-                )
-              )}
+              className={cn(WIDTH_CLASS[size], className)}
               classNames={{ input: "w-full text-center" }}
-              {...rest}
             />
-            {separator && i < length - 1 && (
-              <span>
-                {typeof separator === "function" ? separator(i) : separator}
-              </span>
-            )}
+            {separator && i < length - 1 && <span>{typeof separator === "function" ? separator(i) : separator}</span>}
           </React.Fragment>
         );
       })}
     </div>
   );
-};
+}

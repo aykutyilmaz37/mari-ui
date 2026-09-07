@@ -1,40 +1,44 @@
 "use client";
-import React, {
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-  forwardRef,
-} from "react";
-import clsx from "clsx";
-import { twMerge } from "tailwind-merge";
-import {
-  getTextareaSizeClasses,
-  getVariantClasses,
-  getStatusClasses,
-  isClearable,
-  getShapeClasses,
-} from "./utils";
-import { TextareaAutoSize } from "./types";
-import { InputProps } from "./Input";
 
-export type TextareaProps = Omit<
-  InputProps,
-  | "type"
-  | "onChange"
-  | "onPressEnter"
-  | "onClear"
-  | "icon"
-  | "iconPosition"
-  | "onKeyDown"
-  | "onFocus"
-  | "onInput"
-> & {
-  autoSize?: TextareaAutoSize;
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { cn, useControllableState } from "@mari-ui/core";
+import type { InputClassNames, InputShape, InputVariant, InputCountConfig, TextareaAutoSize } from "./types";
+import { getShapeClasses, getTextareaSizeClasses, getVariantClasses, isClearable, resolveInputColor, resolveLegacyInputVariant } from "./utils";
+import type { ColorRole, Size } from "@mari-ui/core";
+
+export interface TextareaProps {
+  placeholder?: string;
+  value?: string;
+  defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onClear?: () => void;
-};
+  onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
+  allowClear?: boolean | { clearIcon?: React.ReactNode };
+  disabled?: boolean;
+  size?: Size;
+  shape?: InputShape;
+  variant?: InputVariant | "outlined" | "filled" | "borderless";
+  color?: ColorRole;
+  /** @deprecated `color` kullanın. */
+  status?: "error" | "warning";
+  maxLength?: number;
+  showCount?: boolean;
+  count?: InputCountConfig;
+  id?: string;
+  classNames?: InputClassNames;
+  className?: string;
+  autoSize?: TextareaAutoSize;
+}
 
+/**
+ * Eskiden `TextareaProps = Omit<InputProps, ...>` ile `Input`tan türetiliyordu
+ * ama `onBlur`/`onFocus` Omit listesinde YOKTU — `InputProps.onBlur`'un tipi
+ * `FormEvent<HTMLInputElement>` idi ve `{...rest}` ile `<textarea>`'ya
+ * yayıldığında (`FocusEventHandler<HTMLTextAreaElement>` beklenen yerde)
+ * gerçek bir TS hatasıydı (bkz. plan denetimi). Artık Textarea kendi tam
+ * tip setini tanımlıyor, `Input`tan miras almıyor.
+ */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
@@ -49,35 +53,35 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       maxLength,
       showCount,
       status,
-      size = "middle",
+      color,
+      size = "md",
       shape = "default",
-      variant = "outlined",
+      variant,
       value,
       onChange,
       onClear,
+      onFocus,
+      onBlur,
       autoSize = false,
-      ...rest
     },
     ref
   ) => {
+    const resolvedVariant = resolveLegacyInputVariant(variant);
+    const resolvedColor = resolveInputColor(color, status);
     const innerRef = useRef<HTMLTextAreaElement>(null);
-
     useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
 
-    const [internalValue, setInternalValue] = useState(value ?? defaultValue);
-    const currentValue = value ?? internalValue;
+    const [currentValue, setCurrentValue] = useControllableState<string>({ value, defaultValue });
     const charCount = currentValue.length;
-    const showClear = isClearable(allowClear) && currentValue && !disabled;
+    const showClear = isClearable(allowClear) && Boolean(currentValue) && !disabled;
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (value === undefined) {
-        setInternalValue(e.target.value);
-      }
+      setCurrentValue(e.target.value);
       onChange?.(e);
     };
 
     const handleClear = () => {
-      setInternalValue("");
+      setCurrentValue("");
       onClear?.();
     };
 
@@ -89,22 +93,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       }
     }, [currentValue, autoSize]);
 
-    const wrapperClass = twMerge(
-      clsx(
-        "flex gap-2 items-start rounded-md transition-colors duration-300",
-        getTextareaSizeClasses(size),
-        getVariantClasses(variant),
-        getStatusClasses(status),
-        getShapeClasses(shape),
-        disabled && "opacity-50 pointer-events-none",
-        classNames.wrapper,
-        className
-      )
-    );
-
-    const textareaClass = clsx(
-      "w-full resize-none bg-transparent focus:outline-none",
-      classNames.input
+    const wrapperClass = cn(
+      "flex gap-2 items-start rounded-md transition-colors duration-300",
+      getTextareaSizeClasses(size),
+      getVariantClasses(resolvedVariant, resolvedColor),
+      getShapeClasses(shape),
+      disabled && "opacity-50 pointer-events-none",
+      classNames.wrapper,
+      className
     );
 
     return (
@@ -115,46 +111,26 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             ref={innerRef}
             value={currentValue}
             onChange={handleChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
             placeholder={placeholder}
             maxLength={maxLength}
             disabled={disabled}
-            className={textareaClass}
-            {...rest}
+            className={cn("w-full resize-none bg-transparent focus:outline-none", classNames.input)}
           />
-
           {allowClear && (
             <button
               type="button"
               onClick={handleClear}
-              className={twMerge(
-                clsx(
-                  "shrink-0 invisible cursor-pointer",
-                  { visible: showClear },
-                  classNames.clear
-                )
-              )}
+              className={cn("shrink-0 invisible cursor-pointer", showClear && "visible", classNames.clear)}
             >
-              {typeof allowClear === "object" && allowClear.clearIcon
-                ? allowClear.clearIcon
-                : "×"}
+              {typeof allowClear === "object" && allowClear.clearIcon ? allowClear.clearIcon : "×"}
             </button>
           )}
         </div>
-
         {(showCount || count?.formatter) && (
-          <span
-            className={clsx(
-              "text-muted text-xs flex flex-none items-center justify-end",
-              classNames.count
-            )}
-          >
-            {count?.formatter
-              ? count.formatter({
-                  value: currentValue,
-                  count: charCount,
-                  maxLength,
-                })
-              : `${charCount}${maxLength ? ` / ${maxLength}` : ""}`}
+          <span className={cn("text-mari-muted text-xs flex flex-none items-center justify-end", classNames.count)}>
+            {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : `${charCount}${maxLength ? ` / ${maxLength}` : ""}`}
           </span>
         )}
       </div>

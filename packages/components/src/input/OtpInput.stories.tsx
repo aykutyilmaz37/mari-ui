@@ -14,7 +14,7 @@ const meta: Meta<typeof OtpInput> = {
     disabled: { control: "boolean" },
     size: {
       control: "select",
-      options: ["small", "middle", "large"],
+      options: ["sm", "md", "lg"],
     },
     variant: {
       control: "select",
@@ -39,7 +39,7 @@ export const Playground: Story = {
     length: 6,
     mask: false,
     disabled: false,
-    size: "middle",
+    size: "md",
     variant: "outlined",
     status: undefined,
   },
@@ -49,7 +49,7 @@ export const Masked: Story = {
   args: {
     length: 4,
     mask: true,
-    size: "middle",
+    size: "md",
     variant: "filled",
   },
 };
@@ -59,7 +59,7 @@ export const WithSeparators: Story = {
     length: 6,
     mask: false,
     separator: "-",
-    size: "large",
+    size: "lg",
   },
 };
 

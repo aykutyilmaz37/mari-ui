@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Input } from "@/components/ui/input";
-import type { InputProps } from "@/components/ui/input";
+import { Input } from "./index";
+import type { InputProps } from "./index";
 import { EyeIcon, EyeOffIcon, PhoneIcon, Search, XIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -12,7 +12,7 @@ const meta: Meta<typeof Input> = {
     placeholder: { control: "text" },
     size: {
       control: "select",
-      options: ["large", "middle", "small"],
+      options: ["lg", "md", "sm"],
     },
     variant: {
       control: "select",
@@ -74,7 +74,7 @@ export const Playground: StoryObj<InputProps & { enableMask: boolean }> = {
     placeholder: "Type something...",
     allowClear: false,
     showCount: false,
-    size: "middle",
+    size: "md",
     variant: "outlined",
     maxLength: 100,
     enableMask: false,
@@ -95,7 +95,7 @@ export const AllVariants: StoryObj = {
       "borderless",
       "underlined",
     ] as const;
-    const sizes = ["large", "middle", "small"] as const;
+    const sizes = ["lg", "md", "sm"] as const;
 
     return (
       <div className="flex flex-col gap-6 p-6">
@@ -192,7 +192,7 @@ export const MaskedInput: StoryObj<InputProps> = {
       clearIcon: <XIcon size={16} />,
     },
     showCount: true,
-    size: "middle",
+    size: "md",
     variant: "outlined",
     maxLength: 16,
   },

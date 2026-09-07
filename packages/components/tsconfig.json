@@ -20,6 +20,7 @@
     "src/switch",
     "src/tooltip",
     "src/rate",
+    "src/input",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

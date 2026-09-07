@@ -1,4 +1,4 @@
 {
   "_comment": "Faz 3 kapsamında yeni @mari-ui/core sözleşmesine taşınmış component'lerin listesi. tsconfig.json ve tsup.config.ts bu listeyi okur. Henüz burada olmayan component klasörleri eski (mergen-next dönemi) kodu içerir ve @/ path alias'ı ile Next.js paketlerine (next/navigation, next/image) bağımlı olduğu için build/typecheck kapsamı dışındadır — 'bitti' değil, 'sırada' anlamına gelir.",
-  "components": ["button", "divider", "typography", "empty", "tag", "card", "avatar", "breadcrumb", "skeleton", "loading", "pagination", "steps", "checkbox", "radio", "switch", "tooltip", "rate"]
+  "components": ["button", "divider", "typography", "empty", "tag", "card", "avatar", "breadcrumb", "skeleton", "loading", "pagination", "steps", "checkbox", "radio", "switch", "tooltip", "rate", "input"]
 }
