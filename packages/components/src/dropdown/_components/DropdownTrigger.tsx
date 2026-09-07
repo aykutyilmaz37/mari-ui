@@ -1,36 +1,17 @@
 "use client";
 
 import React from "react";
-import { twMerge } from "tailwind-merge";
-import { TriggerVariant } from "../types";
-import { getVariantClasses } from "../utils";
+import { cn } from "@mari-ui/core";
+import type { DropdownTriggerProps } from "../types";
 import { useDropdown } from "../useDropdown";
+import { getTriggerClasses } from "../utils";
 
-type DropdownTriggerProps = {
-  children: React.ReactNode;
-  className?: string;
-  variant?: TriggerVariant;
-};
-
-export const DropdownTrigger: React.FC<DropdownTriggerProps> = ({
-  children,
-  className,
-  variant = "none",
-}) => {
+export function DropdownTrigger({ children, className, color, variant }: DropdownTriggerProps) {
   const { visible, setVisible } = useDropdown();
 
-  const handleTrigger = () => setVisible(!visible);
-
   return (
-    <button
-      className={twMerge(
-        "cursor-pointer",
-        className,
-        getVariantClasses(variant)
-      )}
-      onClick={handleTrigger}
-    >
+    <button type="button" className={cn("cursor-pointer", getTriggerClasses(color, variant), className)} onClick={() => setVisible(!visible)}>
       {children}
     </button>
   );
-};
+}

@@ -1,29 +1,18 @@
 "use client";
 
-import { twMerge } from "tailwind-merge";
-import { getPlacementClass } from "../utils";
-import { Placement } from "../types";
 import React from "react";
+import { cn } from "@mari-ui/core";
+import type { DropdownContentProps } from "../types";
 import { useDropdown } from "../useDropdown";
+import { getPlacementClass } from "../utils";
 
-type DropdownContentProps = {
-  placement?: Placement;
-  className?: string;
-  children: React.ReactNode;
-  customVisible?: boolean;
-};
-export const DropdownContent: React.FC<DropdownContentProps> = ({
-  placement = "bottom",
-  children,
-  className,
-  customVisible,
-}) => {
+export function DropdownContent({ placement = "bottom", children, className, customVisible }: DropdownContentProps) {
   const { visible } = useDropdown();
   return (
     <div className="p-1">
       <div
-        className={twMerge(
-          "absolute text-wrap z-[999] max-w-2xl text-sm transition-opacity duration-200 p-4 border border-secondary-light shadow-2xl rounded-xl",
+        className={cn(
+          "absolute text-wrap z-mari-dropdown max-w-2xl text-sm transition-opacity duration-200 p-4 border border-mari-border bg-mari-surface shadow-2xl rounded-xl",
           getPlacementClass(placement),
           (customVisible === false || (!customVisible && !visible)) && "hidden",
           className
@@ -33,4 +22,4 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
       </div>
     </div>
   );
-};
+}

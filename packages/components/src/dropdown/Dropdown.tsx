@@ -1,25 +1,13 @@
 "use client";
 
 import React from "react";
-import { DropdownTrigger } from "./_components/DropdownTrigger";
-import { DropdownContent } from "./_components/DropdownContent";
-import { useDropdown } from "./useDropdown";
+import type { DropdownProps } from "./types";
+import { DropdownProvider, useDropdown } from "./useDropdown";
 
-type DropdownProps = {
-  children:
-    | [
-        React.ReactElement<typeof DropdownTrigger>,
-        React.ReactElement<typeof DropdownContent>
-      ]
-    | React.ReactElement<typeof DropdownContent>;
-  hover?: boolean;
-};
-export const Dropdown: React.FC<DropdownProps> = ({
-  children,
-  hover = false,
-}) => {
+export type { DropdownProps };
+
+function DropdownRoot({ children, hover = false }: DropdownProps) {
   const { setVisible } = useDropdown();
-
   return (
     <div
       role="menu"
@@ -31,4 +19,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
       {children}
     </div>
   );
-};
+}
+
+/** `DropdownProvider`ı kendi içine gömer — tüketicinin ayrıca sarması gerekmez. */
+export function Dropdown(props: DropdownProps) {
+  return (
+    <DropdownProvider>
+      <DropdownRoot {...props} />
+    </DropdownProvider>
+  );
+}

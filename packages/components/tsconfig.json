@@ -22,6 +22,7 @@
     "src/rate",
     "src/input",
     "src/slider",
+    "src/dropdown",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"
