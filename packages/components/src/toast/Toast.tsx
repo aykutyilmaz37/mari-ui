@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { PositionType, ToastType } from "./types";
 import { XIcon } from "lucide-react";

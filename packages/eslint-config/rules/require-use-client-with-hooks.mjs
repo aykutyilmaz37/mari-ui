@@ -42,11 +42,15 @@ const rule = {
       CallExpression(node) {
         if (trigger || hasUseClientDirective) return;
         const callee = node.callee;
+        // `useX()` VE `React.useX()` biçimlerinin ikisini de yakalar. Üye
+        // erişiminde (`React.useRef()`) hook adı PROPERTY'dedir, OBJECT'te
+        // değil — bu ayrım kaçırılırsa (önceki sürümde olduğu gibi)
+        // `React.useRef`/`React.useEffect` kullanan dosyalar hiç yakalanmaz.
         const name =
           callee.type === "Identifier"
             ? callee.name
-            : callee.type === "MemberExpression" && callee.object.type === "Identifier"
-              ? callee.object.name
+            : callee.type === "MemberExpression" && callee.property.type === "Identifier"
+              ? callee.property.name
               : null;
         if (name && HOOK_CALL_PATTERN.test(name)) {
           trigger = `${name}(...)`;
