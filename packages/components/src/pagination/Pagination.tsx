@@ -1,49 +1,36 @@
 import React from "react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 import { Button } from "../button";
-import clsx from "clsx";
-import { getGeneratePageNumbers } from "./utils";
+import type { PaginationProps } from "./types";
+import { getGeneratePageNumbers, resolvePageClickTarget } from "./utils";
 
-export type PaginationProps = {
-  currentPage: number;
-  pageSize: number;
-  totalItems: number;
-  onPageChange: (page: number) => void;
-};
+export type { PaginationProps };
 
-export const Pagination: React.FC<PaginationProps> = ({
-  currentPage,
-  pageSize,
-  totalItems,
-  onPageChange,
-}) => {
+/**
+ * Hook yok, browser API yok — saf sunum, "use client" gerekmiyor. Eskiden
+ * Button sadece tıklama davranışı için kullanılıp görseli tamamen elle
+ * `className` ile eziliyordu (`bg-primary-light`, `bg-foreground
+ * text-background` gibi ham class'larla). Artık Button'ın kendi
+ * `color`/`variant` ekseni kullanılıyor.
+ */
+export function Pagination({ currentPage, pageSize, totalItems, onPageChange }: PaginationProps) {
   const totalPages = Math.ceil(totalItems / pageSize);
   const pages = getGeneratePageNumbers(totalPages, currentPage);
 
-  const handleClick = (
-    page: number | { type: "ellipsis"; direction: "left" | "right" }
-  ) => {
-    if (typeof page === "object" && page.type === "ellipsis") {
-      const targetPage =
-        page.direction === "left"
-          ? Math.max(currentPage - 5, 1)
-          : Math.min(currentPage + 5, totalPages);
-      onPageChange(targetPage);
-    } else {
-      onPageChange(Number(page));
-    }
+  const handleClick = (page: number | { type: "ellipsis"; direction: "left" | "right" }) => {
+    onPageChange(resolvePageClickTarget(page, currentPage, totalPages));
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <nav className="flex items-center gap-2" aria-label="Sayfalama">
       <Button
+        variant="ghost"
+        color="neutral"
+        size="sm"
+        shape="circle"
         onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}
-        className="p-2 text-foreground disabled:opacity-50 bg-transparent hover:bg-primary-light"
+        aria-label="Önceki sayfa"
       >
         <ChevronLeftIcon size={16} />
       </Button>
@@ -55,21 +42,22 @@ export const Pagination: React.FC<PaginationProps> = ({
         return isEllipsis ? (
           <Button
             key={`ellipsis-${page.direction}-${index}`}
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            shape="circle"
             onClick={() => handleClick(page)}
-            className="px-3 py-1 rounded text-muted bg-background-alt"
           >
             <MoreHorizontalIcon size={16} />
           </Button>
         ) : (
           <Button
             key={`page-${page}`}
+            variant={isActive ? "solid" : "ghost"}
+            color={isActive ? "primary" : "neutral"}
+            size="sm"
+            shape="circle"
             onClick={() => handleClick(page)}
-            className={clsx(
-              "px-3 py-1 rounded transition",
-              isActive
-                ? "bg-foreground text-background"
-                : "text-foreground bg-transparent hover:bg-primary-light"
-            )}
           >
             {Number(page)}
           </Button>
@@ -77,12 +65,16 @@ export const Pagination: React.FC<PaginationProps> = ({
       })}
 
       <Button
+        variant="ghost"
+        color="neutral"
+        size="sm"
+        shape="circle"
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage === totalPages}
-        className="p-2 text-foreground disabled:opacity-50 bg-transparent hover:bg-primary-light"
+        aria-label="Sonraki sayfa"
       >
         <ChevronRightIcon size={16} />
       </Button>
-    </div>
+    </nav>
   );
-};
+}

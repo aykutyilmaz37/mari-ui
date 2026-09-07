@@ -37,6 +37,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     onDragOver,
     onDrop,
     children,
+    ...rest
   } = props;
 
   const { color: resolvedColor, variant: resolvedVariant } = resolveLegacyButtonProps({
@@ -74,6 +75,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   );
 
   const commonProps = {
+    ...rest,
     className: rootClasses,
     onClick,
     onMouseEnter,

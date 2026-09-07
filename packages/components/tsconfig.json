@@ -13,6 +13,8 @@
     "src/breadcrumb",
     "src/skeleton",
     "src/loading",
+    "src/pagination",
+    "src/steps",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

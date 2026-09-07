@@ -1,61 +1,31 @@
-import clsx from "clsx";
-import { CheckIcon, DotIcon } from "lucide-react";
 import React from "react";
+import { CheckIcon, DotIcon } from "lucide-react";
+import { cn, resolveColorVariant } from "@mari-ui/core";
 import { Button } from "../button";
-import { StepData } from "./types";
-import { getStepIconClass } from "./utils";
+import { colorVariantToClassName, textClass } from "../lib/colorClasses";
+import type { StepItem, StepsProps } from "./types";
+import { getLineClass, getStepIconClass } from "./utils";
 
-type StepProps = {
-  data: StepData;
-  lineColor?: string;
-  currentStep: number;
-  onChange?: (step: number) => void;
-  vertical?: boolean;
-  dot?: boolean;
-  dotColor?: string;
-  content?: React.ReactNode;
-};
+export type { StepsProps };
 
-export const Steps: React.FC<StepProps> = ({
-  data,
-  lineColor = "bg-info",
-  currentStep,
-  onChange,
-  vertical,
-  dot,
-  dotColor = "text-info",
-  content,
-}) => {
-  const renderStepIcon = (item: StepData[0], i: number): React.ReactNode => {
+/**
+ * Hook yok, browser API yok (`onChange` bir PROP) — saf sunum, "use client"
+ * gerekmiyor. Eskiden `ml-[22px]` gibi bir kaçış değeri vardı (bkz. plan);
+ * en yakın sabit spacing skalasına (`ml-6`) çekildi.
+ */
+export function Steps({ data, color = "primary", currentStep, onChange, vertical, dot, content }: StepsProps) {
+  const solidClass = colorVariantToClassName(resolveColorVariant(color, "solid"));
+
+  const renderStepIcon = (item: StepItem, i: number): React.ReactNode => {
     if (dot) {
-      return (
-        <DotIcon
-          size={48}
-          className={getStepIconClass(currentStep, item.step, dotColor)}
-        />
-      );
+      return <DotIcon size={48} className={getStepIconClass(currentStep, item.step, color)} />;
     }
-
     if (item.icon) {
       const Icon = item.icon;
-      return (
-        <Icon
-          size={vertical ? 24 : 32}
-          className={clsx(
-            currentStep === item.step ? "text-info" : "text-primary"
-          )}
-        />
-      );
+      return <Icon size={vertical ? 24 : 32} className={currentStep === item.step ? textClass[color] : "text-mari-muted"} />;
     }
-
     return (
-      <span
-        className={clsx(
-          vertical ? "px-1.5 py-0.5" : "px-2",
-          "rounded-full text-white",
-          currentStep === item.step ? "bg-info" : "bg-primary"
-        )}
-      >
+      <span className={cn(vertical ? "px-1.5 py-0.5" : "px-2", "rounded-full", colorVariantToClassName(resolveColorVariant(color, "solid")))}>
         {i + 1}
       </span>
     );
@@ -67,64 +37,45 @@ export const Steps: React.FC<StepProps> = ({
         <div
           key={item.step}
           role="none"
-          className={clsx(
-            "flex flex-row gap-2",
-            currentStep === item.step &&
-              "scale-y-105 transition-all duration-300 font-bold text-primary"
-          )}
+          className={cn("flex flex-row gap-2", currentStep === item.step && cn("scale-y-105 transition-all duration-300 font-bold", textClass[color]))}
           onClick={() => onChange?.(item.step)}
         >
           <div>
             {renderStepIcon(item, i)}
-
             <div
-              className={clsx(
+              className={cn(
                 "min-h-32 w-0.5 rounded",
                 i === data.length - 1 && "hidden",
-                currentStep > item.step ? lineColor : "bg-primary",
-                !dot ? "ml-2.5" : "ml-[22px]"
+                getLineClass(currentStep > item.step, color),
+                !dot ? "ml-2.5" : "ml-6"
               )}
             />
           </div>
-
           <div className="flex flex-col cursor-pointer">
             <span>{item.title}</span>
-            <span className="text-sm text-secondary w-fit truncate">
-              {item.description}
-            </span>
+            <span className="text-sm text-mari-muted w-fit truncate">{item.description}</span>
           </div>
         </div>
       ))}
     </div>
   );
 
-  const renderHorizontalContent = (item: StepData[0], i: number) => {
+  const renderHorizontalContent = (item: StepItem, i: number) => {
     const isCompleted = currentStep > item.step;
-
     return (
-      <div className={clsx("flex items-center gap-2 truncate")}>
+      <div className="flex items-center gap-2 truncate">
         {isCompleted ? (
-          <div className="bg-info/50 p-1 transition-all rounded-full text-white">
+          <div className={cn("p-1 transition-all rounded-full", solidClass)}>
             <CheckIcon size={16} />
           </div>
         ) : (
           renderStepIcon(item, i)
         )}
-
         <div className="flex flex-col cursor-pointer pt-5">
           <span>{item.title}</span>
-          <span className="text-sm text-secondary w-fit truncate">
-            {item.description}
-          </span>
+          <span className="text-sm text-mari-muted w-fit truncate">{item.description}</span>
         </div>
-
-        <div
-          className={clsx(
-            "w-full h-0.5 rounded",
-            i === data.length - 1 && "hidden",
-            isCompleted ? lineColor : "bg-primary"
-          )}
-        />
+        <div className={cn("w-full h-0.5 rounded", i === data.length - 1 && "hidden", getLineClass(isCompleted, color))} />
       </div>
     );
   };
@@ -136,32 +87,17 @@ export const Steps: React.FC<StepProps> = ({
           key={item.step}
           role="none"
           onClick={() => onChange?.(item.step)}
-          className={clsx(
-            "flex-1 min-w-0",
-            currentStep === item.step &&
-              "scale-102 transition-all font-bold text-primary"
-          )}
+          className={cn("flex-1 min-w-0", currentStep === item.step && cn("scale-102 transition-all font-bold", textClass[color]))}
         >
           {dot ? (
             <div>
               <div className="flex items-center">
-                <DotIcon
-                  size={48}
-                  className={getStepIconClass(currentStep, item.step, dotColor)}
-                />
-                <div
-                  className={clsx(
-                    "w-full h-0.5 rounded",
-                    i === data.length - 1 && "hidden",
-                    currentStep > item.step ? lineColor : "bg-primary"
-                  )}
-                />
+                <DotIcon size={48} className={getStepIconClass(currentStep, item.step, color)} />
+                <div className={cn("w-full h-0.5 rounded", i === data.length - 1 && "hidden", getLineClass(currentStep > item.step, color))} />
               </div>
               <div className="flex flex-col">
                 <span>{item.title}</span>
-                <span className="text-sm text-secondary w-fit truncate">
-                  {item.description}
-                </span>
+                <span className="text-sm text-mari-muted w-fit truncate">{item.description}</span>
               </div>
             </div>
           ) : (
@@ -175,27 +111,15 @@ export const Steps: React.FC<StepProps> = ({
   return (
     <div className="w-full h-full space-y-2">
       {vertical ? renderVerticalSteps() : renderHorizontalSteps()}
-      {/* content */}
-
       {content}
-
-      {/* next & previous buttons */}
       <div className="flex justify-start gap-4">
-        <Button
-          type="primary"
-          disabled={currentStep === 1}
-          onClick={() => onChange?.(currentStep - 1)}
-        >
+        <Button color="neutral" variant="outline" disabled={currentStep === 1} onClick={() => onChange?.(currentStep - 1)}>
           Geri
         </Button>
-        <Button
-          type="info"
-          disabled={currentStep === data.length}
-          onClick={() => onChange?.(currentStep + 1)}
-        >
+        <Button color={color} disabled={currentStep === data.length} onClick={() => onChange?.(currentStep + 1)}>
           İleri
         </Button>
       </div>
     </div>
   );
-};
+}

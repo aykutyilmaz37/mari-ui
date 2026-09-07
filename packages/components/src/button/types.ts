@@ -30,7 +30,22 @@ export interface LegacyButtonProps {
   type?: LegacyButtonType;
 }
 
-export interface ButtonProps extends LegacyButtonProps {
+/**
+ * `aria-*`, `id`, `data-*` gibi native attribute'lar — eskiden Button
+ * bunları hiç desteklemiyordu (kapalı bir prop objesiydi), bu yüzden
+ * `aria-label` gibi temel erişilebilirlik prop'ları bile geçirilemiyordu.
+ * `<button>`'a özgü attribute'lar (`form`, `formAction` gibi) YOK — Button
+ * `href` verildiğinde `<a>` render eder, ikisi için ortak olmayan
+ * attribute'ları desteklemek gerekmiyor.
+ */
+type NativeCommonAttributes = React.AriaAttributes & {
+  id?: string;
+  role?: string;
+  tabIndex?: number;
+  [dataAttribute: `data-${string}`]: unknown;
+};
+
+export interface ButtonProps extends LegacyButtonProps, NativeCommonAttributes {
   /** Semantik renk. Varsayılan: `primary`. */
   color?: ColorRole;
   /**

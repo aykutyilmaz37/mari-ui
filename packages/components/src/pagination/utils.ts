@@ -1,48 +1,31 @@
-import { PageItem } from "./types";
+import type { PageItem } from "./types";
 
-export const getGeneratePageNumbers = (
-  totalPages: number,
-  currentPage: number
-): PageItem[] => {
+export function getGeneratePageNumbers(totalPages: number, currentPage: number): PageItem[] {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
   const pages: PageItem[] = [1];
-
   const startPage = Math.max(2, currentPage - 2);
   const endPage = Math.min(totalPages - 1, currentPage + 2);
 
-  if (startPage > 2) {
-    pages.push({ type: "ellipsis", direction: "left" });
-  }
-
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i);
-  }
-
-  if (endPage < totalPages - 1) {
-    pages.push({ type: "ellipsis", direction: "right" });
-  }
-
+  if (startPage > 2) pages.push({ type: "ellipsis", direction: "left" });
+  for (let i = startPage; i <= endPage; i++) pages.push(i);
+  if (endPage < totalPages - 1) pages.push({ type: "ellipsis", direction: "right" });
   pages.push(totalPages);
 
   return pages;
-};
+}
 
-export const getHandleClick = (
+// Not: eskiden bu dosyada bir de `getHandleClick` vardı — hiçbir yerde
+// import edilmiyordu, Pagination.tsx kendi (biraz farklı sıçrama miktarına
+// sahip) tıklama mantığını inline tutuyordu. Ölü kod silindi, tek gerçek
+// mantık aşağıda.
+export function resolvePageClickTarget(
   page: PageItem,
   currentPage: number,
-  totalPages: number,
-  onPageChange: (page: number) => void
-) => {
-  if (typeof page === "number" && page !== currentPage) {
-    onPageChange(page);
-  } else if (typeof page === "object" && page.type === "ellipsis") {
-    if (page.direction === "right") {
-      onPageChange(Math.min(currentPage + 3, totalPages));
-    } else if (page.direction === "left") {
-      onPageChange(Math.max(currentPage - 3, 1));
-    }
-  }
-};
+  totalPages: number
+): number {
+  if (typeof page === "number") return page;
+  return page.direction === "left" ? Math.max(currentPage - 5, 1) : Math.min(currentPage + 5, totalPages);
+}

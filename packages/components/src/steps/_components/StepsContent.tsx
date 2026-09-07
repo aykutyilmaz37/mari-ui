@@ -1,29 +1,20 @@
 import React from "react";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@mari-ui/core";
 
-type StepsContentProps = {
+export interface StepsContentProps {
   value: number;
   currentSteps: number;
   children: React.ReactNode;
   className?: string;
-};
-export const StepsContent: React.FC<StepsContentProps> = ({
-  value,
-  currentSteps,
-  children,
-  className,
-}) => {
+}
+
+// Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
+export function StepsContent({ value, currentSteps, children, className }: StepsContentProps) {
   return (
     currentSteps === value && (
-      <div
-        className={twMerge(
-          "w-fit p-2 border border-dashed border-primary bg-secondary-light rounded",
-          className
-        )}
-        data-value={value}
-      >
+      <div className={cn("w-fit p-2 border border-dashed border-mari-primary-border bg-mari-primary-subtle rounded", className)} data-value={value}>
         {children}
       </div>
     )
   );
-};
+}
