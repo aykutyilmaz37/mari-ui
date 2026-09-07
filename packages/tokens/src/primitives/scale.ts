@@ -106,3 +106,9 @@ export const breakpoint = {
   xl: "1280px",
   "2xl": "1536px",
 } as const;
+
+// `@mari-ui/core`'un radius/spacing gibi skalaların anahtarlarını yeniden
+// tanımlamak yerine buradan türetebilmesi için anahtar tipleri.
+export type SpacingScale = keyof typeof spacing;
+export type RadiusScale = keyof typeof radius;
+export type FontSizeScale = keyof typeof fontSize;

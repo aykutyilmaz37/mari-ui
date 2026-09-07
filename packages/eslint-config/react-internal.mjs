@@ -24,8 +24,9 @@ export const reactInternalConfig = [
     },
   },
   {
-    // Story dosyaları ve tip tanımları bu kuraldan muaftır.
-    files: ["**/*.stories.tsx", "**/*.d.ts", "**/types.ts"],
+    // Story, test dosyaları ve tip tanımları bu kuraldan muaftır — bunlar
+    // kütüphanenin tüketiciye dağıttığı component'ler değil.
+    files: ["**/*.stories.tsx", "**/*.d.ts", "**/types.ts", "**/*.test.ts", "**/*.test.tsx"],
     rules: {
       "mari-ui/require-use-client-with-hooks": "off",
     },
