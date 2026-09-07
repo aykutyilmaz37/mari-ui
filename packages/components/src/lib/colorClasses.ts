@@ -84,6 +84,27 @@ export const borderColorClass: Record<ColorRole, string> = {
   neutral: "border-mari-neutral-border",
 };
 
+/** SVG `fill`/`stroke` için — örn. Tooltip'in ok işareti. */
+export const fillSolidClass: Record<ColorRole, string> = {
+  primary: "fill-mari-primary-solid",
+  accent: "fill-mari-accent-solid",
+  success: "fill-mari-success-solid",
+  error: "fill-mari-error-solid",
+  warning: "fill-mari-warning-solid",
+  info: "fill-mari-info-solid",
+  neutral: "fill-mari-neutral-solid",
+};
+
+export const strokeSolidClass: Record<ColorRole, string> = {
+  primary: "stroke-mari-primary-solid",
+  accent: "stroke-mari-accent-solid",
+  success: "stroke-mari-success-solid",
+  error: "stroke-mari-error-solid",
+  warning: "stroke-mari-warning-solid",
+  info: "stroke-mari-info-solid",
+  neutral: "stroke-mari-neutral-solid",
+};
+
 /**
  * `resolveColorVariant()`'ın döndürdüğü soyut token referanslarını gerçek
  * Tailwind class'larına çevirir. Web renderer'ının (bu paketin) tek görevi

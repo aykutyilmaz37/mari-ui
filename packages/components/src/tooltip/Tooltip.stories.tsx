@@ -34,16 +34,16 @@ export const AllPlacements: Story = {
 export const Variants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4 p-4 mt-10">
-      <Tooltip content="Primary tooltip" variant="primary" trigger={<Info />} />
-      <Tooltip content="Success tooltip" variant="success" trigger={<Info />} />
-      <Tooltip content="Warning tooltip" variant="warning" trigger={<Info />} />
+      <Tooltip content="Primary tooltip" color="primary" trigger={<Info />} />
+      <Tooltip content="Success tooltip" color="success" trigger={<Info />} />
+      <Tooltip content="Warning tooltip" color="warning" trigger={<Info />} />
       <Tooltip
         content="Secondary tooltip"
-        variant="secondary"
+        color="neutral"
         trigger={<Info />}
       />
-      <Tooltip content="Info tooltip" variant="info" trigger={<Info />} />
-      <Tooltip content="Error tooltip" variant="error" trigger={<Info />} />
+      <Tooltip content="Info tooltip" color="info" trigger={<Info />} />
+      <Tooltip content="Error tooltip" color="error" trigger={<Info />} />
     </div>
   ),
 };

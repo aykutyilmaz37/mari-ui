@@ -18,6 +18,8 @@
     "src/checkbox",
     "src/radio",
     "src/switch",
+    "src/tooltip",
+    "src/rate",
     "vitest.config.ts",
     "vitest.setup.ts",
     "tsup.config.ts"

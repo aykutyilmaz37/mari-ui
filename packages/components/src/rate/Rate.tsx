@@ -1,31 +1,21 @@
 "use client";
 
-import React from "react";
-import clsx from "clsx";
+import React, { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
+import { cn, useControllableState } from "@mari-ui/core";
+import { textClass } from "../lib/colorClasses";
+import type { RateProps } from "./types";
 import { handleClick, handleMouseEnter, handleMouseLeave } from "./utils";
-import { twMerge } from "tailwind-merge";
 
-export interface RateProps {
-  allowClear?: boolean;
-  allowHalf?: boolean;
-  autoFocus?: boolean;
-  character?: React.ReactNode | ((props: RateProps) => React.ReactNode);
-  className?: string;
-  count?: number;
-  defaultValue?: number;
-  disabled?: boolean;
-  value?: number;
-  onBlur?: () => void;
-  onChange?: (value: number) => void;
-  onFocus?: () => void;
-  onHoverChange?: (value: number) => void;
-  onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-  characterSize?: number;
-  characterColor?: string;
-}
+export type { RateProps };
 
-export const Rate: React.FC<RateProps> = ({
+/**
+ * Eskiden `types.ts` tamamen boştu (bkz. plan denetimi). `value`/
+ * `defaultValue` artık `useControllableState` ile yönetiliyor — eskiden
+ * `isControlled = value !== undefined` elle hesaplanıp `handleClick`'e
+ * ayrıca geçiriliyordu.
+ */
+export function Rate({
   allowClear = true,
   allowHalf = false,
   autoFocus = false,
@@ -41,64 +31,38 @@ export const Rate: React.FC<RateProps> = ({
   onHoverChange,
   onKeyDown,
   characterSize = 24,
+  color = "warning",
   characterColor,
-}) => {
-  const [hoverValue, setHoverValue] = React.useState<number | undefined>(
-    undefined
-  );
-  const [internalValue, setInternalValue] =
-    React.useState<number>(defaultValue);
-  const rootRef = React.useRef<HTMLDivElement>(null);
-  const isControlled = value !== undefined;
-  const displayValue = isControlled ? value : internalValue;
+}: RateProps) {
+  const [hoverValue, setHoverValue] = useState<number | undefined>(undefined);
+  const [displayValue, setDisplayValue] = useControllableState<number>({ value, defaultValue, onChange });
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    if (autoFocus && rootRef.current) {
-      rootRef.current.focus();
-    }
+  useEffect(() => {
+    if (autoFocus) rootRef.current?.focus();
   }, [autoFocus]);
+
+  const colorClass = textClass[color];
 
   const stars = Array.from({ length: count }, (_, i) => {
     const currentValue = hoverValue ?? displayValue;
     const isFull = currentValue >= i + 1;
     const isHalf = !isFull && allowHalf && currentValue >= i + 0.5;
 
-    let icon: React.ReactNode;
-    if (typeof character === "function") {
-      icon = character({});
-    } else if (character) {
-      icon = character;
-    } else {
-      icon = (
-        <Star fill="currentColor" stroke="currentColor" size={characterSize} />
-      );
-    }
+    const icon =
+      typeof character === "function" ? character({}) : character ?? <Star fill="currentColor" stroke="currentColor" size={characterSize} />;
 
     let starOverlay: React.ReactNode = null;
     if (isFull) {
       starOverlay = (
-        <span
-          className={twMerge(
-            clsx(
-              "absolute inset-0 w-full h-full pointer-events-none",
-              "text-yellow-400"
-            )
-          )}
-          style={{ color: characterColor }}
-          aria-hidden
-        >
+        <span className={cn("absolute inset-0 w-full h-full pointer-events-none", colorClass)} style={{ color: characterColor }} aria-hidden>
           {icon}
         </span>
       );
     } else if (isHalf) {
       starOverlay = (
         <span
-          className={twMerge(
-            clsx(
-              "absolute inset-0 h-full w-1/2 overflow-hidden pointer-events-none",
-              "text-yellow-400"
-            )
-          )}
+          className={cn("absolute inset-0 h-full w-1/2 overflow-hidden pointer-events-none", colorClass)}
           style={{ color: characterColor, left: 0 }}
           aria-hidden
         >
@@ -113,54 +77,28 @@ export const Rate: React.FC<RateProps> = ({
         role="none"
         onClick={(e) => {
           if (!disabled) {
-            handleClick(e, i, {
-              allowHalf,
-              allowClear,
-              displayValue,
-              isControlled,
-              setInternalValue,
-              onChange,
-            });
+            // `onChange` burada BİLİNÇLİ OLARAK geçirilmiyor: `setDisplayValue`
+            // (useControllableState'ten) zaten kendi `onChange`'ini tetikliyor —
+            // ikisini birden geçirmek tüketicinin callback'ini ÇİFT çağırırdı.
+            handleClick(e, i, { allowHalf, allowClear, displayValue, isControlled: false, setInternalValue: setDisplayValue });
           }
         }}
-        onMouseEnter={(e) => {
-          if (!disabled) {
-            handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange);
-          }
-        }}
-        onMouseMove={(e) => {
-          if (!disabled) {
-            handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange);
-          }
-        }}
-        onMouseLeave={() => {
-          if (!disabled) {
-            handleMouseLeave(setHoverValue, onHoverChange);
-          }
-        }}
-        className={twMerge(
-          clsx(
-            "relative inline-flex items-center justify-center select-none",
-            {
-              "text-gray-300": !isFull && !isHalf,
-              "text-yellow-400": isFull || isHalf,
-              "cursor-not-allowed": disabled,
-              "cursor-pointer": !disabled,
-            },
-            className
-          )
+        onMouseEnter={(e) => !disabled && handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange)}
+        onMouseMove={(e) => !disabled && handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange)}
+        onMouseLeave={() => !disabled && handleMouseLeave(setHoverValue, onHoverChange)}
+        className={cn(
+          "relative inline-flex items-center justify-center select-none",
+          !isFull && !isHalf && "text-mari-border",
+          (isFull || isHalf) && colorClass,
+          disabled ? "cursor-not-allowed" : "cursor-pointer",
+          className
         )}
         style={{ fontSize: characterSize }}
       >
-        <span
-          className="absolute inset-0 w-full h-full text-gray-300 pointer-events-none"
-          aria-hidden
-        >
+        <span className="absolute inset-0 w-full h-full text-mari-border pointer-events-none" aria-hidden>
           {icon}
         </span>
-
         {starOverlay}
-
         <span className="invisible" aria-hidden>
           {icon}
         </span>
@@ -169,18 +107,8 @@ export const Rate: React.FC<RateProps> = ({
   });
 
   return (
-    <div
-      ref={rootRef}
-      className={twMerge(clsx("flex gap-1 outline-none", className))}
-      tabIndex={disabled ? -1 : 0}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      onKeyDown={onKeyDown}
-      role="none"
-    >
+    <div ref={rootRef} className={cn("flex gap-1 outline-none", className)} tabIndex={disabled ? -1 : 0} onFocus={onFocus} onBlur={onBlur} onKeyDown={onKeyDown} role="none">
       {stars}
     </div>
   );
-};
-
-export default Rate;
+}
