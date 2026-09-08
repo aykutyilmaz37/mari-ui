@@ -13,6 +13,17 @@ const meta: Meta<typeof Dropdown> = {
   title: "Components/Dropdown",
   component: Dropdown,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Bir tetikleyiciye tıklandığında (veya `hover` ile üzerine gelindiğinde) açılan içerik paneli. Compound-" +
+          "component deseni kullanır: `<Dropdown><DropdownTrigger/><DropdownContent/></Dropdown>`. `Dropdown` kendi " +
+          "state Provider'ını içine gömer — ayrıca sarmalamanıza gerek yok. `DropdownTrigger`'a renk/variant " +
+          "verilmezse (varsayılan) düz/renksiz render edilir.",
+      },
+    },
+  },
 };
 
 export default meta;
@@ -20,6 +31,7 @@ export default meta;
 type Story = StoryObj<typeof Dropdown>;
 
 export const Bottom: Story = {
+  name: "Alt",
   render: () => (
     <Dropdown>
       <DropdownTrigger color="primary" variant="solid">
@@ -33,6 +45,7 @@ export const Bottom: Story = {
 };
 
 export const Top: Story = {
+  name: "Üst",
   render: () => (
     <Dropdown>
       <DropdownTrigger color="primary" variant="solid">
@@ -46,6 +59,7 @@ export const Top: Story = {
 };
 
 export const Plain: Story = {
+  name: "Renksiz",
   render: () => (
     <Dropdown>
       <DropdownTrigger>Renksiz Trigger</DropdownTrigger>
@@ -57,6 +71,7 @@ export const Plain: Story = {
 };
 
 export const Hoverable: Story = {
+  name: "Hover ile",
   render: () => (
     <Dropdown hover>
       <DropdownTrigger color="neutral" variant="soft">

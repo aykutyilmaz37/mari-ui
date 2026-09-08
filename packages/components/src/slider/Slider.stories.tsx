@@ -1,24 +1,46 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Slider } from "./Slider";
 import { Leaf } from "lucide-react";
+import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { Slider } from "./Slider";
 
 const meta: Meta<typeof Slider> = {
   title: "Components/Slider",
   component: Slider,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Sayısal bir aralıkta değer seçmek için sürüklenebilir kontrol. İşaretli noktalar (`iconList`), yanında " +
+          "bir sayı girişi (`showInput`) ve dikey mod destekler. Kendisi `Input` (native range) ve `Tooltip`ı " +
+          "birlikte kullanır. **Not:** eskiden `Tooltip`e `disabled={tooltipVisible}` geçiriliyordu — " +
+          "`tooltipVisible=true` iken tooltip'i GİZLEYEN ters bir mantıktı, düzeltildi.",
+      },
+    },
+  },
+  argTypes: {
+    value: { control: "number", description: "Controlled değer." },
+    defaultValue: { control: "number", description: "Uncontrolled başlangıç değeri." },
+    min: { control: "number" },
+    max: { control: "number" },
+    size: baseSizeArgType,
+    vertical: { control: "boolean", description: "Dikey mod." },
+    disabled: disabledArgType,
+    showInput: { control: "boolean", description: "Yanında bir sayı girişi gösterir." },
+    tooltipAlwaysVisible: { control: "boolean", description: "Tooltip'i hover beklemeden her zaman gösterir." },
+    onChange: { action: "onChange" },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Slider>;
 
-export const Basic: Story = {
-  args: {
-    defaultValue: 50,
-    onChange: (val) => console.log("value:", val),
-  },
+export const Playground: Story = {
+  args: { defaultValue: 50 },
 };
 
 export const WithIcons: Story = {
+  name: "İşaretli Noktalarla",
   args: {
     defaultValue: 50,
     iconList: [
@@ -27,11 +49,11 @@ export const WithIcons: Story = {
       { icon: <Leaf size={16} />, value: 100 },
     ],
     tooltipAlwaysVisible: true,
-    onChange: (val) => console.log("value:", val),
   },
 };
 
 export const Vertical: Story = {
+  name: "Dikey",
   args: {
     defaultValue: 40,
     vertical: true,
@@ -42,23 +64,16 @@ export const Vertical: Story = {
       { icon: <Leaf size={16} />, value: 40 },
       { icon: <Leaf size={16} />, value: 80 },
     ],
-    onChange: (val) => console.log("value:", val),
     showInput: true,
   },
 };
 
 export const WithInputField: Story = {
-  args: {
-    defaultValue: 30,
-    showInput: true,
-    onChange: (val) => console.log("value:", val),
-  },
+  name: "Sayı Girişli",
+  args: { defaultValue: 30, showInput: true },
 };
 
 export const Disabled: Story = {
-  args: {
-    defaultValue: 60,
-    disabled: true,
-    tooltipVisible: true,
-  },
+  name: "Devre Dışı",
+  args: { defaultValue: 60, disabled: true },
 };

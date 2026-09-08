@@ -1,34 +1,32 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { SearchInput } from "./SearchInput";
 
 const meta: Meta<typeof SearchInput> = {
   title: "Components/SearchInput",
   component: SearchInput,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "`Input`ın üzerine bir arama butonu ekleyen ince sarmalayıcı. `onSearch`, arama butonuna tıklandığında " +
+          "VEYA Enter'a basıldığında çağrılır. `Input`ın tüm prop'larını (`{...rest}` ile) devralır.",
+      },
+    },
+  },
   argTypes: {
     placeholder: { control: "text" },
-    size: {
-      control: "select",
-      options: ["lg", "md", "sm"],
-    },
-    variant: {
-      control: "select",
-      options: ["outlined", "filled", "borderless", "underlined"],
-    },
-    status: {
-      control: "select",
-      options: ["error", "warning", undefined],
-    },
-    shape: {
-      control: "select",
-      options: ["default", "round", "sharp"],
-    },
+    size: baseSizeArgType,
+    variant: { control: "select", options: ["outline", "soft", "ghost", "underlined"], description: "Kenarlık/arka plan stili." },
+    color: { ...colorArgType, description: "Odak/kenarlık rengi." },
+    shape: { control: "select", options: ["default", "pill", "square"], description: "Köşe geometrisi." },
     allowClear: { control: "boolean" },
-    disabled: { control: "boolean" },
+    disabled: disabledArgType,
     maxLength: { control: "number" },
     onChange: { action: "onChange" },
     onPressEnter: { action: "onPressEnter" },
-    onSearch: { action: "onSearch" },
+    onSearch: { action: "onSearch", description: "Arama butonuna tıklandığında veya Enter'a basıldığında çağrılır." },
   },
 };
 export default meta;
@@ -37,10 +35,10 @@ type Story = StoryObj<typeof SearchInput>;
 
 export const Playground: Story = {
   args: {
-    placeholder: "Search...",
+    placeholder: "Ara...",
     allowClear: true,
     size: "md",
-    variant: "outlined",
+    variant: "outline",
     showCount: false,
     maxLength: 50,
     disabled: false,
@@ -48,10 +46,9 @@ export const Playground: Story = {
 };
 
 export const WithSearch: Story = {
+  name: "Arama Tetikleyicili",
   args: {
-    placeholder: "Type a keyword and click search",
-    onSearch: (value: string) => {
-      alert(`Searching for: ${value}`);
-    },
+    placeholder: "Bir kelime yazıp aramaya tıklayın",
+    onSearch: (value: string) => alert(`Aranıyor: ${value}`),
   },
 };
