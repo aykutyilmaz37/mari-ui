@@ -13,7 +13,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "storybook": "turbo run storybook --filter=@mari-ui/docs",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "audit": "pnpm audit --audit-level critical"
   },
   "devDependencies": {
     "turbo": "^2.3.0",

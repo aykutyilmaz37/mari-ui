@@ -26,6 +26,13 @@ export interface OtpInputProps {
 
 const WIDTH_CLASS: Record<Size, string> = { sm: "w-6 p-0", md: "w-8 p-0", lg: "w-10 p-0" };
 
+/** İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-conditional`). */
+function resolveDisplayValue(rawValue: string, formatter: ((val: string) => string) | undefined, mask: boolean): string {
+  if (formatter) return formatter(rawValue);
+  if (mask && rawValue) return "•";
+  return rawValue;
+}
+
 export function OtpInput({
   length = 6,
   value,
@@ -107,7 +114,7 @@ export function OtpInput({
     <div className="flex items-center gap-2">
       {Array.from({ length }).map((_, i) => {
         const rawValue = otpValues[i] ?? "";
-        const displayValue = formatter ? formatter(rawValue) : mask && rawValue ? "•" : rawValue;
+        const displayValue = resolveDisplayValue(rawValue, formatter, mask);
 
         return (
           <React.Fragment key={`otp-${i}`}>

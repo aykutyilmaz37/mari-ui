@@ -15,7 +15,16 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-function ToastGroup({ position, toasts, onClose }: { position: ToastPosition; toasts: ToastData[]; onClose: (id: number) => void }) {
+/**
+ * Modül seviyesinde tanımlı — `showToast`in `setTimeout` içindeki otomatik
+ * kapatması olmadan `useCallback > setTimeout > setToasts > filter` 5 kat iç
+ * içe fonksiyona çıkıyordu (SonarJS `no-nested-functions`, Faz 8, sınır 4).
+ */
+function removeToastById(toasts: ToastData[], id: string): ToastData[] {
+  return toasts.filter((t) => t.id !== id);
+}
+
+function ToastGroup({ position, toasts, onClose }: { position: ToastPosition; toasts: ToastData[]; onClose: (id: string) => void }) {
   if (toasts.length === 0) return null;
   return (
     <div className={cn("fixed z-mari-toast flex flex-col gap-2 pointer-events-none", getContainerPositionClass(position))}>
@@ -43,15 +52,19 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
   const showToast = useCallback((toast: Omit<ToastData, "id">) => {
-    const id = Date.now() + Math.random();
+    // Eskiden `Date.now() + Math.random()` idi — çakışma ihtimali pratikte
+    // sıfıra yakın olsa da, ID üretmek için `crypto.randomUUID()` zaten bu
+    // projenin kendi kuralı (bkz. Faz 3 — `uuid` paketinin kaldırılıp aynı
+    // yerleşik API'ye taşınması); SonarJS bu tutarsızlığı haklı yakaladı.
+    const id = crypto.randomUUID();
     setToasts((prev) => [...prev, { ...toast, id }]);
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+      setToasts((prev) => removeToastById(prev, id));
     }, TOAST_TIMEOUT);
   }, []);
 
-  const handleClose = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+  const handleClose = useCallback((id: string) => {
+    setToasts((prev) => removeToastById(prev, id));
   }, []);
 
   const contextValue = useMemo(() => ({ showToast }), [showToast]);

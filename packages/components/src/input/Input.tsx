@@ -57,8 +57,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const defaultIconRender = (visible: boolean) => (visible ? <EyeIcon size={16} /> : <EyeOffIcon size={16} />);
     const showPasswordToggle = type === "password" && visibilityToggle !== false;
 
-    const inputType = showPasswordToggle ? (passwordVisible ? "text" : "password") : type;
+    // İç içe ternary yerine ayrık if — SonarJS'in `no-nested-conditional`
+    // kuralı bunu okunurluk için haklı olarak istiyordu (Faz 8).
+    let inputType = type;
+    if (showPasswordToggle) inputType = passwordVisible ? "text" : "password";
     const charCount = currentValue.length;
+    // Ayrık değişken — iç içe template literal yerine (Faz 8, SonarJS `no-nested-template-literals`).
+    const countLabel = maxLength ? `${charCount} / ${maxLength}` : `${charCount}`;
     const showClear = isClearable(allowClear) && Boolean(currentValue) && !disabled;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,7 +147,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {(showCount || count?.formatter) && (
           <span className={cn("ml-2 text-mari-muted text-xs flex flex-none items-center", classNames.count)}>
-            {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : `${charCount}${maxLength ? ` / ${maxLength}` : ""}`}
+            {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : countLabel}
           </span>
         )}
 

@@ -75,51 +75,65 @@ function printHelp() {
   );
 }
 
+/**
+ * Her komut kendi fonksiyonuna ayrıldı (Faz 8, SonarJS `cognitive-
+ * complexity`) — hepsi tek bir `main()` switch'inde toplandığında bilişsel
+ * karmaşıklık 25'e çıkıp izin verilen 15'i aşıyordu.
+ */
+function runInitCommand(args: ParsedArgs) {
+  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest });
+  if (result.addedDependencies.length > 0) {
+    console.log(`✓ package.json'a eklendi: ${result.addedDependencies.join(", ")}`);
+  }
+  console.log(result.configCreated ? `✓ ${result.configPath} oluşturuldu.` : `• ${result.configPath} zaten vardı, dokunulmadı.`);
+  if (result.ruleFiles) {
+    console.log(`✓ AI ajan kural dosyaları yazıldı: ${result.ruleFiles.changed.join(", ") || "(hepsi zaten güncel)"}`);
+  } else {
+    console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx mari-ui sync");
+  }
+  console.log('\nSon adım: "@mari-ui/components/styles.css"i projenizin global CSS giriş noktasına import edin.');
+}
+
+function runSyncCommand(args: ParsedArgs) {
+  const result = syncAgentRules({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, check: args.check });
+  if (!args.check) {
+    console.log(result.changed.length > 0 ? `✓ Güncellendi: ${result.changed.join(", ")}` : "• Zaten güncel, değişiklik yok.");
+    return;
+  }
+  if (result.changed.length > 0) {
+    console.error(`✗ Bayat: ${result.changed.join(", ")}`);
+    process.exit(1);
+  }
+  console.log("✓ Tüm AI ajan kural dosyaları güncel.");
+}
+
+function runThemeCliCommand(args: ParsedArgs) {
+  const result = runThemeCommand({ targetDir: args.dir, configPath: args.config, outDir: args.out, check: args.check });
+  if (!args.check) {
+    console.log(`✓ Yazıldı: ${result.cssPath}`);
+    console.log(`✓ Yazıldı: ${result.themeTsPath}`);
+    return;
+  }
+  if (result.stale) {
+    console.error(`✗ Bayat: ${result.cssPath}, ${result.themeTsPath}`);
+    process.exit(1);
+  }
+  console.log("✓ Tema çıktıları güncel.");
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
 
   switch (args.command) {
-    case "init": {
-      const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest });
-      if (result.addedDependencies.length > 0) {
-        console.log(`✓ package.json'a eklendi: ${result.addedDependencies.join(", ")}`);
-      }
-      console.log(result.configCreated ? `✓ ${result.configPath} oluşturuldu.` : `• ${result.configPath} zaten vardı, dokunulmadı.`);
-      if (result.ruleFiles) {
-        console.log(`✓ AI ajan kural dosyaları yazıldı: ${result.ruleFiles.changed.join(", ") || "(hepsi zaten güncel)"}`);
-      } else {
-        console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx mari-ui sync");
-      }
-      console.log('\nSon adım: "@mari-ui/components/styles.css"i projenizin global CSS giriş noktasına import edin.');
+    case "init":
+      runInitCommand(args);
       break;
-    }
-    case "sync": {
-      const result = syncAgentRules({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, check: args.check });
-      if (args.check) {
-        if (result.changed.length > 0) {
-          console.error(`✗ Bayat: ${result.changed.join(", ")}`);
-          process.exit(1);
-        }
-        console.log("✓ Tüm AI ajan kural dosyaları güncel.");
-      } else {
-        console.log(result.changed.length > 0 ? `✓ Güncellendi: ${result.changed.join(", ")}` : "• Zaten güncel, değişiklik yok.");
-      }
+    case "sync":
+      runSyncCommand(args);
       break;
-    }
-    case "theme": {
-      const result = runThemeCommand({ targetDir: args.dir, configPath: args.config, outDir: args.out, check: args.check });
-      if (args.check) {
-        if (result.stale) {
-          console.error(`✗ Bayat: ${result.cssPath}, ${result.themeTsPath}`);
-          process.exit(1);
-        }
-        console.log("✓ Tema çıktıları güncel.");
-      } else {
-        console.log(`✓ Yazıldı: ${result.cssPath}`);
-        console.log(`✓ Yazıldı: ${result.themeTsPath}`);
-      }
+    case "theme":
+      runThemeCliCommand(args);
       break;
-    }
     default:
       printHelp();
       if (args.command !== "help") process.exitCode = 1;

@@ -8,3 +8,11 @@ nodeLinker: hoisted
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
+# Faz 8 — bağımlılık güvenlik taraması (pnpm audit'te fiilen bulunan CVE'ler).
+# Transitif bağımlılıkların (Storybook/tsup zincirinden gelen vite/uuid/
+# esbuild) yamalı sürümlere zorlanması — bu paketleri doğrudan biz seçmiyoruz,
+# ama pnpm'in "overrides" mekanizması ağacın her yerinde bu sürümü zorlar.
+overrides:
+  vite: '>=6.4.3'
+  uuid: '>=11.1.1'
+  esbuild: '>=0.28.1'

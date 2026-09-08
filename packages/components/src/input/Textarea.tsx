@@ -73,6 +73,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     const [currentValue, setCurrentValue] = useControllableState<string>({ value, defaultValue });
     const charCount = currentValue.length;
+    // Ayrık değişken — iç içe template literal yerine (Faz 8, SonarJS `no-nested-template-literals`).
+    const countLabel = maxLength ? `${charCount} / ${maxLength}` : `${charCount}`;
     const showClear = isClearable(allowClear) && Boolean(currentValue) && !disabled;
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -130,7 +132,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         </div>
         {(showCount || count?.formatter) && (
           <span className={cn("text-mari-muted text-xs flex flex-none items-center justify-end", classNames.count)}>
-            {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : `${charCount}${maxLength ? ` / ${maxLength}` : ""}`}
+            {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : countLabel}
           </span>
         )}
       </div>

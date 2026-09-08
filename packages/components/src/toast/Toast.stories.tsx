@@ -39,7 +39,10 @@ export const Success: Story = {
   args: { title: "Başarılı!", description: "Verileriniz başarıyla kaydedildi.", type: "success" },
 };
 
-export const Error: Story = {
+// Global `Error` sınıfını gölgelememek için `ErrorState` (Faz 8, SonarJS
+// `no-globals-shadowing`) — görünen story adı yine `name: "Hata"`, değişen
+// sadece JS export identifier'ı.
+export const ErrorState: Story = {
   name: "Hata",
   args: { title: "Hata!", description: "Bir hata oluştu. Lütfen tekrar deneyin.", type: "error" },
 };

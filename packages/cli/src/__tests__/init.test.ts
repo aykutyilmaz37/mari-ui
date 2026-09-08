@@ -59,6 +59,6 @@ describe("runInit", () => {
     const second = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH });
     expect(second.configCreated).toBe(false);
     expect(second.addedDependencies).toEqual([]);
-    expect(second.alreadyHadDependencies.length).toBe(3);
+    expect(second.alreadyHadDependencies).toHaveLength(3);
   });
 });

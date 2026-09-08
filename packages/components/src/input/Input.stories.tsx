@@ -43,7 +43,10 @@ export default meta;
 export const Playground: StoryObj<InputProps & { enableMask: boolean }> = {
   render: (args) => {
     const { enableMask, mask, replacement, visibilityToggle, type, ...rest } = args as InputProps & { enableMask?: boolean };
-    const resolvedType = visibilityToggle === true ? "password" : type === "password" ? "text" : type;
+    // İç içe ternary yerine ayrık if (Faz 8, SonarJS `no-nested-conditional`).
+    let resolvedType = type;
+    if (visibilityToggle === true) resolvedType = "password";
+    else if (type === "password") resolvedType = "text";
 
     return <Input {...rest} type={resolvedType} {...(enableMask ? { mask, replacement } : {})} visibilityToggle={visibilityToggle} />;
   },

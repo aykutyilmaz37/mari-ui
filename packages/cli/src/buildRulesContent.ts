@@ -51,7 +51,11 @@ const ANTI_PATTERNS = [
 
 function formatAxes(axes: Record<string, string[]>): string {
   const rows = Object.entries(axes)
-    .map(([name, values]) => `| \`${name}\` | ${values.map((v) => `\`${v}\``).join(", ")} |`)
+    .map(([name, values]) => {
+      // Ayrık değişken — iç içe template literal yerine (Faz 8, SonarJS `no-nested-template-literals`).
+      const valueList = values.map((v) => `\`${v}\``).join(", ");
+      return `| \`${name}\` | ${valueList} |`;
+    })
     .join("\n");
   return `| Eksen | Geçerli değerler |\n|---|---|\n${rows}`;
 }
@@ -69,7 +73,10 @@ function formatDeprecatedProps(manifest: Manifest): string {
   const lines: string[] = [];
   for (const c of manifest.components) {
     for (const p of c.props) {
-      if (p.deprecated) lines.push(`- \`${c.name}.${p.name}\`${p.deprecatedReason ? ` — ${p.deprecatedReason}` : ""}`);
+      if (!p.deprecated) continue;
+      // Ayrık değişken — iç içe template literal yerine (Faz 8, SonarJS `no-nested-template-literals`).
+      const reasonSuffix = p.deprecatedReason ? ` — ${p.deprecatedReason}` : "";
+      lines.push(`- \`${c.name}.${p.name}\`${reasonSuffix}`);
     }
   }
   return lines.length > 0 ? lines.join("\n") : "(şu an hiç terk edilmiş prop yok)";

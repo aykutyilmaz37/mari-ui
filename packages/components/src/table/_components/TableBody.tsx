@@ -13,6 +13,34 @@ export interface TableBodyProps<T extends { id: string }> {
   columns: ColumnDef<T>[];
 }
 
+type DraftsSetter<T> = React.Dispatch<React.SetStateAction<Record<string, Partial<T>>>>;
+
+/**
+ * Modül seviyesinde (component'in İÇİNDE değil) tanımlı — bu iki fonksiyon
+ * olmadan `setDrafts((prev) => {...})` çağrıları `data.map > columns.map >
+ * onSaveInlineEdit/onChange` içine gömülü kalıp 5 kat iç içe fonksiyona
+ * çıkıyordu (SonarJS `no-nested-functions`, Faz 8'de yakalandı — sınır 4).
+ * Burada tanımlanınca çağrı yerinde artık yeni bir fonksiyon TANIMI değil,
+ * düz bir fonksiyon ÇAĞRISI kalıyor.
+ */
+function clearRowDraft<T>(setDrafts: DraftsSetter<T>, id: string) {
+  setDrafts((prev) => {
+    const next = { ...prev };
+    delete next[id];
+    return next;
+  });
+}
+
+function setRowDraftValue<T>(setDrafts: DraftsSetter<T>, id: string, columnName: keyof T, value: T[keyof T]) {
+  setDrafts((prev) => {
+    // TS, jenerik bir `keyof T` anahtarıyla computed-property atamasını
+    // statik olarak doğrulayamıyor (bilinen bir TS kısıtı) — tek satırlık
+    // bir cast ile çözülüyor, `columnName`/`value` zaten çağıranda tam tipli.
+    const rowDraft = { ...prev[id], [columnName]: value } as Partial<T>;
+    return { ...prev, [id]: rowDraft };
+  });
+}
+
 export function TableBody<T extends { id: string }>({ data, columns }: TableBodyProps<T>) {
   // Satır içi düzenleme durumu burada (satır seviyesinde) yaşıyor çünkü
   // aksiyon hücresindeki "düzenle" butonu AYNI satırdaki diğer (veri)
@@ -53,19 +81,11 @@ export function TableBody<T extends { id: string }>({ data, columns }: TableBody
                       onSaveInlineEdit={() => {
                         col.actions?.editRowInInline?.onChange({ ...item, ...draft });
                         setEditingRowId(null);
-                        setDrafts((prev) => {
-                          const next = { ...prev };
-                          delete next[item.id];
-                          return next;
-                        });
+                        clearRowDraft(setDrafts, item.id);
                       }}
                       onCancelInlineEdit={() => {
                         setEditingRowId(null);
-                        setDrafts((prev) => {
-                          const next = { ...prev };
-                          delete next[item.id];
-                          return next;
-                        });
+                        clearRowDraft(setDrafts, item.id);
                       }}
                     />
                   </td>
@@ -87,14 +107,7 @@ export function TableBody<T extends { id: string }>({ data, columns }: TableBody
                       value={draftValue !== undefined ? String(draftValue) : displayValue}
                       onChange={(e) => {
                         const nextValue = e.target.value as T[typeof columnName];
-                        setDrafts((prev) => {
-                          // TS, jenerik bir `keyof T` anahtarıyla computed-property
-                          // atamasını statik olarak doğrulayamıyor (bilinen bir
-                          // TS kısıtı) — tek satırlık bir cast ile çözülüyor,
-                          // `columnName`/`nextValue` zaten yukarıda tam tipli.
-                          const rowDraft = { ...prev[item.id], [columnName]: nextValue } as Partial<T>;
-                          return { ...prev, [item.id]: rowDraft };
-                        });
+                        setRowDraftValue(setDrafts, item.id, columnName, nextValue);
                       }}
                     />
                   ) : (

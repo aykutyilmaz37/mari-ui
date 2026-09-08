@@ -53,10 +53,12 @@ export function resolveColorVariant(color: ColorRole, variant: Variant): ColorVa
         background: ref(color, "subtle"),
         foreground: ref(color, "subtleContrast"),
       };
+    // İkisi de bugün aynı stile çözülüyor (sadece metin rengi) — SonarJS'in
+    // "duplicated branches" kuralı bunu haklı olarak yakaladı (Faz 8).
+    // Ayrı case'lerde tutmak yerine fallthrough: gelecekte `link` (örn. alt
+    // çizgi) farklılaşırsa buraya geri dönüp ayırmak, şu an iki kopya kod
+    // bloğu taşımaktan daha doğru.
     case "ghost":
-      return {
-        foreground: ref(color, "text"),
-      };
     case "link":
       return {
         foreground: ref(color, "text"),

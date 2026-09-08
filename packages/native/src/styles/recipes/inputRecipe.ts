@@ -19,6 +19,12 @@ export interface InputRecipeResult {
   input: TextStyle;
 }
 
+/** İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-conditional`). */
+function resolveBorderWidth(active: boolean, focused: boolean): number {
+  if (!active) return 0;
+  return focused ? 2 : 1;
+}
+
 const SHAPE_RADIUS: Partial<Record<InputShape, number>> = {
   square: 0,
   pill: 9999,
@@ -45,8 +51,8 @@ export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRec
   const colorStyle = resolveColorVariantStyle(theme, resolveInputColorRefs(color, variant));
   const sizeStyle = resolveComponentSize(componentSize[size]);
   const hasBorderColor = Boolean(colorStyle.container.borderColor);
-  const borderWidth = hasBorderColor && variant !== "underlined" ? (focused ? 2 : 1) : 0;
-  const underlineWidth = hasBorderColor && variant === "underlined" ? (focused ? 2 : 1) : 0;
+  const borderWidth = resolveBorderWidth(hasBorderColor && variant !== "underlined", focused);
+  const underlineWidth = resolveBorderWidth(hasBorderColor && variant === "underlined", focused);
 
   const container: ViewStyle = {
     flexDirection: "row",

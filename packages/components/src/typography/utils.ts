@@ -29,24 +29,25 @@ export function getTitleClass(level: TitleLevel, color: ColorRole | undefined, c
   return cn(TITLE_CLASS[level], color ? textClass[color] : "text-mari-foreground", className);
 }
 
+/**
+ * İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-
+ * conditional`) — `getTextClass`/`getParagraphClass`teki BİREBİR AYNI
+ * mantığı da tek yerde topluyor (ikisi ayrı ayrı yazıyordu).
+ */
+function resolveMutedOrColorClass(muted: boolean | undefined, color: ColorRole | undefined): string {
+  if (muted) return "text-mari-muted";
+  return color ? textClass[color] : "text-mari-foreground";
+}
+
 export function getTextClass(
   color: ColorRole | undefined,
   weight: TextWeight | undefined,
   muted: boolean | undefined,
   className?: string
 ): string {
-  return cn(
-    "text-sm leading-normal",
-    muted ? "text-mari-muted" : color ? textClass[color] : "text-mari-foreground",
-    weight && WEIGHT_CLASS[weight],
-    className
-  );
+  return cn("text-sm leading-normal", resolveMutedOrColorClass(muted, color), weight && WEIGHT_CLASS[weight], className);
 }
 
 export function getParagraphClass(color: ColorRole | undefined, muted: boolean | undefined, className?: string): string {
-  return cn(
-    "text-sm leading-relaxed",
-    muted ? "text-mari-muted" : color ? textClass[color] : "text-mari-foreground",
-    className
-  );
+  return cn("text-sm leading-relaxed", resolveMutedOrColorClass(muted, color), className);
 }

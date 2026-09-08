@@ -1,8 +1,28 @@
+import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useStyles } from "../styles/useStyles";
+import type { CardRecipeResult } from "../styles/recipes/cardRecipe";
 import type { CardProps } from "./types";
 
 export type { CardProps };
+
+/**
+ * İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-
+ * conditional`): `loading` → iskelet, string `children` → `<Text>`,
+ * aksi halde `children` olduğu gibi.
+ */
+function resolveBodyContent(loading: boolean, children: CardProps["children"], styles: CardRecipeResult): ReactNode {
+  if (loading) {
+    return (
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <View style={[styles.divider, { width: "75%", height: 12, borderRadius: 4, marginBottom: 8 }]} />
+        <View style={[styles.divider, { width: "50%", height: 12, borderRadius: 4 }]} />
+      </View>
+    );
+  }
+  if (typeof children === "string") return <Text style={styles.bodyText}>{children}</Text>;
+  return children;
+}
 
 /**
  * Web'deki `Card`ın slot yapısıyla (header/body/footer/cover) aynı düzen.
@@ -25,18 +45,7 @@ export function Card({ children, title, extra, cover, footer, bordered = true, h
           <View style={styles.divider} />
         </>
       )}
-      <View style={styles.body}>
-        {loading ? (
-          <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <View style={[styles.divider, { width: "75%", height: 12, borderRadius: 4, marginBottom: 8 }]} />
-            <View style={[styles.divider, { width: "50%", height: 12, borderRadius: 4 }]} />
-          </View>
-        ) : typeof children === "string" ? (
-          <Text style={styles.bodyText}>{children}</Text>
-        ) : (
-          children
-        )}
-      </View>
+      <View style={styles.body}>{resolveBodyContent(loading, children, styles)}</View>
       {footer && (
         <>
           <View style={styles.divider} />
