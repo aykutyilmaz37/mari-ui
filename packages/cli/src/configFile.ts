@@ -4,8 +4,15 @@ import type { MariUiThemeConfig } from "@mari-ui/tokens";
 
 export const CONFIG_FILE_NAME = "mari-ui.config.json";
 
-/** `dist/schema.json`'daki `editable`in kendi varsayılanlarıyla BİREBİR aynı — bkz. `packages/tokens/scripts/build-schema.ts`. */
-export const DEFAULT_CONFIG: Required<MariUiThemeConfig> = {
+/**
+ * `dist/schema.json`'daki `editable`in kendi varsayılanlarıyla BİREBİR aynı
+ * — bkz. `packages/tokens/scripts/build-schema.ts`. `themes` (Faz 10)
+ * BİLİNÇLİ OLARAK burada YOK: opsiyonel, opt-in bir alan — taze bir
+ * `mari-ui.config.json`ı gereksiz bir `"themes": {}` satırıyla
+ * kirletmemek için varsayılan çıktıdan çıkarıldı (yine de `MariUiThemeConfig`
+ * tipinde geçerli, tüketici isterse elle ekler).
+ */
+export const DEFAULT_CONFIG: Required<Omit<MariUiThemeConfig, "themes">> = {
   color: { primary: "#2563eb", accent: "#f97316" },
   typography: {
     fontFamilySans: "var(--mari-font-sans, ui-sans-serif, system-ui, -apple-system, sans-serif)",

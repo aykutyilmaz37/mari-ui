@@ -57,6 +57,19 @@ const schema = {
         default: "md",
       },
     },
+    themes: {
+      type: "record",
+      description:
+        "Faz 10 — light/dark'ın ÖTESİNDE, keyfi sayıda ek isimli tema (örn. \"brand\", \"highContrast\"). " +
+        "Her girdi kendi `base`ini (\"light\" veya \"dark\" — WCAG kontrast aramasının hangi yönde çalışacağı) " +
+        "ve isteğe bağlı kendi `color`/`typography` override'larını taşır. Varsayılan: boş (hiç ek tema yok).",
+      itemShape: {
+        base: { type: "select", options: ["light", "dark"], required: true },
+        color: { type: "object", description: "Üstteki `editable.color` ile AYNI şekil, bu temaya özel." },
+        typography: { type: "object", description: "Üstteki `editable.typography` ile AYNI şekil, bu temaya özel." },
+      },
+      default: {},
+    },
   },
   derived: {
     description:

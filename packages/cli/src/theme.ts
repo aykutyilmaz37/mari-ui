@@ -32,7 +32,11 @@ function buildThemeTsContent(resolved: ReturnType<typeof resolveThemeConfig>): s
   return [
     "// ÜRETİLMİŞ DOSYA — elle düzenlemeyin. \"npx mari-ui theme\" ile mari-ui.config.json'dan üretildi.",
     "// @mari-ui/native (veya token değerlerine doğrudan erişmek isteyen başka bir platform) için.",
-    `export const mariTheme = ${JSON.stringify({ light: resolved.light, dark: resolved.dark, radiusDensity: resolved.radiusDensity }, null, 2)} as const;`,
+    `export const mariTheme = ${JSON.stringify(
+      { light: resolved.light, dark: resolved.dark, themes: resolved.themes, radiusDensity: resolved.radiusDensity },
+      null,
+      2
+    )} as const;`,
     "",
   ].join("\n");
 }
@@ -43,13 +47,18 @@ function buildThemeTsContent(resolved: ReturnType<typeof resolveThemeConfig>): s
  * `@mari-ui/tokens`ın KENDİ build script'inin (`scripts/build-css.ts`, paketin
  * varsayılan teması için) kullandığı AYNI fonksiyonlardır — mantık burada
  * ikinci kez yazılmıyor (bkz. `packages/tokens/src/cssOutput.ts`teki not).
+ *
+ * Faz 10 (backlog madde 10 — 3. tema desteği): `config.themes`teki HER ek
+ * isimli tema de (varsa) aynı CSS çıktısına `[data-theme="<isim>"]` olarak
+ * eklenir — tüketici `mari-ui.config.json`a bir `themes.brand` girdisi
+ * eklemesi yeterli, CLI'ı ayrıca çağırmasına gerek yok.
  */
 export function runThemeCommand(options: ThemeCommandOptions): ThemeCommandResult {
   const { targetDir, configPath, outDir = targetDir, check = false } = options;
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
 
-  const cssContent = buildPlainThemeCss(resolved.light, resolved.dark, { header: HEADER });
+  const cssContent = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER });
   const themeTsContent = buildThemeTsContent(resolved);
 
   const cssPath = join(outDir, THEME_CSS_FILE_NAME);

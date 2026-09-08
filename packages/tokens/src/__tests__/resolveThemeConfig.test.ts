@@ -44,4 +44,39 @@ describe("resolveThemeConfig", () => {
     expect(resolved.dark.mode).toBe("dark");
     expect(resolved.light.color.accent).not.toEqual(resolved.dark.color.accent);
   });
+
+  it("light/dark her zaman name='light'/name='dark' taşır", () => {
+    const resolved = resolveThemeConfig();
+    expect(resolved.light.name).toBe("light");
+    expect(resolved.dark.name).toBe("dark");
+  });
+
+  describe("Faz 10 — themes (3. tema desteği)", () => {
+    it("themes verilmezse boş obje döner (opsiyonel, geriye dönük uyumlu)", () => {
+      expect(resolveThemeConfig().themes).toEqual({});
+    });
+
+    it("her ek tema kendi ismini ve base'ini taşır, birbirinden bağımsız renk override'ı alabilir", () => {
+      const resolved = resolveThemeConfig({
+        themes: {
+          brand: { base: "light", color: { primary: "#a21caf" } },
+          highContrast: { base: "dark", color: { primary: "#facc15" } },
+        },
+      });
+      expect(resolved.themes.brand?.name).toBe("brand");
+      expect(resolved.themes.brand?.mode).toBe("light");
+      expect(resolved.themes.highContrast?.name).toBe("highContrast");
+      expect(resolved.themes.highContrast?.mode).toBe("dark");
+      expect(resolved.themes.brand?.color.primary).not.toEqual(resolved.themes.highContrast?.color.primary);
+    });
+
+    it("ek temalar üst seviye color/typography'den ETKİLENMEZ — tamamen bağımsız", () => {
+      const resolved = resolveThemeConfig({
+        color: { primary: "#000000" },
+        themes: { brand: { base: "light" } },
+      });
+      // `brand` kendi override'ını vermedi -> varsayılan primary'yi (üst seviyedeki #000000'ı DEĞİL) taşımalı.
+      expect(resolved.themes.brand?.color.primary).toEqual(lightTheme.color.primary);
+    });
+  });
 });

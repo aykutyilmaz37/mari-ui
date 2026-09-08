@@ -11,7 +11,24 @@ export interface ThemeFontFamily {
 }
 
 export interface Theme {
+  /**
+   * WCAG kontrast aramasının hangi YÖNDE çalıştığı (`deriveColorRole`'ün
+   * "surface açık mı koyu mu" varsayımı) — Faz 10'dan önce bu aynı zamanda
+   * temanın "kimliği" gibi kullanılıyordu. Artık İKİ ayrı kavram: `mode`
+   * SADECE kontrast yönünü belirler, `name` (aşağıda) temanın GÖRÜNEN
+   * kimliğidir. Bir tüketicinin özel "brand" veya "highContrast" teması
+   * `mode: "light"` (ya da `"dark"`) TABANLI olabilir ama `name: "brand"`
+   * taşır — `deriveColorRole` hâlâ doğru yönde arama yapar, CSS çıktısı
+   * `[data-theme="brand"]` altında yayınlanır.
+   */
   mode: ThemeMode;
+  /**
+   * `data-theme="..."` seçicisinde kullanılacak isim (Faz 10 — backlog
+   * madde 10: "tüketici 3. temayı ekleyebilmeli"). Yerleşik `lightTheme`/
+   * `darkTheme` için sırasıyla `"light"`/`"dark"`; `createNamedTheme()`ın
+   * ürettiği özel temalarda tüketicinin verdiği KEYFİ isim.
+   */
+  name: string;
   color: SemanticColorTokens;
   spacing: typeof primitives.spacing;
   radius: typeof primitives.radius;
@@ -27,6 +44,7 @@ export interface Theme {
 }
 
 interface BuildThemeOptions {
+  name?: string;
   rampOverrides?: Partial<Record<ColorRole, ColorRamp>>;
   fontFamily?: Partial<ThemeFontFamily>;
 }
@@ -34,6 +52,7 @@ interface BuildThemeOptions {
 function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
   return {
     mode,
+    name: options.name ?? mode,
     color: buildSemanticColors(mode, options.rampOverrides),
     spacing: primitives.spacing,
     radius: primitives.radius,
@@ -64,6 +83,14 @@ export const themes = { light: lightTheme, dark: darkTheme } as const;
  * çözümlemesi `@mari-ui/core/buildComponentSize`'ın işi, `resolveThemeConfig`
  * sadece `radiusDensity`'yi olduğu gibi geri döndürür ki çağıran (stüdyo)
  * bunu `core`'a iletebilsin.
+ *
+ * `themes` (Faz 10 — backlog madde 10): light/dark'IN ÖTESİNDE, tüketicinin
+ * kendi projesine ekleyebileceği KEYFİ sayıda ek isimli tema. Her girdi
+ * kendi `base`ini (kontrast aramasının hangi yönde çalışacağını) ve
+ * isteğe bağlı kendi renk/tipografi override'larını taşır — `color`/
+ * `typography` alanlarıyla AYNI şekil, sadece bir isim ALTINDA. Örnek:
+ * `{ "brand": { base: "light", color: { primary: "#a21caf" } } }` ->
+ * `mari-ui-theme.css`de `[data-theme="brand"] { ... }` olarak çıkar.
  */
 export interface MariUiThemeConfig {
   color?: {
@@ -77,21 +104,25 @@ export interface MariUiThemeConfig {
   density?: {
     radius?: keyof typeof primitives.radius;
   };
+  themes?: Record<string, NamedThemeInput>;
+}
+
+/** `MariUiThemeConfig`in `color`/`typography` alanlarıyla AYNI şekil — sadece bir `base` (kontrast yönü) eklenmiş hali. */
+export interface NamedThemeInput {
+  base: ThemeMode;
+  color?: MariUiThemeConfig["color"];
+  typography?: MariUiThemeConfig["typography"];
 }
 
 export interface ResolvedMariUiTheme {
   light: Theme;
   dark: Theme;
   radiusDensity: keyof typeof primitives.radius;
+  /** `config.themes`teki her girdinin ADI → çözümlenmiş `Theme`si. Girdi yoksa boş obje. */
+  themes: Record<string, Theme>;
 }
 
-/**
- * `mari-ui.config.json`ı (stüdyonun ürettiği anchor renkler + font ailesi +
- * radius yoğunluğu) gerçek `Theme` objelerine çözer. Faz 7'nin `npx mari-ui
- * theme` komutu bu FONKSİYONUN AYNISINI çağıracak — burada tek kaynak olarak
- * şimdiden inşa ediliyor ki CLI geldiğinde mantığı ikinci kez yazmasın.
- */
-export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMariUiTheme {
+function resolveBuildThemeOptions(config: { color?: MariUiThemeConfig["color"]; typography?: MariUiThemeConfig["typography"] } = {}, name?: string): BuildThemeOptions {
   const rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {};
   if (config.color?.primary) rampOverrides.primary = primitives.generateRamp(config.color.primary);
   if (config.color?.accent) rampOverrides.accent = primitives.generateRamp(config.color.accent);
@@ -100,11 +131,38 @@ export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMari
   if (config.typography?.fontFamilySans) fontFamilyOverride.sans = config.typography.fontFamilySans;
   if (config.typography?.fontFamilyMono) fontFamilyOverride.mono = config.typography.fontFamilyMono;
 
-  const options: BuildThemeOptions = { rampOverrides, fontFamily: fontFamilyOverride };
+  return { name, rampOverrides, fontFamily: fontFamilyOverride };
+}
+
+/**
+ * Tek bir KEYFİ isimli tema üretir — `resolveThemeConfig`in `themes` alt
+ * alanının kullandığı AYNI fonksiyon, ama tek bir tema için doğrudan
+ * çağırmak isteyen bir tüketici (örn. `@mari-ui/native`de programatik bir
+ * 3. tema kurmak isteyen biri) için de dışa açık.
+ */
+export function createNamedTheme(name: string, base: ThemeMode, config: Omit<NamedThemeInput, "base"> = {}): Theme {
+  return buildTheme(base, resolveBuildThemeOptions(config, name));
+}
+
+/**
+ * `mari-ui.config.json`ı (stüdyonun ürettiği anchor renkler + font ailesi +
+ * radius yoğunluğu + Faz 10'un opsiyonel `themes`i) gerçek `Theme`
+ * objelerine çözer. Faz 7'nin `npx mari-ui theme` komutu bu FONKSİYONUN
+ * AYNISINI çağırır — burada tek kaynak olarak duruyor ki CLI mantığı
+ * ikinci kez yazmasın.
+ */
+export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMariUiTheme {
+  const baseOptions = resolveBuildThemeOptions(config);
+
+  const namedThemes: Record<string, Theme> = {};
+  for (const [name, themeInput] of Object.entries(config.themes ?? {})) {
+    namedThemes[name] = createNamedTheme(name, themeInput.base, themeInput);
+  }
 
   return {
-    light: buildTheme("light", options),
-    dark: buildTheme("dark", options),
+    light: buildTheme("light", { ...baseOptions, name: "light" }),
+    dark: buildTheme("dark", { ...baseOptions, name: "dark" }),
     radiusDensity: config.density?.radius ?? "md",
+    themes: namedThemes,
   };
 }

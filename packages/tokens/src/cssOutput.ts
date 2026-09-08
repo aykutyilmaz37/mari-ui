@@ -42,29 +42,48 @@ const DEFAULT_HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.",
 );
 
 /**
+ * Faz 10 (backlog madde 10 — 3. tema desteği): `default` `:root`e yazılır,
+ * `named`teki HER giriş kendi `[data-theme="<anahtar>"]` bloğu olur —
+ * `dark` da dahil, artık özel bir statü taşımıyor (tüketicinin `"brand"`/
+ * `"highContrast"` gibi keyfi sayıda ek teması AYNI mekanizmaya takılabilir).
+ */
+export interface CssThemeSet {
+  /** `:root`e (herhangi bir `data-theme` olmadan varsayılan) yazılacak tema — genelde `lightTheme`. */
+  default: Theme;
+  /** Anahtarı `[data-theme="<anahtar>"]` seçicisi olur. `"dark"` burada sıradan bir isim — özel davranışı SADECE `@media (prefers-color-scheme: dark)` fallback'i tetiklemesi (aşağıda). */
+  named?: Record<string, Theme>;
+}
+
+/**
  * SADECE `--mari-*` CSS değişkenleri. Hiçbir şeye bağımlı değildir —
  * Tailwind kurulu olmayan bir tüketicide de çalışır ("Tailwind zorunlu
  * değil" kararının somut karşılığı, bkz. proje planı).
  */
-export function buildPlainThemeCss(light: Theme, dark: Theme, options: CssOutputOptions = {}): string {
+export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOptions = {}): string {
   const header = options.header ?? DEFAULT_HEADER;
-  return [
-    header,
-    ":root {",
-    ...varsToLines(themeToCssVariables(light)),
-    "}",
-    "",
-    '[data-theme="dark"] {',
-    ...varsToLines(onlyColorVars(themeToCssVariables(dark))),
-    "}",
-    "",
-    "@media (prefers-color-scheme: dark) {",
-    '  :root:not([data-theme="light"]) {',
-    ...varsToLines(onlyColorVars(themeToCssVariables(dark))).map((l) => `  ${l}`),
-    "  }",
-    "}",
-    "",
-  ].join("\n");
+  const lines: string[] = [header, ":root {", ...varsToLines(themeToCssVariables(themeSet.default)), "}", ""];
+
+  for (const [name, theme] of Object.entries(themeSet.named ?? {})) {
+    lines.push(`[data-theme="${name}"] {`, ...varsToLines(onlyColorVars(themeToCssVariables(theme))), "}", "");
+  }
+
+  // `prefers-color-scheme` tarayıcının kendi İKİ değerli (light/dark)
+  // kavramı — N-adet özel temaya genellenemez. Sadece `named.dark` VARSA
+  // sistem tercihi fallback'i eklenir; başka özel temalar (`brand`, ...)
+  // sadece açıkça `data-theme` ile seçildiklerinde devreye girer.
+  const darkTheme = themeSet.named?.dark;
+  if (darkTheme) {
+    lines.push(
+      "@media (prefers-color-scheme: dark) {",
+      '  :root:not([data-theme="light"]) {',
+      ...varsToLines(onlyColorVars(themeToCssVariables(darkTheme))).map((l) => `  ${l}`),
+      "  }",
+      "}",
+      ""
+    );
+  }
+
+  return lines.join("\n");
 }
 
 const THEME_TOKEN_KEYS = [

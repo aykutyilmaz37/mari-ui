@@ -45,4 +45,15 @@ describe("runThemeCommand", () => {
       cleanupTempDir(outDir);
     }
   });
+
+  it("Faz 10 — config.themes'teki ek isimli temalar da CSS'e [data-theme=\"...\"] olarak yazılır", () => {
+    writeFileSync(
+      join(dir, "mari-ui.config.json"),
+      JSON.stringify({ themes: { brand: { base: "light", color: { primary: "#a21caf" } } } }),
+      "utf8"
+    );
+    const result = runThemeCommand({ targetDir: dir });
+    expect(result.cssContent).toContain('[data-theme="brand"]');
+    expect(result.themeTsContent).toContain('"brand"');
+  });
 });

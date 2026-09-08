@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { lightTheme, darkTheme, resolveThemeConfig } from "../theme";
+import { lightTheme, darkTheme, resolveThemeConfig, createNamedTheme } from "../theme";
 import { buildPlainThemeCss, buildTailwindThemeCss } from "../cssOutput";
 
 describe("buildPlainThemeCss", () => {
-  it(":root, [data-theme=dark] ve @media dark bloklarının hepsini içerir", () => {
-    const css = buildPlainThemeCss(lightTheme, darkTheme);
+  it(":root ve [data-theme=dark] bloklarının hepsini içerir", () => {
+    const css = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
     expect(css).toContain(":root {");
     expect(css).toContain('[data-theme="dark"] {');
     expect(css).toContain("@media (prefers-color-scheme: dark)");
   });
 
   it("dark blok sadece --mari-color-* değişkenlerini taşır, spacing/radius'u TEKRARLAMAZ (regresyon — bir kere %45 şişirmişti)", () => {
-    const css = buildPlainThemeCss(lightTheme, darkTheme);
+    const css = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
     const darkBlockStart = css.indexOf('[data-theme="dark"] {');
     const darkBlockEnd = css.indexOf("}", darkBlockStart);
     const darkBlock = css.slice(darkBlockStart, darkBlockEnd);
@@ -22,16 +22,49 @@ describe("buildPlainThemeCss", () => {
 
   it("keyfi bir özel tema (resolveThemeConfig çıktısı) için de çalışır — sadece varsayılan temaya bağlı değil", () => {
     const resolved = resolveThemeConfig({ color: { primary: "#059669" } });
-    const css = buildPlainThemeCss(resolved.light, resolved.dark);
+    const css = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark } });
     expect(css).toContain(resolved.light.color.primary.solid);
   });
 
   it("özel header verilirse kullanır, verilmezse varsayılan 'ÜRETİLMİŞ DOSYA' notunu ekler", () => {
-    const withDefault = buildPlainThemeCss(lightTheme, darkTheme);
+    const withDefault = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
     expect(withDefault).toContain("ÜRETİLMİŞ DOSYA");
-    const withCustom = buildPlainThemeCss(lightTheme, darkTheme, { header: "/* özel başlık */" });
+    const withCustom = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } }, { header: "/* özel başlık */" });
     expect(withCustom).toContain("/* özel başlık */");
     expect(withCustom).not.toContain("ÜRETİLMİŞ DOSYA");
+  });
+
+  describe("Faz 10 — N-adet isimli tema", () => {
+    it("light/dark'ın ÖTESİNDE keyfi sayıda ek tema için ayrı [data-theme] bloğu üretir", () => {
+      const brand = createNamedTheme("brand", "light", { color: { primary: "#a21caf" } });
+      const highContrast = createNamedTheme("highContrast", "dark", { color: { primary: "#facc15" } });
+      const css = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme, brand, highContrast } });
+
+      expect(css).toContain('[data-theme="dark"] {');
+      expect(css).toContain('[data-theme="brand"] {');
+      expect(css).toContain('[data-theme="highContrast"] {');
+      expect(css).toContain(brand.color.primary.solid);
+      expect(css).toContain(highContrast.color.primary.solid);
+    });
+
+    it("'dark' adlı bir tema YOKSA @media (prefers-color-scheme: dark) fallback'i eklenmez (N-adet özel temaya genellenemeyen tarayıcı kavramı)", () => {
+      const brand = createNamedTheme("brand", "light");
+      const css = buildPlainThemeCss({ default: lightTheme, named: { brand } });
+      expect(css).not.toContain("@media (prefers-color-scheme: dark)");
+    });
+
+    it("named olmadan (sadece default) da çalışır — sadece :root üretir", () => {
+      const css = buildPlainThemeCss({ default: lightTheme });
+      expect(css).toContain(":root {");
+      expect(css).not.toContain("[data-theme=");
+    });
+
+    it("createNamedTheme: base='dark' iken kontrast araması dark yönünde çalışır (mode korunur, sadece name değişir)", () => {
+      const highContrast = createNamedTheme("highContrast", "dark");
+      expect(highContrast.mode).toBe("dark");
+      expect(highContrast.name).toBe("highContrast");
+      expect(highContrast.color.primary.text).toEqual(darkTheme.color.primary.text);
+    });
   });
 });
 

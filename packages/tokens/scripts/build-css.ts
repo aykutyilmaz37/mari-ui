@@ -20,7 +20,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = resolve(__dirname, "../dist");
 
 async function main() {
-  const plainCss = buildPlainThemeCss(lightTheme, darkTheme);
+  const plainCss = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
   const tailwindCss = buildTailwindThemeCss(lightTheme);
 
   await mkdir(DIST_DIR, { recursive: true });
