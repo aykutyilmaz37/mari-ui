@@ -1,17 +1,34 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Empty } from "./Empty";
 import { RefreshCcw } from "lucide-react";
+import { Empty } from "./Empty";
 
 const meta: Meta<typeof Empty> = {
   title: "Components/Empty",
   component: Empty,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Bir liste/tablo boş olduğunda gösterilecek yer tutucu. **Ne zaman kullanılır:** Veri yüklendi ama sonuç " +
+          "yoksa (arama sonucu boş, filtre sonucu boş, yeni oluşturulan bir liste). **Ne zaman kullanılmaz:** Veri " +
+          "henüz yükleniyorsa — o durumda `Skeleton`/`Loading` kullanılır. Hook kullanmaz, sunucu bileşeni olarak " +
+          "render edilebilir.",
+      },
+    },
+  },
+  argTypes: {
+    title: { control: "text", description: "Ana başlık." },
+    description: { control: "text", description: "Açıklayıcı alt metin (opsiyonel)." },
+    buttonText: { control: "text", description: "Verilirse bir eylem butonu render edilir (örn. \"Tekrar Dene\")." },
+    onClick: { description: "Buton tıklamasında çağrılır. Verilmezse buton devre dışı görünür." },
+  },
   args: {
-    title: "No Data Available",
-    description: "We couldn’t find any data matching your criteria.",
-    buttonText: "Retry",
+    title: "Veri Bulunamadı",
+    description: "Kriterlerinize uyan herhangi bir veri bulamadık.",
+    buttonText: "Tekrar Dene",
     buttonIcon: <RefreshCcw size={16} />,
-    onClick: () => alert("Retry clicked"),
+    onClick: () => alert("Tekrar Dene tıklandı"),
   },
 };
 
@@ -19,4 +36,15 @@ export default meta;
 
 type Story = StoryObj<typeof Empty>;
 
-export const Default: Story = {};
+export const Playground: Story = {};
+
+export const Varyantlar: Story = {
+  name: "Varyantlar",
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <Empty title="Sadece başlık" />
+      <Empty title="Başlık ve açıklama" description="Ek bir açıklama metni burada gösterilir." />
+      <Empty title="Eylem butonlu" description="Kullanıcıyı bir aksiyona yönlendirir." buttonText="Yeniden Dene" onClick={() => {}} />
+    </div>
+  ),
+};
