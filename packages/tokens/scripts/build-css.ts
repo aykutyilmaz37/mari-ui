@@ -13,71 +13,39 @@
  *  - `dist/tailwind-theme.css` → `theme.css`'i import eder + `@theme inline`
  *    katmanı ekler (`bg-mari-primary` gibi utility'ler için). Sadece
  *    Tailwind v4 kullanan tüketiciler bunu tercih eder.
+ *
+ * Değişken adı → değer eşlemesi (`--mari-color-primary-solid: #2563eb;` gibi)
+ * `../src/cssVariables.ts`teki `themeToCssVariables()`ten gelir — bu FONKSİYON
+ * aynı zamanda Faz 6'nın tema stüdyosu tarafından ÇALIŞMA ZAMANINDA (canlı
+ * önizleme için) da çağrılıyor. Mapping burada ikinci kez elle yazılmıyor.
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { darkTheme, lightTheme, type Theme } from "../src/theme";
-import type { SemanticColorRole } from "../src/semantic/deriveColorRole";
+import { darkTheme, lightTheme } from "../src/theme";
+import { themeToCssVariables } from "../src/cssVariables";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = resolve(__dirname, "../dist");
 
-/**
- * CSS custom property adları noktalı olabilir (`--mari-space-0.5`) ama
- * bazı minifier/optimizer'lar (bu build'de fiilen görüldü: Tailwind'in
- * lightningcss tabanlı optimize adımı) noktayı sayı token'ı sanıp uyarı
- * veriyor. `spacing` skalasındaki `0.5`/`1.5`/`2.5` gibi kesirli anahtarlar
- * için noktayı alt çizgiye çeviriyoruz — değer değişmiyor, sadece adı.
- */
 function cssSafeKey(key: string): string {
   return key.replace(".", "_");
 }
 
-function colorRoleToVars(prefix: string, role: SemanticColorRole): string[] {
-  return [
-    `  --mari-color-${prefix}: ${role.text};`,
-    `  --mari-color-${prefix}-solid: ${role.solid};`,
-    `  --mari-color-${prefix}-solid-contrast: ${role.solidContrast};`,
-    `  --mari-color-${prefix}-solid-hover: ${role.solidHover};`,
-    `  --mari-color-${prefix}-subtle: ${role.subtle};`,
-    `  --mari-color-${prefix}-subtle-contrast: ${role.subtleContrast};`,
-    `  --mari-color-${prefix}-border: ${role.border};`,
-  ];
+function varsToLines(vars: Record<string, string>): string[] {
+  return Object.entries(vars).map(([name, value]) => `  ${name}: ${value};`);
 }
 
-function themeToVarLines(theme: Theme): string[] {
-  const lines: string[] = [];
-  for (const role of ["primary", "accent", "success", "error", "warning", "info", "neutral"] as const) {
-    lines.push(...colorRoleToVars(role, theme.color[role]));
-  }
-  const c = theme.color.canvas;
-  lines.push(
-    `  --mari-color-surface: ${c.surface};`,
-    `  --mari-color-surface-alt: ${c.surfaceAlt};`,
-    `  --mari-color-border: ${c.border};`,
-    `  --mari-color-foreground: ${c.foreground};`,
-    `  --mari-color-muted: ${c.muted};`,
-    `  --mari-color-disabled: ${c.disabled};`
-  );
-  return lines;
-}
-
-function nonColorVarLines(theme: Theme): string[] {
-  const lines: string[] = [];
-  for (const [key, value] of Object.entries(theme.spacing))
-    lines.push(`  --mari-space-${cssSafeKey(key)}: ${value};`);
-  for (const [key, value] of Object.entries(theme.radius)) lines.push(`  --mari-radius-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.fontSize)) lines.push(`  --mari-font-size-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.fontWeight)) lines.push(`  --mari-font-weight-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.lineHeight)) lines.push(`  --mari-line-height-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.shadow)) lines.push(`  --mari-shadow-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.zIndex)) lines.push(`  --mari-z-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.duration)) lines.push(`  --mari-duration-${key}: ${value};`);
-  for (const [key, value] of Object.entries(theme.easing)) lines.push(`  --mari-easing-${key}: ${value};`);
-  lines.push(`  --mari-font-sans: ${theme.fontFamily.sans};`);
-  lines.push(`  --mari-font-mono: ${theme.fontFamily.mono};`);
-  return lines;
+/**
+ * `[data-theme="dark"]` bloğu sadece MODA GÖRE DEĞİŞEN (`--mari-color-*`)
+ * değişkenleri taşımalı — spacing/radius/fontSize/shadow/zIndex/duration/
+ * easing/fontFamily light ve dark'ta ZATEN aynı, `:root`te bir kez yeterli.
+ * `themeToCssVariables` ikisini birden döndürdüğü için burada filtreleniyor;
+ * filtrelenmezse (fiilen bu refactor sırasında bir kere olduğu gibi) her
+ * mod bloğunda gereksiz yere tekrarlanıp `theme.css`nin boyutu ~%45 şişer.
+ */
+function onlyColorVars(vars: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(vars).filter(([name]) => name.startsWith("--mari-color-")));
 }
 
 const THEME_TOKEN_KEYS = [
@@ -126,17 +94,16 @@ async function main() {
   const plainCss = [
     GENERATED_HEADER,
     ":root {",
-    ...themeToVarLines(lightTheme),
-    ...nonColorVarLines(lightTheme),
+    ...varsToLines(themeToCssVariables(lightTheme)),
     "}",
     "",
     '[data-theme="dark"] {',
-    ...themeToVarLines(darkTheme),
+    ...varsToLines(onlyColorVars(themeToCssVariables(darkTheme))),
     "}",
     "",
     "@media (prefers-color-scheme: dark) {",
     '  :root:not([data-theme="light"]) {',
-    ...themeToVarLines(darkTheme).map((l) => `  ${l}`),
+    ...varsToLines(onlyColorVars(themeToCssVariables(darkTheme))).map((l) => `  ${l}`),
     "  }",
     "}",
     "",

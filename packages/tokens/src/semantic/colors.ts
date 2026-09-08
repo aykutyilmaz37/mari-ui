@@ -1,4 +1,5 @@
 import { BLACK, WHITE } from "../primitives/ramps";
+import type { ColorRamp } from "../primitives/ramps";
 import {
   accentRamp,
   errorRamp,
@@ -78,17 +79,25 @@ function buildCanvas(mode: ThemeMode): CanvasTokens {
  * `bg-warning text-white` kombinasyonunun aslında WCAG'yi geçmediğinin
  * (contrast.test.ts ile doğrulanan) somut kanıtıdır. `neutral` rolü de
  * aynı `deriveColorRole` fonksiyonundan geçer, sadece nötr rampayla.
+ *
+ * `rampOverrides` (Faz 6 — tema stüdyosu): şemanın (`schema.json`)
+ * `editable.color` alanı sadece `primary`/`accent`i düzenlenebilir işaretler
+ * — bu yüzden stüdyo sadece bu iki rol için `generateRamp(anchor)` çıktısını
+ * geçirir, ama imza herhangi bir rolü (hatta hepsini) geçersiz kılmaya izin
+ * verecek kadar genel: gelecekte şema genişlerse burada değişiklik gerekmez.
+ * Override VERİLMEZSE davranış birebir eskisiyle aynıdır (regresyon testi:
+ * `colors.test.ts`).
  */
-export function buildSemanticColors(mode: ThemeMode): SemanticColorTokens {
+export function buildSemanticColors(mode: ThemeMode, rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {}): SemanticColorTokens {
   const surface = mode === "light" ? LIGHT_SURFACE : DARK_SURFACE;
   return {
-    primary: deriveColorRole(primaryRamp, surface, mode, 600),
-    accent: deriveColorRole(accentRamp, surface, mode, 500),
-    success: deriveColorRole(successRamp, surface, mode, 600),
-    error: deriveColorRole(errorRamp, surface, mode, 600),
-    warning: deriveColorRole(warningRamp, surface, mode, 700),
-    info: deriveColorRole(infoRamp, surface, mode, 600),
-    neutral: deriveColorRole(neutralRamp, surface, mode, 600),
+    primary: deriveColorRole(rampOverrides.primary ?? primaryRamp, surface, mode, 600),
+    accent: deriveColorRole(rampOverrides.accent ?? accentRamp, surface, mode, 500),
+    success: deriveColorRole(rampOverrides.success ?? successRamp, surface, mode, 600),
+    error: deriveColorRole(rampOverrides.error ?? errorRamp, surface, mode, 600),
+    warning: deriveColorRole(rampOverrides.warning ?? warningRamp, surface, mode, 700),
+    info: deriveColorRole(rampOverrides.info ?? infoRamp, surface, mode, 600),
+    neutral: deriveColorRole(rampOverrides.neutral ?? neutralRamp, surface, mode, 600),
     canvas: buildCanvas(mode),
   };
 }
