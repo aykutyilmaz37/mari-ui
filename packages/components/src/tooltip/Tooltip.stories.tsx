@@ -1,49 +1,60 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Tooltip } from "./Tooltip";
 import { Info } from "lucide-react";
+import { colorArgType, placementArgType } from "../lib/storybookArgTypes";
+import { Tooltip } from "./Tooltip";
 
 const meta: Meta<typeof Tooltip> = {
   title: "Components/Tooltip",
   component: Tooltip,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Bir elemanın üzerine gelindiğinde kısa bir açıklama gösteren balon. **Not:** eskiden her trigger " +
+          "`<Button>` içine sarılıyordu — bir ikon/link'e tooltip eklendiğinde iç içe buton render ediliyordu " +
+          "(gerçek bir a11y/DOM bug'ıydı). Artık trigger düz bir `<span>` içinde; kendi bir buton/link ise " +
+          "davranışı korunur.",
+      },
+    },
+  },
+  argTypes: {
+    content: { control: "text", description: "Balon içinde gösterilecek içerik." },
+    trigger: { control: false, description: "Üzerine gelindiğinde tooltip'i tetikleyecek eleman." },
+    placement: placementArgType,
+    color: { ...colorArgType, description: "Balonun rengi. Varsayılan: `neutral` (koyu tooltip)." },
+    alwaysVisible: { control: "boolean", description: "Hover beklemeden her zaman görünür yapar." },
+    disabled: { control: "boolean", description: "Tooltip'i tamamen devre dışı bırakır." },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Tooltip>;
 
-export const Default: Story = {
-  render: () => (
-    <Tooltip
-      content="This is a tooltip"
-      trigger={<button className="px-4 py-2 bg-gray-200">Hover me</button>}
-    />
-  ),
+export const Playground: Story = {
+  render: (args) => <Tooltip {...args} trigger={<button className="px-4 py-2 rounded bg-mari-surface-alt">Üzerine gel</button>} />,
+  args: { content: "Bu bir tooltip", placement: "top", color: "neutral" },
 };
 
 export const AllPlacements: Story = {
+  name: "Tüm Konumlar",
   render: () => (
     <div className="flex flex-wrap gap-8 justify-center items-center p-10 mt-20">
-      <Tooltip content="Top tooltip" placement="top" trigger={<Info />} />
-      <Tooltip content="Bottom tooltiptooltiptooltiptooltip tooltiptooltiptooltiptooltip" placement="bottom" trigger={<Info />} />
-      <Tooltip content="Left tooltip" placement="left" trigger={<Info />} />
-      <Tooltip content="Right tooltip" placement="right" trigger={<Info />} />
+      <Tooltip content="Üst tooltip" placement="top" trigger={<Info />} />
+      <Tooltip content="Alt tooltip, biraz daha uzun bir metin içeriyor" placement="bottom" trigger={<Info />} />
+      <Tooltip content="Sol tooltip" placement="left" trigger={<Info />} />
+      <Tooltip content="Sağ tooltip" placement="right" trigger={<Info />} />
     </div>
   ),
 };
 
-export const Variants: Story = {
+export const AllColors: Story = {
+  name: "Tüm Renkler",
   render: () => (
     <div className="flex flex-wrap gap-4 p-4 mt-10">
-      <Tooltip content="Primary tooltip" color="primary" trigger={<Info />} />
-      <Tooltip content="Success tooltip" color="success" trigger={<Info />} />
-      <Tooltip content="Warning tooltip" color="warning" trigger={<Info />} />
-      <Tooltip
-        content="Secondary tooltip"
-        color="neutral"
-        trigger={<Info />}
-      />
-      <Tooltip content="Info tooltip" color="info" trigger={<Info />} />
-      <Tooltip content="Error tooltip" color="error" trigger={<Info />} />
+      {(["primary", "accent", "success", "warning", "error", "info", "neutral"] as const).map((color) => (
+        <Tooltip key={color} content={`${color} tooltip`} color={color} alwaysVisible trigger={<Info />} />
+      ))}
     </div>
   ),
 };
