@@ -1,0 +1,39 @@
+{
+  "name": "@mari-ui/docs",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build": "storybook build",
+    "build-storybook": "storybook build",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf storybook-static .turbo"
+  },
+  "dependencies": {
+    "@mari-ui/components": "workspace:*",
+    "@mari-ui/core": "workspace:*",
+    "@mari-ui/tokens": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@mari-ui/eslint-config": "workspace:*",
+    "@mari-ui/tsconfig": "workspace:*",
+    "@storybook/addon-a11y": "^8.6.18",
+    "@storybook/addon-essentials": "^8.6.18",
+    "@storybook/addon-interactions": "^8.6.18",
+    "@storybook/addon-themes": "^8.6.18",
+    "@storybook/blocks": "^8.6.18",
+    "@storybook/react": "^8.6.18",
+    "@storybook/react-vite": "^8.6.18",
+    "@storybook/test": "^8.6.18",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "^9.17.0",
+    "eslint-plugin-storybook": "^0.11.1",
+    "storybook": "^8.6.18",
+    "typescript": "^5.7.0",
+    "vite": "^5.4.11"
+  }
+}

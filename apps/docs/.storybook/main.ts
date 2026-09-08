@@ -1,38 +1,38 @@
-import type { StorybookConfig } from '@storybook/nextjs';
+import type { StorybookConfig } from "@storybook/react-vite";
 
+/**
+ * Eskiden framework `@storybook/nextjs` idi ve `nextConfigPath: "../next.config.ts"`
+ * diye SİLİNMİŞ bir dosyaya işaret ediyordu (o Next.js uygulaması Faz 0'da
+ * kaldırıldı — bkz. plan). `@mari-ui/components` artık bağımsız bir kütüphane,
+ * Next'e bağlı değil; bu yüzden framework de daha basit, daha hızlı olan
+ * `@storybook/react-vite`'a geçirildi.
+ *
+ * Story'ler artık `apps/docs/src` altında değil — component'ler
+ * `packages/components/src/**` içinde yaşıyor (Faz 0'da taşındı), story
+ * dosyaları da onlarla aynı klasörde.
+ */
 const config: StorybookConfig = {
-  "stories": [
-    "../src/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+  stories: [
+    "../../../packages/components/src/**/*.mdx",
+    "../../../packages/components/src/**/*.stories.@(ts|tsx)",
   ],
-  "addons": [
-    {
-      "name": "@storybook/addon-essentials",
-      "options": {
-        "docs": false
-      }
-    },
-    "@storybook/addon-onboarding",
-    "@storybook/addon-interactions"
+  addons: [
+    "@storybook/addon-essentials",
+    "@storybook/addon-interactions",
+    "@storybook/addon-a11y",
+    "@storybook/addon-themes",
   ],
-  "framework": {
-    "name": "@storybook/nextjs",
-    "options": {
-      "nextConfigPath": "../next.config.ts"
-    }
+  framework: {
+    name: "@storybook/react-vite",
+    options: {},
   },
-  "staticDirs": [
-    "../public"
-  ],
-  "webpackFinal": async (config) => {
-    // Next.js App Router için gerekli konfigürasyon
-    if (config.resolve) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@': '/src',
-      };
-    }
-    return config;
-  },
+  staticDirs: ["../public"],
+  // pnpm workspace paketlerini (@mari-ui/core, @mari-ui/tokens) kaynak
+  // değil DERLENMİŞ dist çıktısı üzerinden çözmek için ekstra bir Vite
+  // ayarı gerekmiyor — normal node_modules symlink çözümlemesi yeterli,
+  // ama bu paketlerin `pnpm build` ile önceden derlenmiş olması gerekiyor
+  // (turbo.json'daki `storybook` görevi `dependsOn: ["^build"]` ile
+  // bunu garanti ediyor).
 };
+
 export default config;
