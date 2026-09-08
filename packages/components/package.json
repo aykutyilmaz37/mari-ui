@@ -134,8 +134,9 @@
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && pnpm build:css && pnpm build:manifest",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "build:css:watch": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "build:manifest": "tsx scripts/build-manifest.ts",
-    "dev": "tsup --watch",
+    "dev": "concurrently -n tsup,css -c blue,magenta \"NODE_OPTIONS=--max-old-space-size=8192 tsup --watch\" \"pnpm build:css:watch\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
@@ -174,6 +175,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "axe-core": "^4.13.0",
+    "concurrently": "^9.1.2",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "esbuild-plugin-preserve-directives": "^0.0.11",

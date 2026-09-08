@@ -1,12 +1,19 @@
 import { preserveDirectivesPlugin } from "esbuild-plugin-preserve-directives";
 import { defineConfig } from "tsup";
 
-export default defineConfig({
+export default defineConfig((options) => ({
   entry: ["src/index.ts"],
   format: ["esm"],
   dts: true,
   sourcemap: true,
-  clean: true,
+  // Watch modunda `clean: true` her yeniden başlatmada `dist/`i (ve o anki
+  // `.d.ts`i) kısa süreliğine siler; `pnpm dev` tüm paketleri aynı anda
+  // ayağa kaldırdığında `@mari-ui/components`in DTS build'i tam bu silme
+  // penceresine denk gelip "Could not find a declaration file" hatasıyla
+  // patlayabiliyor (fiilen görüldü). Tek seferlik `build`de temiz başlamak
+  // hâlâ isteniyor, o yüzden clean sadece watch modunda kapatılıyor —
+  // bkz. `packages/components/tsup.config.ts`teki aynı gerekçe.
+  clean: !options.watch,
   target: "es2020",
   external: ["react"],
   // tsup'ın altında yattığı esbuild, birden fazla dosyayı tek chunk'a
@@ -20,4 +27,4 @@ export default defineConfig({
       exclude: /node_modules/,
     }),
   ],
-});
+}));
