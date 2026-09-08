@@ -1,0 +1,10 @@
+{
+  "extends": "@mari-ui/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "types": ["node"]
+  },
+  "include": ["src", "vitest.config.ts", "tsup.config.ts"],
+  "exclude": ["dist", "node_modules"]
+}

@@ -1,7 +1,7 @@
-import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { preserveDirectivesPlugin } from "esbuild-plugin-preserve-directives";
 import { defineConfig } from "tsup";
+import { discoverEntries } from "./scripts/discoverEntries";
 
 /**
  * Her component klasörü kendi chunk'ına derlenir (dist/button.js,
@@ -24,25 +24,8 @@ import { defineConfig } from "tsup";
  */
 const SRC_DIR = join(__dirname, "src");
 
-function findComponentEntries(): Record<string, string> {
-  const entries: Record<string, string> = {};
-  for (const name of readdirSync(SRC_DIR)) {
-    const dir = join(SRC_DIR, name);
-    if (!statSync(dir).isDirectory()) continue;
-    const indexPath = join(dir, "index.ts");
-    try {
-      if (statSync(indexPath).isFile()) {
-        entries[name] = indexPath;
-      }
-    } catch {
-      // index.ts yoksa (örn. src/lib) atla.
-    }
-  }
-  return entries;
-}
-
 export default defineConfig({
-  entry: findComponentEntries(),
+  entry: discoverEntries(SRC_DIR),
   format: ["esm"],
   dts: true,
   sourcemap: true,
