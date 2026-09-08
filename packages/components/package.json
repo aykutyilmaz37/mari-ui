@@ -131,7 +131,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsup && pnpm build:css",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && pnpm build:css",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
     "dev": "tsup --watch",
     "test": "vitest run",

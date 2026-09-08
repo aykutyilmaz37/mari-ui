@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "files": [
     "base.json",
-    "react-library.json"
+    "react-library.json",
+    "react-native-library.json"
   ]
 }

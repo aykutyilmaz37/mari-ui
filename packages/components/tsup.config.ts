@@ -13,6 +13,14 @@ import { defineConfig } from "tsup";
  * `migrated.json` allowlist'i (henüz migrate edilmemiş component'leri
  * build dışında tutmak için) kaldırıldı; yeni bir component eklendiğinde
  * bu dosyaya dokunmaya gerek yok.
+ *
+ * `package.json`'daki `build` script'i `NODE_OPTIONS=--max-old-space-size=
+ * 8192` taşıyor: tsup'ın `dts:true` çıktısı 29 ayrı entry'yi tek bir
+ * worker thread'de derliyor ve bu worker'ın varsayılan V8 heap limiti daha
+ * yeni Node sürümlerinde (fiilen Node 25'te doğrulandı) bu iş yükü için
+ * yetersiz kalıp `ERR_WORKER_OUT_OF_MEMORY` ile patlıyor — `tsup.config.ts`
+ * içinden bu worker'a doğrudan `resourceLimits` geçme yolu yok, bu yüzden
+ * çözüm `NODE_OPTIONS` üzerinden.
  */
 const SRC_DIR = join(__dirname, "src");
 

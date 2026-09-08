@@ -6,7 +6,8 @@
   "main": "base.mjs",
   "exports": {
     ".": "./base.mjs",
-    "./react": "./react-internal.mjs"
+    "./react": "./react-internal.mjs",
+    "./native": "./react-native.mjs"
   },
   "dependencies": {
     "@eslint/js": "^9.17.0",

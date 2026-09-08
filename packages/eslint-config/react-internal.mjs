@@ -1,4 +1,6 @@
-// @mari-ui/eslint-config/react — React kütüphane paketleri için (components, native).
+// @mari-ui/eslint-config/react — web component kütüphanesi (`components`) için.
+// React Native paketi (`native`) bunu KULLANMAZ — "use client" kuralı web'e
+// (Next.js/RSC) özgüdür; native kendi `./react-native.mjs` varyantını kullanır.
 import reactHooks from "eslint-plugin-react-hooks";
 import { baseConfig } from "./base.mjs";
 import requireUseClientWithHooks from "./rules/require-use-client-with-hooks.mjs";
