@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Button } from "./Button";
+import { getA11yViolations } from "../testUtils/a11y";
 
 describe("Button", () => {
   it("varsayılan color=primary, variant=solid render eder", () => {
@@ -68,5 +69,15 @@ describe("Button", () => {
       <Button loading={{ icon: <span data-testid="spinner" /> }}>Gönder</Button>
     );
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
+  });
+
+  it("erişilebilirlik ihlali içermez (axe-core, Faz 9)", async () => {
+    const { container } = render(<Button>Kaydet</Button>);
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
+
+  it("disabled durumda da erişilebilirlik ihlali içermez", async () => {
+    const { container } = render(<Button disabled>Devre dışı</Button>);
+    expect(await getA11yViolations(container)).toEqual([]);
   });
 });

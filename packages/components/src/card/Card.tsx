@@ -39,8 +39,30 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
     const base = getBaseClassname({ bordered, hoverable, size, inset, className });
 
+    // `onClick` verildiğinde Card TIKLANABİLİR hale geliyor ama bir `<div>`
+    // olduğu için klavye kullanıcıları ve ekran okuyucular bunu asla
+    // ETKİNLEŞTİREMİYORDU — sadece fare/dokunmayla erişilebiliyordu. Faz 9'da
+    // eslint-plugin-jsx-a11y'nin yakaladığı gerçek bir bug (bkz. plan).
+    // `onClick` yoksa hiçbir interaktiflik semantiği eklenmiyor — düz bir
+    // kapsayıcı olarak kalıyor.
+    const isInteractive = Boolean(onClick);
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!onClick) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onClick();
+      }
+    };
+
     return (
-      <div ref={ref} className={base} onClick={onClick}>
+      <div
+        ref={ref}
+        className={base}
+        onClick={onClick}
+        onKeyDown={isInteractive ? handleKeyDown : undefined}
+        role={isInteractive ? "button" : undefined}
+        tabIndex={isInteractive ? 0 : undefined}
+      >
         {cover && <div className={cn("mb-4", classNames?.cover)}>{cover}</div>}
 
         {(title || extra) && (

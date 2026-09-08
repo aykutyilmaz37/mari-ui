@@ -67,6 +67,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               ref={inputRef}
               id={id}
               type="radio"
+              // eslint-disable-next-line jsx-a11y/no-autofocus -- pass-through: kütüphane autofocus'u ZORLAMIYOR, tüketicinin verdiği prop'u iletiyor.
               autoFocus={autoFocus}
               checked={isChecked}
               disabled={disabled}

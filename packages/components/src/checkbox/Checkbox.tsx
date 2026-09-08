@@ -72,6 +72,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             ref={inputRef}
             id={id}
             type="checkbox"
+            // eslint-disable-next-line jsx-a11y/no-autofocus -- pass-through: kütüphane autofocus'u ZORLAMIYOR, tüketicinin verdiği prop'u iletiyor.
             autoFocus={autoFocus}
             checked={isChecked}
             disabled={disabled}
