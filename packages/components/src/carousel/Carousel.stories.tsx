@@ -8,6 +8,25 @@ const meta: Meta<typeof Carousel> = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component:
+          "[Embla Carousel](https://www.embla-carousel.com/) üzerine kurulu slayt gösterici. `embla-carousel-" +
+          "react`/`embla-carousel-autoplay` opsiyonel peer bağımlılıktır — sadece bu component'i kullanan " +
+          "tüketiciler kurar. **Not:** eskiden `slick-carousel`'den kalma `infinite`/`autoplaySpeed` prop " +
+          "isimleri kullanılıyordu; Embla'ya geçişte `loop`/`autoplayDelay` olarak yeniden adlandırıldı.",
+      },
+    },
+  },
+  argTypes: {
+    arrows: { control: "boolean", description: "Önceki/sonraki ok butonlarını gösterir." },
+    autoplay: { control: "boolean", description: "Otomatik ilerlemeyi açar." },
+    autoplayDelay: { control: "number", description: "Otomatik ilerleme aralığı (ms). Eskiden `autoplaySpeed`." },
+    loop: { control: "boolean", description: "Sona gelince başa döner. Eskiden `infinite`." },
+    draggable: { control: "boolean", description: "Fare/dokunma ile sürükleyerek gezinmeyi açar." },
+    slidesToShow: { control: "number", description: "Aynı anda görünecek slayt sayısı." },
+    slidesToScroll: { control: "number", description: "Her adımda kaydırılacak slayt sayısı." },
+    dotPosition: { control: "select", options: ["top", "bottom", "left", "right"], description: "Sayfa noktalarının (dots) konumu." },
   },
 };
 export default meta;
@@ -36,12 +55,14 @@ const basicChildren = [
 ];
 
 export const Basic: Story = {
+  name: "Temel",
   args: {
     children: basicChildren,
   },
 };
 
 export const WithArrows: Story = {
+  name: "Ok Butonlu",
   args: {
     arrows: true,
     children: basicChildren,
@@ -49,6 +70,7 @@ export const WithArrows: Story = {
 };
 
 export const Autoplay: Story = {
+  name: "Otomatik Oynatma",
   args: {
     autoplay: true,
     autoplayDelay: 2000, // eskiden autoplaySpeed
@@ -57,6 +79,7 @@ export const Autoplay: Story = {
 };
 
 export const SlidesToShow: Story = {
+  name: "Aynı Anda Görünen Slayt Sayısı",
   args: {
     slidesToShow: 3,
     children: basicChildren,
@@ -65,6 +88,7 @@ export const SlidesToShow: Story = {
 };
 
 export const SlidesToScroll: Story = {
+  name: "Adım Başına Kaydırma",
   args: {
     slidesToShow: 4,
     slidesToScroll: 2,
@@ -89,6 +113,7 @@ export const SlidesToScroll: Story = {
 };
 
 export const DotPositions: Story = {
+  name: "Nokta Konumları",
   render: () => (
     <div className="flex flex-col gap-6">
       {(["top", "bottom", "left", "right"] as const).map((position) => (
@@ -116,6 +141,7 @@ const adaptiveChildren = [
 ];
 
 export const AdaptiveHeight: Story = {
+  name: "Değişken Yükseklik",
   args: {
     // Embla tarafında yükseklik sabit; içerikte farklı yükseklikleri görmek için container’ı auto bırakıyoruz.
     // Eğer dışarıdan height kontrolü istersen, slide içinde min-h veya aspect kullan.
@@ -125,6 +151,7 @@ export const AdaptiveHeight: Story = {
 };
 
 export const LoopingAutoplay: Story = {
+  name: "Döngülü Otomatik Oynatma",
   args: {
     loop: true, // eskiden infinite
     arrows: true,
@@ -139,6 +166,7 @@ export const LoopingAutoplay: Story = {
 };
 
 export const Draggable: Story = {
+  name: "Sürüklenebilir",
   args: {
     draggable: true,
     arrows: true,
@@ -147,6 +175,7 @@ export const Draggable: Story = {
 };
 
 export const Responsive: Story = {
+  name: "Duyarlı (Responsive)",
   args: {
     slidesToShow: 4,
     slidesToScroll: 4,

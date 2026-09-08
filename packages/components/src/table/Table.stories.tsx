@@ -20,17 +20,30 @@ const meta: Meta<typeof Table<DataType>> = {
   title: "Components/Table",
   component: Table,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Tip güvenli veri tablosu. Her sütun bir `ColumnDef<T>` ile tanımlanır: `header` başlık metni, " +
+          "`columnName` verinin hangi alandan okunacağı (`keyof T`), `actions` satır içi düzenleme/silme, `info` " +
+          "değeri bir tooltip içinde de gösterir. **Not:** eskiden `tableHeader: string[]` ve `tableBody: " +
+          "ColumnProps[]` iki ayrı, elle senkron tutulan dizi olarak geçiliyordu — artık tek bir `columns` dizisi " +
+          "hem başlığı hem veri eşlemesini taşıyor. Ayrıca `0`/`false`/`\"\"` gibi falsy ama geçerli değerler " +
+          "eskiden \"-\" olarak gösteriliyordu (yalnızca `null`/`undefined` için \"-\" gösterilecek şekilde " +
+          "düzeltildi).",
+      },
+    },
+  },
+  argTypes: {
+    loading: { control: "boolean", description: "Veri yerine bir yükleniyor göstergesi render eder." },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Table<DataType>>;
 
-/**
- * Not: eskiden `tableHeader: string[]` ve `tableBody: ColumnProps[]` iki
- * ayrı, elle senkron tutulan dizi olarak geçiliyordu. Artık tek bir
- * `columns` dizisi hem başlığı hem veri eşlemesini taşıyor.
- */
 export const Default: Story = {
+  name: "Varsayılan",
   render: () => {
     const columns: ColumnDef<DataType>[] = [
       { header: "İsim", columnName: "name" },
@@ -42,6 +55,7 @@ export const Default: Story = {
 };
 
 export const Loading: Story = {
+  name: "Yükleniyor",
   render: () => {
     const columns: ColumnDef<DataType>[] = [{ header: "İsim", columnName: "name" }];
     return <Table<DataType> data={initialData} columns={columns} loading />;
@@ -49,6 +63,7 @@ export const Loading: Story = {
 };
 
 export const Empty: Story = {
+  name: "Boş Veri",
   render: () => {
     const columns: ColumnDef<DataType>[] = [{ header: "İsim", columnName: "name" }];
     return <Table<DataType> data={[]} columns={columns} />;
@@ -77,5 +92,6 @@ const WithActionsStory = () => {
 };
 
 export const WithActions: Story = {
+  name: "İşlem Sütunlu",
   render: () => <WithActionsStory />,
 };

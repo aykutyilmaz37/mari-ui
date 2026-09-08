@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { colorArgType } from "../lib/storybookArgTypes";
 import { Tabs } from "./Tabs";
 import { TabsList } from "./_components/TabsList";
 import { TabsTrigger } from "./_components/TabsTrigger";
@@ -12,6 +13,20 @@ const meta: Meta<typeof Tabs> = {
   title: "Components/Tabs",
   component: Tabs,
   tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Compound-component deseninde sekmeli gezinme: `<Tabs><TabsList><TabsTrigger/></TabsList>" +
+          "<TabsContent/></Tabs>`. `TabsList`/`TabsTrigger`'a `cardTabs` verilirse kart görünümlü (arka planlı, " +
+          "birbirinden ayrık) sekmeler render edilir; verilmezse klasik alt-çizgili sekme görünümü kullanılır.",
+      },
+    },
+  },
+  argTypes: {
+    color: colorArgType,
+    defaultActiveTab: { control: "text", description: "Uncontrolled başlangıçta aktif olacak sekmenin `value`'su." },
+  },
 };
 
 export default meta;
@@ -19,6 +34,7 @@ export default meta;
 type Story = StoryObj<typeof Tabs>;
 
 export const Default: Story = {
+  name: "Varsayılan",
   render: () => (
     <Tabs defaultActiveTab="tab1">
       <TabsList>
@@ -34,6 +50,7 @@ export const Default: Story = {
 };
 
 export const CardTabs: Story = {
+  name: "Kart Görünümlü",
   render: () => (
     <Tabs defaultActiveTab="tab1" color="accent">
       <TabsList cardTabs>

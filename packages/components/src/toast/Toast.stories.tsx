@@ -35,30 +35,37 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Success: Story = {
+  name: "Başarılı",
   args: { title: "Başarılı!", description: "Verileriniz başarıyla kaydedildi.", type: "success" },
 };
 
 export const Error: Story = {
+  name: "Hata",
   args: { title: "Hata!", description: "Bir hata oluştu. Lütfen tekrar deneyin.", type: "error" },
 };
 
 export const Warning: Story = {
+  name: "Uyarı",
   args: { title: "Uyarı!", description: "Bu işlem geri alınamaz.", type: "warning" },
 };
 
 export const Info: Story = {
+  name: "Bilgi",
   args: { title: "Bilgi", description: "Yeni bir güncelleme mevcut.", type: "info" },
 };
 
 export const TitleOnly: Story = {
+  name: "Sadece Başlık",
   args: { title: "Sadece başlık", type: "none" },
 };
 
 export const WithoutCloseIcon: Story = {
+  name: "Kapatma İkonu Yok",
   args: { title: "Kapatma İkonu Yok", description: "Bu toast'ta kapatma ikonu bulunmuyor.", type: "warning", closeIcon: false },
 };
 
 export const AllTypes: Story = {
+  name: "Tüm Tipler",
   render: () => (
     <div className="space-y-4">
       <Toast title="Başarılı" description="İşlem başarıyla tamamlandı" type="success" />
@@ -83,6 +90,7 @@ const DemoTrigger = ({ position, type }: { position: ToastPosition; type: ToastT
 };
 
 export const LiveWithProvider: Story = {
+  name: "Canlı Kullanım (Provider ile)",
   parameters: { layout: "fullscreen" },
   render: () => (
     <ToastProvider>

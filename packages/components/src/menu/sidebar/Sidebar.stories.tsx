@@ -51,13 +51,23 @@ const meta: Meta<typeof Sidebar> = {
   title: "Components/Sidebar",
   component: Sidebar,
   tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    docs: {
+      description: {
+        component:
+          "Dikey gezinme menüsü. Alt öğeler `variant=\"hover\"` iken üzerine gelince, `variant=\"click\"` iken " +
+          "tıklanınca açılır; `dropdown`/`mega` ile alt öğelerin akordeon yerine bir dropdown veya mega-panel " +
+          "olarak açılması sağlanır. `onlyIcon` sidebar'ı sadece ikonlarla daraltır.",
+      },
+    },
+  },
   argTypes: {
-    variant: { control: { type: "radio" }, options: ["hover", "click"] },
-    position: { control: { type: "radio" }, options: ["left", "right"] },
-    onlyIcon: { control: { type: "boolean" } },
-    dropdown: { control: { type: "boolean" } },
-    mega: { control: { type: "boolean" } },
+    variant: { control: { type: "radio" }, options: ["hover", "click"], description: "Alt menülerin açılma tetikleyicisi." },
+    position: { control: { type: "radio" }, options: ["left", "right"], description: "Sidebar'ın ekrandaki kenarı." },
+    onlyIcon: { control: { type: "boolean" }, description: "Sidebar'ı sadece ikonlarla daraltır." },
+    dropdown: { control: { type: "boolean" }, description: "Alt öğeleri akordeon yerine bir dropdown panelde açar." },
+    mega: { control: { type: "boolean" }, description: "Alt öğeleri bir mega-menu panelinde açar." },
   },
   args: {
     data: baseData,
