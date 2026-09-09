@@ -11,7 +11,7 @@ import type { ToastPosition, ToastType } from "./types";
  * görünümü hem gerçek `useToast()` akışını gösteriyor.
  */
 const meta: Meta<typeof Toast> = {
-  title: "Components/Toast",
+  title: "Geri Bildirim/Toast",
   component: Toast,
   parameters: {
     layout: "centered",

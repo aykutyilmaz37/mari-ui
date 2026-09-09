@@ -6,7 +6,7 @@ import { colorArgType } from "../lib/storybookArgTypes";
 import { StepsContent } from "./_components/StepsContent";
 
 const meta: Meta<typeof Steps> = {
-  title: "Components/Steps",
+  title: "Navigasyon/Steps",
   component: Steps,
   tags: ["autodocs"],
   parameters: {

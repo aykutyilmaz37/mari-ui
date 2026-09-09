@@ -3,7 +3,7 @@ import { baseSizeArgType, classNameArgType } from "../lib/storybookArgTypes";
 import { Card } from "./Card";
 
 const meta: Meta<typeof Card> = {
-  title: "Components/Card",
+  title: "Veri Gösterimi/Card",
   component: Card,
   tags: ["autodocs"],
   parameters: {

@@ -3,7 +3,7 @@ import { colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { Rate } from "./Rate";
 
 const meta: Meta<typeof Rate> = {
-  title: "Components/Rate",
+  title: "Veri Girişi/Rate",
   component: Rate,
   tags: ["autodocs"],
   parameters: {

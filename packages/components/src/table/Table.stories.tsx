@@ -17,7 +17,7 @@ const initialData: DataType[] = [
 ];
 
 const meta: Meta<typeof Table<DataType>> = {
-  title: "Components/Table",
+  title: "Veri Gösterimi/Table",
   component: Table,
   tags: ["autodocs"],
   parameters: {

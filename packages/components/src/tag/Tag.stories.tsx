@@ -4,7 +4,7 @@ import { colorArgType, variantArgType } from "../lib/storybookArgTypes";
 import { Tag } from "./Tag";
 
 const meta: Meta<typeof Tag> = {
-  title: "Components/Tag",
+  title: "Veri Gösterimi/Tag",
   component: Tag,
   tags: ["autodocs"],
   parameters: {

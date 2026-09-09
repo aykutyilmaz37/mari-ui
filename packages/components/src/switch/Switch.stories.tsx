@@ -4,7 +4,7 @@ import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybook
 import { Switch } from "./Switch";
 
 const meta: Meta<typeof Switch> = {
-  title: "Components/Switch",
+  title: "Veri Girişi/Switch",
   component: Switch,
   tags: ["autodocs"],
   parameters: {

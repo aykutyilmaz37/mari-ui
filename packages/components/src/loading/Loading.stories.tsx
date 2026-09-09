@@ -9,7 +9,7 @@ import { Loading } from "./Loading";
  * şablona taşındı.
  */
 const meta: Meta<typeof Loading> = {
-  title: "Components/Loading",
+  title: "Geri Bildirim/Loading",
   component: Loading,
   tags: ["autodocs"],
   parameters: {

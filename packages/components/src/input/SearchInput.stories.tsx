@@ -3,7 +3,7 @@ import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybook
 import { SearchInput } from "./SearchInput";
 
 const meta: Meta<typeof SearchInput> = {
-  title: "Components/SearchInput",
+  title: "Veri Girişi/SearchInput",
   component: SearchInput,
   tags: ["autodocs"],
   parameters: {

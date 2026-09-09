@@ -4,7 +4,7 @@ import { Breadcrumb } from "./Breadcrumb";
 import type { BreadcrumbProps } from "./Breadcrumb";
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: "Components/Breadcrumb",
+  title: "Navigasyon/Breadcrumb",
   component: Breadcrumb,
   tags: ["autodocs"],
   parameters: {

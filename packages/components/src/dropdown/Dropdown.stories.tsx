@@ -10,7 +10,7 @@ import { DropdownContent } from "./_components/DropdownContent";
  * <DropdownContent/></Dropdown>`). Düzeltildi.
  */
 const meta: Meta<typeof Dropdown> = {
-  title: "Components/Dropdown",
+  title: "Navigasyon/Dropdown",
   component: Dropdown,
   tags: ["autodocs"],
   parameters: {

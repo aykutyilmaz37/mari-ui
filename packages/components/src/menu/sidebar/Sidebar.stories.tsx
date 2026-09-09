@@ -48,7 +48,7 @@ const baseData: MenuItemType[] = [
 const disabledData: MenuItemType[] = [...baseData, { key: "billing", title: "Faturalama (Devre Dışı)", route: "/billing", icon: icon(DatabaseIcon), disabled: true }];
 
 const meta: Meta<typeof Sidebar> = {
-  title: "Components/Sidebar",
+  title: "Navigasyon/Sidebar",
   component: Sidebar,
   tags: ["autodocs"],
   parameters: {

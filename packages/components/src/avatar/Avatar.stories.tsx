@@ -7,7 +7,7 @@ import type { AvatarProps } from "./types";
 const AVATAR_URL = "/images/avatar.png";
 
 const meta: Meta<typeof Avatar> = {
-  title: "Components/Avatar",
+  title: "Veri Gösterimi/Avatar",
   component: Avatar,
   tags: ["autodocs"],
   parameters: {

@@ -3,7 +3,7 @@ import { Upload } from "./Upload";
 import { ToastProvider } from "../toast";
 
 const meta: Meta<typeof Upload> = {
-  title: "Components/Upload",
+  title: "Veri Girişi/Upload",
   component: Upload,
   tags: ["autodocs"],
   parameters: {

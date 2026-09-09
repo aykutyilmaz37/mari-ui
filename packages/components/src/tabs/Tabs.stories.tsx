@@ -10,7 +10,7 @@ import { TabsContent } from "./_components/TabsContent";
  * diğer 33 story dosyası CSF3 kullanıyordu. Faz 4'ün tam standardizasyonu
  * beklemeden burada CSF3'e taşındı. */
 const meta: Meta<typeof Tabs> = {
-  title: "Components/Tabs",
+  title: "Navigasyon/Tabs",
   component: Tabs,
   tags: ["autodocs"],
   parameters: {

@@ -6,7 +6,7 @@ import { OtpInput } from "./OtpInput";
 type Story = StoryObj<typeof OtpInput>;
 
 const meta: Meta<typeof OtpInput> = {
-  title: "Components/OtpInput",
+  title: "Veri Girişi/OtpInput",
   component: OtpInput,
   tags: ["autodocs"],
   parameters: {

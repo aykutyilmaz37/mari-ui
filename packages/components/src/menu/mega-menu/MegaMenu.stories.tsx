@@ -18,7 +18,7 @@ const mockData: MenuItemType[] = [
 
 const meta: Meta<typeof MegaMenu> = {
   component: MegaMenu,
-  title: "Components/MegaMenu",
+  title: "Navigasyon/MegaMenu",
   tags: ["autodocs"],
   parameters: {
     docs: {

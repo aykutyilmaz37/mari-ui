@@ -4,7 +4,7 @@ import { colorArgType, placementArgType } from "../lib/storybookArgTypes";
 import { Tooltip } from "./Tooltip";
 
 const meta: Meta<typeof Tooltip> = {
-  title: "Components/Tooltip",
+  title: "Veri Gösterimi/Tooltip",
   component: Tooltip,
   tags: ["autodocs"],
   parameters: {

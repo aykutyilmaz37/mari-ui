@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Renkler" />
+
+# Renkler
+
+mari-ui'ın renk sistemi `@mari-ui/tokens`'ta **hesaplanır** — elle "bu maviye şu
+metin yakışır" kararı yoktur. Her semantik rol bir renk rampasından WCAG AA'yı
+geçen tonları `deriveColorRole` ile seçer.
+
+## Palet
+
+Faz 13'te palet blue-grey'e geçti; turuncu accent kaldırıldı.
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px", margin: "16px 0" }}>
+  {[
+    ["primary", "#88BDF2", "Birincil marka — buton, link, aktif durum"],
+    ["accent", "#6A89A7", "İkincil vurgu — muted steel-blue"],
+    ["neutral", "#384959", "Nötr bileşen rengi (gri Tag/Badge)"],
+    ["success", "#059669", "Olumlu / tamamlandı"],
+    ["error", "#dc2626", "Hata / yıkıcı aksiyon"],
+    ["warning", "#b45309", "Uyarı / dikkat"],
+    ["info", "#0284c7", "Bilgilendirme"],
+  ].map(([role, hex, desc]) => (
+    <div key={role} style={{ border: "1px solid var(--mari-color-border)", borderRadius: "8px", overflow: "hidden" }}>
+      <div style={{ height: "56px", background: `var(--mari-color-${role}-solid)` }} />
+      <div style={{ padding: "8px 10px", fontSize: "13px" }}>
+        <strong>{role}</strong> <code>{hex}</code>
+        <div style={{ color: "var(--mari-color-muted)", marginTop: "2px" }}>{desc}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+## Her rolün 7 slotu
+
+| Slot | CSS değişkeni | Kullanım |
+|---|---|---|
+| `text` | `--mari-color-<rol>` | Sayfa yüzeyinde metin/ikon |
+| `solid` | `--mari-color-<rol>-solid` | Dolgulu bileşen arka planı (buton) — **tema-bağımsız** |
+| `solid-contrast` | `--mari-color-<rol>-solid-contrast` | `solid` üzerinde AA geçen metin |
+| `solid-hover` | `--mari-color-<rol>-solid-hover` | `solid`in hover tonu |
+| `subtle` | `--mari-color-<rol>-subtle` | Yumuşak arka plan (seçili satır, bilgi kutusu) |
+| `subtle-contrast` | `--mari-color-<rol>-subtle-contrast` | `subtle` üzerinde AA geçen metin |
+| `border` | `--mari-color-<rol>-border` | Kenarlık |
+
+Tailwind tarafında: `bg-mari-primary-solid`, `text-mari-primary`, `border-mari-primary-border` …
+
+## Sayfa yüzeyi (canvas) token'ları
+
+Bir component'in `color` prop'undan bağımsız, her zaman var olan zemin/metin
+değerleri.
+
+| Token | Açık | Koyu | Kullanım |
+|---|---|---|---|
+| `--mari-color-surface` | `#ffffff` | `#141d26` | Sayfa / kart zemini. **Koyu tema saf siyah değil.** |
+| `--mari-color-surface-alt` | `#f4f6f8` | `#1e2a35` | İkincil zemin (gömülü kart, tablo başlığı) |
+| `--mari-color-border` | `#d0d8df` | `#384959` | Genel kenarlık |
+| `--mari-color-input` | `#b0bdc8` | `#4a5a6b` | **Form alanı kenarlığı** — `border`den belirgin; koyu temada input kaybolmasın diye ayrı token (Faz 13) |
+| `--mari-color-ring` | `#5b9fe0` | `#88bdf2` | Klavye odak halkası |
+| `--mari-color-scrim` | `rgb(20 29 38 / .45)` | `rgb(3 7 12 / .7)` | Modal / Drawer karartma katmanı (tek kaynak) |
+| `--mari-color-foreground` | `#1e2a35` | `#f4f6f8` | Gövde metni (AAA) |
+| `--mari-color-muted` | `#5f7183` | `#8395a5` | İkincil metin (AA) |
+| `--mari-color-disabled` | `#b0bdc8` | `#384959` | Devre dışı öğe |
+
+## Koyu tema
+
+Tema geçişi `data-theme="dark"` attribute'u ile. `solid` tonlar tema-bağımsızdır
+(birincil buton her iki temada aynı mavi); değişen şey `text` / `subtle` /
+`border` ve canvas token'larıdır. Sağ üstteki tema switcher'ıyla her sayfayı iki
+modda da kontrol edin.

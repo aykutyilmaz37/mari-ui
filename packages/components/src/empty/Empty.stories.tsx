@@ -3,7 +3,7 @@ import { RefreshCcw } from "lucide-react";
 import { Empty } from "./Empty";
 
 const meta: Meta<typeof Empty> = {
-  title: "Components/Empty",
+  title: "Veri Gösterimi/Empty",
   component: Empty,
   tags: ["autodocs"],
   parameters: {

@@ -1,0 +1,81 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Genel Bakış" />
+
+<style>{`
+  .mari-ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 12px 0 28px; }
+  .mari-ov-card { display: block; padding: 12px 14px; border: 1px solid var(--mari-color-border); border-radius: 8px; text-decoration: none; color: var(--mari-color-foreground); background: var(--mari-color-surface); transition: border-color .15s; }
+  .mari-ov-card:hover { border-color: var(--mari-color-primary-border); }
+  .mari-ov-card b { display: block; font-size: 14px; }
+  .mari-ov-card span { display: block; margin-top: 3px; font-size: 12px; color: var(--mari-color-muted); }
+`}</style>
+
+# mari-ui
+
+Türkçe, token-tabanlı, framework-bağımsız React bileşen kütüphanesi. Renk /
+tipografi / spacing tek bir kaynaktan (`@mari-ui/tokens`) türer; light ve dark
+tema `data-theme` attribute'u ile, WCAG AA kontrastı otomatik hesaplanır.
+
+Yapı ant.design/components düzenini izler: her sayfada **özet → Ne Zaman
+Kullanılır → Playground → varyantlar → API tablosu**. Başlarken **Foundations**
+(Renkler, Tipografi, Spacing, Elevation) sayfalarına bakın.
+
+## Genel
+
+<div className="mari-ov-grid">
+  <a className="mari-ov-card" href="?path=/docs/genel-button--docs"><b>Button</b><span>Aksiyon tetikleyen temel öğe</span></a>
+  <a className="mari-ov-card" href="?path=/docs/genel-typography--docs"><b>Typography</b><span>Başlık, paragraf, metin ölçeği</span></a>
+  <a className="mari-ov-card" href="?path=/docs/genel-divider--docs"><b>Divider</b><span>İçerik ayırıcı çizgi</span></a>
+</div>
+
+## Navigasyon
+
+<div className="mari-ov-grid">
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-breadcrumb--docs"><b>Breadcrumb</b><span>Sayfa konumu izi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-dropdown--docs"><b>Dropdown</b><span>Tıklamayla açılan menü</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-basicmenu--docs"><b>BasicMenu</b><span>Yatay gezinme menüsü</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-megamenu--docs"><b>MegaMenu</b><span>Çok sütunlu geniş menü</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-sidebar--docs"><b>Sidebar</b><span>Katmanlı yan gezinme</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-pagination--docs"><b>Pagination</b><span>Sayfalama kontrolü</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-steps--docs"><b>Steps</b><span>Çok adımlı süreç göstergesi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/navigasyon-tabs--docs"><b>Tabs</b><span>Sekmeli içerik</span></a>
+</div>
+
+## Veri Girişi
+
+<div className="mari-ov-grid">
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-input--docs"><b>Input</b><span>Tek satırlık metin girişi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-textarea--docs"><b>Textarea</b><span>Çok satırlık metin girişi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-searchinput--docs"><b>SearchInput</b><span>Arama alanı</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-otpinput--docs"><b>OtpInput</b><span>Tek karakterlik kod alanları</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-autocomplete--docs"><b>AutoComplete</b><span>Öneri listeli giriş</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-checkbox--docs"><b>Checkbox</b><span>Çoklu seçim kutusu</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-radio--docs"><b>Radio</b><span>Tekli seçim</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-radiogroup--docs"><b>RadioGroup</b><span>Radio grubu</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-switch--docs"><b>Switch</b><span>Açık/kapalı anahtar</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-slider--docs"><b>Slider</b><span>Aralıktan değer seçimi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-rate--docs"><b>Rate</b><span>Yıldız puanlama</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-girişi-upload--docs"><b>Upload</b><span>Dosya yükleme</span></a>
+</div>
+
+## Veri Gösterimi
+
+<div className="mari-ov-grid">
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-avatar--docs"><b>Avatar</b><span>Kullanıcı/nesne görseli</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-card--docs"><b>Card</b><span>İçerik kapsayıcı yüzey</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-carousel--docs"><b>Carousel</b><span>Kaydırmalı içerik</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-empty--docs"><b>Empty</b><span>Boş durum göstergesi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-table--docs"><b>Table</b><span>Tablo verisi</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-tag--docs"><b>Tag</b><span>Etiket / rozet</span></a>
+  <a className="mari-ov-card" href="?path=/docs/veri-gösterimi-tooltip--docs"><b>Tooltip</b><span>Hover ipucu</span></a>
+</div>
+
+## Geri Bildirim
+
+<div className="mari-ov-grid">
+  <a className="mari-ov-card" href="?path=/docs/geri-bildirim-modal--docs"><b>Modal</b><span>Odaklı diyalog</span></a>
+  <a className="mari-ov-card" href="?path=/docs/geri-bildirim-drawer--docs"><b>Drawer</b><span>Kenardan açılan panel</span></a>
+  <a className="mari-ov-card" href="?path=/docs/geri-bildirim-toast--docs"><b>Toast</b><span>Geçici bildirim</span></a>
+  <a className="mari-ov-card" href="?path=/docs/geri-bildirim-skeleton--docs"><b>Skeleton</b><span>Yükleme iskeleti</span></a>
+  <a className="mari-ov-card" href="?path=/docs/geri-bildirim-loading--docs"><b>Loading</b><span>Yükleme göstergesi</span></a>
+</div>

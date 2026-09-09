@@ -3,7 +3,7 @@ import React from "react";
 import { Carousel } from "./Carousel";
 
 const meta: Meta<typeof Carousel> = {
-  title: "Components/Carousel",
+  title: "Veri Gösterimi/Carousel",
   component: Carousel,
   tags: ["autodocs"],
   parameters: {

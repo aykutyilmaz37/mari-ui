@@ -5,7 +5,7 @@ import { Checkbox } from "./index";
 import type { CheckboxProps } from "./index";
 
 const meta: Meta<typeof Checkbox> = {
-  title: "Components/Checkbox",
+  title: "Veri Girişi/Checkbox",
   component: Checkbox,
   tags: ["autodocs"],
   parameters: {

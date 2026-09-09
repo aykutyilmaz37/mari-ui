@@ -23,7 +23,7 @@ const mockData: MenuItemType[] = [
  */
 const meta: Meta<typeof BasicMenu> = {
   component: BasicMenu,
-  title: "Components/BasicMenu",
+  title: "Navigasyon/BasicMenu",
   tags: ["autodocs"],
   parameters: {
     docs: {

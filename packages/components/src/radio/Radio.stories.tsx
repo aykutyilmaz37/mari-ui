@@ -5,7 +5,7 @@ import { Radio } from "./index";
 import type { RadioProps } from "./index";
 
 const meta: Meta<typeof Radio> = {
-  title: "Components/Radio",
+  title: "Veri Girişi/Radio",
   component: Radio,
   tags: ["autodocs"],
   parameters: {

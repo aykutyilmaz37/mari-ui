@@ -5,7 +5,7 @@ import { colorArgType, baseSizeArgType } from "../lib/storybookArgTypes";
 import { Modal } from "./Modal";
 
 const meta: Meta<typeof Modal> = {
-  title: "Components/Modal",
+  title: "Geri Bildirim/Modal",
   component: Modal,
   tags: ["autodocs"],
   parameters: {

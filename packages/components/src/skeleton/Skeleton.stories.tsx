@@ -4,7 +4,7 @@ import { SkeletonButton } from "./SkeletonButton";
 import { SkeletonInput } from "./SkeletonInput";
 
 const meta: Meta = {
-  title: "Components/Skeleton",
+  title: "Geri Bildirim/Skeleton",
   tags: ["autodocs"],
   parameters: {
     docs: {

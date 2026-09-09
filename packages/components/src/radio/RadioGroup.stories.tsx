@@ -5,7 +5,7 @@ import { RadioGroup } from "./index";
 import type { RadioGroupProps } from "./index";
 
 const meta: Meta<typeof RadioGroup> = {
-  title: "Components/RadioGroup",
+  title: "Veri Girişi/RadioGroup",
   component: RadioGroup,
   tags: ["autodocs"],
   parameters: {

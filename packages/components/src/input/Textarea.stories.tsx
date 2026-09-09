@@ -5,7 +5,7 @@ import { Textarea } from "./index";
 import type { TextareaProps } from "./index";
 
 const meta: Meta<typeof Textarea> = {
-  title: "Components/Textarea",
+  title: "Veri Girişi/Textarea",
   component: Textarea,
   tags: ["autodocs"],
   parameters: {

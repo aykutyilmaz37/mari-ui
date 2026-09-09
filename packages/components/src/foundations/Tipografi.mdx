@@ -1,0 +1,61 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Tipografi" />
+
+# Tipografi
+
+Font ölçeği 1.125 (major second) oranıyla, 14px gövde metni tabanı üzerine
+kuruludur. Kaynak: `@mari-ui/tokens` `fontSize` / `fontWeight` / `lineHeight`.
+
+## Ölçek
+
+| Anahtar | Boyut | CSS değişkeni | Tipik kullanım |
+|---|---|---|---|
+| `xs` | 12px | `--mari-font-size-xs` | Yardım metni, rozet, sayaç |
+| `sm` | 14px | `--mari-font-size-sm` | **Gövde metni varsayılanı**, UI etiketleri |
+| `md` | 16px | `--mari-font-size-md` | Vurgulu gövde, büyük input |
+| `lg` | 18px | `--mari-font-size-lg` | Alt başlık (h5/h6) |
+| `xl` | 20px | `--mari-font-size-xl` | Bölüm başlığı (h4) |
+| `2xl` | 24px | `--mari-font-size-2xl` | Sayfa başlığı (h3) |
+| `3xl` | 30px | `--mari-font-size-3xl` | h2 |
+| `4xl` | 36px | `--mari-font-size-4xl` | h1 / hero |
+
+<div style={{ margin: "16px 0" }}>
+  {[
+    ["4xl", "36 / Başlık 1"],
+    ["3xl", "30 / Başlık 2"],
+    ["2xl", "24 / Başlık 3"],
+    ["xl", "20 / Başlık 4"],
+    ["lg", "18 / Başlık 5"],
+    ["md", "16 / Vurgulu gövde"],
+    ["sm", "14 / Gövde metni"],
+    ["xs", "12 / Yardım metni"],
+  ].map(([k, label]) => (
+    <div key={k} style={{ fontSize: `var(--mari-font-size-${k})`, lineHeight: 1.4, padding: "4px 0", color: "var(--mari-color-foreground)" }}>
+      {label}
+    </div>
+  ))}
+</div>
+
+## Ağırlıklar
+
+| Anahtar | Değer | Kullanım |
+|---|---|---|
+| `normal` | 400 | Gövde metni |
+| `medium` | 500 | Buton, aktif nav öğesi |
+| `semibold` | 600 | Başlıklar, kart başlığı |
+| `bold` | 700 | Nadiren — güçlü vurgu |
+
+## Satır yüksekliği
+
+| Anahtar | Değer | Kullanım |
+|---|---|---|
+| `tight` | 1.25 | Başlıklar |
+| `normal` | 1.5 | UI metni |
+| `relaxed` | 1.75 | Uzun paragraf |
+
+## Kural (Faz 13)
+
+Component'ler kendi `text-*` sınıflarını uydurmaz — boyutu `size` prop'undan
+gelen paylaşılan ölçeğe (`lib/sizeClasses.ts` `fontSizeClass`) bağlar.
+`Typography` component'i başlık ölçeğinin tek referansıdır.

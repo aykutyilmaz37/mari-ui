@@ -9,7 +9,7 @@ import { Paragraph, Text, Title } from "./Typography";
  * anlatım tercih edildi).
  */
 const meta: Meta = {
-  title: "Components/Typography",
+  title: "Genel/Typography",
   tags: ["autodocs"],
   parameters: {
     docs: {

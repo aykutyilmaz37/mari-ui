@@ -26,6 +26,9 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  // Faz 13: autodocs sekmesi Türkçe ("Docs" yerine "Doküman"); her component'in
+  // `tags: ["autodocs"]` taşıması yeterli (makeMeta zaten ekliyor).
+  docs: { defaultName: "Doküman" },
   staticDirs: ["../public"],
   // pnpm workspace paketlerini (@mari-ui/core, @mari-ui/tokens) kaynak
   // değil DERLENMİŞ dist çıktısı üzerinden çözmek için ekstra bir Vite

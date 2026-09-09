@@ -4,7 +4,7 @@ import { AutoComplete } from "./AutoComplete";
 import { Option } from "./types";
 
 const meta: Meta<typeof AutoComplete> = {
-  title: "Components/AutoComplete",
+  title: "Veri Girişi/AutoComplete",
   component: AutoComplete,
   tags: ["autodocs"],
   parameters: {

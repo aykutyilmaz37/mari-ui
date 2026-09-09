@@ -4,7 +4,7 @@ import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { Slider } from "./Slider";
 
 const meta: Meta<typeof Slider> = {
-  title: "Components/Slider",
+  title: "Veri Girişi/Slider",
   component: Slider,
   tags: ["autodocs"],
   parameters: {
