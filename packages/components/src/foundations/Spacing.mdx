@@ -4,9 +4,13 @@ import { Meta } from "@storybook/blocks";
 
 # Spacing
 
-4px taban birimi üzerine kurulu tek ölçek. Kaynak: `@mari-ui/tokens` `spacing`.
-Component'lerdeki `w-[32rem]`, `ml-[22px]`, `h-[1px]` gibi keyfi kaçış değerleri
-Faz 3/13'te bu ölçeğe taşındı.
+`0.25rem` (4px @ 16px kök) taban birimi üzerine kurulu tek ölçek. Kaynak:
+`@mari-ui/tokens` `spacing`. Component'lerdeki `w-[32rem]`, `ml-[22px]`,
+`h-[1px]` gibi keyfi kaçış değerleri Faz 3/13'te bu ölçeğe taşındı.
+
+> **Birim kuralı:** genişlik/yükseklik/padding/margin daima `rem` (veya `%` /
+> `fr`), asla `px`. Tek istisna: `1px` hairline kenarlıklar ve DOM'dan ölçülen
+> değerler. Aşağıdaki px karşılıkları 16px kök font varsayımıyla referanstır.
 
 ## Ölçek
 

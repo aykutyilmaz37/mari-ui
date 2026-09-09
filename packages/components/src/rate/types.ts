@@ -16,7 +16,8 @@ export interface RateProps {
   onFocus?: () => void;
   onHoverChange?: (value: number) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-  characterSize?: number;
+  /** Yıldız ikonunun boyutu. Varsayılan `"1.5rem"` (4K ekranlarda `px` ölçeklenmiyor). Sayı verilirse `px`. */
+  characterSize?: number | string;
   /** Varsayılan: `warning` (amber — geleneksel "yıldız" rengi). */
   color?: ColorRole;
   /** İleri düzey kaçış: token yerine ham bir CSS rengi zorlar (inline style). */

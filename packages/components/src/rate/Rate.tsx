@@ -30,7 +30,7 @@ export function Rate({
   onFocus,
   onHoverChange,
   onKeyDown,
-  characterSize = 24,
+  characterSize = "1.5rem",
   color = "warning",
   characterColor,
 }: RateProps) {

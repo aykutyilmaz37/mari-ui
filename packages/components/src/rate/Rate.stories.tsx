@@ -24,7 +24,7 @@ const meta: Meta<typeof Rate> = {
     allowClear: { control: "boolean", description: "Mevcut değere tekrar tıklanınca sıfırlar." },
     disabled: disabledArgType,
     color: { ...colorArgType, description: "Yıldızların rengi. Varsayılan: `warning` (amber)." },
-    characterSize: { control: "number", description: "Yıldız ikonunun piksel boyutu." },
+    characterSize: { control: "text", description: "Yıldız ikonunun boyutu — varsayılan `\"1.5rem\"`. Sayı verilirse `px`." },
     characterColor: { control: "color", description: "İleri düzey kaçış: `color` yerine ham bir CSS rengi zorlar." },
     onChange: { action: "onChange" },
   },
@@ -59,7 +59,7 @@ export const Disabled: Story = {
   args: {
     defaultValue: 4.5,
     allowHalf: true,
-    characterSize: 30,
+    characterSize: "2rem",
     disabled: true,
   },
 };

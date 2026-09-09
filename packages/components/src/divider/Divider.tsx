@@ -16,7 +16,9 @@ export function Divider({
   plain = true,
   style,
   size,
-  height = "48px",
+  // Dikey divider varsayılan yüksekliği — `rem` (4K ekranlarda `px` kök
+  // font'la ölçeklenmiyordu). Sayı verilirse `px` kabul edilir (kaçış).
+  height = "3rem",
 }: DividerProps) {
   const isHorizontal = orientation === "horizontal";
   const baseClass = getBaseClass(isHorizontal, size, lineStyle, className);
