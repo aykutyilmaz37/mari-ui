@@ -22,8 +22,8 @@ describe("runThemeCommand", () => {
   it("özel bir mari-ui.config.json'daki rengi GERÇEKTEN kullanır", () => {
     writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ color: { primary: "#059669" } }), "utf8");
     const result = runThemeCommand({ targetDir: dir });
-    // #059669 tam olarak solid tonda çıkmayabilir (deriveColorRole AA'ya göre en yakın tonu seçer) ama tema artık varsayılan maviyi İÇERMEMELİ.
-    expect(result.cssContent).not.toContain("#2563eb");
+    // #059669 tam olarak solid tonda çıkmayabilir (deriveColorRole AA'ya göre en yakın tonu seçer) ama tema artık varsayılan primary solid'ini (#2f66a3) İÇERMEMELİ.
+    expect(result.cssContent).not.toContain("#2f66a3");
   });
 
   it("check: true iken dosya yazmadan bayat olup olmadığını raporlar", () => {

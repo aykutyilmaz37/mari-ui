@@ -9,6 +9,7 @@ import {
   successRamp,
   warningRamp,
 } from "../primitives/ramps";
+import type { HexColor } from "../contrast";
 import { deriveColorRole, type SemanticColorRole, type ThemeMode } from "./deriveColorRole";
 
 /**
@@ -31,6 +32,22 @@ export interface CanvasTokens {
   surface: string;
   surfaceAlt: string;
   border: string;
+  /**
+   * Form alanı (input/textarea/select) kenarlığı. `border`den bilinçli olarak
+   * AYRI: koyu temada saf-siyaha yakın bir yüzeyde `border` neredeyse görünmez
+   * kalıyordu ("input kayboldu" — Faz 13 audit). `input` her iki temada da
+   * yüzeye karşı belirgin daha yüksek kontrastlı bir tondur (shadcn'in
+   * `--input` token'ıyla aynı amaç).
+   */
+  input: string;
+  /** Klavye odak halkası rengi — primary tabanlı, yüzeyde net görünür. */
+  ring: string;
+  /**
+   * Modal/Drawer arkasındaki karartma katmanı. Tek token — Modal `bg-black/50`,
+   * Drawer `bg-black/30` kullanıyordu (tutarsız, token'sız). Hafif blue-grey
+   * tint taşır, saf siyah değil.
+   */
+  scrim: string;
   foreground: string;
   muted: string;
   disabled: string;
@@ -48,23 +65,29 @@ export interface SemanticColorTokens {
 }
 
 const LIGHT_SURFACE = WHITE;
-const DARK_SURFACE = neutralRamp[950];
+const DARK_SURFACE: HexColor = neutralRamp[950]; // #141d26 — palete özgü koyu, saf siyah değil
 
 function buildCanvas(mode: ThemeMode): CanvasTokens {
   if (mode === "light") {
     return {
-      surface: WHITE,
+      surface: LIGHT_SURFACE,
       surfaceAlt: neutralRamp[50],
       border: neutralRamp[200],
+      input: neutralRamp[300],
+      ring: primaryRamp[500],
+      scrim: "rgb(20 29 38 / 0.45)",
       foreground: neutralRamp[900],
       muted: neutralRamp[500],
       disabled: neutralRamp[300],
     };
   }
   return {
-    surface: neutralRamp[950],
+    surface: DARK_SURFACE,
     surfaceAlt: neutralRamp[900],
     border: neutralRamp[700],
+    input: neutralRamp[600],
+    ring: primaryRamp[400],
+    scrim: "rgb(3 7 12 / 0.7)",
     foreground: neutralRamp[50],
     muted: neutralRamp[400],
     disabled: neutralRamp[700],
@@ -91,8 +114,8 @@ function buildCanvas(mode: ThemeMode): CanvasTokens {
 export function buildSemanticColors(mode: ThemeMode, rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {}): SemanticColorTokens {
   const surface = mode === "light" ? LIGHT_SURFACE : DARK_SURFACE;
   return {
-    primary: deriveColorRole(rampOverrides.primary ?? primaryRamp, surface, mode, 600),
-    accent: deriveColorRole(rampOverrides.accent ?? accentRamp, surface, mode, 500),
+    primary: deriveColorRole(rampOverrides.primary ?? primaryRamp, surface, mode, 700),
+    accent: deriveColorRole(rampOverrides.accent ?? accentRamp, surface, mode, 600),
     success: deriveColorRole(rampOverrides.success ?? successRamp, surface, mode, 600),
     error: deriveColorRole(rampOverrides.error ?? errorRamp, surface, mode, 600),
     warning: deriveColorRole(rampOverrides.warning ?? warningRamp, surface, mode, 700),

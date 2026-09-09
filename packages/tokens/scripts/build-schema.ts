@@ -25,15 +25,15 @@ const schema = {
     color: {
       primary: {
         type: "color",
-        description: "Birincil marka rengi (anchor tonu, örn. 600).",
-        default: primaryRamp[600],
+        description: "Birincil marka rengi (anchor tonu — kullanıcının 'gördüğü' ton).",
+        default: primaryRamp[400],
       },
       accent: {
         type: "color",
         description:
           "İkincil vurgu rengi (anchor tonu, örn. 500). Kontrastı otomatik hesaplanır — " +
-          "kullanıcı bu rengi turuncudan farklı bir tona çevirse bile solid/subtle metin " +
-          "renkleri WCAG AA'yı geçecek şekilde yeniden hesaplanır.",
+          "kullanıcı bu rengi farklı bir tona çevirse bile solid/subtle metin renkleri " +
+          "WCAG AA'yı geçecek şekilde yeniden hesaplanır.",
         default: accentRamp[500],
       },
     },

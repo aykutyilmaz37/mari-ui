@@ -42,6 +42,9 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   vars["--mari-color-surface"] = c.surface;
   vars["--mari-color-surface-alt"] = c.surfaceAlt;
   vars["--mari-color-border"] = c.border;
+  vars["--mari-color-input"] = c.input;
+  vars["--mari-color-ring"] = c.ring;
+  vars["--mari-color-scrim"] = c.scrim;
   vars["--mari-color-foreground"] = c.foreground;
   vars["--mari-color-muted"] = c.muted;
   vars["--mari-color-disabled"] = c.disabled;

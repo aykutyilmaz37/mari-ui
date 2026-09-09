@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { lightTheme, darkTheme } from "../theme";
 import { themeToCssVariables } from "../cssVariables";
+import { contrastRatio } from "../contrast";
 
 describe("themeToCssVariables", () => {
   it("her semantik rol için 7 renk değişkeni üretir (text/solid/solidContrast/solidHover/subtle/subtleContrast/border)", () => {
@@ -14,10 +15,23 @@ describe("themeToCssVariables", () => {
     expect(vars["--mari-color-primary-border"]).toBe(lightTheme.color.primary.border);
   });
 
-  it("canvas token'larını da düzleştirir", () => {
+  it("canvas token'larını da düzleştirir (input/ring/scrim dahil — Faz 13)", () => {
     const vars = themeToCssVariables(lightTheme);
     expect(vars["--mari-color-surface"]).toBe(lightTheme.color.canvas.surface);
     expect(vars["--mari-color-foreground"]).toBe(lightTheme.color.canvas.foreground);
+    expect(vars["--mari-color-input"]).toBe(lightTheme.color.canvas.input);
+    expect(vars["--mari-color-ring"]).toBe(lightTheme.color.canvas.ring);
+    expect(vars["--mari-color-scrim"]).toBe(lightTheme.color.canvas.scrim);
+  });
+
+  it("input kenarlığı koyu temada yüzeye karşı görünür kontrast taşır (input kaybolmaz)", () => {
+    const { input, surface, border } = darkTheme.color.canvas;
+    expect(input).not.toBe(surface);
+    // input her zaman düz `border`den daha belirgin olmalı — "input kayboldu"
+    // (Faz 13 audit) tam olarak input'un `border`e eşit olmasından kaynaklıydı.
+    expect(contrastRatio(surface as `#${string}`, input as `#${string}`)).toBeGreaterThan(
+      contrastRatio(surface as `#${string}`, border as `#${string}`)
+    );
   });
 
   it("kesirli spacing anahtarındaki noktayı alt çizgiye çevirir (--mari-space-0_5)", () => {

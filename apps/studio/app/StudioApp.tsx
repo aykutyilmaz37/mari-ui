@@ -62,7 +62,7 @@ function downloadJson(filename: string, data: unknown) {
 }
 
 export function StudioApp() {
-  const [primaryHex, setPrimaryHex] = useState<string>(primaryRamp[600]);
+  const [primaryHex, setPrimaryHex] = useState<string>(primaryRamp[400]);
   const [accentHex, setAccentHex] = useState<string>(accentRamp[500]);
   const [fontFamilySans, setFontFamilySans] = useState<string>(lightTheme.fontFamily.sans);
   const [fontFamilyMono, setFontFamilyMono] = useState<string>(lightTheme.fontFamily.mono);

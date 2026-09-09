@@ -13,7 +13,7 @@ export const CONFIG_FILE_NAME = "mari-ui.config.json";
  * tipinde geçerli, tüketici isterse elle ekler).
  */
 export const DEFAULT_CONFIG: Required<Omit<MariUiThemeConfig, "themes">> = {
-  color: { primary: "#2563eb", accent: "#f97316" },
+  color: { primary: "#88bdf2", accent: "#6a89a7" },
   typography: {
     fontFamilySans: "var(--mari-font-sans, ui-sans-serif, system-ui, -apple-system, sans-serif)",
     fontFamilyMono: "var(--mari-font-mono, ui-monospace, SFMono-Regular, monospace)",

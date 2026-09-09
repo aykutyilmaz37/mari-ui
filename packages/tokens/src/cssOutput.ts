@@ -99,6 +99,9 @@ const THEME_TOKEN_KEYS = [
   "surface",
   "surface-alt",
   "border",
+  "input",
+  "ring",
+  "scrim",
   "foreground",
   "muted",
   "disabled",
@@ -113,7 +116,11 @@ function buildThemeInlineBlock(theme: Theme): string {
   // dağılmıştı (Modal/Drawer/Toast/Tooltip/Dropdown hepsi kendi katmanını
   // seçiyordu) — artık hepsi bu tek skaladan okur.
   const zIndexLines = Object.keys(theme.zIndex).map((key) => `  --z-mari-${key}: var(--mari-z-${key});`);
-  return ["@theme inline {", ...colorLines, ...spacingLines, ...radiusLines, ...zIndexLines, "}"].join("\n");
+  // Elevation skalası namespace'lenir: `shadow-mari-md` gibi utility'ler için.
+  // Bugün component'ler `shadow-lg`/`shadow-2xl` gibi Tailwind built-in'lerini
+  // rastgele kullanıyordu (Faz 13 audit) — hepsi bu tek skaladan okuyacak.
+  const shadowLines = Object.keys(theme.shadow).map((key) => `  --shadow-mari-${key}: var(--mari-shadow-${key});`);
+  return ["@theme inline {", ...colorLines, ...spacingLines, ...radiusLines, ...zIndexLines, ...shadowLines, "}"].join("\n");
 }
 
 /**

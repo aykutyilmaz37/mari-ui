@@ -10,50 +10,60 @@ export type ColorRamp = Record<
  * oluşur. Semantic katman (`semantic/colors.ts`) bunları rol'e (primary,
  * success, ...) bağlar; component'ler asla bu dosyayı doğrudan import etmez.
  *
- * primary (mavi) ve accent (turuncu) anchor'ları madde 8'deki karar:
- * primary anchor #2563EB, accent anchor #F97316.
+ * Faz 13 (madde 18 — tasarım geçişi): palet Tailwind blue/slate/orange'dan
+ * kullanıcının blue-grey paletine geçti. Turuncu accent TAMAMEN kaldırıldı.
+ * Anchor swatch'lar: primary #88BDF2 (300/400), accent #6A89A7 (500),
+ * neutral #384959 (700). Rampalar elle yazıldı — her biri `deriveColorRole`
+ * aramasının WCAG AA geçen bir `solid` ton bulabilmesi için yeterince derin
+ * uçlara sahip (doğrulama: contrast.test.ts).
  */
 export const primaryRamp: ColorRamp = {
-  50: "#eff6ff",
-  100: "#dbeafe",
-  200: "#bfdbfe",
-  300: "#93c5fd",
-  400: "#60a5fa",
-  500: "#3b82f6",
-  600: "#2563eb",
-  700: "#1d4ed8",
-  800: "#1e40af",
-  900: "#1e3a8a",
-  950: "#172554",
+  50: "#eef6fe",
+  100: "#d9ebfd",
+  200: "#bdddfc", // kullanıcı swatch
+  300: "#93c6f6",
+  400: "#88bdf2", // kullanıcı swatch — "seçtiğim rengi görüyorum"
+  500: "#5b9fe0",
+  600: "#3f82c8",
+  700: "#2f66a3", // solid hedef (beyaz metin ~5.9:1)
+  800: "#274f7d",
+  900: "#213f61",
+  950: "#16273f",
 };
 
+/** İkincil vurgu — muted steel-blue (#6A89A7 ailesi). Neutral'dan doygunlukla ayrışır. */
 export const accentRamp: ColorRamp = {
-  50: "#fff7ed",
-  100: "#ffedd5",
-  200: "#fed7aa",
-  300: "#fdba74",
-  400: "#fb923c",
-  500: "#f97316",
-  600: "#ea580c",
-  700: "#c2410c",
-  800: "#9a3412",
-  900: "#7c2d12",
-  950: "#431407",
+  50: "#f1f4f7",
+  100: "#e2e8ee",
+  200: "#c9d5df",
+  300: "#a8bccd",
+  400: "#88a1b8",
+  500: "#6a89a7", // kullanıcı swatch
+  600: "#557293", // solid hedef (beyaz metin ~5.0:1)
+  700: "#455d79",
+  800: "#3a4d63",
+  900: "#334153",
+  950: "#1f2a37",
 };
 
-/** Nötr rampa — surface/border/foreground/muted token'ları burada türer. */
+/**
+ * Nötr rampa — surface/border/foreground/muted/input token'ları burada türer.
+ * Düşük doygunluklu blue-grey: metin/kenarlık "gri" okunur ama palete uygun
+ * hafif mavi tint taşır. `950` (#141d26) koyu tema yüzeyidir — bilinçli olarak
+ * saf siyah DEĞİL, palete özgü görünür bir koyu blue-grey.
+ */
 export const neutralRamp: ColorRamp = {
-  50: "#f8fafc",
-  100: "#f1f5f9",
-  200: "#e2e8f0",
-  300: "#cbd5e1",
-  400: "#94a3b8",
-  500: "#64748b",
-  600: "#475569",
-  700: "#334155",
-  800: "#1e293b",
-  900: "#0f172a",
-  950: "#020617",
+  50: "#f4f6f8",
+  100: "#e7ebef",
+  200: "#d0d8df",
+  300: "#b0bdc8",
+  400: "#8395a5",
+  500: "#5f7183",
+  600: "#4a5a6b",
+  700: "#384959", // kullanıcı swatch
+  800: "#2a3946",
+  900: "#1e2a35",
+  950: "#141d26", // koyu tema yüzeyi
 };
 
 export const successRamp: ColorRamp = {

@@ -1,14 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { AA_TEXT_MIN, contrastRatio } from "../contrast";
+import { AA_TEXT_MIN, contrastRatio, meetsAA } from "../contrast";
+import { deriveColorRole } from "../semantic/deriveColorRole";
+import { generateRamp } from "../primitives/generateRamp";
 import { lightTheme, darkTheme, type Theme } from "../theme";
 import type { ColorRole } from "../semantic/colors";
 
 /**
  * Bu test dosyasının varlık sebebi planın kendisinde yazılı: "Tüm semantik
  * çiftler için kontrast doğrulaması bir test olarak yazılacak — göz kararı
- * bırakılmayacak." Turuncu accent (#F97316) üzerine beyaz metin konursa
- * WCAG AA'yı geçemez (~2.8:1); bu test suite'i tam olarak böyle bir
- * regresyonun sessizce geri gelmesini engeller.
+ * bırakılmayacak." `deriveColorRole` bir renk üzerinde beyaz metnin AA'yı
+ * geçip geçmediğini HESAPLAYIP `solidContrast`i otomatik seçer; bu suite hem
+ * yerleşik paletin tüm çiftlerini hem de bu otomatik seçim mekanizmasını
+ * doğrular (Faz 13'te palet blue-grey'e geçti, turuncu accent kaldırıldı).
  */
 
 const ROLES: ColorRole[] = ["primary", "accent", "success", "error", "warning", "info", "neutral"];
@@ -55,14 +58,22 @@ function testTheme(theme: Theme, name: string) {
 testTheme(lightTheme, "Açık");
 testTheme(darkTheme, "Koyu");
 
-describe("Bilinen regresyon: turuncu accent + beyaz metin", () => {
-  it("accent.solid (#F97316 ailesi) üzerinde düz beyazın AA'yı GEÇEMEYECEĞİNİ doğrular", () => {
-    // Bu, "solidContrast otomatik hesaplanmasaydı ne olurdu" senaryosu —
-    // beklenen davranış: whiteContrast AA'yı geçmiyor, bu yüzden
-    // deriveColorRole otomatik olarak koyu bir foreground seçiyor.
-    const ratio = contrastRatio(lightTheme.color.accent.solid, "#ffffff");
-    expect(ratio).toBeLessThan(AA_TEXT_MIN);
-    // Ve gerçekten kullanılan solidContrast bunun yerine AA'yı geçiyor:
-    expectAA("accent.solid (gerçek foreground ile)", lightTheme.color.accent.solid, lightTheme.color.accent.solidContrast);
+describe("Otomatik foreground seçimi: açık bir renk üzerinde beyaz metin", () => {
+  it("beyazın AA'yı geçemediği bir rampada deriveColorRole koyu foreground seçer", () => {
+    // Açık sarı (#facc15) üzerinde beyaz metin ~1.6:1 — AA'nın çok altında.
+    // "solidContrast otomatik hesaplanmasaydı ne olurdu" senaryosu: beklenen
+    // davranış deriveColorRole'ün otomatik olarak SİYAH foreground seçmesi.
+    const ramp = generateRamp("#facc15");
+    const role = deriveColorRole(ramp, "#ffffff", "light", 600);
+    expect(contrastRatio(role.solid, "#ffffff")).toBeLessThan(AA_TEXT_MIN);
+    expect(role.solidContrast).toBe("#000000");
+    expect(meetsAA(role.solid, role.solidContrast)).toBe(true);
+  });
+
+  it("yerleşik paletin her solid/solidContrast çifti gerçekten AA geçer (açık + koyu)", () => {
+    for (const role of ROLES) {
+      expectAA(`light ${role}.solid`, lightTheme.color[role].solid, lightTheme.color[role].solidContrast);
+      expectAA(`dark ${role}.solid`, darkTheme.color[role].solid, darkTheme.color[role].solidContrast);
+    }
   });
 });
