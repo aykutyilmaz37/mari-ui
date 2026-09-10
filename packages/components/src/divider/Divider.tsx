@@ -26,7 +26,12 @@ export function Divider({
   const marginStyle = getLabelMarginStyle(labelAlign, labelMargin, isHorizontal);
 
   return (
-    <div className={baseClass} style={style}>
+    <div
+      className={baseClass}
+      style={style}
+      role="separator"
+      aria-orientation={isHorizontal ? undefined : "vertical"}
+    >
       {children && isHorizontal ? (
         <>
           <span className="flex-1 border-t border-inherit" />

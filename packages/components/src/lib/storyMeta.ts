@@ -1,15 +1,24 @@
-import type { Meta } from "@storybook/react";
-
 /**
  * Faz 13 (madde 18 — tasarım geçişi): Storybook düzeni ant.design/components
  * yapısına oturtuldu. Her component sayfası aynı iskelete sahip olsun diye
- * `makeMeta` bunu tek yerden zorlar:
+ * bu iki helper kullanılır:
  *
- *  - `title` → `<Kategori>/<Ad>` (sidebar Genel / Navigasyon / Veri Girişi /
- *    Veri Gösterimi / Geri Bildirim gruplarına düşer — `preview.tsx` storySort).
- *  - autodocs sayfası: özet + **Ne Zaman Kullanılır** / **Ne Zaman Kullanılmaz**
- *    madde listeleri (ant'ın "When To Use" bölümü).
- *  - `Playground` her zaman ilk story; `argTypes` ortak parçalarla birleşir.
+ *  - `componentDoc({...})` → autodocs sayfasının component açıklaması:
+ *    özet + **Ne Zaman Kullanılır** / **Ne Zaman Kullanılmaz** madde listeleri
+ *    (ant'ın "When To Use" bölümü) + **Erişilebilirlik** notu. Tek markdown
+ *    string döndürür; `parameters.docs.description.component`'e verilir.
+ *  - `storyDoc("...")` → tek bir story'nin autodocs açıklaması (ant'ın her
+ *    demo'sunun altındaki paragraf).
+ *
+ * NEDEN helper bir `Meta` OBJESİ değil de string döndürüyor: Storybook'un
+ * statik CSF indeksleyicisi `export default`'un başlatıcısının bir
+ * **ObjectExpression** olmasını şart koşuyor — `export default makeMeta({...})`
+ * "default export must be an object" hatası veriyor. Bu yüzden `title`,
+ * `component`, `tags` her stories dosyasında düz obje literali olarak kalır;
+ * helper sadece tekrar eden markdown'ı üretir.
+ *
+ * `title` → `<Kategori>/<Ad>` (sidebar Genel / Navigasyon / Veri Girişi /
+ * Veri Gösterimi / Geri Bildirim gruplarına düşer — `preview.tsx` storySort).
  *
  * Sadece `.stories.tsx`'ten import edilir — dist'e girmez (storybookArgTypes.ts
  * ile aynı gerekçe).
@@ -25,13 +34,7 @@ export const STORY_CATEGORIES = [
 
 export type StoryCategory = (typeof STORY_CATEGORIES)[number];
 
-interface MakeMetaInput {
-  /** ant kategorisi — sidebar grubu. */
-  category: StoryCategory;
-  /** Component'in görünen adı (sidebar + sayfa başlığı). */
-  name: string;
-  /** `React` component'i. */
-  component: Meta["component"];
+interface ComponentDocInput {
   /** Tek-iki cümlelik tanım — ne işe yarar. Markdown desteklenir. */
   summary: string;
   /** "Ne Zaman Kullanılır" maddeleri. */
@@ -40,14 +43,6 @@ interface MakeMetaInput {
   whenNotToUse?: string[];
   /** Erişilebilirlik notu (klavye, ARIA, odak). */
   a11y?: string;
-  /** Ortak + component'e özel argType'lar. */
-  argTypes?: Meta["argTypes"];
-  /** Ek `parameters` (nadiren — layout override vb.). */
-  parameters?: Meta["parameters"];
-  /** Meta seviyesinde decorator (ör. Provider sarmalayıcı). */
-  decorators?: Meta["decorators"];
-  /** Meta seviyesinde `args` varsayılanları. */
-  args?: Meta["args"];
 }
 
 function bulletList(heading: string, items?: string[]): string {
@@ -56,27 +51,14 @@ function bulletList(heading: string, items?: string[]): string {
   return `\n\n### ${heading}\n\n${bullets}`;
 }
 
-export function makeMeta(input: MakeMetaInput): Meta {
-  const description =
+/** ant düzeninde bir component autodocs açıklaması üretir. */
+export function componentDoc(input: ComponentDocInput): string {
+  return (
     input.summary +
     bulletList("Ne Zaman Kullanılır", input.whenToUse) +
     bulletList("Ne Zaman Kullanılmaz", input.whenNotToUse) +
-    (input.a11y ? `\n\n### Erişilebilirlik\n\n${input.a11y}` : "");
-
-  return {
-    title: `${input.category}/${input.name}`,
-    component: input.component,
-    tags: ["autodocs"],
-    parameters: {
-      docs: {
-        description: { component: description },
-      },
-      ...input.parameters,
-    },
-    argTypes: input.argTypes,
-    decorators: input.decorators,
-    args: input.args,
-  };
+    (input.a11y ? `\n\n### Erişilebilirlik\n\n${input.a11y}` : "")
+  );
 }
 
 /**

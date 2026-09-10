@@ -50,7 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   const colorClasses = colorVariantToClassName(resolveColorVariant(resolvedColor, resolvedVariant));
 
   const rootClasses = cn(
-    "inline-flex items-center justify-center font-medium transition-colors duration-150 select-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2",
+    "inline-flex items-center justify-center font-medium transition-colors duration-150 select-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
     sizeClass[size],
     getShapeClasses(shape),
     colorClasses,
