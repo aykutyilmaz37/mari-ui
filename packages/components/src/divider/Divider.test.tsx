@@ -19,6 +19,23 @@ describe("Divider", () => {
     expect(screen.getByRole("separator")).toHaveAttribute("aria-orientation", "vertical");
   });
 
+  it("kendi varsayılan boşluğu var (yatay my-4, dikey mx-3) ve className ile ezilebilir", () => {
+    const { rerender } = render(<Divider />);
+    expect(screen.getByRole("separator").className).toContain("my-4");
+
+    rerender(<Divider orientation="vertical" />);
+    expect(screen.getByRole("separator").className).toContain("mx-3");
+
+    rerender(<Divider className="my-0" />);
+    expect(screen.getByRole("separator").className).not.toContain("my-4");
+  });
+
+  it("dashed/dotted çizgi stili çizgiyi çizen elemana uygulanır (kapsayıcıya değil — border-style inherit edilmez)", () => {
+    const { container } = render(<Divider lineStyle="dashed">Etiket</Divider>);
+    const lines = container.querySelectorAll("span.border-dashed");
+    expect(lines).toHaveLength(2);
+  });
+
   it("erişilebilirlik ihlali içermez — etiketli ve etiketsiz (axe-core, Faz 9)", async () => {
     const withLabel = render(<Divider>Ayraç</Divider>);
     expect(await getA11yViolations(withLabel.container)).toEqual([]);

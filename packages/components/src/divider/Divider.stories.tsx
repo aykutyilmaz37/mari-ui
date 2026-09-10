@@ -13,12 +13,13 @@ const meta: Meta<typeof Divider> = {
       description: {
         component: componentDoc({
           summary:
-            "İçerik bloklarını görsel olarak ayıran ince bir çizgi. Yatayda bir başlık/etiket taşıyabilir, dikeyde sabit bir " +
-            "yükseklik alır. Hook kullanmaz, sunucu bileşeni olarak render edilebilir.",
+            "İçerik bloklarını görsel olarak ayıran ince bir çizgi. Yatayda bir başlık/etiket taşıyabilir, dikeyde satır içi " +
+            "öğeleri böler. Komşu içeriğe yapışmaması için kendi varsayılan boşluğu vardır (yatayda `my-4`, dikeyde `mx-3`) — " +
+            "`className` ile ezilebilir. Hook kullanmaz, sunucu bileşeni olarak render edilebilir.",
           whenToUse: [
-            "Bir sayfa veya kart içinde ilgisiz bölümleri görsel olarak ayırmak için.",
-            "Bir satır içi öğe grubunu (butonlar, linkler) dikey bir çizgiyle bölmek için (`orientation=\"vertical\"`).",
+            "Bir sayfa veya kartın içindeki ilgisiz bölümleri görsel olarak ayırmak için.",
             "Bir bölümün başında kısa bir başlık göstermek için (`children` + `labelAlign`).",
+            "Satır içi meta bilgileri (yazar · tarih · süre) veya araç çubuğu eylemlerini bölmek için (`orientation=\"vertical\"`).",
           ],
           whenNotToUse: [
             "Yapısal bir gruplama gerekiyorsa — `Card` veya `<fieldset>` semantik bir sınır oluşturur, Divider yalnızca çizgidir.",
@@ -37,8 +38,8 @@ const meta: Meta<typeof Divider> = {
     lineStyle: { control: "select", options: ["solid", "dashed", "dotted"], description: "Çizgi stili.", table: { defaultValue: { summary: "solid" } } },
     orientation: { control: "select", options: ["horizontal", "vertical"], description: "Yön.", table: { defaultValue: { summary: "horizontal" } } },
     labelAlign: { control: "select", options: ["start", "center", "end"], description: "Yatay modda etiketin hizası.", table: { defaultValue: { summary: "center" } } },
-    labelMargin: { control: "text", description: "Etiketin kenardan uzaklığı (start/end hizasında)." },
-    plain: { control: "boolean", description: "Etiket metnini nötr (soluk) renkte gösterir.", table: { defaultValue: { summary: "true" } } },
+    labelMargin: { control: "text", description: "Etiketin yaslandığı kenardan uzaklığı (start/end hizasında)." },
+    plain: { control: "boolean", description: "`true` iken etiket soluk/nötr; `false` iken vurgulu (medium font).", table: { defaultValue: { summary: "true" } } },
     style: { control: false },
     size: baseSizeArgType,
     height: { control: "text", description: "Sadece dikey modda — `rem` önerilir; sayı verilirse `px` kabul edilir.", table: { defaultValue: { summary: "3rem" } } },
@@ -48,57 +49,120 @@ const meta: Meta<typeof Divider> = {
 export default meta;
 
 export const Playground: StoryObj<DividerProps> = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
+  ...storyDoc("Tüm props'ları canlı deneyin — tam genişlikte bir bölüm ayracı."),
+  render: (args) => (
+    <div className="w-full max-w-2xl">
+      <p className="text-mari-foreground">
+        Hesap bilgileriniz aşağıda görüntüleniyor. Değişiklikleri kaydetmeden sayfadan ayrılırsanız düzenlemeleriniz
+        kaybolur.
+      </p>
+      <Divider {...args} />
+      <p className="text-mari-neutral">Son güncelleme: 3 gün önce · Oturum: Chrome · İstanbul</p>
+    </div>
+  ),
   args: {
-    children: "Lorem Ipsum.",
+    children: "Tercihler",
     lineStyle: "solid",
     orientation: "horizontal",
     labelAlign: "center",
-    labelMargin: "0.75rem",
     plain: true,
-    size: "md",
   },
 };
 
-export const Varyantlar: StoryObj = {
-  name: "Çizgi Stilleri",
-  ...storyDoc("`solid` / `dashed` / `dotted` — çizgi stili bir dolgu değil, geometrik bir özellik olduğu için `variant` ekseninden ayrıdır."),
+export const SectionSeparator: StoryObj = {
+  name: "Bölüm Ayracı (etiketsiz)",
+  ...storyDoc("En yaygın kullanım: iki paragraf/blok arasına tam genişlikte sade bir çizgi. Etiket yok."),
   render: () => (
-    <div className="flex flex-col gap-6 w-full max-w-md">
-      {(["solid", "dashed", "dotted"] as const).map((lineStyle) => (
-        <Divider key={lineStyle} lineStyle={lineStyle}>
-          {lineStyle}
+    <article className="w-full max-w-2xl text-mari-foreground">
+      <h3 className="text-lg font-semibold">Teslimat</h3>
+      <p className="mt-1 text-mari-neutral">Siparişiniz 2–4 iş günü içinde kargoya verilir. Kargo ücreti alıcıya aittir.</p>
+      <Divider />
+      <h3 className="text-lg font-semibold">İade</h3>
+      <p className="mt-1 text-mari-neutral">Ürünü teslim aldıktan sonra 14 gün içinde koşulsuz iade edebilirsiniz.</p>
+    </article>
+  ),
+};
+
+export const LabeledSections: StoryObj = {
+  name: "Başlıklı Bölümler (hizalama)",
+  ...storyDoc(
+    "Bir formu/listeyi bölümlere ayırmak için başlıklı divider. `labelAlign` etiketi ortaya (varsayılan), başa veya sona " +
+      "yaslar — yaslanan kenardaki çizgi parçası kısalır."
+  ),
+  render: () => (
+    <div className="w-full max-w-2xl flex flex-col gap-8">
+      <section>
+        <Divider labelAlign="start">Profil</Divider>
+        <p className="mt-2 text-mari-neutral">Ad, soyad ve herkese açık kullanıcı adınız.</p>
+      </section>
+      <section>
+        <Divider>Bildirimler</Divider>
+        <p className="mt-2 text-mari-neutral">E-posta ve anlık bildirim tercihleri.</p>
+      </section>
+      <section>
+        <Divider labelAlign="end" plain={false}>
+          Tehlikeli Bölge
         </Divider>
-      ))}
+        <p className="mt-2 text-mari-neutral">Hesabı kalıcı olarak silme. `plain={false}` ile başlık vurgulanır.</p>
+      </section>
     </div>
   ),
 };
 
-export const Vertical: StoryObj<DividerProps> = {
-  name: "Dikey",
-  ...storyDoc("Satır içi öğeleri böler. `height` `rem` cinsinden veya yüzde verilir (`px` yerine — 4K ekranlarda kök font'la ölçeklensin)."),
-  render: (args) => (
-    <div className="h-40 flex items-center justify-center gap-4">
-      <span>Sol</span>
-      <Divider {...args} />
-      <span>Sağ</span>
+export const LineStyles: StoryObj = {
+  name: "Çizgi Stilleri",
+  ...storyDoc(
+    "`solid` kalıcı/net ayrımlar için (varsayılan); `dashed` geçici veya taslak bir sınır için; `dotted` en hafif, " +
+      "yalnızca hafif bir ipucu gereken yerde."
+  ),
+  render: () => (
+    <div className="w-full max-w-2xl flex flex-col gap-8 text-mari-foreground">
+      <div>
+        <p>Kayıtlı adresler</p>
+        <Divider lineStyle="solid" />
+        <p className="text-mari-neutral">Ev · İş · Fatura</p>
+      </div>
+      <div>
+        <p>Yeni adres (kaydedilmedi)</p>
+        <Divider lineStyle="dashed" />
+        <p className="text-mari-neutral">Taslak — henüz onaylanmadı</p>
+      </div>
+      <div>
+        <p>Önerilenler</p>
+        <Divider lineStyle="dotted" />
+        <p className="text-mari-neutral">Konumunuza göre otomatik doldurma</p>
+      </div>
     </div>
   ),
-  args: {
-    orientation: "vertical",
-    lineStyle: "dotted",
-    height: "80%",
-  },
 };
 
-export const DashedEndWithMargin: StoryObj<DividerProps> = {
-  name: "Sona Hizalı, Kesikli",
-  ...storyDoc("Etiket `labelAlign=\"end\"` ile sağa yaslanır; `labelMargin` kenar boşluğunu ayarlar."),
-  args: {
-    children: "Sona Hizalı",
-    lineStyle: "dashed",
-    labelAlign: "end",
-    labelMargin: "1.25rem",
-    orientation: "horizontal",
-  },
+export const VerticalInline: StoryObj = {
+  name: "Dikey (satır içi)",
+  ...storyDoc("Satır içi meta bilgi ve araç çubuğu eylemlerini bölmek için. Yükseklik içeriğe göre ayarlanır (`height`)."),
+  render: () => (
+    <div className="w-full max-w-2xl flex flex-col gap-6 text-mari-foreground">
+      <div className="flex items-center text-sm text-mari-neutral">
+        <span>Ayşe Yılmaz</span>
+        <Divider orientation="vertical" height="1rem" />
+        <span>10 Eylül 2026</span>
+        <Divider orientation="vertical" height="1rem" />
+        <span>5 dk okuma</span>
+        <Divider orientation="vertical" height="1rem" />
+        <span>12 yorum</span>
+      </div>
+      <div className="flex items-center gap-1 text-sm">
+        <button type="button" className="px-2 py-1 text-mari-primary hover:underline">
+          Düzenle
+        </button>
+        <Divider orientation="vertical" height="1.25rem" />
+        <button type="button" className="px-2 py-1 text-mari-primary hover:underline">
+          Kopyala
+        </button>
+        <Divider orientation="vertical" height="1.25rem" />
+        <button type="button" className="px-2 py-1 text-mari-error hover:underline">
+          Sil
+        </button>
+      </div>
+    </div>
+  ),
 };

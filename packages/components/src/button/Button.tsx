@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import { Loader2Icon } from "lucide-react";
 import { cn, resolveColorVariant } from "@mari-ui/core";
 import { colorVariantToClassName } from "../lib/colorClasses";
 import { sizeClass } from "../lib/sizeClasses";
@@ -47,6 +48,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   });
   const { isLoading, loadingIcon, loadingIconPosition } = resolveLoading(loading);
 
+  // Yükleniyor durumunda buton HER ZAMAN devre dışıdır — çift gönderim /
+  // yarım işlem sırasında ikinci tıklama engellenir.
+  const isDisabled = disabled || isLoading;
+
+  // `loading` bir ikon vermediyse (ör. `loading` veya `loading={{}}`) varsayılan
+  // dönen göstergeyi kullan — "yükleniyor" durumunun HER ZAMAN görünür bir
+  // ikonu olur.
+  const resolvedLoadingIcon = loadingIcon ?? <Loader2Icon className="w-4 h-4 animate-spin" aria-hidden />;
+
   const colorClasses = colorVariantToClassName(resolveColorVariant(resolvedColor, resolvedVariant));
 
   const rootClasses = cn(
@@ -54,7 +64,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     sizeClass[size],
     getShapeClasses(shape),
     colorClasses,
-    disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+    isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
     block && "w-full",
     className,
     classNames.wrapper
@@ -66,11 +76,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   // çıkarmaya gerek kalmaz.
   const children_ = (
     <>
-      {isLoading && loadingIconPosition === "start" && <span className={classNames.icon}>{loadingIcon}</span>}
+      {isLoading && loadingIconPosition === "start" && <span className={classNames.icon}>{resolvedLoadingIcon}</span>}
       {icon && !isLoading && iconPosition === "start" && <span className={classNames.icon}>{icon}</span>}
       {children && <span className={classNames.label}>{children}</span>}
       {icon && !isLoading && iconPosition === "end" && <span className={classNames.icon}>{icon}</span>}
-      {isLoading && loadingIconPosition === "end" && <span className={classNames.icon}>{loadingIcon}</span>}
+      {isLoading && loadingIconPosition === "end" && <span className={classNames.icon}>{resolvedLoadingIcon}</span>}
     </>
   );
 
@@ -84,7 +94,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     onDrop,
   };
 
-  if (href && !disabled) {
+  if (href && !isDisabled) {
     return (
       <a href={href} target={target} {...commonProps} ref={ref as React.Ref<HTMLAnchorElement>}>
         {children_}
@@ -93,7 +103,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   }
 
   return (
-    <button type={htmlType} disabled={disabled} {...commonProps} ref={ref}>
+    <button
+      type={htmlType}
+      disabled={isDisabled}
+      aria-busy={isLoading || undefined}
+      {...commonProps}
+      ref={ref}
+    >
       {children_}
     </button>
   );

@@ -3,31 +3,36 @@ import { cn, type Size } from "@mari-ui/core";
 import { fontSizeClass } from "../lib/sizeClasses";
 import type { DividerLabelAlign, DividerLineStyle } from "./types";
 
-export function getBaseClass(
-  isHorizontal: boolean,
-  size: Size | undefined,
-  lineStyle: DividerLineStyle | undefined,
-  className?: string
-): string {
+export function getBaseClass(isHorizontal: boolean, size: Size | undefined, className?: string): string {
   return cn(
     "flex",
-    isHorizontal ? "w-full items-center" : "h-full flex-col justify-center",
+    // Divider'ın KENDİ varsayılan boşluğu var — yatayda dikey (`my-4`),
+    // dikeyde yatay (`mx-3`) — böylece komşu içeriğe yapışmaz. `cn`
+    // (twMerge) sayesinde tüketici `className`'iyle (`my-2`, `mx-0` …)
+    // ezilebilir.
+    isHorizontal ? "w-full items-center my-4" : "h-full flex-col justify-center mx-3",
     size && fontSizeClass[size],
-    lineStyle === "solid" && "border-solid",
-    lineStyle === "dashed" && "border-dashed",
-    lineStyle === "dotted" && "border-dotted",
     className
   );
 }
 
-export function getLabelClass(plain: boolean | undefined, labelAlign: DividerLabelAlign | undefined, isHorizontal: boolean): string {
+/**
+ * Çizgi stili class'ı — çizgiyi çizen elemana (kapsayıcıya DEĞİL) uygulanır.
+ * `border-style` CSS'te `inherit` edilmez.
+ */
+export function getLineClass(lineStyle: DividerLineStyle | undefined): string {
+  if (lineStyle === "dashed") return "border-dashed";
+  if (lineStyle === "dotted") return "border-dotted";
+  return "border-solid";
+}
+
+export function getLabelClass(plain: boolean | undefined, isHorizontal: boolean): string {
   return cn(
-    "px-2 whitespace-nowrap",
+    isHorizontal ? "px-3" : "py-2",
+    "whitespace-nowrap",
     // "text-muted-500" -> gerçek bir token değildi (tema'da hiç yoktu, sessizce
     // no-op'tu). Nötr rolün `text` slotu bunun yerine geçiyor.
-    plain && "text-mari-neutral",
-    labelAlign === "end" && isHorizontal && "ml-auto",
-    labelAlign === "start" && isHorizontal && "mr-auto"
+    plain ? "text-mari-neutral" : "text-mari-foreground font-medium"
   );
 }
 

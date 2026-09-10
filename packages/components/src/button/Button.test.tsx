@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Button } from "./Button";
 import { getA11yViolations } from "../testUtils/a11y";
@@ -69,6 +70,36 @@ describe("Button", () => {
       <Button loading={{ icon: <span data-testid="spinner" /> }}>Gönder</Button>
     );
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
+  });
+
+  it("loading=true (özel ikon verilmeden) daima bir dönen gösterge çizer", () => {
+    const { container } = render(<Button loading>Gönder</Button>);
+    expect(container.querySelector("svg.animate-spin")).toBeInTheDocument();
+  });
+
+  it("loading=true iken buton daima devre dışıdır ve onClick tetiklenmez", async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(
+      <Button loading onClick={onClick}>
+        Gönder
+      </Button>
+    );
+    const btn = screen.getByRole("button", { name: "Gönder" });
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveAttribute("aria-busy", "true");
+    await user.click(btn);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("loading iken href verilse bile <a> değil devre dışı <button> render eder", () => {
+    render(
+      <Button loading href="/hedef">
+        Git
+      </Button>
+    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Git" })).toBeDisabled();
   });
 
   it("erişilebilirlik ihlali içermez (axe-core, Faz 9)", async () => {

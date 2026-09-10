@@ -70,7 +70,9 @@ export function resolveLoading(loading: ButtonLoading): {
   loadingIcon: React.ReactNode | null;
   loadingIconPosition: ButtonIconPosition;
 } {
-  const isLoading = typeof loading === "boolean" ? loading : Boolean(loading?.delay || loading?.icon);
+  // Bir obje verilmişse (ör. `{ iconPosition: "end" }`) niyet "yükleniyor"dur —
+  // `icon`/`delay` alanı olmasa bile. Varsayılan gösterge Button'da eklenir.
+  const isLoading = typeof loading === "boolean" ? loading : loading != null;
 
   const loadingIcon = typeof loading === "object" && loading.icon ? loading.icon : null;
 

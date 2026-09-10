@@ -1,6 +1,7 @@
 import React from "react";
+import { cn } from "@mari-ui/core";
 import type { DividerProps } from "./types";
-import { getBaseClass, getLabelClass, getLabelMarginStyle } from "./utils";
+import { getBaseClass, getLabelClass, getLabelMarginStyle, getLineClass } from "./utils";
 
 /**
  * Hook yok, browser API yok — saf sunum. Eski kodda gereksiz yere
@@ -21,31 +22,47 @@ export function Divider({
   height = "3rem",
 }: DividerProps) {
   const isHorizontal = orientation === "horizontal";
-  const baseClass = getBaseClass(isHorizontal, size, lineStyle, className);
-  const labelClass = getLabelClass(plain, labelAlign, isHorizontal);
+  const baseClass = getBaseClass(isHorizontal, size, className);
+  const labelClass = getLabelClass(plain, isHorizontal);
   const marginStyle = getLabelMarginStyle(labelAlign, labelMargin, isHorizontal);
 
-  return (
-    <div
-      className={baseClass}
-      style={style}
-      role="separator"
-      aria-orientation={isHorizontal ? undefined : "vertical"}
-    >
-      {children && isHorizontal ? (
-        <>
-          <span className="flex-1 border-t border-inherit" />
-          <span className={labelClass} style={marginStyle}>
-            {children}
-          </span>
-          <span className="flex-1 border-t border-inherit" />
-        </>
-      ) : (
+  // Çizgi stili (solid/dashed/dotted) DOĞRUDAN çizgiyi çizen elemana
+  // uygulanır — `border-style` CSS'te KALITILMAZ, bu yüzden eskiden
+  // kapsayıcıya konunca hep solid görünüyordu.
+  const lineClass = cn("border-mari-border", getLineClass(lineStyle));
+
+  if (!isHorizontal) {
+    return (
+      <div className={baseClass} style={style} role="separator" aria-orientation="vertical">
         <span
-          className="inline-block border-l border-inherit"
+          className={cn("inline-block border-l", lineClass)}
           style={{ height: typeof height === "number" ? `${height}px` : height }}
         />
-      )}
+      </div>
+    );
+  }
+
+  if (!children) {
+    return (
+      <div className={baseClass} style={style} role="separator">
+        <span className={cn("flex-1 border-t", lineClass)} />
+      </div>
+    );
+  }
+
+  // Etiketli yatay divider: etiketin iki yanındaki çizgi parçaları.
+  // `labelAlign` etiketi bir kenara yaslamak için o kenardaki parçayı
+  // kısaltır (`w-6` = 1.5rem), diğerini `flex-1` ile uzatır.
+  const startLineClass = cn("border-t", lineClass, labelAlign === "start" ? "w-6 flex-none" : "flex-1");
+  const endLineClass = cn("border-t", lineClass, labelAlign === "end" ? "w-6 flex-none" : "flex-1");
+
+  return (
+    <div className={baseClass} style={style} role="separator">
+      <span className={startLineClass} />
+      <span className={labelClass} style={marginStyle}>
+        {children}
+      </span>
+      <span className={endLineClass} />
     </div>
   );
 }

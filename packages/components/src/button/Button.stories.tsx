@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { colorArgType, disabledArgType, sizeArgType, variantArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Button } from "./Button";
@@ -42,7 +42,7 @@ const meta: Meta<ButtonProps & { showIcon?: boolean }> = {
     showIcon: { control: "boolean", description: "(Sadece bu story'de) örnek bir ikon gösterir/gizler." },
     icon: { control: false, description: "Etiketle birlikte gösterilecek ikon." },
     iconPosition: { control: "select", options: ["start", "end"], description: "İkonun etikete göre konumu.", table: { defaultValue: { summary: "start" } } },
-    loading: { control: "boolean", description: "Yükleniyor durumu — `true` veya `{ icon, iconPosition }` şeklinde özelleştirilebilir." },
+    loading: { control: "boolean", description: "Yükleniyor durumu. `true` verilince dönen bir gösterge çıkar ve buton **daima devre dışı** olur (çift gönderim engellenir). `{ icon, iconPosition }` ile gösterge özelleştirilebilir.", table: { defaultValue: { summary: "false" } } },
     block: { control: "boolean", description: "Tam genişlik kaplar." },
     disabled: disabledArgType,
     href: { control: "text", description: "Verilirse `<a>` olarak render edilir." },
@@ -68,9 +68,7 @@ export const Playground: Story = {
   },
   render: (args) => {
     const { showIcon, ...rest } = args;
-    return (
-      <Button {...rest} icon={showIcon ? <Sparkles className="w-4 h-4" /> : undefined} loading={args.loading ? { icon: <Loader2 className="w-4 h-4 animate-spin" />, iconPosition: "start" } : false} />
-    );
+    return <Button {...rest} icon={showIcon ? <Sparkles className="w-4 h-4" /> : undefined} />;
   },
 };
 
@@ -111,12 +109,15 @@ export const Sizes: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("Normal, `disabled`, `loading` ve ikonlu. `loading` sırasında ikon yerini yükleme göstergesi alır."),
+  ...storyDoc("Normal, `disabled`, `loading` ve ikonlu. `loading` durumunda daima bir dönen gösterge çıkar ve buton otomatik olarak devre dışı olur — ayrıca `disabled` vermeye gerek yoktur."),
   render: () => (
     <div className="flex items-center gap-3">
       <Button>Normal</Button>
       <Button disabled>Devre dışı</Button>
       <Button loading>Yükleniyor</Button>
+      <Button loading variant="outline">
+        Kaydediliyor
+      </Button>
       <Button icon={<Sparkles className="w-4 h-4" />}>İkonlu</Button>
     </div>
   ),
