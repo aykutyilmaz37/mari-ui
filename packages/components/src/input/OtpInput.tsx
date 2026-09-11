@@ -110,6 +110,14 @@ export function OtpInput({
     }
   }, [value, length]);
 
+  // Faz 13 gözden geçirmesi: `ghost` Input'ta ("kenarlıksız, arka planı
+  // saydam") bir metin alanının içinde/etrafında bağlam olduğu için anlamlı
+  // — ama OTP'de her kutucuk TEK BAŞINA bir hücre, çevresinde hiçbir görsel
+  // referans yok. `ghost` seçilince kutucuklar TAMAMEN görünmez oluyordu,
+  // kullanıcı nereye yazacağını göremiyordu. OTP için `ghost`, `underlined`e
+  // (en azından bir alt çizgi kalır) düşürülür.
+  const resolvedVariant = variant === "ghost" ? "underlined" : variant;
+
   return (
     <div className="flex items-center gap-2">
       {Array.from({ length }).map((_, i) => {
@@ -130,7 +138,7 @@ export function OtpInput({
               disabled={disabled}
               size={size}
               shape={shape}
-              variant={variant}
+              variant={resolvedVariant}
               color={color}
               status={status}
               className={cn(WIDTH_CLASS[size], className)}
