@@ -20,6 +20,8 @@ export function RadioGroup({
   size = "md",
   block = false,
   className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
 }: RadioGroupProps) {
   const [selectedValue, setSelectedValue] = useControllableState<string | number | undefined>({
     value,
@@ -32,7 +34,11 @@ export function RadioGroup({
   );
 
   return (
-    <div className={cn("flex gap-2 flex-wrap", block && "w-full", className)}>
+    // `role="radiogroup"` eskiden yoktu — birden çok `<input type="radio">`
+    // sadece aynı `name`'i paylaşarak native olarak bir grup oluşturuyordu
+    // ama ekran okuyucuya bunun tek bir SEÇİM grubu olduğu (ve varsa grubun
+    // adının) ayrıca duyurulması gerekir.
+    <div role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledBy} className={cn("flex gap-2 flex-wrap", block && "w-full", className)}>
       {parsedOptions.map((opt) => (
         <Radio
           key={opt.value}

@@ -33,6 +33,7 @@ export function Rate({
   characterSize = "1.5rem",
   color = "warning",
   characterColor,
+  "aria-label": ariaLabel = "Puan",
 }: RateProps) {
   const [hoverValue, setHoverValue] = useState<number | undefined>(undefined);
   const [displayValue, setDisplayValue] = useControllableState<number>({ value, defaultValue, onChange });
@@ -43,6 +44,36 @@ export function Rate({
   }, [autoFocus]);
 
   const colorClass = textClass[color];
+  const step = allowHalf ? 0.5 : 1;
+
+  /**
+   * Eskiden kök `<div>` odaklanabilirdi (`tabIndex`) ama YALNIZCA fareyle
+   * değiştirilebiliyordu — dahili hiçbir tuş işleyicisi yoktu, `onKeyDown`
+   * salt tüketiciye ilettiği bir pass-through'du. Klavye kullanıcısı için
+   * KULLANILAMAZ durumdaydı (AutoComplete'in Faz 13'te düzeltilen aynı
+   * sınıf hatası). Ok Sağ/Yukarı artırır, Ok Sol/Aşağı azaltır, Home/End
+   * uçlara atlar.
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(e);
+    if (disabled) return;
+    if (!["ArrowRight", "ArrowUp", "ArrowLeft", "ArrowDown", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    // Fare daha önce üzerinde durup ayrılmadıysa `hoverValue` hâlâ set —
+    // görsel önizleme `displayValue`nun önüne geçip klavyeyle yapılan
+    // değişikliği MASKELİYORDU (aria-value* doğru ama yıldızlar eski
+    // hover konumunda donuk kalıyordu). Klavyeyle her değişiklikte temizle.
+    setHoverValue(undefined);
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      setDisplayValue(Math.min(count, Math.round((displayValue + step) * 2) / 2));
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      setDisplayValue(Math.max(0, Math.round((displayValue - step) * 2) / 2));
+    } else if (e.key === "Home") {
+      setDisplayValue(0);
+    } else if (e.key === "End") {
+      setDisplayValue(count);
+    }
+  };
 
   const stars = Array.from({ length: count }, (_, i) => {
     const currentValue = hoverValue ?? displayValue;
@@ -74,7 +105,10 @@ export function Rate({
     return (
       <span
         key={i}
-        role="none"
+        // Kök `<div>` artık tek bir ARIA "slider" olarak modelleniyor —
+        // bu span'lar sadece fare/dokunma için görsel/tıklama hedefleri,
+        // ekran okuyucudan gizli (değeri kök zaten `aria-valuetext` ile duyurur).
+        aria-hidden="true"
         onClick={(e) => {
           if (!disabled) {
             // `onChange` burada BİLİNÇLİ OLARAK geçirilmiyor: `setDisplayValue`
@@ -107,7 +141,24 @@ export function Rate({
   });
 
   return (
-    <div ref={rootRef} className={cn("flex gap-1 outline-none", className)} tabIndex={disabled ? -1 : 0} onFocus={onFocus} onBlur={onBlur} onKeyDown={onKeyDown} role="none">
+    <div
+      ref={rootRef}
+      className={cn(
+        "flex gap-1 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+        className
+      )}
+      tabIndex={disabled ? -1 : 0}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onKeyDown={handleKeyDown}
+      role="slider"
+      aria-label={ariaLabel}
+      aria-valuemin={0}
+      aria-valuemax={count}
+      aria-valuenow={displayValue}
+      aria-valuetext={`${displayValue} / ${count}`}
+      aria-disabled={disabled || undefined}
+    >
       {stars}
     </div>
   );

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Leaf } from "lucide-react";
 import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Slider } from "./Slider";
 
 const meta: Meta<typeof Slider> = {
@@ -10,11 +11,15 @@ const meta: Meta<typeof Slider> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Sayısal bir aralıkta değer seçmek için sürüklenebilir kontrol. İşaretli noktalar (`iconList`), yanında " +
-          "bir sayı girişi (`showInput`) ve dikey mod destekler. Kendisi `Input` (native range) ve `Tooltip`ı " +
-          "birlikte kullanır. **Not:** eskiden `Tooltip`e `disabled={tooltipVisible}` geçiriliyordu — " +
-          "`tooltipVisible=true` iken tooltip'i GİZLEYEN ters bir mantıktı, düzeltildi.",
+        component: componentDoc({
+          summary:
+            "Sayısal bir aralıkta değer seçmek için sürüklenebilir kontrol. İşaretli noktalar (`iconList`), yanında " +
+            "bir sayı girişi (`showInput`) ve dikey mod destekler. Track/thumb rengi native `accent-color` ile " +
+            "temadan gelir — özel bir çizim gerekmez.",
+          whenToUse: ["Kesin bir sayı yerine yaklaşık/görsel bir aralıkta değer seçtirmek için (ses düzeyi, fiyat aralığı)."],
+          whenNotToUse: ["Kesin bir sayı gerekiyorsa — düz bir `Input type=\"number\"` daha güvenilir."],
+          a11y: "Görünür bir `<label>` yoksa mutlaka `aria-label` verin — aksi halde ekran okuyucu kullanıcısı kontrolün ne işe yaradığını bilemez.",
+        }),
       },
     },
   },
@@ -36,13 +41,28 @@ export default meta;
 type Story = StoryObj<typeof Slider>;
 
 export const Playground: Story = {
-  args: { defaultValue: 50 },
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { defaultValue: 50, "aria-label": "Değer" },
+};
+
+export const Sizes: Story = {
+  name: "Boyutlar",
+  ...storyDoc("`sm`/`md`/`lg` — genişliği değiştirir (kalınlık native `accent-color`'a bağlı, tarayıcıya göre değişir)."),
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <Slider key={size} size={size} defaultValue={50} aria-label={`${size} boyut`} />
+      ))}
+    </div>
+  ),
 };
 
 export const WithIcons: Story = {
   name: "İşaretli Noktalarla",
+  ...storyDoc("`iconList` ile belirli değerlerin altına/üstüne ikon yerleştirilir."),
   args: {
     defaultValue: 50,
+    "aria-label": "Değer",
     iconList: [
       { icon: <Leaf size={16} />, value: 0 },
       { icon: <Leaf size={16} />, value: 50 },
@@ -54,8 +74,10 @@ export const WithIcons: Story = {
 
 export const Vertical: Story = {
   name: "Dikey",
+  ...storyDoc("`vertical` — yukarı/aşağı sürüklenir."),
   args: {
     defaultValue: 40,
+    "aria-label": "Değer",
     vertical: true,
     tooltipAlwaysVisible: true,
     iconPosition: "top",
@@ -70,10 +92,12 @@ export const Vertical: Story = {
 
 export const WithInputField: Story = {
   name: "Sayı Girişli",
-  args: { defaultValue: 30, showInput: true },
+  ...storyDoc("`showInput` — yanında senkronize bir sayı girişi gösterir, klavyeyle kesin değer girmek için."),
+  args: { defaultValue: 30, "aria-label": "Değer", showInput: true },
 };
 
 export const Disabled: Story = {
   name: "Devre Dışı",
-  args: { defaultValue: 60, disabled: true },
+  ...storyDoc("`disabled` — sürüklenemez, soluk görünür."),
+  args: { defaultValue: 60, "aria-label": "Değer", disabled: true },
 };

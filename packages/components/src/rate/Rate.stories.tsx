@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Rate } from "./Rate";
 
 const meta: Meta<typeof Rate> = {
@@ -9,10 +10,18 @@ const meta: Meta<typeof Rate> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Yıldız tabanlı derecelendirme girişi. Yarım puan (`allowHalf`) ve tıklayarak temizleme (`allowClear`) " +
-          "destekler. `useControllableState` ile hem controlled hem uncontrolled kullanılabilir. `characterColor` " +
-          "ile token dışı ham bir renk zorlanabilir (ileri düzey kaçış).",
+        component: componentDoc({
+          summary:
+            "Yıldız tabanlı derecelendirme girişi. Yarım puan (`allowHalf`) ve tıklayarak temizleme (`allowClear`) " +
+            "destekler. `useControllableState` ile hem controlled hem uncontrolled kullanılabilir. `characterColor` " +
+            "ile token dışı ham bir renk zorlanabilir (ileri düzey kaçış).",
+          whenToUse: ["Kullanıcıdan bir memnuniyet/kalite puanı almak için."],
+          whenNotToUse: ["Kesin bir sayısal değer gerekiyorsa — `Slider` veya `Input type=\"number\"`."],
+          a11y:
+            "Tek bir odak durağı — `role=\"slider\"` + `aria-valuenow`/`aria-valuemin`/`aria-valuemax`/`aria-valuetext` " +
+            "taşır. **Ok Sağ/Yukarı** artırır, **Ok Sol/Aşağı** azaltır, **Home**/**End** uçlara atlar (eskiden " +
+            "dahili hiçbir tuş desteği yoktu — fare olmadan kullanılamazdı).",
+        }),
       },
     },
   },
@@ -35,16 +44,19 @@ export default meta;
 type Story = StoryObj<typeof Rate>;
 
 export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin. Odaklanıp Ok tuşlarını da deneyin."),
   args: { defaultValue: 3 },
 };
 
 export const AllowHalf: Story = {
   name: "Yarım Puan",
+  ...storyDoc("`allowHalf` — yarım yıldız hassasiyetiyle puanlama; klavyede adım da yarımşar ilerler."),
   args: { allowHalf: true, defaultValue: 2.5 },
 };
 
 export const AllColors: Story = {
   name: "Tüm Renkler",
+  ...storyDoc("7 renk rolünün tamamı."),
   render: () => (
     <div className="flex flex-col gap-3">
       {(["warning", "primary", "accent", "success", "error", "info", "neutral"] as const).map((color) => (
@@ -56,6 +68,7 @@ export const AllColors: Story = {
 
 export const Disabled: Story = {
   name: "Devre Dışı",
+  ...storyDoc("`disabled` — ne fare ne klavye ile değişir."),
   args: {
     defaultValue: 4.5,
     allowHalf: true,
@@ -66,6 +79,7 @@ export const Disabled: Story = {
 
 export const WithAutoFocus: Story = {
   name: "Otomatik Odak",
+  ...storyDoc("`autoFocus` — mount olduğunda doğrudan klavye ile puanlamaya hazır."),
   args: {
     defaultValue: 2,
     autoFocus: true,

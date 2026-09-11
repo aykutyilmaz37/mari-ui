@@ -30,6 +30,7 @@ export function Slider({
   iconPosition = "bottom",
   showInput = false,
   onChange,
+  "aria-label": ariaLabel,
 }: SliderProps) {
   const [internalValue, setInternalValue] = useControllableState<SliderValue>({ value, defaultValue, onChange });
 
@@ -48,7 +49,10 @@ export function Slider({
           style={{ left: `${internalValue}%` }}
           trigger={
             <Input
-              className="p-0"
+              // `accent-*` — native `<input type="range">`'in track/thumb rengini
+              // tema token'ından alması için (özel bir track/thumb markup'ı
+              // gerekmez, tarayıcı kendi native kontrolünü boyar).
+              className="p-0 accent-mari-primary-solid"
               type="range"
               variant="ghost"
               min={min}
@@ -56,6 +60,7 @@ export function Slider({
               disabled={disabled}
               value={String(internalValue)}
               onChange={(e) => setInternalValue(Number(e.target.value))}
+              aria-label={ariaLabel}
             />
           }
         />
@@ -77,13 +82,19 @@ export function Slider({
         </div>
       </div>
       {showInput && (
+        // Not: `className`'e elle "border rounded p-1 text-sm" EKLEMİYORUZ —
+        // Input zaten kendi `size`/`variant`'ından bunları üretiyor; üstüne
+        // aynı özellikleri tekrar yazmak `cn`/twMerge sırasına göre boyut
+        // ölçeğini SESSİZCE eziyordu (bkz. Faz 13 denetimi).
         <Input
           type="number"
-          className="border rounded p-1 text-sm w-14"
+          size="sm"
+          className="w-14"
           value={String(internalValue)}
           disabled={disabled}
           min={min}
           max={max}
+          aria-label={ariaLabel ? `${ariaLabel} (sayısal giriş)` : undefined}
           onChange={(e) => setInternalValue(Number(e.target.value))}
         />
       )}

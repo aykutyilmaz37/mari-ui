@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useId, useRef } from "react";
 import { Loader2Icon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import type { SwitchProps } from "./types";
@@ -32,6 +32,12 @@ export function Switch({
 }: SwitchProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked, onChange });
+  // `label` eskiden salt dekoratif bir <span>'di — ne ekran okuyucuya
+  // duyurulan bir isim ne de tıklanabilir bir etiket olarak switch'e
+  // bağlıydı (Checkbox/Radio'nun aksine). `<label htmlFor>` hem
+  // `aria-labelledby` gerektirmeden erişilebilir adı sağlar hem de metne
+  // tıklamayı switch'i değiştirir.
+  const switchId = useId();
 
   useEffect(() => {
     buttonRef.current?.blur();
@@ -39,9 +45,14 @@ export function Switch({
 
   return (
     <div className="flex items-center w-full gap-2">
-      {label && <span className="text-sm">{label}</span>}
+      {label && (
+        <label htmlFor={switchId} className={cn("text-sm", disabled && "cursor-not-allowed")}>
+          {label}
+        </label>
+      )}
       <button
         type="button"
+        id={switchId}
         ref={buttonRef}
         onClick={() => !disabled && !loading && setIsChecked(!isChecked)}
         disabled={disabled || loading}
@@ -49,6 +60,9 @@ export function Switch({
         role="switch"
         className={cn(
           "relative inline-flex items-center justify-start rounded-full focus:ring-0 duration-300 overflow-hidden transition-opacity hover:opacity-80 group",
+          // Buton'daki (Faz 13.1) aynı odak halkası deseni — eskiden `focus:ring-0`
+          // ile TAMAMEN kapatılmıştı, klavye kullanıcısı odağın nerede olduğunu göremiyordu.
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
           (disabled || loading) && "opacity-50 cursor-not-allowed",
           !isChecked && !disabled && "opacity-70",
           getTrackClass(size, color, isChecked),

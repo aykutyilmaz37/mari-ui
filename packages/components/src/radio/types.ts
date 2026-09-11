@@ -54,4 +54,7 @@ export interface RadioGroupProps {
   size?: Size;
   block?: boolean;
   className?: string;
+  /** Ekran okuyucu için grubun adı — görünür bir başlık varsa `aria-labelledby` tercih edin. */
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
 }

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Checkbox } from "./index";
 import type { CheckboxProps } from "./index";
 
@@ -11,11 +12,21 @@ const meta: Meta<typeof Checkbox> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Bir açık/kapalı veya çoklu seçim durumunu temsil eden form kontrolü; `indeterminate` durumu (bazı alt " +
-          "öğeler seçili) destekler. `useControllableState` ile hem controlled (`checked`+`onChange`) hem " +
-          "uncontrolled (`defaultChecked`) kullanılabilir. `error`/`warning` doğrulama durumu `color` prop'unun " +
-          "kendisidir (ayrı bir `status` ekseni değil — eski `status` prop'u hâlâ çalışır ama deprecated).",
+        component: componentDoc({
+          summary:
+            "Bir açık/kapalı veya çoklu seçim durumunu temsil eden form kontrolü; `indeterminate` durumu (bazı alt " +
+            "öğeler seçili) destekler. `useControllableState` ile hem controlled (`checked`+`onChange`) hem " +
+            "uncontrolled (`defaultChecked`) kullanılabilir.",
+          whenToUse: [
+            "Bağımsız bir açık/kapalı ayar veya çoklu seçim listesi için.",
+            "\"Tümünü seç\" gibi bir üst kontrolde `indeterminate` ile kısmi seçim durumunu göstermek için.",
+          ],
+          whenNotToUse: ["Karşılıklı dışlayan (yalnızca biri seçilebilir) seçenekler için — `Radio`/`RadioGroup`."],
+          a11y:
+            "Gerçek bir `<input type=\"checkbox\">` render eder, `<label>` ile sarmalanır (etikete tıklamak da " +
+            "değiştirir). `color` verilmediyse dinlenme halinde kenarlık nötr/gridir; sadece işaretlenince (veya " +
+            "`color` açıkça verildiyse her zaman) renkli olur.",
+        }),
       },
     },
   },
@@ -40,6 +51,7 @@ const meta: Meta<typeof Checkbox> = {
 export default meta;
 
 export const Playground: StoryObj<CheckboxProps> = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
     label: "Checkbox örneği",
     defaultChecked: false,
@@ -55,6 +67,7 @@ export const Playground: StoryObj<CheckboxProps> = {
 
 export const AllVariants: StoryObj = {
   name: "Tüm Renk × Varyant × Boyut",
+  ...storyDoc("`md` boyutlar önceden işaretli — dinlenme (gri) ve işaretli (renkli dolgu) halleri yan yana karşılaştırın."),
   render: () => {
     const colors = ["primary", "neutral", "error", "warning"] as const;
     const variants = ["outline", "solid"] as const;
@@ -105,5 +118,6 @@ const IndeterminateExample = () => {
 
 export const IndeterminateCheckbox: StoryObj = {
   name: "Belirsiz (Indeterminate) Örneği",
+  ...storyDoc("Klasik \"Tümünü Seç\" deseni — bazı alt öğeler seçiliyken üst kutucuk `indeterminate` gösterir."),
   render: () => <IndeterminateExample />,
 };

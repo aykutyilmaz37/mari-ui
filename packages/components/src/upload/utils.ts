@@ -20,6 +20,15 @@ export function getFileKey(file: File): string {
   return `${file.lastModified}-${file.name}`;
 }
 
+/**
+ * `allowedType` hem bir uzantı ("png") hem bir MIME türü ("image/png")
+ * olarak dokümante edilmiş/kullanılmıştı (bkz. Upload.stories.tsx'in
+ * `fileType` argType açıklaması ve `WithCustomFileType` örneği) ama burada
+ * her zaman ÇIPLAK uzantıyla (`getFileExtension`) karşılaştırılıyordu —
+ * "image/png" verilince `"png" !== "image/png"` hep true çıkıyor, yani
+ * dokümante edilen kullanım her dosyayı GEÇERSİZ sayıyordu. İkisini de
+ * uzantıya normalize ediyoruz.
+ */
 export function isFileValid({
   file,
   allowedType,
@@ -30,7 +39,8 @@ export function isFileValid({
   maxSize?: number;
 }): { valid: boolean; reason?: "invalid-type" | "size-exceeded" } {
   const extension = getFileExtension(file);
-  if (allowedType && extension !== allowedType) return { valid: false, reason: "invalid-type" };
+  const allowedExtension = allowedType?.includes("/") ? allowedType.split("/")[1] : allowedType;
+  if (allowedExtension && extension !== allowedExtension) return { valid: false, reason: "invalid-type" };
   if (maxSize && file.size > maxSize) return { valid: false, reason: "size-exceeded" };
   return { valid: true };
 }

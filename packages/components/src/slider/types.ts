@@ -19,4 +19,6 @@ export interface SliderProps {
   iconPosition?: SliderIconPosition;
   showInput?: boolean;
   onChange?: (value: number | [number, number]) => void;
+  /** Ekran okuyucu için erişilebilir ad — görünür bir `<label>` yoksa mutlaka verin. */
+  "aria-label"?: string;
 }

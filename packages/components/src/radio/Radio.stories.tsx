@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Radio } from "./index";
 import type { RadioProps } from "./index";
 
@@ -11,10 +12,17 @@ const meta: Meta<typeof Radio> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Bir grup seçenekten TEK birini seçmek için kullanılır — genelde `RadioGroup` içinde, ama tek başına da " +
-          "kullanılabilir. `useControllableState` ile controlled/uncontrolled ikisini de destekler. Aynı `name` " +
-          "değerini paylaşan Radio'lar bir grup oluşturur (native `<input type=\"radio\">` davranışı).",
+        component: componentDoc({
+          summary:
+            "Bir grup seçenekten TEK birini seçmek için kullanılır — tek tek `Radio` yerine genelde `RadioGroup` " +
+            "tercih edin (grup semantiği ve düzeni hazır gelir). `useControllableState` ile controlled/uncontrolled " +
+            "ikisini de destekler. Aynı `name` değerini paylaşan Radio'lar native olarak bir grup oluşturur.",
+          whenToUse: ["Birbirini dışlayan (yalnızca biri seçilebilir) bir seçenek grubu için — 3+ seçenekte `RadioGroup` kullanın."],
+          whenNotToUse: ["Bağımsız açık/kapalı bir ayar için — `Checkbox` veya `Switch`."],
+          a11y:
+            "`color` verilmediyse dinlenme halinde kenarlık nötr/gridir; sadece seçilince (veya `color` açıkça " +
+            "verildiyse her zaman) renkli olur. Bir grup içinde kullanırken kapsayıcıya `role=\"radiogroup\"` için `RadioGroup`'u tercih edin.",
+        }),
       },
     },
   },
@@ -36,6 +44,7 @@ const meta: Meta<typeof Radio> = {
 export default meta;
 
 export const Playground: StoryObj<RadioProps> = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
     label: "Radio Seçeneği",
     defaultChecked: false,
@@ -49,6 +58,7 @@ export const Playground: StoryObj<RadioProps> = {
 
 export const AllVariants: StoryObj = {
   name: "Tüm Renk × Varyant × Boyut",
+  ...storyDoc("`md` boyutlar önceden seçili — dinlenme (gri) ve seçili (renkli) halleri yan yana karşılaştırın."),
   render: () => {
     const colors = ["primary", "neutral", "error", "warning"] as const;
     const variants = ["outline", "solid"] as const;
@@ -87,5 +97,6 @@ const ControlledExample = () => {
 };
 export const Controlled: StoryObj = {
   name: "Controlled Örneği",
+  ...storyDoc("Tek tek `Radio` ile elle kurulan bir grup — genelde bunun yerine `RadioGroup` tercih edilir."),
   render: () => <ControlledExample />,
 };

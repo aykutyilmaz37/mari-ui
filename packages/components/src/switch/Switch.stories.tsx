@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Switch } from "./Switch";
 
 const meta: Meta<typeof Switch> = {
@@ -10,10 +11,17 @@ const meta: Meta<typeof Switch> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Anlık açık/kapalı durumları için bir toggle — Checkbox'tan farkı, değişikliğin genelde ANINDA etkili " +
-          "olmasıdır (bir formu submit etmeyi beklemez). `useControllableState` ile hem controlled hem uncontrolled " +
-          "kullanılabilir. Bağımsız bir `<button role=\"switch\">` render eder — `Button` component'ine bağımlı değildir.",
+        component: componentDoc({
+          summary:
+            "Anlık açık/kapalı durumları için bir toggle — Checkbox'tan farkı, değişikliğin genelde ANINDA etkili " +
+            "olmasıdır (bir formu submit etmeyi beklemez). `useControllableState` ile hem controlled hem uncontrolled " +
+            "kullanılabilir. Bağımsız bir `<button role=\"switch\">` render eder — `Button` component'ine bağımlı değildir.",
+          whenToUse: ["Bir ayarı hemen uygulayan tekil bir açık/kapalı kontrol için (bildirim aç/kapa, karanlık mod)."],
+          whenNotToUse: ["Bir form gönderilene kadar etkisi olmayan bir seçim için — `Checkbox`."],
+          a11y:
+            "`label` gerçek bir `<label htmlFor>` ile switch'e bağlıdır — hem erişilebilir adı sağlar hem de metne " +
+            "tıklamak switch'i değiştirir (eskiden salt dekoratifti). Odak halkası `focus-visible` ile görünür.",
+        }),
       },
     },
   },
@@ -39,6 +47,7 @@ const PlaygroundStory = () => {
   return <Switch checked={value} onChange={setValue} label="Bildirimler" />;
 };
 export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   render: () => <PlaygroundStory />,
 };
 
@@ -48,6 +57,7 @@ const WithLabelsStory = () => {
 };
 export const WithLabels: Story = {
   name: "İç Etiketli",
+  ...storyDoc("`switchTrueLabel`/`switchFalseLabel` ile track içine kısa bir durum metni eklenebilir."),
   render: () => <WithLabelsStory />,
 };
 
@@ -63,6 +73,7 @@ const ColorsStory = () => {
 };
 export const Colors: Story = {
   name: "Renkler",
+  ...storyDoc("7 renk rolünün tamamı — açık durumdaki track rengini belirler."),
   render: () => <ColorsStory />,
 };
 
@@ -78,6 +89,7 @@ const SizesStory = () => {
 };
 export const Sizes: Story = {
   name: "Boyutlar",
+  ...storyDoc("`sm`/`md`/`lg`."),
   render: () => <SizesStory />,
 };
 
@@ -87,11 +99,13 @@ const LoadingStory = () => {
 };
 export const Loading: Story = {
   name: "Yükleniyor",
+  ...storyDoc("`loading` sırasında toggle devre dışı kalır ve topun üzerinde bir spinner döner."),
   render: () => <LoadingStory />,
 };
 
 const DisabledStory = () => <Switch checked={true} onChange={() => {}} disabled label="Devre Dışı" />;
 export const Disabled: Story = {
   name: "Devre Dışı",
+  ...storyDoc("`disabled` — tıklanamaz, soluk görünür."),
   render: () => <DisabledStory />,
 };

@@ -22,4 +22,6 @@ export interface RateProps {
   color?: ColorRole;
   /** İleri düzey kaçış: token yerine ham bir CSS rengi zorlar (inline style). */
   characterColor?: string;
+  /** Ekran okuyucu için erişilebilir ad. Varsayılan: "Puan". */
+  "aria-label"?: string;
 }
