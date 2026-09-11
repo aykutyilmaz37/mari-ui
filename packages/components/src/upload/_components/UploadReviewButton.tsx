@@ -1,5 +1,5 @@
 import React from "react";
-import { UploadIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import { Button } from "../../button";
 import type { ReviewType } from "../types";
@@ -9,24 +9,24 @@ export interface UploadReviewButtonProps {
   reviewType: ReviewType;
 }
 
+/**
+ * ant.design'ın "Pictures Wall" karosuyla AYNI boyutta (`h-28 w-28`) —
+ * eskiden ayrı bir satırda/boyutta duruyordu, artık küçük resimlerle AYNI
+ * grid'e (bkz. `Upload.tsx`) akıp aynı boyutta bir "ekle" karosu oluyor.
+ */
 export function UploadReviewButton({ handleClick, reviewType }: UploadReviewButtonProps) {
   return (
-    <div className="flex gap-2">
-      <Button
-        onClick={handleClick}
-        variant="ghost"
-        color="neutral"
-        className={cn(
-          "h-28 w-32 border-2 border-mari-border border-dashed bg-mari-surface-alt p-2 hover:border-mari-info-border hover:text-mari-info shrink-0",
-          reviewType === "square" && "rounded-lg h-28 w-32",
-          reviewType === "circle" && "rounded-full h-32 w-32"
-        )}
-      >
-        <span className="flex flex-col items-center justify-center">
-          <UploadIcon />
-          <span>Yüklemek için tıklayın</span>
-        </span>
-      </Button>
-    </div>
+    <Button
+      onClick={handleClick}
+      variant="ghost"
+      color="neutral"
+      className={cn(
+        "h-28 w-28 shrink-0 flex-col gap-1 border border-dashed border-mari-border bg-mari-surface-alt hover:border-mari-primary-border hover:text-mari-primary",
+        reviewType === "circle" ? "rounded-full" : "rounded-lg"
+      )}
+    >
+      <PlusIcon size={18} />
+      <span className="text-xs">Yükle</span>
+    </Button>
   );
 }

@@ -45,4 +45,30 @@ describe("Upload", () => {
     const { container } = renderUpload({ fileType: "png" });
     expect(container.querySelector('input[type="file"]')).toHaveAttribute("accept", ".png");
   });
+
+  it("yeni dosya önce uploading (ilerleme çubuklu) durumda başlar, sonra done'a geçer (Faz 13 — ant.design ile karşılaştırma, eskiden hep statikti)", async () => {
+    const user = userEvent.setup();
+    const { container } = renderUpload({ max: 5 });
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+
+    await user.upload(input, [makeFile("a.png")]);
+    expect(container.querySelector('[role="progressbar"]')).toBeInTheDocument();
+
+    await waitFor(
+      () => {
+        expect(container.querySelector('[role="progressbar"]')).not.toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
+  });
+
+  it("listType=\"review\" iken \"ekle\" karosu küçük resimlerle AYNI grid'de akar", async () => {
+    const user = userEvent.setup();
+    const { container } = renderUpload({ listType: "review", max: 5 });
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    await user.upload(input, [makeFile("a.png")]);
+
+    const grid = container.querySelector(".flex-wrap");
+    expect(grid?.children.length).toBe(2); // 1 dosya karosu + 1 "ekle" karosu
+  });
 });

@@ -13,9 +13,11 @@ const meta: Meta<typeof Upload> = {
         component: componentDoc({
           summary:
             "Dosya yükleme kontrolü. Buton (`inputType=\"button\"`), sürükle-bırak alanı (`\"dragDrop\"`) veya " +
-            "resim önizlemeli liste (`\"review\"`) modlarını destekler. Boyut/tip doğrulaması başarısız olursa " +
-            "(`fileSize`/`fileType`) `useToast()` ile bir bildirim gösterir — bu yüzden her story bir " +
-            "`ToastProvider` içine sarılı.",
+            "resim önizlemeli liste (`\"review\"`, ant.design'ın \"Pictures Wall\"ıyla birebir) modlarını destekler. " +
+            "Her dosya eklendiğinde önce `uploading` (ilerleme çubuklu), sonra `done` durumuna geçer — gerçek bir " +
+            "sunucu/`action` prop'u yok, bu geçiş simüle edilir (ant'ın kendi demo sayfalarının da yaptığı gibi). " +
+            "Boyut/tip doğrulaması başarısız olursa (`fileSize`/`fileType`) `useToast()` ile bir bildirim gösterir — " +
+            "bu yüzden her story bir `ToastProvider` içine sarılı.",
           whenToUse: ["Kullanıcının bir veya daha fazla dosya (belge, resim) yüklemesi gerektiğinde."],
           whenNotToUse: ["Tek bir metin/URL girişi yeterliyse — `Input`."],
           a11y:

@@ -8,7 +8,11 @@ export interface UploadListButtonProps {
 
 export function UploadListButton({ handleClick }: UploadListButtonProps) {
   return (
-    <Button onClick={handleClick} className="flex justify-between items-center" variant="outline" color="primary" icon={<UploadIcon size={16} />}>
+    // `self-start` — ant.design'ın butonu da içeriği kadar geniştir; flex-col
+    // ebeveynin `align-items: stretch` varsayılanı (Faz 13'te fark edildi)
+    // butonu tam genişliğe geriyor, ikon/metni köşelere itip garip
+    // görünmesine sebep oluyordu.
+    <Button onClick={handleClick} className="self-start" variant="outline" color="primary" icon={<UploadIcon size={16} />}>
       Yüklemek için tıklayın
     </Button>
   );

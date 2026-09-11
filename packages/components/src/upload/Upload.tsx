@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef } from "react";
-import { cn } from "@mari-ui/core";
-import type { UploadProps, ListType } from "./types";
+import type { UploadProps } from "./types";
 import { ReviewList } from "./_components/ReviewList";
 import { UploadList } from "./_components/List";
 import { UploadListButton } from "./_components/UploadListButton";
@@ -42,38 +41,31 @@ export function Upload({ inputType = "button", fileSize = 5 * 1024 * 1024, fileT
     event.target.value = "";
   };
 
-  const renderFilePreview = (fileItem: File, type: ListType) =>
-    type === "review" ? <ReviewList key={fileItem.name} fileItem={fileItem} reviewType={reviewType} handleDelete={deleteFile} /> : <UploadList key={fileItem.name} fileItem={fileItem} handleDelete={deleteFile} />;
-
-  const renderUploadButton = () => {
-    switch (inputType) {
-      case "button":
-        return <UploadListButton handleClick={handleClick} />;
-      case "dragDrop":
-        return <UploadDragDropButton addFiles={addFiles} handleClick={handleClick} />;
-      case "review":
-        return <UploadReviewButton handleClick={handleClick} reviewType={reviewType} />;
-    }
-  };
+  const isReview = listType === "review";
 
   return (
-    <div className={cn("flex gap-2", listType === "review" ? "flex-row" : "flex-col")}>
-      {renderUploadButton()}
+    <div className="flex flex-col gap-2">
+      {!isReview && (inputType === "dragDrop" ? <UploadDragDropButton addFiles={addFiles} handleClick={handleClick} /> : <UploadListButton handleClick={handleClick} />)}
       {/* Görsel açıdan hep gizli, programatik olarak `handleClick` ile tetiklenir
           — bu yüzden stillenmiş `Input`a değil, düz native `<input>`'a ihtiyacı var
           (`multiple`/`accept` gibi Input'un desteklemediği native attribute'lar gerekiyor). */}
-      <input
-        ref={fileInputRef}
-        className="hidden"
-        type="file"
-        multiple={max > 1}
-        accept={acceptAttr}
-        onChange={handleFileChange}
-      />
-      {listType === "review" ? (
-        <div className="grid grid-cols-5 gap-1 shrink-0">{fileList.map((file) => renderFilePreview(file, listType))}</div>
+      <input ref={fileInputRef} className="hidden" type="file" multiple={max > 1} accept={acceptAttr} onChange={handleFileChange} />
+      {isReview ? (
+        // ant.design'ın "Pictures Wall"ıyla birebir: "ekle" karosu küçük
+        // resimlerle AYNI grid'de akar (eskiden ayrı bir satırda,
+        // farklı boyutta duruyordu).
+        <div className="flex flex-wrap gap-2">
+          {fileList.map((item) => (
+            <ReviewList key={item.id} item={item} reviewType={reviewType} handleDelete={deleteFile} />
+          ))}
+          <UploadReviewButton handleClick={handleClick} reviewType={reviewType} />
+        </div>
       ) : (
-        <ul>{fileList.map((file) => renderFilePreview(file, listType))}</ul>
+        <ul className="flex flex-col">
+          {fileList.map((item) => (
+            <UploadList key={item.id} item={item} handleDelete={deleteFile} />
+          ))}
+        </ul>
       )}
     </div>
   );

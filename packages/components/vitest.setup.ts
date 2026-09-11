@@ -13,3 +13,16 @@ import { cleanup } from "@testing-library/react";
  * FAZLA eşleşme bulup patlamasıyla fiilen yakalandı.
  */
 afterEach(cleanup);
+
+/**
+ * jsdom `URL.createObjectURL`/`revokeObjectURL`i hiç implemente etmiyor —
+ * gerçek tarayıcıda çalışan `Upload`'ın resim önizlemesi (`ReviewList`)
+ * burada TypeError ile patlıyordu. Testler için minimal, deterministik bir
+ * sahte (gerçek bir Blob URL'i değil, sadece varlığı yeten bir işaretçi).
+ */
+if (typeof URL.createObjectURL !== "function") {
+  URL.createObjectURL = () => "blob:mock-object-url";
+}
+if (typeof URL.revokeObjectURL !== "function") {
+  URL.revokeObjectURL = () => {};
+}
