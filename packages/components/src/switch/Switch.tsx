@@ -4,7 +4,7 @@ import React, { useEffect, useId, useRef } from "react";
 import { Loader2Icon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import type { SwitchProps } from "./types";
-import { getBallClass, getTrackClass } from "./utils";
+import { getBallClass, getSpinnerSize, getTrackClass } from "./utils";
 
 export type { SwitchProps };
 
@@ -76,12 +76,12 @@ export function Switch({
             getBallClass(size, isChecked)
           )}
         >
-          {loading && <Loader2Icon className="animate-spin text-black" />}
+          {loading && <Loader2Icon size={getSpinnerSize(size)} className="animate-spin text-black" />}
         </span>
-        <span className={cn("inline-block absolute transform transition-all duration-300", isChecked ? "top-1 left-1" : "top-1 -left-20")}>
+        <span className={cn("inline-block absolute text-xs leading-none transform transition-all duration-300", isChecked ? "top-1.5 left-1" : "top-1.5 -left-20")}>
           {switchTrueLabel}
         </span>
-        <span className={cn("inline-block absolute transform transition-all duration-300", !isChecked ? "top-1 right-1" : "top-1 -right-20")}>
+        <span className={cn("inline-block absolute text-xs leading-none transform transition-all duration-300", !isChecked ? "top-1.5 right-1" : "top-1.5 -right-20")}>
           {switchFalseLabel}
         </span>
       </button>

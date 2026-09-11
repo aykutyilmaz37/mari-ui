@@ -5,7 +5,7 @@ import { cn, useControllableState } from "@mari-ui/core";
 import { Input } from "../input";
 import { Tooltip } from "../tooltip";
 import type { SliderProps, SliderValue } from "./types";
-import { getSizeClasses } from "./utils";
+import { getSizeClasses, TRACK_HEIGHT, THUMB_SIZE } from "./utils";
 
 export type { SliderProps };
 
@@ -15,6 +15,15 @@ export type { SliderProps };
  * Ayrıca `Tooltip`e `disabled={tooltipVisible}` geçiriliyordu: `tooltipVisible`
  * true iken tooltip'i GİZLEMEK gibi TERS bir mantıktı (isimle davranış
  * uyuşmuyordu). `tooltipVisible === false` olarak düzeltildi.
+ *
+ * Faz 13 (kullanıcı geri bildirimi): eskiden görünen track/thumb doğrudan
+ * native `<input type="range">`ın kendisiydi — tarayıcının varsayılan
+ * çizimiydi, `size` sadece kapsayıcının UZUNLUĞUNU değiştiriyordu, kalınlık/
+ * thumb çapı her zaman aynı kalıyordu ("hepsi aynı boyutta" görünümü).
+ * Artık track/thumb kendi çizdiğimiz (token renkli, `size`'a göre ölçeklenen)
+ * `<div>`ler — native `<input>` GÖRÜNMEZ ama tam boyutlu ve en üstte kalıyor,
+ * tüm klavye/fare/dokunma etkileşimini o karşılıyor (erişilebilirlik native
+ * range'in kendisinden gelir, sadece görünümü özelleştirdik).
  */
 export function Slider({
   value,
@@ -33,52 +42,81 @@ export function Slider({
   "aria-label": ariaLabel,
 }: SliderProps) {
   const [internalValue, setInternalValue] = useControllableState<SliderValue>({ value, defaultValue, onChange });
+  // Not: `SliderValue` bir aralık (`[number, number]`) da kabul eder ama
+  // gerçek render mantığı hep tekil bir sayı varsaymıştı (bkz. plan denetimi
+  // — bu Faz 13'ün kapsamı dışında, önceden var olan bir eksiklik). Burada
+  // aynı varsayımı koruyoruz.
+  const numericValue = typeof internalValue === "number" ? internalValue : internalValue[0];
+  const percent = ((numericValue - min) / (max - min)) * 100;
 
   const sizeClass = getSizeClasses(size, vertical);
+  const trackHeight = TRACK_HEIGHT[size];
+  const thumbSize = THUMB_SIZE[size];
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       <div className={cn("relative w-full", vertical && "transform -rotate-90", sizeClass)}>
         <Tooltip
-          content={<div className={cn(vertical && "transform rotate-90")}>{internalValue}</div>}
+          content={<div className={cn(vertical && "transform rotate-90")}>{numericValue}</div>}
           disabled={tooltipVisible === false}
           alwaysVisible={tooltipAlwaysVisible}
           placement={iconPosition === "top" ? "bottom" : "top"}
           color="neutral"
           className="absolute"
-          style={{ left: `${internalValue}%` }}
+          style={{ left: `${percent}%` }}
+          // `Tooltip` trigger'ı `inline-block` bir <span>'e sarar (içeriğe göre
+          // BÜZÜLÜR) — track/thumb'ın `w-full`ü buna göre %0'a çözülüyordu
+          // (eski native-range sürümünde de AYNI kök nedenden dolayı track hep
+          // tarayıcının sabit varsayılan genişliğindeydi, `size` hiç etkilemiyordu).
+          // `block w-full` ile trigger'ı kapsayıcının tam genişliğine geriyoruz.
+          triggerClassName="block w-full"
           trigger={
-            <Input
-              // `accent-*` — native `<input type="range">`'in track/thumb rengini
-              // tema token'ından alması için (özel bir track/thumb markup'ı
-              // gerekmez, tarayıcı kendi native kontrolünü boyar).
-              className="p-0 accent-mari-primary-solid"
-              type="range"
-              variant="ghost"
-              min={min}
-              max={max}
-              disabled={disabled}
-              value={String(internalValue)}
-              onChange={(e) => setInternalValue(Number(e.target.value))}
-              aria-label={ariaLabel}
-            />
+            <div className={cn("relative flex items-center", disabled && "opacity-50")} style={{ height: thumbSize }}>
+              {/* Görsel track — dolu (primary) + boş (nötr) kısım. Salt görsel, tıklama native input'a düşer. */}
+              <div className="absolute w-full rounded-full bg-mari-border pointer-events-none" style={{ height: trackHeight }}>
+                <div className="h-full rounded-full bg-mari-primary-solid" style={{ width: `${percent}%` }} />
+              </div>
+              {/* Native range — GÖRÜNMEZ ama tam boyutlu, tüm etkileşimi (klavye dahil) o taşır. */}
+              <input
+                type="range"
+                className="peer absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                min={min}
+                max={max}
+                disabled={disabled}
+                value={numericValue}
+                onChange={(e) => setInternalValue(Number(e.target.value))}
+                aria-label={ariaLabel}
+              />
+              {/* Görsel thumb — native input'un ÜSTÜNDE (DOM sırası sayesinde) ama
+                  `pointer-events-none` olduğu için tıklamayı yine input alır. */}
+              <div
+                className={cn(
+                  "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-mari-primary-solid border-2 border-mari-surface shadow pointer-events-none transition-shadow",
+                  "peer-focus-visible:ring-2 peer-focus-visible:ring-mari-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-mari-surface"
+                )}
+                style={{ left: `${percent}%`, width: thumbSize, height: thumbSize }}
+              />
+            </div>
           }
         />
         <div className="relative">
-          {iconList.map((item, i) => (
-            <div
-              key={i}
-              className={cn(
-                "absolute transform",
-                iconPosition === "bottom" && "top-0 -translate-x-1/2",
-                iconPosition === "top" && "bottom-6 -translate-x-1/2",
-                internalValue === item.value ? "opacity-100" : "opacity-50"
-              )}
-              style={{ left: `${((item.value - min) / (max - min)) * 96}%` }}
-            >
-              {item.icon}
-            </div>
-          ))}
+          {iconList.map((item, i) => {
+            const itemPercent = ((item.value - min) / (max - min)) * 100;
+            return (
+              <div
+                key={i}
+                className={cn(
+                  "absolute transform -translate-x-1/2",
+                  iconPosition === "bottom" && "top-1",
+                  iconPosition === "top" && "-top-6",
+                  numericValue >= item.value ? "opacity-100 text-mari-primary" : "opacity-50 text-mari-muted"
+                )}
+                style={{ left: `${itemPercent}%` }}
+              >
+                {item.icon}
+              </div>
+            );
+          })}
         </div>
       </div>
       {showInput && (
@@ -90,7 +128,7 @@ export function Slider({
           type="number"
           size="sm"
           className="w-14"
-          value={String(internalValue)}
+          value={String(numericValue)}
           disabled={disabled}
           min={min}
           max={max}

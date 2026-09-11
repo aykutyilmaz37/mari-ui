@@ -22,3 +22,23 @@ const VERTICAL_WIDTH_CLASS: Record<Size, string> = {
 export function getSizeClasses(size: Size, vertical: boolean | undefined): string {
   return vertical ? VERTICAL_WIDTH_CLASS[size] : HORIZONTAL_WIDTH_CLASS[size];
 }
+
+/**
+ * Kullanıcı geri bildirimi (Faz 13): `size` eskiden yalnızca kapsayıcının
+ * UZUNLUĞUNU değiştiriyordu — track/thumb'ın kendisi (native `<input
+ * type="range">`, tarayıcı varsayılanı) her boyutta AYNI kalınlıktaydı,
+ * yan yana konunca "hepsi aynı boyutta" görünüyordu. Artık track kalınlığı
+ * ve thumb çapı da `size`'a göre değişiyor (ant.design'ın rail/handle
+ * oranlarına yakın: sm≈4px/12px, md≈6px/16px, lg≈8px/20px).
+ */
+export const TRACK_HEIGHT: Record<Size, string> = {
+  sm: "0.25rem",
+  md: "0.375rem",
+  lg: "0.5rem",
+};
+
+export const THUMB_SIZE: Record<Size, string> = {
+  sm: "0.75rem",
+  md: "1rem",
+  lg: "1.25rem",
+};
