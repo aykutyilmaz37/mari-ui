@@ -43,6 +43,8 @@ export function Switch({
     buttonRef.current?.blur();
   }, [isChecked]);
 
+  const hasLabel = Boolean(switchTrueLabel || switchFalseLabel);
+
   return (
     <div className="flex items-center w-full gap-2">
       {label && (
@@ -65,7 +67,7 @@ export function Switch({
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
           (disabled || loading) && "opacity-50 cursor-not-allowed",
           !isChecked && !disabled && "opacity-70",
-          getTrackClass(size, color, isChecked),
+          getTrackClass(size, color, isChecked, hasLabel),
           className
         )}
       >

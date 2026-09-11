@@ -1,26 +1,25 @@
 import type { Size } from "@mari-ui/core";
 
 /**
- * Eskiden `w-lg`/`w-md`/`w-sm`/`w-xs` kullanılıyordu — bunlar Tailwind'in
- * `w-*` (width) skalasında GERÇEKTEN VAR OLMAYAN class'lardı (bu isimler
- * sadece `max-w-*` skalasında gerçek). Sessizce hiçbir genişlik
- * uygulanmıyordu — bu repodaki bir başka "sessizce bozuk" örnek. Gerçek
- * Tailwind width utility'leriyle düzeltildi.
+ * Uzunluk artık `rem` STRING olarak tutuluyor (Tailwind `w-*` class'ı değil)
+ * — hem yatay hem dikey modda aynı değer JS tarafında da (dikey modda
+ * kapsayıcı kutunun boyutlarını ayırmak için) gerekiyor; class + inline
+ * style'ı ayrı ayrı senkron tutmak yerine tek kaynak.
  */
-const HORIZONTAL_WIDTH_CLASS: Record<Size, string> = {
-  sm: "w-40",
-  md: "w-64",
-  lg: "w-96",
+const HORIZONTAL_LENGTH: Record<Size, string> = {
+  sm: "10rem", // w-40
+  md: "16rem", // w-64
+  lg: "24rem", // w-96
 };
 
-const VERTICAL_WIDTH_CLASS: Record<Size, string> = {
-  sm: "w-40",
-  md: "w-56",
-  lg: "w-64",
+const VERTICAL_LENGTH: Record<Size, string> = {
+  sm: "10rem", // w-40
+  md: "14rem", // w-56
+  lg: "16rem", // w-64
 };
 
-export function getSizeClasses(size: Size, vertical: boolean | undefined): string {
-  return vertical ? VERTICAL_WIDTH_CLASS[size] : HORIZONTAL_WIDTH_CLASS[size];
+export function getLength(size: Size, vertical: boolean | undefined): string {
+  return vertical ? VERTICAL_LENGTH[size] : HORIZONTAL_LENGTH[size];
 }
 
 /**

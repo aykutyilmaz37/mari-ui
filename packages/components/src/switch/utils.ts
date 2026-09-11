@@ -14,14 +14,27 @@ const TRACK_SIZE_CLASS: Record<Size, string> = {
   lg: "h-7 w-14",
 };
 
-// Thumb çapı = track yüksekliği - 4px (üstte/altta 2px pay). Ant'ın oranı.
+/**
+ * `switchTrueLabel`/`switchFalseLabel` verildiğinde (ant'ın "Text & icon"
+ * örneğindeki gibi) normal track bu metne yer açamıyordu — "Kapalı" gibi
+ * bir etiket track'in DIŞINA taşıp kesiliyordu (Faz 13 kullanıcı geri
+ * bildirimi). Etiketli kullanım için daha geniş, ayrı bir preset.
+ */
+const TRACK_SIZE_WITH_LABEL_CLASS: Record<Size, string> = {
+  sm: "h-4 w-14",
+  md: "h-[1.375rem] w-20",
+  lg: "h-7 w-28",
+};
+
 const BALL_SIZE_CLASS: Record<Size, string> = {
   sm: "h-3 w-3 top-0.5",
   md: "h-[1.125rem] w-[1.125rem] top-0.5", // 18px
   lg: "h-6 w-6 top-0.5",
 };
 
-// Kayan topun "açık" konumdaki sol boşluğu — track genişliği - top genişliği - 2px kenar payı.
+// Kayan topun "açık" konumdaki sol boşluğu — `calc(100% - ...)` kullanıldığı
+// için gerçek (dar veya geniş) track genişliğine göre KENDİLİĞİNDEN uyarlanır,
+// track genişliği elle iki kez senkron tutulmaz.
 const BALL_LEFT_ON_CLASS: Record<Size, string> = {
   sm: "left-[calc(100%-1.125rem)]",
   md: "left-[calc(100%-1.5rem)]",
@@ -36,8 +49,8 @@ export function getSpinnerSize(size: Size): number {
   return SPINNER_SIZE[size];
 }
 
-export function getTrackClass(size: Size, color: ColorRole, checked: boolean): string {
-  return cn(TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-border");
+export function getTrackClass(size: Size, color: ColorRole, checked: boolean, hasLabel: boolean): string {
+  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-border");
 }
 
 export function getBallClass(size: Size, checked: boolean): string {

@@ -36,6 +36,16 @@ const meta: Meta<typeof Slider> = {
     tooltipAlwaysVisible: { control: "boolean", description: "Tooltip'i hover beklemeden her zaman gösterir." },
     onChange: { action: "onChange" },
   },
+  // Tooltip varsayılan olarak track'in ÜSTÜNDE açılır (`position: absolute`,
+  // normal akışa yükseklik katmaz) — kanvasın hemen üst kenarında yeterli
+  // boşluk olmayınca araç çubuğuna çarpıp kesiliyordu. Üstte pay bırakıyoruz.
+  decorators: [
+    (Story) => (
+      <div className="pt-10">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -62,7 +72,7 @@ export const Sizes: Story = {
 };
 
 export const VolumeControl: Story = {
-  name: "Ses Düzeyi (gerçek örnek)",
+  name: "Ses Düzeyi",
   ...storyDoc(
     "`iconList` ile 0/50/100 noktalarına anlamlı ikonlar yerleştirilir; geçilen noktalar (`value >= item.value`) " +
       "vurgulanır, ilerideki noktalar soluk kalır."
@@ -79,7 +89,7 @@ export const VolumeControl: Story = {
 };
 
 export const Vertical: Story = {
-  name: "Dikey (gerçek örnek: parlaklık)",
+  name: "Dikey",
   ...storyDoc("`vertical` — yukarı/aşağı sürüklenir. Ekran parlaklığı gibi dikey bir kontrolü örnekler."),
   args: {
     defaultValue: 40,
@@ -92,7 +102,6 @@ export const Vertical: Story = {
       { icon: <Volume size={16} />, value: 50 },
       { icon: <Volume2 size={16} />, value: 100 },
     ],
-    showInput: true,
   },
 };
 

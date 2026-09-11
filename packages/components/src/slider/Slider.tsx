@@ -5,7 +5,7 @@ import { cn, useControllableState } from "@mari-ui/core";
 import { Input } from "../input";
 import { Tooltip } from "../tooltip";
 import type { SliderProps, SliderValue } from "./types";
-import { getSizeClasses, TRACK_HEIGHT, THUMB_SIZE } from "./utils";
+import { getLength, TRACK_HEIGHT, THUMB_SIZE } from "./utils";
 
 export type { SliderProps };
 
@@ -24,6 +24,16 @@ export type { SliderProps };
  * `<div>`ler — native `<input>` GÖRÜNMEZ ama tam boyutlu ve en üstte kalıyor,
  * tüm klavye/fare/dokunma etkileşimini o karşılıyor (erişilebilirlik native
  * range'in kendisinden gelir, sadece görünümü özelleştirdik).
+ *
+ * Dikey mod, yatay içeriği `-rotate-90` ile döndürerek elde edilir (native
+ * range input'u cross-browser dikeyleştirmenin standart yolu). Eskiden bu
+ * transform DOĞRUDAN normal akıştaki elemana uygulanıyordu — CSS transform
+ * LAYOUT'U etkilemez, yalnızca ÇİZİMİ, bu yüzden ebeveyn hâlâ elemanı
+ * (kısa/geniş) YATAY kutusuna göre hizalıyordu ve döndürülmüş (uzun/dar)
+ * görsel kutu, kendi merkezi etrafında döndüğü için üst kenarın DIŞINA
+ * taşıyordu. Artık dış kutu döndürülmüş görselin GERÇEK boyutlarını
+ * (`thumbSize` × `length`) rezerve ediyor, iç eleman bu kutunun ortasında
+ * mutlak konumlanıp döndürülüyor — çevresindeki içeriğe taşmaz.
  */
 export function Slider({
   value,
@@ -49,56 +59,56 @@ export function Slider({
   const numericValue = typeof internalValue === "number" ? internalValue : internalValue[0];
   const percent = ((numericValue - min) / (max - min)) * 100;
 
-  const sizeClass = getSizeClasses(size, vertical);
+  const length = getLength(size, vertical);
   const trackHeight = TRACK_HEIGHT[size];
   const thumbSize = THUMB_SIZE[size];
 
-  return (
-    <div className="flex items-center gap-3">
-      <div className={cn("relative w-full", vertical && "transform -rotate-90", sizeClass)}>
-        <Tooltip
-          content={<div className={cn(vertical && "transform rotate-90")}>{numericValue}</div>}
-          disabled={tooltipVisible === false}
-          alwaysVisible={tooltipAlwaysVisible}
-          placement={iconPosition === "top" ? "bottom" : "top"}
-          color="neutral"
-          className="absolute"
-          style={{ left: `${percent}%` }}
-          // `Tooltip` trigger'ı `inline-block` bir <span>'e sarar (içeriğe göre
-          // BÜZÜLÜR) — track/thumb'ın `w-full`ü buna göre %0'a çözülüyordu
-          // (eski native-range sürümünde de AYNI kök nedenden dolayı track hep
-          // tarayıcının sabit varsayılan genişliğindeydi, `size` hiç etkilemiyordu).
-          // `block w-full` ile trigger'ı kapsayıcının tam genişliğine geriyoruz.
-          triggerClassName="block w-full"
-          trigger={
-            <div className={cn("relative flex items-center", disabled && "opacity-50")} style={{ height: thumbSize }}>
-              {/* Görsel track — dolu (primary) + boş (nötr) kısım. Salt görsel, tıklama native input'a düşer. */}
-              <div className="absolute w-full rounded-full bg-mari-border pointer-events-none" style={{ height: trackHeight }}>
-                <div className="h-full rounded-full bg-mari-primary-solid" style={{ width: `${percent}%` }} />
-              </div>
-              {/* Native range — GÖRÜNMEZ ama tam boyutlu, tüm etkileşimi (klavye dahil) o taşır. */}
-              <input
-                type="range"
-                className="peer absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                min={min}
-                max={max}
-                disabled={disabled}
-                value={numericValue}
-                onChange={(e) => setInternalValue(Number(e.target.value))}
-                aria-label={ariaLabel}
-              />
-              {/* Görsel thumb — native input'un ÜSTÜNDE (DOM sırası sayesinde) ama
-                  `pointer-events-none` olduğu için tıklamayı yine input alır. */}
-              <div
-                className={cn(
-                  "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-mari-primary-solid border-2 border-mari-surface shadow pointer-events-none transition-shadow",
-                  "peer-focus-visible:ring-2 peer-focus-visible:ring-mari-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-mari-surface"
-                )}
-                style={{ left: `${percent}%`, width: thumbSize, height: thumbSize }}
-              />
+  const trackAndMarkers = (
+    <>
+      <Tooltip
+        content={<div className={cn(vertical && "transform rotate-90")}>{numericValue}</div>}
+        disabled={tooltipVisible === false}
+        alwaysVisible={tooltipAlwaysVisible}
+        placement={iconPosition === "top" ? "bottom" : "top"}
+        color="neutral"
+        className="absolute"
+        style={{ left: `${percent}%` }}
+        // `Tooltip` trigger'ı `inline-block` bir <span>'e sarar (içeriğe göre
+        // BÜZÜLÜR) — track/thumb'ın `w-full`ü buna göre %0'a çözülüyordu
+        // (eski native-range sürümünde de AYNI kök nedenden dolayı track hep
+        // tarayıcının sabit varsayılan genişliğindeydi, `size` hiç etkilemiyordu).
+        // `block w-full` ile trigger'ı kapsayıcının tam genişliğine geriyoruz.
+        triggerClassName="block w-full"
+        trigger={
+          <div className={cn("relative flex items-center", disabled && "opacity-50")} style={{ height: thumbSize }}>
+            {/* Görsel track — dolu (primary) + boş (nötr) kısım. Salt görsel, tıklama native input'a düşer. */}
+            <div className="absolute w-full rounded-full bg-mari-border pointer-events-none" style={{ height: trackHeight }}>
+              <div className="h-full rounded-full bg-mari-primary-solid" style={{ width: `${percent}%` }} />
             </div>
-          }
-        />
+            {/* Native range — GÖRÜNMEZ ama tam boyutlu, tüm etkileşimi (klavye dahil) o taşır. */}
+            <input
+              type="range"
+              className="peer absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              min={min}
+              max={max}
+              disabled={disabled}
+              value={numericValue}
+              onChange={(e) => setInternalValue(Number(e.target.value))}
+              aria-label={ariaLabel}
+            />
+            {/* Görsel thumb — native input'un ÜSTÜNDE (DOM sırası sayesinde) ama
+                `pointer-events-none` olduğu için tıklamayı yine input alır. */}
+            <div
+              className={cn(
+                "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-mari-primary-solid border-2 border-mari-surface shadow pointer-events-none transition-shadow",
+                "peer-focus-visible:ring-2 peer-focus-visible:ring-mari-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-mari-surface"
+              )}
+              style={{ left: `${percent}%`, width: thumbSize, height: thumbSize }}
+            />
+          </div>
+        }
+      />
+      {iconList.length > 0 && (
         <div className="relative">
           {iconList.map((item, i) => {
             const itemPercent = ((item.value - min) / (max - min)) * 100;
@@ -107,6 +117,7 @@ export function Slider({
                 key={i}
                 className={cn(
                   "absolute transform -translate-x-1/2",
+                  vertical && "rotate-90",
                   iconPosition === "bottom" && "top-1",
                   iconPosition === "top" && "-top-6",
                   numericValue >= item.value ? "opacity-100 text-mari-primary" : "opacity-50 text-mari-muted"
@@ -118,7 +129,28 @@ export function Slider({
             );
           })}
         </div>
-      </div>
+      )}
+    </>
+  );
+
+  return (
+    <div className="flex items-center gap-3">
+      {vertical ? (
+        // Dış kutu döndürülmüş görselin GERÇEK (dikey) alanını rezerve eder;
+        // iç kutu bu alanın ortasında döner — çevreye taşmaz (bkz. üstteki not).
+        <div className="relative shrink-0" style={{ width: thumbSize, height: length }}>
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90"
+            style={{ width: length, height: thumbSize }}
+          >
+            {trackAndMarkers}
+          </div>
+        </div>
+      ) : (
+        <div className="relative" style={{ width: length }}>
+          {trackAndMarkers}
+        </div>
+      )}
       {showInput && (
         // Not: `className`'e elle "border rounded p-1 text-sm" EKLEMİYORUZ —
         // Input zaten kendi `size`/`variant`'ından bunları üretiyor; üstüne
