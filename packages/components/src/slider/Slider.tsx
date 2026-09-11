@@ -118,8 +118,13 @@ export function Slider({
                 className={cn(
                   "absolute transform -translate-x-1/2",
                   vertical && "rotate-90",
-                  iconPosition === "bottom" && "top-1",
-                  iconPosition === "top" && "-top-6",
+                  // Kullanıcı geri bildirimi: ikonlar track'e "yapışık" duruyordu —
+                  // bu `<div>` sıfır yükseklikli (mutlak konumlu çocuklar kendi
+                  // yüksekliğine katkı yapmaz), bir önceki (track'i taşıyan)
+                  // kardeşin HEMEN altında başlıyor; küçük bir ofset gerçek bir
+                  // boşluk gibi görünmüyordu. Belirgin bir boşluk için büyütüldü.
+                  iconPosition === "bottom" && "top-3",
+                  iconPosition === "top" && "-top-7",
                   numericValue >= item.value ? "opacity-100 text-mari-primary" : "opacity-50 text-mari-muted"
                 )}
                 style={{ left: `${itemPercent}%` }}

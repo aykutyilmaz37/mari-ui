@@ -3,6 +3,7 @@
 import React, { useEffect, useId, useRef } from "react";
 import { Loader2Icon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
+import { textClass, textSolidContrastClass } from "../lib/colorClasses";
 import type { SwitchProps } from "./types";
 import { getBallClass, getSpinnerSize, getTrackClass } from "./utils";
 
@@ -73,17 +74,39 @@ export function Switch({
       >
         <span
           className={cn(
-            "inline-block rounded-full absolute bg-white transform transition-all duration-300",
+            // `shadow` — ant.design'ın topu da düz bir daire değil, hafif bir
+            // gölgeyle (0 2px 4px) track'ten AYRIŞIR; eskiden gölgesiz düz
+            // bir beyaz daireydi, track'e "yapışık" görünüyordu.
+            "inline-block rounded-full absolute bg-white shadow transform transition-all duration-300 flex items-center justify-center",
             isChecked ? "group-focus:scale-x-[1.166] group-focus:origin-right" : "group-focus:scale-x-[1.166] group-focus:origin-left",
             getBallClass(size, isChecked)
           )}
         >
-          {loading && <Loader2Icon size={getSpinnerSize(size)} className="animate-spin text-black" />}
+          {loading && (
+            <Loader2Icon
+              size={getSpinnerSize(size)}
+              // Spinner rengi track'in rengini yansıtır (ant.design'ın deseni) —
+              // eskiden sabit `text-black`ti, hangi renk/durumda olursa olsun
+              // aynı görünüyordu.
+              className={cn("animate-spin", isChecked ? textClass[color] : "text-mari-muted")}
+            />
+          )}
         </span>
-        <span className={cn("inline-block absolute text-xs leading-none transform transition-all duration-300", isChecked ? "top-1.5 left-1" : "top-1.5 -left-20")}>
+        <span
+          className={cn(
+            "inline-block absolute text-xs leading-none whitespace-nowrap transform transition-all duration-300",
+            textSolidContrastClass[color],
+            isChecked ? "top-1.5 left-1" : "top-1.5 -left-20"
+          )}
+        >
           {switchTrueLabel}
         </span>
-        <span className={cn("inline-block absolute text-xs leading-none transform transition-all duration-300", !isChecked ? "top-1.5 right-1" : "top-1.5 -right-20")}>
+        <span
+          className={cn(
+            "inline-block absolute text-xs leading-none whitespace-nowrap transform transition-all duration-300 text-mari-foreground",
+            !isChecked ? "top-1.5 right-1" : "top-1.5 -right-20"
+          )}
+        >
           {switchFalseLabel}
         </span>
       </button>
