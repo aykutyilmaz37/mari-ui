@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { EyeIcon, EyeOffIcon, PhoneIcon, Search, XIcon } from "lucide-react";
 import { useState } from "react";
 import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Input } from "./index";
 import type { InputProps } from "./index";
 
@@ -12,11 +13,24 @@ const meta: Meta<typeof Input> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Tek satırlık metin girişi. Maske (`mask`), karakter sayacı (`showCount`), temizleme butonu " +
-          "(`allowClear`) ve şifre görünürlük toggle'ı destekler. `useControllableState` ile hem controlled hem " +
-          "uncontrolled kullanılabilir. `error`/`warning` doğrulama durumu `color` prop'unun kendisidir (eski " +
-          "`status` prop'u hâlâ çalışır ama deprecated).",
+        component: componentDoc({
+          summary:
+            "Tek satırlık metin girişi. Maske (`mask`), karakter sayacı (`showCount`), temizleme butonu " +
+            "(`allowClear`) ve şifre görünürlük toggle'ı destekler. `useControllableState` ile hem controlled hem " +
+            "uncontrolled kullanılabilir.",
+          whenToUse: [
+            "Bir formda tek satırlık serbest metin, sayı, telefon (`mask`) veya şifre girişi için.",
+            "Doğrulama durumunu görsel olarak göstermek için — `color=\"error\"`/`\"warning\"` (eski `status` prop'u hâlâ çalışır, deprecated).",
+          ],
+          whenNotToUse: [
+            "Çok satırlı metin için — `Textarea`.",
+            "Sabit uzunlukta kod/OTP girişi için — `OtpInput`.",
+            "Bir listeden filtreli seçim için — `AutoComplete`.",
+          ],
+          a11y:
+            "`aria-label`/`aria-labelledby`/`name`/`required` dahil native attribute'ları geçirir. `color=\"error\"` " +
+            "iken (`aria-invalid` verilmediyse) otomatik `aria-invalid=\"true\"` eklenir.",
+        }),
       },
     },
   },
@@ -41,6 +55,7 @@ const meta: Meta<typeof Input> = {
 export default meta;
 
 export const Playground: StoryObj<InputProps & { enableMask: boolean }> = {
+  ...storyDoc("Tüm props'ları canlı deneyin — maske, şifre toggle'ı ve sayaç bir arada."),
   render: (args) => {
     const { enableMask, mask, replacement, visibilityToggle, type, ...rest } = args as InputProps & { enableMask?: boolean };
     // İç içe ternary yerine ayrık if (Faz 8, SonarJS `no-nested-conditional`).
@@ -71,6 +86,7 @@ export const Playground: StoryObj<InputProps & { enableMask: boolean }> = {
 
 export const AllVariants: StoryObj = {
   name: "Tüm Varyant × Boyut",
+  ...storyDoc("4 kenarlık/arka plan stili (`outline`/`soft`/`ghost`/`underlined`) × 3 boyut."),
   render: () => {
     const variants = ["outline", "soft", "ghost", "underlined"] as const;
     const sizes = ["lg", "md", "sm"] as const;
@@ -94,6 +110,7 @@ export const AllVariants: StoryObj = {
 
 export const ErrorStatus: StoryObj<InputProps> = {
   name: "Hata Durumu",
+  ...storyDoc("`color=\"error\"` — kenarlık kırmızıya döner ve alana otomatik `aria-invalid=\"true\"` eklenir."),
   args: {
     placeholder: "Hata durumu...",
     color: "error",
@@ -104,6 +121,7 @@ export const ErrorStatus: StoryObj<InputProps> = {
 
 export const WarningStatus: StoryObj<InputProps> = {
   name: "Uyarı Durumu",
+  ...storyDoc("`color=\"warning\"` — engelleyici olmayan, dikkat çeken bir doğrulama uyarısı için."),
   args: {
     placeholder: "Uyarı durumu...",
     color: "warning",
@@ -114,6 +132,7 @@ export const WarningStatus: StoryObj<InputProps> = {
 
 export const PressEnterAction: StoryObj<InputProps> = {
   name: "Enter ile Tetikleme",
+  ...storyDoc("`onPressEnter` — arama/gönderme gibi Enter'a bağlı eylemler için."),
   args: {
     placeholder: "Tetiklemek için Enter'a basın",
     onPressEnter: () => alert("Enter'a basıldı!"),
@@ -122,6 +141,7 @@ export const PressEnterAction: StoryObj<InputProps> = {
 
 export const CustomCountFormatter: StoryObj<InputProps> = {
   name: "Özel Karakter Sayacı",
+  ...storyDoc("`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir."),
   args: {
     placeholder: "Özel sayaç formatı",
     maxLength: 50,
@@ -145,11 +165,13 @@ const ControlledInputExample = () => {
 
 export const ControlledAndDefault: StoryObj = {
   name: "Controlled Örneği",
+  ...storyDoc("`value`+`onChange` ile tamamen dışarıdan yönetilir; güncel değer ayrıca ekranda gösterilir."),
   render: () => <ControlledInputExample />,
 };
 
 export const MaskedInput: StoryObj<InputProps> = {
   name: "Maskeli",
+  ...storyDoc("`mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası)."),
   args: {
     placeholder: "0(5__) ___ __ __",
     mask: "0(5__) ___ __ __",

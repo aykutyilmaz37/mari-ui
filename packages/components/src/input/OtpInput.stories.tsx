@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { OtpInput } from "./OtpInput";
 
 type Story = StoryObj<typeof OtpInput>;
@@ -12,9 +13,14 @@ const meta: Meta<typeof OtpInput> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Tek karakterlik kutucuklar dizisi olarak render edilen doğrulama kodu (OTP/SMS kodu) girişi. Ok " +
-          "tuşlarıyla gezinme ve yapıştırma (birden fazla karakter otomatik dağıtılır) desteklenir.",
+        component: componentDoc({
+          summary:
+            "Tek karakterlik kutucuklar dizisi olarak render edilen doğrulama kodu (OTP/SMS kodu) girişi. Ok " +
+            "tuşlarıyla gezinme ve yapıştırma (birden fazla karakter otomatik dağıtılır) desteklenir.",
+          whenToUse: ["SMS/e-posta ile gönderilen sabit uzunluklu doğrulama kodu girişi için."],
+          whenNotToUse: ["Serbest uzunlukta bir kod/parola için — `Input`."],
+          a11y: "Her kutucuk bağımsız bir `Input`tır; Ok tuşları ve Backspace kutucuklar arası gezinmeyi klavyeyle sağlar.",
+        }),
       },
     },
   },
@@ -34,6 +40,7 @@ const meta: Meta<typeof OtpInput> = {
 export default meta;
 
 export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
     length: 6,
     mask: false,
@@ -45,6 +52,7 @@ export const Playground: Story = {
 
 export const Masked: Story = {
   name: "Gizli (Maskeli)",
+  ...storyDoc("`mask` — girilen karakterleri `•` ile gizler (şifre benzeri gizli kodlar için)."),
   args: {
     length: 4,
     mask: true,
@@ -55,6 +63,7 @@ export const Masked: Story = {
 
 export const WithSeparators: Story = {
   name: "Ayırıcılı",
+  ...storyDoc("`separator` — kutucuklar arasına sabit bir ayırıcı (örn. \"-\") koyar."),
   args: {
     length: 6,
     mask: false,
@@ -76,5 +85,6 @@ const ControlledExample = () => {
 
 export const Controlled: Story = {
   name: "Controlled Örneği",
+  ...storyDoc("`value`+`onChange` ile tamamen dışarıdan yönetilir."),
   render: () => <ControlledExample />,
 };

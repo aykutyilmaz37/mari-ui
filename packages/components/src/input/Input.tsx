@@ -44,11 +44,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       visibilityIconRender,
       max,
       min,
+      ...nativeProps
     },
     ref
   ) => {
     const resolvedVariant = resolveLegacyInputVariant(variant);
     const resolvedColor = resolveInputColor(color, status);
+    // `error` rengi aynı zamanda gerçek bir doğrulama durumudur — ekran
+    // okuyucuya da bildirilsin diye `aria-invalid` otomatik eklenir
+    // (tüketici zaten kendi `aria-invalid`'ini verdiyse o kazanır).
+    const ariaInvalid = nativeProps["aria-invalid"] ?? (resolvedColor === "error" || undefined);
     // `onChange` burada hook'a geçirilmiyor — tam ChangeEvent'i tüketiciye
     // iletmek için `handleChange` içinde ayrıca çağrılıyor.
     const [currentValue, setCurrentValue] = useControllableState<string>({ value, defaultValue });
@@ -114,6 +119,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onBlur={onBlur}
             onInput={onInput}
             className={inputClass}
+            {...nativeProps}
+            aria-invalid={ariaInvalid}
           />
         ) : (
           <input
@@ -132,6 +139,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={inputClass}
             max={max}
             min={min}
+            {...nativeProps}
+            aria-invalid={ariaInvalid}
           />
         )}
 

@@ -1,26 +1,21 @@
 import type React from "react";
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
 import { borderColorClass } from "../lib/colorClasses";
+import { sizeClass } from "../lib/sizeClasses";
 import type { InputShape, InputVariant } from "./types";
 
-const SIZE_CLASS: Record<Size, string> = {
-  sm: "text-xs px-2 py-1 h-6",
-  md: "text-sm px-3 py-1.5 h-8",
-  lg: "text-base px-4 py-2 h-10",
-};
-
-const TEXTAREA_SIZE_CLASS: Record<Size, string> = {
-  sm: "text-xs px-2 py-1",
-  md: "text-sm px-3 py-1.5",
-  lg: "text-base px-4 py-2",
-};
-
+/**
+ * Kendi `SIZE_CLASS`/`TEXTAREA_SIZE_CLASS` tabloları vardı — `lib.sizeClass`
+ * ile SAYISAL OLARAK zaten birebir aynıydı (yükseklik/padding/font). Faz 13
+ * gereği tek kaynağa bağlandı; rakip tablo silindi.
+ */
 export function getSizeClasses(size: Size): string {
-  return SIZE_CLASS[size];
+  return sizeClass[size];
 }
 
+/** Textarea çok satırlı olduğu için sabit `h-*` almaz — geri kalan (padding/font/gap/radius) aynı ölçekten. */
 export function getTextareaSizeClasses(size: Size): string {
-  return TEXTAREA_SIZE_CLASS[size];
+  return cn(sizeClass[size], "h-auto");
 }
 
 /** Eski "outlined"/"filled"/"borderless" değerlerini yeni eksene çevirir. */

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { SearchInput } from "./SearchInput";
 
 const meta: Meta<typeof SearchInput> = {
@@ -9,9 +10,13 @@ const meta: Meta<typeof SearchInput> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "`Input`ın üzerine bir arama butonu ekleyen ince sarmalayıcı. `onSearch`, arama butonuna tıklandığında " +
-          "VEYA Enter'a basıldığında çağrılır. `Input`ın tüm prop'larını (`{...rest}` ile) devralır.",
+        component: componentDoc({
+          summary:
+            "`Input`ın üzerine bir arama butonu ekleyen ince sarmalayıcı. `onSearch`, arama butonuna tıklandığında " +
+            "VEYA Enter'a basıldığında çağrılır. `Input`ın tüm prop'larını (`{...rest}` ile) devralır.",
+          whenToUse: ["Bağımsız bir arama kutusu için (site arama, tablo/liste filtresi)."],
+          whenNotToUse: ["Yazarken anlık filtreli öneri listesi gerekiyorsa — `AutoComplete`."],
+        }),
       },
     },
   },
@@ -34,6 +39,7 @@ export default meta;
 type Story = StoryObj<typeof SearchInput>;
 
 export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
     placeholder: "Ara...",
     allowClear: true,
@@ -47,6 +53,7 @@ export const Playground: Story = {
 
 export const WithSearch: Story = {
   name: "Arama Tetikleyicili",
+  ...storyDoc("`onSearch` — arama ikonuna tıklayınca veya Enter'a basınca güncel değerle çağrılır."),
   args: {
     placeholder: "Bir kelime yazıp aramaya tıklayın",
     onSearch: (value: string) => alert(`Aranıyor: ${value}`),

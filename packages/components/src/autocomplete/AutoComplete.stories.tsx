@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { AutoComplete } from "./AutoComplete";
 import { Option } from "./types";
 
@@ -10,11 +11,17 @@ const meta: Meta<typeof AutoComplete> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Yazdıkça filtrelenen bir seçenek listesi açan metin girişi. `onSearch` her tuş vuruşunda, `onSelect` " +
-          "bir seçenek tıklandığında çağrılır. **Not:** eskiden liste `opacity-0` ile gizlenirken hâlâ tıklanabilir " +
-          "kalıyordu ve seçeneğe tıklamak input'un `onBlur`'unu (listeyi kapatanı) tıklamadan önce tetikliyordu — " +
-          "ikisi de düzeltildi (`pointer-events-none` + seçenek üzerinde `onMouseDown` ile `preventDefault`).",
+        component: componentDoc({
+          summary:
+            "Yazdıkça filtrelenen bir seçenek listesi açan metin girişi. `onSearch` her tuş vuruşunda, `onSelect` " +
+            "bir seçenek tıklandığında çağrılır.",
+          whenToUse: ["Kullanıcının serbest yazabildiği ama önceden tanımlı bir listeden de seçebildiği durumlarda (isim, şehir, etiket)."],
+          whenNotToUse: ["Seçenekler SABİT ve serbest yazmaya gerek yoksa — `Dropdown`/`Select`."],
+          a11y:
+            "Tam bir ARIA \"combobox\" deseni: input `role=\"combobox\"` + `aria-expanded`/`aria-controls`/" +
+            "`aria-activedescendant`, liste `role=\"listbox\"`, seçenekler `role=\"option\"`. Klavye: **Ok Aşağı/Yukarı** " +
+            "vurgulu seçeneği taşır, **Enter** seçer, **Escape** listeyi kapatır.",
+        }),
       },
     },
   },
@@ -40,6 +47,7 @@ const sampleOptions: Option[] = [
 
 export const Playground: Story = {
   name: "Oynama Alanı",
+  ...storyDoc("Yazın ve Ok Aşağı/Yukarı + Enter ile de seçin — klavye ile fareyle aynı ölçüde kullanılabilir."),
   args: {
     options: sampleOptions,
     placeholder: "İsim yazın...",
@@ -64,5 +72,6 @@ const ControlledExample = () => {
 
 export const Controlled: Story = {
   name: "Controlled Örneği",
+  ...storyDoc("`value`+`onSearch`/`onSelect` ile tamamen dışarıdan yönetilir."),
   render: () => <ControlledExample />,
 };

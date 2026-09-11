@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Textarea } from "./index";
 import type { TextareaProps } from "./index";
 
@@ -11,10 +12,14 @@ const meta: Meta<typeof Textarea> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Çok satırlı metin girişi. `autoSize` ile içeriğe göre otomatik büyür (min/max satır sınırıyla). Kendi " +
-          "tam tip setini tanımlar — `Input`tan miras almaz (eskiden `Omit<InputProps,...>` ile türetiliyordu ama " +
-          "`onBlur`/`onFocus` tipleri `<textarea>` ile uyuşmuyordu, gerçek bir derleme hatasıydı).",
+        component: componentDoc({
+          summary:
+            "Çok satırlı metin girişi. `autoSize` ile içeriğe göre otomatik büyür (min/max satır sınırıyla). Kendi " +
+            "tam tip setini tanımlar — `Input`tan miras almaz.",
+          whenToUse: ["Yorum, açıklama, mesaj gibi birden fazla satır gerektiren serbest metin için."],
+          whenNotToUse: ["Tek satırlık girişler için — `Input`, gereksiz yükseklik kaplamaz."],
+          a11y: "`name`/`required`/`aria-label`/`aria-labelledby` desteklenir. `color=\"error\"` iken otomatik `aria-invalid=\"true\"` eklenir.",
+        }),
       },
     },
   },
@@ -34,6 +39,7 @@ const meta: Meta<typeof Textarea> = {
 export default meta;
 
 export const Playground: StoryObj<TextareaProps> = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
     placeholder: "Mesajınızı yazın...",
     allowClear: true,
@@ -48,6 +54,7 @@ export const Playground: StoryObj<TextareaProps> = {
 
 export const AllVariants: StoryObj = {
   name: "Tüm Varyant × Boyut",
+  ...storyDoc("4 kenarlık/arka plan stili × 3 boyut. Yükseklik `autoSize` ile içeriğe göre büyür, sabit değil."),
   render: () => {
     const variants = ["outline", "soft", "ghost", "underlined"] as const;
     const sizes = ["lg", "md", "sm"] as const;
@@ -71,6 +78,7 @@ export const AllVariants: StoryObj = {
 
 export const AutoSizeObject: StoryObj<TextareaProps> = {
   name: "Min/Max Satır Sınırlı",
+  ...storyDoc("`autoSize={{ minRows, maxRows }}` — belirli bir aralıkta büyür, sonra kayar."),
   args: {
     placeholder: "minRows ve maxRows'lu textarea",
     autoSize: { minRows: 2, maxRows: 6 },
@@ -92,5 +100,6 @@ const ControlledTextareaExample = () => {
 
 export const ControlledAndDefault: StoryObj = {
   name: "Controlled Örneği",
+  ...storyDoc("`value`+`onChange` ile tamamen dışarıdan yönetilir."),
   render: () => <ControlledTextareaExample />,
 };

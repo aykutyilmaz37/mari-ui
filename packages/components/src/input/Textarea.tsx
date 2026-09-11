@@ -1,6 +1,7 @@
 "use client";
 
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { XIcon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import type { InputClassNames, InputShape, InputVariant, InputCountConfig, TextareaAutoSize } from "./types";
 import { getShapeClasses, getTextareaSizeClasses, getVariantClasses, isClearable, resolveInputColor, resolveLegacyInputVariant } from "./utils";
@@ -16,6 +17,11 @@ export interface TextareaProps {
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   allowClear?: boolean | { clearIcon?: React.ReactNode };
   disabled?: boolean;
+  name?: string;
+  required?: boolean;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
+  "aria-invalid"?: boolean | "true" | "false";
   size?: Size;
   shape?: InputShape;
   variant?: InputVariant | "outlined" | "filled" | "borderless";
@@ -63,11 +69,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       onFocus,
       onBlur,
       autoSize = false,
+      name,
+      required,
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
+      "aria-invalid": ariaInvalidProp,
     },
     ref
   ) => {
     const resolvedVariant = resolveLegacyInputVariant(variant);
     const resolvedColor = resolveInputColor(color, status);
+    const ariaInvalid = ariaInvalidProp ?? (resolvedColor === "error" || undefined);
     const innerRef = useRef<HTMLTextAreaElement>(null);
     useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
 
@@ -118,6 +130,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             placeholder={placeholder}
             maxLength={maxLength}
             disabled={disabled}
+            name={name}
+            required={required}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            aria-invalid={ariaInvalid}
             className={cn("w-full resize-none bg-transparent focus:outline-none", classNames.input)}
           />
           {allowClear && (
@@ -126,7 +143,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               onClick={handleClear}
               className={cn("shrink-0 invisible cursor-pointer", showClear && "visible", classNames.clear)}
             >
-              {typeof allowClear === "object" && allowClear.clearIcon ? allowClear.clearIcon : "×"}
+              {typeof allowClear === "object" && allowClear.clearIcon ? allowClear.clearIcon : <XIcon size={16} />}
             </button>
           )}
         </div>

@@ -18,7 +18,22 @@ export interface InputCountConfig {
   formatter?: (info: { value: string; count: number; maxLength?: number }) => React.ReactNode;
 }
 
-export interface InputProps {
+/**
+ * `aria-*`/`data-*` gibi native attribute'lar — eskiden Input bunları hiç
+ * desteklemiyordu, bu yüzden bir `<label htmlFor>` dışında bir etikete
+ * bağlamanın (`aria-labelledby`) veya `name`/`required` ile gerçek bir
+ * native form'a katılmanın hiçbir yolu yoktu (bkz. Button'ın Faz 3'te aldığı
+ * aynı düzeltme).
+ */
+export type InputNativeAttributes = React.AriaAttributes & {
+  name?: string;
+  required?: boolean;
+  autoFocus?: boolean;
+  role?: string;
+  [dataAttribute: `data-${string}`]: unknown;
+};
+
+export interface InputProps extends InputNativeAttributes {
   placeholder?: string;
   value?: string;
   defaultValue?: string;
