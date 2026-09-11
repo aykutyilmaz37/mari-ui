@@ -23,6 +23,11 @@ const meta: Meta<typeof AutoComplete> = {
             "vurgulu seçeneği taşır, **Enter** seçer, **Escape** listeyi kapatır.",
         }),
       },
+      // Açılan liste `position: absolute` — normal akışta yükseklik
+      // KATKISI yapmaz. Docs canvas'ı içeriğin doğal yüksekliğine göre
+      // boyutlanınca (bkz. preview.tsx) liste açıldığında kanvasın dışına
+      // taşıp kesiliyordu. Sabit bir minimum yükseklik bunu önler.
+      story: { height: "260px" },
     },
   },
   argTypes: {
@@ -46,7 +51,6 @@ const sampleOptions: Option[] = [
 ];
 
 export const Playground: Story = {
-  name: "Oynama Alanı",
   ...storyDoc("Yazın ve Ok Aşağı/Yukarı + Enter ile de seçin — klavye ile fareyle aynı ölçüde kullanılabilir."),
   args: {
     options: sampleOptions,

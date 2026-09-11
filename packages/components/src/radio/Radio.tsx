@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { cn, useControllableState } from "@mari-ui/core";
+import { fontSizeClass } from "../lib/sizeClasses";
 import type { RadioChangeEvent, RadioProps } from "./types";
 import { getDotSizeClasses, getSizeClasses, getVariantClasses, getVariantDotClasses, resolveRadioColor } from "./utils";
 
@@ -83,7 +84,9 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
             )}
           </span>
           {label && (
-            <span className={cn("select-none text-mari-foreground", disabled && "text-mari-disabled", classNames.label)}>{label}</span>
+            <span className={cn("select-none text-mari-foreground", fontSizeClass[size], disabled && "text-mari-disabled", classNames.label)}>
+              {label}
+            </span>
           )}
         </span>
         {description && <span className="text-xs text-mari-muted">{description}</span>}

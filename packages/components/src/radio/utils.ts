@@ -7,12 +7,16 @@ const LEGACY_TYPE_TO_COLOR: Record<LegacyRadioType, ColorRole> = {
   secondary: "neutral",
 };
 
-/** Checkbox'takiyle aynı birleştirme: `status` (error/warning) artık ayrı bir eksen değil, `color`'ın kendisi. */
-export function resolveRadioColor(props: { color?: ColorRole; status?: "error" | "warning"; type?: LegacyRadioType }): ColorRole {
+/**
+ * Checkbox'takiyle aynı birleştirme: `status` (error/warning) artık ayrı bir
+ * eksen değil, `color`'ın kendisi. `undefined` dönebilir — "renk AÇIKÇA
+ * verilmedi" ile "primary açıkça seçildi" ayrımı korunur (bkz. checkbox/utils.ts).
+ */
+export function resolveRadioColor(props: { color?: ColorRole; status?: "error" | "warning"; type?: LegacyRadioType }): ColorRole | undefined {
   if (props.status) return props.status;
   if (props.color) return props.color;
   if (props.type) return LEGACY_TYPE_TO_COLOR[props.type];
-  return "primary";
+  return undefined;
 }
 
 const SIZE_CLASS: Record<Size, string> = {
@@ -48,11 +52,30 @@ const SOLID_BG_CLASS: Record<ColorRole, string> = {
   neutral: "bg-mari-neutral-solid",
 };
 
-export function getVariantClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole): string {
-  if (variant === "solid") return cn(SOLID_BG_CLASS[color], "border-transparent");
-  return cn("border bg-mari-surface", borderColorClass[color], textClass[color]);
+/** Sadece İŞARETLİYKEN kenarlığı renklendirir — dinlenme halinde nötr/gri kalır. */
+const CHECKED_BORDER_CLASS: Record<ColorRole, string> = {
+  primary: "checked:border-mari-primary-border",
+  accent: "checked:border-mari-accent-border",
+  success: "checked:border-mari-success-border",
+  error: "checked:border-mari-error-border",
+  warning: "checked:border-mari-warning-border",
+  info: "checked:border-mari-info-border",
+  neutral: "checked:border-mari-neutral-border",
+};
+
+/**
+ * `color` verilmediyse dinlenme halindeki (seçilmemiş) kenarlık nötr/gri
+ * (`border-mari-input`) — sadece seçilince `primary`e (veya açıkça verilen
+ * renge) bürünür (bkz. checkbox/utils.ts'teki aynı desen).
+ */
+export function getVariantClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole | undefined): string {
+  const fillColor = color ?? "primary";
+  if (variant === "solid") return cn(SOLID_BG_CLASS[fillColor], "border-transparent");
+  const restBorderClass = color ? borderColorClass[color] : "border-mari-input";
+  return cn("border bg-mari-surface", restBorderClass, CHECKED_BORDER_CLASS[fillColor], textClass[fillColor]);
 }
 
-export function getVariantDotClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole): string {
-  return variant === "solid" ? "bg-mari-surface" : SOLID_BG_CLASS[color];
+export function getVariantDotClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole | undefined): string {
+  const fillColor = color ?? "primary";
+  return variant === "solid" ? "bg-mari-surface" : SOLID_BG_CLASS[fillColor];
 }

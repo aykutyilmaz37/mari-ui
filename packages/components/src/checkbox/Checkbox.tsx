@@ -3,7 +3,8 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CheckIcon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
-import { textClass, textSolidContrastClass } from "../lib/colorClasses";
+import { textSolidContrastClass } from "../lib/colorClasses";
+import { fontSizeClass } from "../lib/sizeClasses";
 import type { CheckboxChangeEvent, CheckboxProps } from "./types";
 import { getIndeterminateSizeClasses, getShapeClasses, getSizeClasses, getVariantClasses, resolveCheckboxColor } from "./utils";
 
@@ -41,6 +42,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     ref
   ) => {
     const resolvedColor = resolveCheckboxColor({ color, status, type });
+    // İşaretliyken çentiğin/açıklamanın rengi — `resolvedColor` bir doğrulama
+    // durumu verilmediyse `undefined` olabilir, o zaman varsayılan `primary`.
+    const fillColor = resolvedColor ?? "primary";
     const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked });
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -86,15 +90,17 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               {indeterminate ? (
                 <span className={cn("rounded-sm bg-mari-surface", getIndeterminateSizeClasses(size))} />
               ) : (
-                <CheckIcon className={textSolidContrastClass[resolvedColor]} size={16} />
+                <CheckIcon className={textSolidContrastClass[fillColor]} size={16} />
               )}
             </span>
           )}
           {label && (
-            <span className={cn("select-none text-mari-foreground", disabled && "text-mari-disabled", classNames.label)}>{label}</span>
+            <span className={cn("select-none text-mari-foreground", fontSizeClass[size], disabled && "text-mari-disabled", classNames.label)}>
+              {label}
+            </span>
           )}
         </span>
-        {description && <span className={cn("text-xs", textClass[resolvedColor])}>{description}</span>}
+        {description && <span className="text-xs text-mari-muted">{description}</span>}
       </label>
     );
   }

@@ -41,16 +41,28 @@ const FOCUS_BORDER_CLASS: Record<ColorRole, string> = {
   neutral: "focus-within:border-mari-neutral-border",
 };
 
-export function getVariantClasses(variant: InputVariant, color: ColorRole): string {
+/**
+ * Kullanıcı geri bildirimi (Faz 13): `color` verilmediyse (yani gerçek bir
+ * doğrulama durumu YOKSA) dinlenme halindeki kenarlık HER ZAMAN nötr/gri
+ * olmalı (`border-mari-input` — Faz 13.0a'da tam bunun için eklenen ama o
+ * zamana kadar hiç tüketilmeyen token) — eskiden varsayılan `"primary"`e
+ * düşüp her input'u sürekli mavi gösteriyordu. Odaklanınca `primary`e döner.
+ * `color` AÇIKÇA verildiyse (örn. `error`/`warning` doğrulama durumu) o renk
+ * dinlenme halinde de kalıcıdır — odak beklemeden görünür olmalı.
+ */
+export function getVariantClasses(variant: InputVariant, color: ColorRole | undefined): string {
+  const restBorderClass = color ? borderColorClass[color] : "border-mari-input";
+  const focusBorderClass = FOCUS_BORDER_CLASS[color ?? "primary"];
+
   switch (variant) {
     case "outline":
-      return cn("border bg-mari-surface text-mari-foreground", borderColorClass[color], FOCUS_BORDER_CLASS[color]);
+      return cn("border bg-mari-surface text-mari-foreground", restBorderClass, focusBorderClass);
     case "soft":
-      return cn("border bg-mari-surface-alt text-mari-foreground", borderColorClass[color], FOCUS_BORDER_CLASS[color]);
+      return cn("border bg-mari-surface-alt text-mari-foreground", restBorderClass, focusBorderClass);
     case "ghost":
       return "border-none bg-transparent";
     case "underlined":
-      return cn("border-b bg-transparent rounded-none", borderColorClass[color], FOCUS_BORDER_CLASS[color]);
+      return cn("border-b bg-transparent rounded-none", restBorderClass, focusBorderClass);
   }
 }
 
@@ -62,7 +74,14 @@ export function isClearable(allowClear: boolean | { clearIcon?: React.ReactNode 
   return typeof allowClear === "boolean" ? allowClear : !!allowClear;
 }
 
-/** Checkbox/Radio'dakiyle aynı birleştirme: `status` artık ayrı bir eksen değil, `color`'ın kendisi. */
-export function resolveInputColor(color: ColorRole | undefined, status: "error" | "warning" | undefined): ColorRole {
-  return status ?? color ?? "primary";
+/**
+ * Checkbox/Radio'dakiyle aynı birleştirme: `status` artık ayrı bir eksen
+ * değil, `color`'ın kendisi. `undefined` dönebilir — bu "renk AÇIKÇA
+ * verilmedi, varsayılan (nötr/gri dinlenme + odakta primary) davranış
+ * geçerli" anlamına gelir (bkz. `getVariantClasses`). Eskiden burada
+ * `?? "primary"` vardı, bu da "verilmedi" ile "primary açıkça seçildi"
+ * ayrımını kaybediyor, her input'u sürekli mavi gösteriyordu.
+ */
+export function resolveInputColor(color: ColorRole | undefined, status: "error" | "warning" | undefined): ColorRole | undefined {
+  return status ?? color;
 }

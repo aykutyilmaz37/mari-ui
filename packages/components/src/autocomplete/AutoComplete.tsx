@@ -83,8 +83,11 @@ export function AutoComplete({ options, value, defaultValue = "", onSearch, onSe
       <ul
         id={listboxId}
         role="listbox"
+        // `text-sm` — geri kalan tüm form kontrolleriyle (Input vb.) aynı
+        // ölçek; eskiden ambient (`text-base`/16px) boyuttaydı, listedeki
+        // seçenekler input metninden gözle görülür şekilde büyük duruyordu.
         className={cn(
-          "absolute top-full left-0 w-full bg-mari-surface shadow-xl border border-mari-border rounded-md p-2 mt-1 z-mari-dropdown transition-opacity duration-300",
+          "absolute top-full left-0 w-full bg-mari-surface shadow-xl border border-mari-border rounded-md p-2 mt-1 z-mari-dropdown text-sm transition-opacity duration-300",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
       >
@@ -101,7 +104,7 @@ export function AutoComplete({ options, value, defaultValue = "", onSearch, onSe
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleSelect(option.value)}
               className={cn(
-                "w-full text-left p-1 hover:bg-mari-surface-alt cursor-pointer rounded-md",
+                "w-full text-left px-2 py-1.5 hover:bg-mari-surface-alt cursor-pointer rounded-md",
                 i === activeIndex && "bg-mari-surface-alt"
               )}
             >

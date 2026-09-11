@@ -51,6 +51,30 @@ export const Playground: Story = {
   },
 };
 
+export const AllVariants: Story = {
+  name: "Tüm Varyant × Boyut",
+  ...storyDoc("4 kenarlık/arka plan stili (`outline`/`soft`/`ghost`/`underlined`) × 3 boyut."),
+  render: () => {
+    const variants = ["outline", "soft", "ghost", "underlined"] as const;
+    const sizes = ["lg", "md", "sm"] as const;
+
+    return (
+      <div className="flex flex-col gap-6 p-6">
+        {variants.map((variant) => (
+          <div key={variant} className="space-y-2">
+            <h3 className="font-semibold capitalize">{variant}</h3>
+            <div className="flex gap-4 flex-wrap">
+              {sizes.map((size) => (
+                <SearchInput key={`${variant}-${size}`} variant={variant} size={size} placeholder={`${variant} - ${size}`} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  },
+};
+
 export const WithSearch: Story = {
   name: "Arama Tetikleyicili",
   ...storyDoc("`onSearch` — arama ikonuna tıklayınca veya Enter'a basınca güncel değerle çağrılır."),

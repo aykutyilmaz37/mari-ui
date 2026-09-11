@@ -12,16 +12,22 @@ const LEGACY_TYPE_TO_COLOR: Record<LegacyCheckboxType, ColorRole> = {
  * eksendi ve `status` varsa `type`'ın renk sınıfları TAMAMEN atlanıyordu.
  * `error`/`warning` zaten birer `ColorRole` olduğu için tek eksene
  * indirgendi: `status` verilmişse o `color` olarak kullanılır.
+ *
+ * `undefined` dönebilir (eskiden `?? "primary"` vardı) — "renk AÇIKÇA
+ * verilmedi" ile "primary açıkça seçildi" ayrımı `getVariantClasses`'ın
+ * dinlenme halindeki kenarlığı nötr/gri mi yoksa kalıcı renkli mi
+ * çizeceğine karar vermesi için korunur (bkz. Faz 13 kullanıcı geri
+ * bildirimi — checked OLMAYAN kutucuk mavi görünmemeli).
  */
 export function resolveCheckboxColor(props: {
   color?: ColorRole;
   status?: "error" | "warning";
   type?: LegacyCheckboxType;
-}): ColorRole {
+}): ColorRole | undefined {
   if (props.status) return props.status;
   if (props.color) return props.color;
   if (props.type) return LEGACY_TYPE_TO_COLOR[props.type];
-  return "primary";
+  return undefined;
 }
 
 const SIZE_CLASS: Record<Size, string> = {
@@ -76,9 +82,29 @@ const CHECKED_BG_SOLID_HOVER_CLASS: Record<ColorRole, string> = {
   neutral: "checked:hover:bg-mari-neutral-solid-hover",
 };
 
-export function getVariantClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole): string {
+/** Sadece İŞARETLİYKEN kenarlığı renklendirir — dinlenme halinde nötr/gri kalır. */
+const CHECKED_BORDER_CLASS: Record<ColorRole, string> = {
+  primary: "checked:border-mari-primary-border",
+  accent: "checked:border-mari-accent-border",
+  success: "checked:border-mari-success-border",
+  error: "checked:border-mari-error-border",
+  warning: "checked:border-mari-warning-border",
+  info: "checked:border-mari-info-border",
+  neutral: "checked:border-mari-neutral-border",
+};
+
+/**
+ * `color` verilmediyse (yani gerçek bir doğrulama durumu YOKSA) dinlenme
+ * halindeki (işaretsiz) kenarlık nötr/gri (`border-mari-input`) — sadece
+ * işaretlenince `primary`e (veya AÇIKÇA verilen renge) bürünür. `color`
+ * AÇIKÇA verildiyse (örn. `error`) o renk işaretli/işaretsiz HER ZAMAN
+ * kalıcıdır (bkz. `input/utils.ts`'teki aynı desen).
+ */
+export function getVariantClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole | undefined): string {
+  const fillColor = color ?? "primary";
   if (variant === "solid") {
-    return cn(CHECKED_BG_SOLID_CLASS[color], CHECKED_BG_SOLID_HOVER_CLASS[color], "border-transparent bg-mari-surface-alt");
+    return cn(CHECKED_BG_SOLID_CLASS[fillColor], CHECKED_BG_SOLID_HOVER_CLASS[fillColor], "border-transparent bg-mari-surface-alt");
   }
-  return cn("bg-mari-surface", borderColorClass[color], CHECKED_BG_SOLID_CLASS[color], textSolidContrastClass[color]);
+  const restBorderClass = color ? borderColorClass[color] : "border-mari-input";
+  return cn("bg-mari-surface", restBorderClass, CHECKED_BG_SOLID_CLASS[fillColor], CHECKED_BORDER_CLASS[fillColor], textSolidContrastClass[fillColor]);
 }

@@ -4,6 +4,20 @@ import { getA11yViolations } from "../testUtils/a11y";
 import { Input } from "./Input";
 
 describe("Input", () => {
+  it("color verilmediyse dinlenme halinde nötr/gri kenarlık taşır, mavi değil (Faz 13 kullanıcı geri bildirimi)", () => {
+    render(<Input aria-label="Ad" placeholder="Ad" />);
+    const wrapper = screen.getByRole("textbox").parentElement!;
+    const classes = wrapper.className.split(" ");
+    expect(classes).toContain("border-mari-input");
+    expect(classes).not.toContain("border-mari-primary-border");
+    expect(classes).toContain("focus-within:border-mari-primary-border");
+  });
+
+  it("color=\"error\" AÇIKÇA verildiyse dinlenme halinde de o renk kalıcıdır", () => {
+    render(<Input aria-label="E-posta" placeholder="E-posta" color="error" />);
+    expect(screen.getByRole("textbox").parentElement!.className).toContain("border-mari-error-border");
+  });
+
   it("varsayılan olarak aria-invalid taşımaz", () => {
     render(<Input placeholder="Ad" aria-label="Ad" />);
     expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-invalid");

@@ -50,6 +50,25 @@ export const Playground: Story = {
   },
 };
 
+export const AllVariants: Story = {
+  name: "Tüm Varyant",
+  ...storyDoc("4 kenarlık/arka plan stili (`outline`/`soft`/`ghost`/`underlined`)."),
+  render: () => {
+    const variants = ["outline", "soft", "ghost", "underlined"] as const;
+
+    return (
+      <div className="flex flex-col gap-6 p-6">
+        {variants.map((variant) => (
+          <div key={variant} className="space-y-2">
+            <h3 className="font-semibold capitalize">{variant}</h3>
+            <OtpInput length={4} variant={variant} />
+          </div>
+        ))}
+      </div>
+    );
+  },
+};
+
 export const Masked: Story = {
   name: "Gizli (Maskeli)",
   ...storyDoc("`mask` — girilen karakterleri `•` ile gizler (şifre benzeri gizli kodlar için)."),
