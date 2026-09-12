@@ -22,4 +22,24 @@ describe("Switch", () => {
     const { container } = render(<Switch label="Bildirimler" />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it.each([
+    ["sm", "0.875rem"],
+    ["md", "1.25rem"],
+    ["lg", "1.625rem"],
+  ] as const)(
+    "boyut=%s işaretliyken thumb'ın sağ/üst/alt kenar payı (2px) simetrik olacak şekilde konumlanır (kullanıcı geri bildirimi: eskiden asimetrikti, lg elle devtools'ta düzeltilmişti)",
+    (size, expectedCalc) => {
+      render(<Switch label="X" size={size} checked onChange={() => {}} />);
+      const thumb = screen.getByRole("switch").querySelector("span")!;
+      expect(thumb.className).toContain(`left-[calc(100%-${expectedCalc})]`);
+    }
+  );
+
+  it("iç etiket dikeyden ortalıdır (inset-y-0 + flex items-center — eskiden her boyutta aynı sabit top-1.5 kullanıyordu)", () => {
+    render(<Switch switchFalseLabel="Kapalı" />);
+    const label = screen.getByText("Kapalı");
+    expect(label.className).toContain("inset-y-0");
+    expect(label.className).toContain("items-center");
+  });
 });

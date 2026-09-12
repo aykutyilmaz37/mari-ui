@@ -26,19 +26,30 @@ const TRACK_SIZE_WITH_LABEL_CLASS: Record<Size, string> = {
   lg: "h-7 w-28",
 };
 
+/**
+ * Kullanıcı geri bildirimi: `lg` topu track'in kenarına tam oturmuyordu
+ * (devtools'ta elle `calc(100% - 1.675rem)` denenince doğru görünmüştü).
+ * Kök sebep: dikey kenar payı (`top-0.5` = 2px, üçü de aynı) ile yatay
+ * kenar payı (`left-1` = 4px) TUTARSIZDI — top burada 2px'i, sağdaki/soldaki
+ * ise 4px'i kullanıyordu, top hem tüm boyutlarda aynı hem de gerçek "track
+ * yüksekliği - thumb yüksekliği" farkına (hep 4px, yarısı 2px) denk
+ * geliyordu; yatay pay ise elle `1` (4px) yazılmış, aynı mantığı izlemiyordu.
+ * Artık YATAY pay da `0.5` (2px) — dikeyle birebir aynı — ve "açık" konumdaki
+ * `calc(100% - X)` değeri `thumb genişliği + 2px` olarak HESAPLANDI (elle
+ * tahmin edilmedi): sm 0.75+0.125=0.875rem, md 1.125+0.125=1.25rem,
+ * lg 1.5+0.125=1.625rem (kullanıcının devtools'ta bulduğu 1.675rem'e çok
+ * yakın — aradaki fark elle sürükleyip bırakmanın hassasiyet payı).
+ */
 const BALL_SIZE_CLASS: Record<Size, string> = {
   sm: "h-3 w-3 top-0.5",
   md: "h-[1.125rem] w-[1.125rem] top-0.5", // 18px
   lg: "h-6 w-6 top-0.5",
 };
 
-// Kayan topun "açık" konumdaki sol boşluğu — `calc(100% - ...)` kullanıldığı
-// için gerçek (dar veya geniş) track genişliğine göre KENDİLİĞİNDEN uyarlanır,
-// track genişliği elle iki kez senkron tutulmaz.
 const BALL_LEFT_ON_CLASS: Record<Size, string> = {
-  sm: "left-[calc(100%-1.125rem)]",
-  md: "left-[calc(100%-1.5rem)]",
-  lg: "left-[calc(100%-1.875rem)]",
+  sm: "left-[calc(100%-0.875rem)]",
+  md: "left-[calc(100%-1.25rem)]",
+  lg: "left-[calc(100%-1.625rem)]",
 };
 
 // Yeni (küçültülmüş) thumb boyutlarına göre — sabit 24px'lik lucide
@@ -54,5 +65,5 @@ export function getTrackClass(size: Size, color: ColorRole, checked: boolean, ha
 }
 
 export function getBallClass(size: Size, checked: boolean): string {
-  return cn(BALL_SIZE_CLASS[size], checked ? BALL_LEFT_ON_CLASS[size] : "left-1");
+  return cn(BALL_SIZE_CLASS[size], checked ? BALL_LEFT_ON_CLASS[size] : "left-0.5");
 }

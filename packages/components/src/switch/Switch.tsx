@@ -92,19 +92,26 @@ export function Switch({
             />
           )}
         </span>
+        {/* Kullanıcı geri bildirimi: etiket track kenarına çok bitişikti VE
+            dikeyden ortalı değildi — sabit bir `top-1.5` (6px) her boyutta
+            AYNI kalıyordu (sm/md/lg track yükseklikleri farklı olduğu için
+            sadece birinde doğru olabilirdi). `inset-y-0 flex items-center`
+            ile track'in GERÇEK yüksekliğine göre her zaman dikey ortalı;
+            kenar payı da `1`(4px) → `1.5`(6px) yapıldı, thumb'a/kenara
+            yapışık durmasın diye. */}
         <span
           className={cn(
-            "inline-block absolute text-xs leading-none whitespace-nowrap transform transition-all duration-300",
+            "absolute inset-y-0 flex items-center text-xs leading-none whitespace-nowrap transition-all duration-300",
             textSolidContrastClass[color],
-            isChecked ? "top-1.5 left-1" : "top-1.5 -left-20"
+            isChecked ? "left-1.5" : "-left-20"
           )}
         >
           {switchTrueLabel}
         </span>
         <span
           className={cn(
-            "inline-block absolute text-xs leading-none whitespace-nowrap transform transition-all duration-300 text-mari-foreground",
-            !isChecked ? "top-1.5 right-1" : "top-1.5 -right-20"
+            "absolute inset-y-0 flex items-center text-xs leading-none whitespace-nowrap transition-all duration-300 text-mari-foreground",
+            !isChecked ? "right-1.5" : "-right-20"
           )}
         >
           {switchFalseLabel}
