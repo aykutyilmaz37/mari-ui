@@ -1,6 +1,8 @@
 import type React from "react";
 import type { ColorRole, Placement } from "@mari-ui/core";
 
+export type TooltipVariant = "solid" | "soft";
+
 export interface TooltipProps {
   content: React.ReactNode;
   trigger: React.ReactNode;
@@ -13,6 +15,8 @@ export interface TooltipProps {
   placement?: Placement;
   /** Varsayılan: `neutral` (koyu tooltip). */
   color?: ColorRole;
+  /** Varsayılan: `solid` (dolu, koyu balon — geleneksel tooltip görünümü). `soft` daha az göze batan, tonlanmış bir arka plan kullanır. */
+  variant?: TooltipVariant;
   className?: string;
   triggerClassName?: string;
   style?: React.CSSProperties;

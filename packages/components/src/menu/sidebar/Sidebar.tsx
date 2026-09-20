@@ -39,8 +39,16 @@ export function Sidebar({ data, variant = "hover", position = "left", onlyIcon =
     setSubVisible(false);
   };
 
+  // Faz 13.5 bulgusu: sarmalayıcı eskiden `w-full` taşıyordu — `aside` (ve
+  // yanındaki dropdown/mega panelleri) kendi genişliğine sahip olsa da (bkz.
+  // `getSidebarWidthClass`), bu `fixed` + `w-full` sarmalayıcı TÜM viewport
+  // genişliğini kaplıyordu ve arkasındaki sayfa içeriğinin TAMAMEN
+  // TIKLANAMAZ hale gelmesine yol açıyordu (görsel olarak görünmez ama
+  // pointer event'leri yutuyordu — `elementFromPoint` ile doğrulandı).
+  // `fixed` + tek taraflı `left`/`right` zaten genişliği içeriğe göre daraltır,
+  // `w-full` hiç gerekli değildi.
   return (
-    <div className={cn("fixed flex top-0 z-mari-drawer h-full w-full overflow-auto transition-all duration-500", position === "right" && "right-0 flex-row-reverse", position === "left" && "left-0")}>
+    <div className={cn("fixed flex top-0 z-mari-drawer h-full overflow-auto transition-all duration-500", position === "right" && "right-0 flex-row-reverse", position === "left" && "left-0")}>
       <aside
         onMouseEnter={variant === "hover" && !onlyIcon ? handleMouseEnter : undefined}
         onMouseLeave={variant === "hover" && !onlyIcon ? handleMouseLeave : undefined}

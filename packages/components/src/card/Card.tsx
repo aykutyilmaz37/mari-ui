@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { cn } from "@mari-ui/core";
 import type { CardProps } from "./types";
-import { getBaseClassname } from "./utils";
+import { getBaseClassname, getBodyPaddingClass, getHeaderClasses } from "./utils";
 
 export type { CardProps };
 
@@ -38,6 +38,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     }
 
     const base = getBaseClassname({ bordered, hoverable, size, inset, className });
+    const bodyPadding = getBodyPaddingClass(size);
+    const header = getHeaderClasses(size);
 
     // `onClick` verildiğinde Card TIKLANABİLİR hale geliyor ama bir `<div>`
     // olduğu için klavye kullanıcıları ve ekran okuyucular bunu asla
@@ -67,7 +69,14 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
         {(title || extra) && (
           <div>
-            <div className={cn("p-4 flex items-center justify-between font-semibold text-mari-foreground", classNames?.header)}>
+            <div
+              className={cn(
+                "flex items-center justify-between font-semibold text-mari-foreground",
+                header.padding,
+                header.text,
+                classNames?.header
+              )}
+            >
               <div>{title}</div>
               <div>{extra}</div>
             </div>
@@ -75,7 +84,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           </div>
         )}
 
-        <div className={cn("p-4", classNames?.body)}>
+        <div className={cn(bodyPadding, classNames?.body)}>
           {loading ? (
             <div className="space-y-2 animate-pulse" aria-hidden>
               <div className="h-3 w-3/4 rounded bg-mari-surface-alt" />
@@ -89,7 +98,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         {footer && (
           <>
             <div className="h-px bg-mari-border min-w-full" />
-            <div className={cn("p-4", classNames?.footer)}>{footer}</div>
+            <div className={cn(bodyPadding, classNames?.footer)}>{footer}</div>
           </>
         )}
       </div>

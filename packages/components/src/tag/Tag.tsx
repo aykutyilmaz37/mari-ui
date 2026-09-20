@@ -24,7 +24,7 @@ export function Tag({
   // verilmese bile. Artık kapatılabilirlik `onClose` VEYA açık `closeIcon`
   // varlığına bağlı; aksi halde işlevsiz bir buton render edilmez.
   const showCloseButton = closeIcon !== false && (closeIcon !== undefined || Boolean(onClose));
-  const closeIconEl = closeIcon === true || closeIcon === undefined || closeIcon === false ? <X size={14} /> : closeIcon;
+  const closeIconEl = closeIcon === true || closeIcon === undefined || closeIcon === false ? <X size={10} /> : closeIcon;
 
   return (
     <span className={tagClass}>
@@ -34,7 +34,8 @@ export function Tag({
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex items-center justify-center rounded-full hover:opacity-70 focus:outline-none"
+          aria-label="Kaldır"
+          className="inline-flex items-center justify-center rounded-full hover:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring"
         >
           {closeIconEl}
         </button>

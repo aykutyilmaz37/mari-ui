@@ -36,24 +36,26 @@ export function TableRowActions<T extends { id: string }>({
       {actions.editRowInInline &&
         (isInlineEditing ? (
           <>
-            <Button variant="ghost" color="info" size="sm" onClick={onSaveInlineEdit} icon={<CheckIcon size={16} />} />
-            <Button variant="ghost" color="error" size="sm" onClick={onCancelInlineEdit} icon={<XIcon size={16} />} />
+            <Button variant="ghost" color="info" size="sm" onClick={onSaveInlineEdit} icon={<CheckIcon size={16} />} aria-label="Kaydet" />
+            <Button variant="ghost" color="error" size="sm" onClick={onCancelInlineEdit} icon={<XIcon size={16} />} aria-label="Vazgeç" />
           </>
         ) : (
-          <Button variant="ghost" color="info" size="sm" onClick={onStartInlineEdit} icon={<PencilIcon size={16} />} />
+          <Button variant="ghost" color="info" size="sm" onClick={onStartInlineEdit} icon={<PencilIcon size={16} />} aria-label="Düzenle" />
         ))}
 
       {actions.onEditWithDrawer && (
         <>
-          <Button variant="ghost" color="info" size="sm" onClick={() => setDrawerOpen(true)} icon={<PencilIcon size={16} />} />
+          <Button variant="ghost" color="info" size="sm" onClick={() => setDrawerOpen(true)} icon={<PencilIcon size={16} />} aria-label="Düzenle" />
           <TableEditDrawer title={actions.onEditWithDrawer.title} description={actions.onEditWithDrawer.description} open={drawerOpen} onClose={() => setDrawerOpen(false)}>
             <actions.onEditWithDrawer.form refetch={actions.refetch ?? (() => {})} initialData={item} closeModal={() => setDrawerOpen(false)} />
           </TableEditDrawer>
         </>
       )}
 
-      {actions.navigateRow && <Button variant="ghost" color="info" size="sm" onClick={() => actions.navigateRow?.(item.id)} icon={<ChevronRightIcon size={16} />} />}
-      {actions.deleteRow && <Button variant="ghost" color="error" size="sm" onClick={() => actions.deleteRow?.(item.id)} icon={<EraserIcon size={16} />} />}
+      {actions.navigateRow && (
+        <Button variant="ghost" color="info" size="sm" onClick={() => actions.navigateRow?.(item.id)} icon={<ChevronRightIcon size={16} />} aria-label="Detaya git" />
+      )}
+      {actions.deleteRow && <Button variant="ghost" color="error" size="sm" onClick={() => actions.deleteRow?.(item.id)} icon={<EraserIcon size={16} />} aria-label="Sil" />}
     </div>
   );
 }

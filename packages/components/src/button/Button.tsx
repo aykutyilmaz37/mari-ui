@@ -35,6 +35,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     onClick,
     onMouseEnter,
     onMouseLeave,
+    onFocus,
+    onBlur,
     onDragOver,
     onDrop,
     children,
@@ -90,6 +92,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     onClick,
     onMouseEnter,
     onMouseLeave,
+    onFocus,
+    onBlur,
     onDragOver,
     onDrop,
   };

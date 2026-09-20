@@ -28,7 +28,7 @@ export function TabsList({ children, cardTabs = false }: TabsListProps) {
   }, [activeTab, children]);
 
   return (
-    <div ref={containerRef} className="w-full flex gap-1 items-center justify-start relative">
+    <div ref={containerRef} role="tablist" className="w-full flex gap-1 items-center justify-start relative">
       {React.Children.map(children, (child, idx) => {
         if (React.isValidElement<TabsTriggerProps>(child) && child.type === TabsTrigger) {
           return cloneWithRef(child, (el: HTMLButtonElement | null): void => {

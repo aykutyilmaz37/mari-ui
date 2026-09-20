@@ -68,3 +68,16 @@ export function componentDoc(input: ComponentDocInput): string {
 export function storyDoc(description: string): { parameters: { docs: { description: { story: string } } } } {
   return { parameters: { docs: { description: { story: description } } } };
 }
+
+/**
+ * Faz 13.5 kullanıcı bulgusu: bir story `render: () => <HelperComponent />`
+ * gibi harici, adlandırılmış bir yardımcı component'e yönlendirirse,
+ * Storybook'un "Show code" paneli JSX'i statik olarak açamayıp ham CSF story
+ * nesnesini (`{ name: "...", ...storyDoc(...), render: () => <HelperComponent
+ * /> }`) olduğu gibi basıyor — tüketiciye component'i NASIL KULLANACAĞINI
+ * değil, bizim iç test/hikaye iskeletimizi gösteriyor. Bu yüzden interaktif
+ * story'lerde `useState` gibi hook'lar DAİMA `render` callback'inin İÇİNE
+ * inline yazılmalı, ayrı bir isimlendirilmiş component'e ÇIKARILMAMALI —
+ * "Show code" o zaman gerçek, kopyalanabilir kullanım kodunu gösterir (bkz.
+ * `pagination/Pagination.stories.tsx`, `steps/Steps.stories.tsx`).
+ */

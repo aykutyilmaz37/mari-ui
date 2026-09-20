@@ -15,10 +15,11 @@ export interface MegaSubProps extends MenuNavigationProps {
 }
 
 export function MegaSub({ setSubVisible, subVisible, subItem, cardClassName, color, onNavigate }: MegaSubProps) {
+  // Faz 13.5 bulgusu: içerik keyfi `Card`lardan oluşuyor (gerçek `menuitem`
+  // değil, bkz. `MegaSubMenu`'deki aynı gerekçe) — `role="menu"` + anlamsız
+  // `tabIndex={0}` kaldırıldı.
   return (
     <div
-      role="menu"
-      tabIndex={0}
       onMouseEnter={() => setSubVisible(true)}
       onMouseLeave={() => setSubVisible(false)}
       className={cn("bg-mari-surface-alt h-full overflow-hidden transition-all duration-300 ease-in-out", subVisible ? "w-full max-w-3xl opacity-100" : "w-0 opacity-0")}

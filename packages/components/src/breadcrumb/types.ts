@@ -4,7 +4,7 @@ export interface BreadcrumbItemType {
   title: React.ReactNode;
   href?: string;
   path?: string;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLSpanElement>) => void;
   className?: string;
 }
 

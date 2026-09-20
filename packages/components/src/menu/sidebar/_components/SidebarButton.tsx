@@ -15,6 +15,7 @@ export function SidebarButton({ position, setVisible, visible }: SidebarButtonPr
     <Button
       variant="soft"
       color="neutral"
+      aria-label={visible ? "Kenar çubuğunu kapat" : "Kenar çubuğunu aç"}
       className={cn("transition-all duration-500 ease-in-out w-8 h-8", position === "right" && "rounded-r-none", position === "left" && "rounded-l-none")}
       onClick={() => setVisible(!visible)}
     >

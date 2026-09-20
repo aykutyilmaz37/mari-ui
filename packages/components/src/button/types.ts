@@ -72,4 +72,7 @@ export interface ButtonProps extends LegacyButtonProps, NativeCommonAttributes {
   children?: React.ReactNode;
   onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
   onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
+  /** Hover ile açılan bir alt panelin (bkz. Sidebar/MegaMenu) klavye eşdeğeri için — Button gerçek bir odaklanabilir eleman. */
+  onFocus?: (event: React.FocusEvent<HTMLElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLElement>) => void;
 }

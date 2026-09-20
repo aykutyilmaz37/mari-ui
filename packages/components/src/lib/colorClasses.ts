@@ -74,6 +74,17 @@ export const textClass: Record<ColorRole, string> = {
   neutral: "text-mari-neutral",
 };
 
+/** `textClass`in `hover:` varyantı — örn. Menu öğelerinde primary rengi SADECE hover metin rengi olarak uygulamak için. */
+export const textHoverClass: Record<ColorRole, string> = {
+  primary: "hover:text-mari-primary",
+  accent: "hover:text-mari-accent",
+  success: "hover:text-mari-success",
+  error: "hover:text-mari-error",
+  warning: "hover:text-mari-warning",
+  info: "hover:text-mari-info",
+  neutral: "hover:text-mari-neutral",
+};
+
 export const borderColorClass: Record<ColorRole, string> = {
   primary: "border-mari-primary-border",
   accent: "border-mari-accent-border",
@@ -82,6 +93,17 @@ export const borderColorClass: Record<ColorRole, string> = {
   warning: "border-mari-warning-border",
   info: "border-mari-info-border",
   neutral: "border-mari-neutral-border",
+};
+
+/** `borderColorClass`in `hover:` varyantı. */
+export const borderColorHoverClass: Record<ColorRole, string> = {
+  primary: "hover:border-mari-primary-border",
+  accent: "hover:border-mari-accent-border",
+  success: "hover:border-mari-success-border",
+  error: "hover:border-mari-error-border",
+  warning: "hover:border-mari-warning-border",
+  info: "hover:border-mari-info-border",
+  neutral: "hover:border-mari-neutral-border",
 };
 
 /** SVG `fill`/`stroke` için — örn. Tooltip'in ok işareti. */
@@ -103,6 +125,27 @@ export const strokeSolidClass: Record<ColorRole, string> = {
   warning: "stroke-mari-warning-solid",
   info: "stroke-mari-info-solid",
   neutral: "stroke-mari-neutral-solid",
+};
+
+/** `soft` varyantlı yüzeyler (örn. Tooltip'in soft rengi) için — arka planla eşleşsin diye SVG `fill`. */
+export const fillSubtleClass: Record<ColorRole, string> = {
+  primary: "fill-mari-primary-subtle",
+  accent: "fill-mari-accent-subtle",
+  success: "fill-mari-success-subtle",
+  error: "fill-mari-error-subtle",
+  warning: "fill-mari-warning-subtle",
+  info: "fill-mari-info-subtle",
+  neutral: "fill-mari-neutral-subtle",
+};
+
+export const strokeSubtleClass: Record<ColorRole, string> = {
+  primary: "stroke-mari-primary-subtle",
+  accent: "stroke-mari-accent-subtle",
+  success: "stroke-mari-success-subtle",
+  error: "stroke-mari-error-subtle",
+  warning: "stroke-mari-warning-subtle",
+  info: "stroke-mari-info-subtle",
+  neutral: "stroke-mari-neutral-subtle",
 };
 
 /**

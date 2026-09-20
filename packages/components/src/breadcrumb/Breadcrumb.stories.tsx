@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { classNameArgType } from "../lib/storybookArgTypes";
+import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Breadcrumb } from "./Breadcrumb";
 import type { BreadcrumbProps } from "./Breadcrumb";
 
@@ -10,10 +11,16 @@ const meta: Meta<typeof Breadcrumb> = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Kullanıcının site hiyerarşisindeki konumunu gösteren gezinme yolu. Hook kullanmaz, sunucu bileşeni olarak " +
-          "render edilebilir. **Not:** Eskiden `index.ts`'te tip export'u eksikti — `BreadcrumbItemType`/`BreadcrumbProps` " +
-          "artık düzgün export ediliyor.",
+        component: componentDoc({
+          summary: "Kullanıcının site hiyerarşisindeki konumunu gösteren gezinme yolu.",
+          whenToUse: ["Kullanıcının derin bir hiyerarşide (kategori/alt kategori/ürün gibi) nerede olduğunu göstermek ve üst seviyelere hızlı dönüş sağlamak için."],
+          whenNotToUse: ["Site tek seviyeliyse veya sayfa geçmişi zaten tarayıcı geri tuşuyla yeterince açıksa."],
+          a11y:
+            "Gerçek bir `<nav><ol><li>` listesi — `aria-label=\"Gezinme yolu\"` taşır, son öğe `aria-current=\"page\"` " +
+            "alır, ayırıcı `aria-hidden` (ekran okuyucu her öğe arasında ayırıcıyı okumaz). `onClick` verilip " +
+            "`href` verilmeyen öğeler gerçek bir `<button>` olarak render edilir — eskiden klavyeyle erişilemeyen " +
+            "bir `<span role=\"none\">` idi.",
+        }),
       },
     },
   },
@@ -28,6 +35,7 @@ const meta: Meta<typeof Breadcrumb> = {
 export default meta;
 
 export const Playground: StoryObj<BreadcrumbProps> = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
     items: [
       { title: "Ana Sayfa", href: "/" },
@@ -40,6 +48,7 @@ export const Playground: StoryObj<BreadcrumbProps> = {
 
 export const CustomSeparator: StoryObj<BreadcrumbProps> = {
   name: "Özel Ayırıcı",
+  ...storyDoc("`separator` herhangi bir React node olabilir — metin, ikon vb."),
   args: {
     items: [
       { title: "Panel", href: "/panel" },
@@ -51,6 +60,7 @@ export const CustomSeparator: StoryObj<BreadcrumbProps> = {
 
 export const WithItemRender: StoryObj<BreadcrumbProps> = {
   name: "Özel Render",
+  ...storyDoc("`itemRender` verilince her öğe tamamen özelleştirilebilir — varsayılan link/buton/span yerine."),
   args: {
     items: [
       { title: "A", path: "a" },
@@ -62,5 +72,20 @@ export const WithItemRender: StoryObj<BreadcrumbProps> = {
         {route.title}
       </a>
     ),
+  },
+};
+
+export const ClickHandlers: StoryObj<BreadcrumbProps> = {
+  name: "Tıklama İşleyicili (href'siz)",
+  ...storyDoc(
+    "`href` verilmeyip `onClick` verilen öğeler (örn. bir SPA route değiştiricisi) gerçek bir `<button>` render " +
+      "eder — Tab ile odaklanılabilir, Enter/Space ile tetiklenebilir."
+  ),
+  args: {
+    items: [
+      { title: "Panel", onClick: () => alert("Panel'e git") },
+      { title: "Siparişler", onClick: () => alert("Siparişler'e git") },
+      { title: "#4821" },
+    ],
   },
 };

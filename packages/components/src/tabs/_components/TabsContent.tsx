@@ -8,7 +8,7 @@ export function TabsContent({ children, value }: TabsContentProps) {
   const { activeTab } = useTabs();
   return (
     activeTab === value && (
-      <div className="p-2" data-value={value}>
+      <div role="tabpanel" id={`tabpanel-${value}`} aria-labelledby={`tab-${value}`} className="p-2" data-value={value}>
         {children}
       </div>
     )

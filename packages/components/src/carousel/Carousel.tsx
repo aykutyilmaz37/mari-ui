@@ -15,7 +15,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 
-import { CarouselControls, DotPosition, ResponsiveItem } from "./types";
+import { ArrowsPlacement, CarouselControls, DotPosition, DotsPlacement, ResponsiveItem } from "./types";
 import { getDotClass } from "./utils";
 
 export type CarouselProps = {
@@ -45,8 +45,14 @@ export type CarouselProps = {
 
   /** UI */
   arrows?: boolean;
+  /** Ok butonlarının görünürlüğü. `"always"` (varsayılan) her zaman görünür, `"hover"` yalnızca carousel'in üzerine gelindiğinde belirir (klavye odağında da görünür kalır). */
+  arrowsVisibility?: "always" | "hover";
+  /** Ok butonlarının yerleşimi. `"sides"` (varsayılan) biri solda biri sağda, dikeyde ortalanmış. Köşe değerleri (örn. `"top-right"`) ikisini de tek bir köşede gruplar — metin ağırlıklı slaytlarda içeriğin üzerine binmemek için. */
+  arrowsPlacement?: ArrowsPlacement;
   dots?: boolean | { className?: string };
   dotPosition?: DotPosition;
+  /** Nokta göstergelerinin yerleşimi. `"overlay"` (varsayılan) carousel'in üzerine `absolute` konumlanır. `"outside"` noktaları normal akışa alıp carousel'in ALTINA, içerikle çakışmadan render eder. */
+  dotsPlacement?: DotsPlacement;
   controlsRef?: React.RefObject<CarouselControls | null>;
 
   /** Responsive */
@@ -134,8 +140,11 @@ export const Carousel: FC<CarouselProps> = ({
   autoplayStopOnInteraction = true,
 
   arrows = true,
+  arrowsVisibility = "always",
+  arrowsPlacement = "sides",
   dots = true,
   dotPosition = "bottom",
+  dotsPlacement = "overlay",
   controlsRef,
   responsive,
   beforeChange,
@@ -290,58 +299,106 @@ export const Carousel: FC<CarouselProps> = ({
     }
   }, [dotPosition]);
 
+  /**
+   * Eskiden oklar `bg-mari-surface/70` + `rounded-full` + `elevationClass.sm`
+   * ile dolgun, dairesel bir "buton" gibiydi ve kenara çok yakındı (`left-2`/
+   * `right-2` = 8px). Kullanıcı isteğiyle çıplak ikonlara indirildi (arka
+   * plan/daire yok), kenar boşluğu artırıldı (`left-4`/`right-4` = 16px), ve
+   * rastgele slayt içeriğinin üzerinde okunabilirlik için arka plansız bir
+   * `drop-shadow` bırakıldı. `arrowsVisibility="hover"` iken oklar varsayılan
+   * olarak görünmez, `group-hover` ile belirir — ama klavye odağında
+   * (`focus-visible`) fareye bağımlı kalmadan yine görünür.
+   */
+  const arrowBaseClass = cn(
+    "text-mari-foreground drop-shadow-sm transition-colors hover:text-mari-primary disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+    arrowsVisibility === "hover" && "opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100"
+  );
+
+  const showArrows = arrows && count > slidesToShow;
+  const showDots = dots && scrollSnaps.length > 1;
+
+  /**
+   * `"sides"` iken oklar bağımsız, dikeyde ortalanmış iki `absolute` eleman.
+   * Köşe değerlerinde (`"top-right"` vb.) metin ağırlıklı slaytların (örn.
+   * yorum kartı) üzerine binmemeleri için ikisi TEK bir köşede, yan yana
+   * gruplanır — kullanıcının "oklar sağ üstte olsun" ihtiyacı buradan geldi.
+   */
+  const arrowsContent =
+    arrowsPlacement === "sides" ? (
+      <>
+        <button type="button" onClick={scrollPrev} disabled={!canScrollPrev} aria-label="Önceki slayt" className={cn(arrowBaseClass, "absolute top-1/2 left-4 -translate-y-1/2 p-1")}>
+          <ChevronLeftIcon className="h-7 w-7" />
+        </button>
+        <button type="button" onClick={scrollNext} disabled={!canScrollNext} aria-label="Sonraki slayt" className={cn(arrowBaseClass, "absolute top-1/2 right-4 -translate-y-1/2 p-1")}>
+          <ChevronRightIcon className="h-7 w-7" />
+        </button>
+      </>
+    ) : (
+      <div
+        className={cn("absolute z-10 flex gap-1", {
+          "top-4 left-4": arrowsPlacement === "top-left",
+          "top-4 right-4": arrowsPlacement === "top-right",
+          "bottom-4 left-4": arrowsPlacement === "bottom-left",
+          "bottom-4 right-4": arrowsPlacement === "bottom-right",
+        })}
+      >
+        <button type="button" onClick={scrollPrev} disabled={!canScrollPrev} aria-label="Önceki slayt" className={cn(arrowBaseClass, "p-1")}>
+          <ChevronLeftIcon className="h-6 w-6" />
+        </button>
+        <button type="button" onClick={scrollNext} disabled={!canScrollNext} aria-label="Sonraki slayt" className={cn(arrowBaseClass, "p-1")}>
+          <ChevronRightIcon className="h-6 w-6" />
+        </button>
+      </div>
+    );
+
+  const dotsContent = (
+    <div
+      className={cn(
+        "flex gap-2",
+        dotsPlacement === "overlay" && "pointer-events-none absolute z-10",
+        dotsPlacement === "overlay" && (dotPosition === "left" || dotPosition === "right" ? "flex-col" : "flex-row"),
+        dotsPlacement === "overlay" && dotWrapperPos,
+        dotsPlacement === "outside" && "mt-3 flex-row justify-center",
+        typeof dots === "object" ? dots.className : undefined
+      )}
+    >
+      {scrollSnaps.map((_, idx) => (
+        <button
+          key={`snap-${idx}`}
+          type="button"
+          onClick={() => scrollTo(idx)}
+          aria-label={`${idx + 1}. slayta git`}
+          aria-current={selectedIndex === idx ? "true" : undefined}
+          className={cn(getDotClass(selectedIndex === idx, color), dotsPlacement === "overlay" && "pointer-events-auto")}
+        />
+      ))}
+    </div>
+  );
+
   return (
-    <div className={cn("relative w-full", className)}>
-      <div className={cn("overflow-hidden", viewportClassName)} ref={emblaRef}>
-        <div
-          className={cn("flex w-full will-change-transform select-none", containerClassName)}
-          style={{ "--slide-basis": slideBasis } as React.CSSProperties}
-        >
-          {items.map((child, i) => {
-            const key = isValidElement(child) && child.key != null ? child.key : `slide-${i}`;
-            return (
-              <div key={key} className={cn("embla__slide shrink-0", itemClassName)} style={{ flex: "0 0 var(--slide-basis)" }}>
-                {child}
-              </div>
-            );
-          })}
+    <div className={className}>
+      <div className="group relative w-full">
+        <div className={cn("overflow-hidden", viewportClassName)} ref={emblaRef}>
+          <div
+            className={cn("flex w-full will-change-transform select-none", containerClassName)}
+            style={{ "--slide-basis": slideBasis } as React.CSSProperties}
+          >
+            {items.map((child, i) => {
+              const key = isValidElement(child) && child.key != null ? child.key : `slide-${i}`;
+              return (
+                <div key={key} className={cn("embla__slide shrink-0", itemClassName)} style={{ flex: "0 0 var(--slide-basis)" }}>
+                  {child}
+                </div>
+              );
+            })}
+          </div>
         </div>
+
+        {showArrows && arrowsContent}
+        {showDots && dotsPlacement === "overlay" && dotsContent}
       </div>
 
-      {/* Default UI */}
-      {arrows && count > slidesToShow && (
-        <>
-          <button
-            onClick={scrollPrev}
-            disabled={!canScrollPrev}
-            className="bg-mari-surface/70 text-mari-foreground hover:bg-mari-surface absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
-          >
-            <ChevronLeftIcon className="h-5 w-5" />
-          </button>
-          <button
-            onClick={scrollNext}
-            disabled={!canScrollNext}
-            className="bg-mari-surface/70 text-mari-foreground hover:bg-mari-surface absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 shadow transition disabled:opacity-40"
-          >
-            <ChevronRightIcon className="h-5 w-5" />
-          </button>
-        </>
-      )}
-
-      {dots && scrollSnaps.length > 1 && (
-        <div
-          className={cn(
-            "pointer-events-none absolute z-10 flex gap-2",
-            dotPosition === "left" || dotPosition === "right" ? "flex-col" : "flex-row",
-            dotWrapperPos,
-            typeof dots === "object" ? dots.className : undefined
-          )}
-        >
-          {scrollSnaps.map((_, idx) => (
-            <button key={`snap-${idx}`} onClick={() => scrollTo(idx)} className={getDotClass(selectedIndex === idx, color)} />
-          ))}
-        </div>
-      )}
+      {showDots && dotsPlacement === "outside" && dotsContent}
     </div>
   );
 };

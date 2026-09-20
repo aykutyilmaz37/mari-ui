@@ -21,6 +21,13 @@ export interface StepsProps {
   color?: ColorRole;
   currentStep: number;
   onChange?: (step: number) => void;
+  /**
+   * Son adımdayken "İleri" düğmesi yerine görünen "Tamamla"ya tıklandığında
+   * çağrılır (bkz. Steps.stories.tsx'teki gerçek sihirbaz örneği). Verilmezse
+   * son adımdaki düğme eski davranışıyla devre dışı kalır — akışın nasıl
+   * sonlanacağını bilmeden bir şey yapmaz.
+   */
+  onComplete?: () => void;
   vertical?: boolean;
   dot?: boolean;
   content?: React.ReactNode;
