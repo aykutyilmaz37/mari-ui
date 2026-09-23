@@ -319,6 +319,42 @@ describe("Dropdown", () => {
     await waitFor(() => expect(panel.style.top).toBe("24px"));
   });
 
+  it("hover modunda fareyle açılan menü, ardından tetikleyiciye TIKLAYINCA kapanmaz (kullanıcı bulgusu: tıklama toggle edip menüyü gözünüzün önünde kapatıyordu)", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown hover>
+        <DropdownTrigger>Üzerine Gel</DropdownTrigger>
+        <DropdownContent>
+          <div>İçerik</div>
+        </DropdownContent>
+      </Dropdown>
+    );
+    const trigger = screen.getByRole("button", { name: "Üzerine Gel" });
+    await user.hover(trigger);
+    expect(screen.getByText("İçerik")).toBeInTheDocument();
+
+    await user.click(trigger);
+    expect(screen.getByText("İçerik")).toBeInTheDocument();
+  });
+
+  it("hover modunda KLAVYEYLE (Enter) toggle davranışı korunur", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown hover>
+        <DropdownTrigger>Üzerine Gel</DropdownTrigger>
+        <DropdownContent>
+          <div>İçerik</div>
+        </DropdownContent>
+      </Dropdown>
+    );
+    const trigger = screen.getByRole("button", { name: "Üzerine Gel" });
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByText("İçerik")).toBeInTheDocument();
+    await user.keyboard("{Enter}");
+    expect(screen.queryByText("İçerik")).not.toBeInTheDocument();
+  });
+
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {
     const { container } = setup();
     expect(await getA11yViolations(container)).toEqual([]);

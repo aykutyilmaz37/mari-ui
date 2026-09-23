@@ -5,7 +5,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { Button } from "../../../button";
 import type { MenuItemType, MenuNavigationProps, SidebarPosition } from "../../types";
-import { getSidebarItemClass, isMenuItemActive } from "../../utils";
+import { getMenuVerticalItemClass, isMenuItemActive, navigateTo } from "../../utils";
 import { AccordionSub } from "./AccordionSub";
 import { DropdownSub } from "./DropdownSub";
 
@@ -24,7 +24,7 @@ export interface SidebarItemProps extends MenuNavigationProps {
 
 export function SidebarItem({ item, activeKey, setActiveKey, dropdown, mega, setSubItem, setSubVisible, visible, position, color, onNavigate, currentPath }: SidebarItemProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const activeClass = getSidebarItemClass(item, activeKey, color);
+  const activeClass = getMenuVerticalItemClass(item, activeKey, color);
 
   useEffect(() => {
     if (item.children) setIsOpen(isMenuItemActive(item, activeKey));
@@ -33,8 +33,7 @@ export function SidebarItem({ item, activeKey, setActiveKey, dropdown, mega, set
 
   const handleNavigateRoute = () => {
     if (!item.route) return;
-    if (onNavigate) onNavigate(item.route);
-    else window.location.href = item.route;
+    navigateTo(item.route, onNavigate);
     setActiveKey(item.key);
   };
 

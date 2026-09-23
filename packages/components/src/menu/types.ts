@@ -13,11 +13,33 @@ export interface MenuItemType {
   disabled?: boolean;
   route?: string;
   children?: MenuItemType[];
+  /**
+   * Ray öğesi seviyesinde (children'ı `MegaPanel`de kolonlara dönüşen
+   * öğede) opsiyonel promosyon kartları. Yoksa/boşsa promosyon alanı hiç
+   * render edilmez (bkz. `menu/_shared/MegaPanel`).
+   */
+  promoTiles?: MenuPromoTile[];
+  /**
+   * `true` ise bu öğe etkileşimsiz bir bölüm etiketidir (Sidebar/MegaPanel
+   * rail'inde): icon/chevron/hover/click YOK, sadece kalın bir başlık
+   * metni. Kendi `children`'ı varsa YOK SAYILIR — gruplama, veri dizisinde
+   * bu öğeden SONRA gelen kardeş öğelerle sağlanır (recursive bir
+   * "children'ı sibling'lere yay" mantığı kasıtlı olarak yok).
+   */
+  heading?: boolean;
+}
+
+/** `MegaPanel`in promosyon ızgarasındaki tek bir kart. */
+export interface MenuPromoTile {
+  title: string;
+  image: string;
+  href?: string;
+  /** Izgara kaplama boyutu. Varsayılan: `"sm"`. */
+  span?: "sm" | "wide" | "full";
 }
 
 export type MenuItemJustify = "left" | "center" | "right";
 export type MenuPosition = "default" | "sticky" | "fixed";
-export type MenuOrientation = "vertical" | "horizontal";
 export type SidebarVariant = "hover" | "click";
 export type SidebarPosition = "left" | "right";
 

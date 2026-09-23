@@ -12,10 +12,10 @@ describe("resolveColorVariantStyle", () => {
     expect(style.pressedContainer.backgroundColor).toBe(lightTheme.color.primary.solidHover);
   });
 
-  it("outline: sadece borderColor + label.color dolu, arka plan yok", () => {
+  it("outline: sadece borderColor + label.color dolu, arka plan yok; kenarlık rolün AÇIK `border` tonu değil rengin KENDİSİ (web'de #93c6f6 beyaz zeminde 1.8:1 ile WCAG 1.4.11'i geçmiyordu)", () => {
     const style = resolveColorVariantStyle(lightTheme, resolveColorVariant("error", "outline"));
     expect(style.container.backgroundColor).toBeUndefined();
-    expect(style.container.borderColor).toBe(lightTheme.color.error.border);
+    expect(style.container.borderColor).toBe(lightTheme.color.error.text);
     expect(style.label.color).toBe(lightTheme.color.error.text);
     expect(style.pressedContainer.backgroundColor).toBeUndefined();
   });

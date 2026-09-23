@@ -4,4 +4,4 @@ export { MegaMenu } from "./mega-menu/MegaMenu";
 export type { MegaMenuProps } from "./mega-menu/MegaMenu";
 export { Sidebar } from "./sidebar/Sidebar";
 export type { SidebarProps } from "./sidebar/Sidebar";
-export type { MenuItemType, MenuItemJustify, MenuPosition, MenuOrientation, SidebarVariant, SidebarPosition, MenuNavigationProps, MenuColorProps } from "./types";
+export type { MenuItemType, MenuPromoTile, MenuItemJustify, MenuPosition, SidebarVariant, SidebarPosition, MenuNavigationProps, MenuColorProps } from "./types";

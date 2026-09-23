@@ -95,6 +95,28 @@ export const borderColorClass: Record<ColorRole, string> = {
   neutral: "border-mari-neutral-border",
 };
 
+/** Rolün KENDİ rengiyle (açık `-border` tonuyla değil) çizilen kenarlık — `outline` varyantı bunu kullanır. */
+export const borderStrongColorClass: Record<ColorRole, string> = {
+  primary: "border-mari-primary",
+  accent: "border-mari-accent",
+  success: "border-mari-success",
+  error: "border-mari-error",
+  warning: "border-mari-warning",
+  info: "border-mari-info",
+  neutral: "border-mari-neutral",
+};
+
+/** `bgSubtleClass`in `hover:` varyantı — outline/ghost butonların hover dolgusu. */
+export const bgSubtleHoverClass: Record<ColorRole, string> = {
+  primary: "hover:bg-mari-primary-subtle",
+  accent: "hover:bg-mari-accent-subtle",
+  success: "hover:bg-mari-success-subtle",
+  error: "hover:bg-mari-error-subtle",
+  warning: "hover:bg-mari-warning-subtle",
+  info: "hover:bg-mari-info-subtle",
+  neutral: "hover:bg-mari-neutral-subtle",
+};
+
 /** `borderColorClass`in `hover:` varyantı. */
 export const borderColorHoverClass: Record<ColorRole, string> = {
   primary: "hover:border-mari-primary-border",
@@ -165,12 +187,20 @@ export function colorVariantToClassName(style: ColorVariantStyle): string {
     border: borderColorClass,
   } as const;
 
+  // `background`/`foreground` slot adını doğrudan kullanır; `border` ve
+  // `hoverBackground` ise AYNI slot'u kendi CSS özelliğine çevirmek zorunda
+  // (örn. `text` slot'u bir kenarlıkta `border-mari-primary`, bir metinde
+  // `text-mari-primary` demektir — native tarafında ikisi de aynı ham renge
+  // çözüldüğü için `slot` seti değişmeden kalıyor).
+  const borderSlotTable = { text: borderStrongColorClass, border: borderColorClass } as const;
+  const hoverBgSlotTable = { solidHover: bgSolidHoverClass, subtle: bgSubtleHoverClass } as const;
+
   const bg = style.background ? slotTable[style.background.slot][style.background.role] : undefined;
   const hoverBg = style.hoverBackground
-    ? slotTable[style.hoverBackground.slot][style.hoverBackground.role]
+    ? hoverBgSlotTable[style.hoverBackground.slot as keyof typeof hoverBgSlotTable]?.[style.hoverBackground.role]
     : undefined;
   const text = style.foreground ? slotTable[style.foreground.slot][style.foreground.role] : undefined;
-  const border = style.border ? slotTable[style.border.slot][style.border.role] : undefined;
+  const border = style.border ? borderSlotTable[style.border.slot as keyof typeof borderSlotTable]?.[style.border.role] : undefined;
 
   return cn(bg, hoverBg, text, border, border && "border");
 }

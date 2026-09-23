@@ -44,4 +44,35 @@ describe("MegaMenu", () => {
     const { container } = render(<MegaMenu data={data} onNavigate={() => {}} />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("3 seviyelik veri MegaPanel'i (ray + kolon leaf'i) render eder", async () => {
+    const user = userEvent.setup();
+    const richData: MenuItemType[] = [
+      {
+        key: "electronics",
+        title: "Elektronik",
+        children: [{ key: "computers", title: "Bilgisayarlar", children: [{ key: "laptop", title: "Laptop", children: [{ key: "lenovo", title: "Lenovo" }] }] }],
+      },
+    ];
+    render(<MegaMenu data={richData} onNavigate={() => {}} />);
+    await user.hover(screen.getByRole("button", { name: "Elektronik" }));
+    expect(await screen.findByText("Bilgisayarlar")).toBeInTheDocument();
+    expect(await screen.findByText("Lenovo")).toBeInTheDocument();
+  });
+
+  it("promosyon kartına tıklamak onNavigate'i kendi href'iyle çağırır", async () => {
+    const user = userEvent.setup();
+    const onNavigate = vi.fn();
+    const richData: MenuItemType[] = [
+      {
+        key: "electronics",
+        title: "Elektronik",
+        children: [{ key: "computers", title: "Bilgisayarlar", promoTiles: [{ title: "Monitörler", image: "/monitor.png", href: "/promo/monitors" }] }],
+      },
+    ];
+    render(<MegaMenu data={richData} onNavigate={onNavigate} />);
+    await user.hover(screen.getByRole("button", { name: "Elektronik" }));
+    await user.click(await screen.findByRole("button", { name: "Monitörler" }));
+    expect(onNavigate).toHaveBeenCalledWith("/promo/monitors");
+  });
 });

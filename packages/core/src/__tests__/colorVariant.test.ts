@@ -10,11 +10,14 @@ describe("resolveColorVariant", () => {
     expect(style.border).toBeUndefined();
   });
 
-  it("outline: sadece foreground+border döner, background yok", () => {
+  it("outline: sadece foreground+border döner, background yok; kenarlık rolün AÇIK `border` tonunu DEĞİL rengin kendisini (`text`) kullanır — `-border` beyaz zeminde 1.8:1 ile WCAG 1.4.11'i (≥3:1) geçmiyordu", () => {
     const style = resolveColorVariant("error", "outline");
     expect(style.background).toBeUndefined();
     expect(style.foreground).toEqual({ role: "error", slot: "text" });
-    expect(style.border).toEqual({ role: "error", slot: "border" });
+    expect(style.border).toEqual({ role: "error", slot: "text" });
+    // Etkileşim geri bildirimi bilinçli olarak burada YOK: aynı varyantı statik
+    // `Tag` da kullanıyor, hover dolgusunu Button kendi ekliyor.
+    expect(style.hoverBackground).toBeUndefined();
   });
 
   it("soft: subtle arka plan + subtleContrast metin", () => {

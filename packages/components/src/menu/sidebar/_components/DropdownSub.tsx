@@ -1,6 +1,7 @@
 import React from "react";
 import { type ColorRole } from "@mari-ui/core";
 import { Dropdown, DropdownContent } from "../../../dropdown";
+import { MegaPanel } from "../../_shared";
 import type { MenuItemType, MenuNavigationProps, SidebarPosition } from "../../types";
 import { SidebarMenu } from "./SidebarMenu";
 
@@ -17,6 +18,13 @@ export interface DropdownSubProps extends MenuNavigationProps {
 export function DropdownSub({ item, setSubVisible, subVisible, position = "left", color, onNavigate, currentPath }: DropdownSubProps) {
   if (!item.children) return null;
 
+  // 2026-09-22: `DropdownSubMenu` (BasicMenu) ile aynı veri-şekli dallanması
+  // — gerçek 3. seviye varsa ray+kolon paneli (`MegaPanel`, `layout="compact"
+  // orientation="vertical"`: ray üstte, kolonlar altta — sidebar'dan yana
+  // açılan dar bir panelde ray+kolon YAN YANA sığmaz). Aksi halde bugünkü
+  // düz `SidebarMenu` liste render'ı korunur.
+  const isRich = item.children.some((child) => child.children && child.children.length > 0);
+
   // Faz 13.5 bulgusu: `role="menu"` + `tabIndex={0}` içerik gerçek bir ARIA
   // menü deseni (ok tuşlarıyla gezinme, roving tabindex) UYGULAMADIĞI halde
   // ekran okuyucuya "bu bir menü" mesajı veriyordu — yanıltıcı. İçerik aslında
@@ -30,8 +38,12 @@ export function DropdownSub({ item, setSubVisible, subVisible, position = "left"
           DropdownContent.tsx'teki kırpma düzeltmesi) `w-full` VIEWPORT'UN
           TAMAMI anlamına geliyordu. Sabit bir genişliğe çevrildi. */}
       <Dropdown hover className="block self-auto">
-        <DropdownContent customVisible={subVisible} placement={position === "left" ? "right" : "left"} className="w-56 p-1.5">
-          <SidebarMenu data={item.children} dropdown setSubVisible={() => {}} position={position} color={color} onNavigate={onNavigate} currentPath={currentPath} />
+        <DropdownContent customVisible={subVisible} placement={position === "left" ? "right" : "left"} className={isRich ? "w-80 p-1.5" : "w-56 p-1.5"}>
+          {isRich ? (
+            <MegaPanel items={item.children} layout="compact" orientation="vertical" color={color} onNavigate={onNavigate} />
+          ) : (
+            <SidebarMenu data={item.children} dropdown setSubVisible={() => {}} position={position} color={color} onNavigate={onNavigate} currentPath={currentPath} />
+          )}
         </DropdownContent>
       </Dropdown>
     </div>

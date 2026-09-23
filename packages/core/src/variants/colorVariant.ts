@@ -44,9 +44,15 @@ export function resolveColorVariant(color: ColorRole, variant: Variant): ColorVa
         hoverBackground: ref(color, "solidHover"),
       };
     case "outline":
+      // Kenarlık, rolün AÇIK `border` tonu değil rengin KENDİSİ (`text` slot'u):
+      // `-border` beyaz zeminde 1.8:1 kontrast veriyordu — WCAG 1.4.11 (UI
+      // bileşen sınırı ≥ 3:1) ihlali, ve görsel olarak da "soluk ikinci renk"
+      // gibi duruyordu (kullanıcı bulgusu). Rol rengiyle 5.9:1.
+      // Hover/etkileşim BURAYA eklenmez: `Tag` gibi statik component'ler de
+      // `outline` kullanıyor — etkileşim geri bildirimi Button'ın işi.
       return {
         foreground: ref(color, "text"),
-        border: ref(color, "border"),
+        border: ref(color, "text"),
       };
     case "soft":
       return {

@@ -21,8 +21,13 @@ export interface BasicMenuProps extends MenuNavigationProps, MenuColorProps {
  * `currentPath` eskiden kabul edilip hiç kullanılmıyordu — sayfa yenilendiğinde
  * (veya SSR'da) aktif öğe her zaman `data[0]`e düşüyordu, gerçek route ne
  * olursa olsun (Faz 13.5 bulgusu). Artık `findActiveKeyByRoute` ile
- * `currentPath`e karşılık gelen öğe varsa o başlangıçta aktif; yoksa ilk öğeye
- * geri düşülür (eski davranış korunuyor).
+ * `currentPath`e karşılık gelen öğe varsa o başlangıçta aktif.
+ *
+ * 2026-09-22: `data[0]`e geri düşme davranışı KALDIRILDI — Sidebar hiçbir
+ * zaman böyle bir varsayılan seçmiyordu (`findActiveKeyByRoute` eşleşmezse
+ * `null` kalır) ve `currentPath` hiç eşleşmediğinde ilk öğeyi "aktif" göstermek
+ * yanıltıcıydı (kullanıcı nav'da olmayan bir sayfadaysa bile ilk öğe vurgulanırdı).
+ * BasicMenu artık Sidebar'la tutarlı: eşleşme yoksa hiçbir öğe aktif görünmez.
  *
  * Faz 13.5 kullanıcı bulgusu: logo ve öğeler eskiden TEK bir flex satırında,
  * yan yana render ediliyordu — "logo solda sabit, öğeler ortada/sağda, eylem
@@ -36,10 +41,8 @@ export function BasicMenu({ data, logo, onLogoClick, menuItemJustify = "left", m
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
   useEffect(() => {
-    if (data.length > 0 && !activeKey) {
-      setActiveKey(findActiveKeyByRoute(data, currentPath) ?? data[0]?.key ?? null);
-    }
-  }, [data, activeKey, currentPath]);
+    setActiveKey(findActiveKeyByRoute(data, currentPath));
+  }, [data, currentPath]);
 
   return (
     <div className={cn("flex flex-row items-center justify-between gap-4 bg-mari-surface px-4 py-3 shadow-md", getMenuPosition(menuPosition))}>

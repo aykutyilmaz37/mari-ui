@@ -1,9 +1,10 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { AppWindowIcon, DatabaseIcon, MailIcon, SettingsIcon } from "lucide-react";
+import { AppWindowIcon, DatabaseIcon, FlameIcon, MailIcon, SettingsIcon, SparklesIcon, UserIcon } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
+import { Avatar } from "../../avatar";
 
 /**
  * Not: eskiden her öğe `iconName: "AppWindowIcon"` gibi bir STRING taşıyordu
@@ -61,7 +62,10 @@ const meta: Meta<typeof Sidebar> = {
           summary:
             "Dikey gezinme menüsü. Alt öğeler `variant=\"hover\"` iken üzerine gelince, `variant=\"click\"` iken " +
             "tıklanınca açılır; `dropdown`/`mega` ile alt öğelerin akordeon yerine bir dropdown veya mega-panel " +
-            "olarak açılması sağlanır. `onlyIcon` sidebar'ı sadece ikonlarla daraltır.",
+            "olarak açılması sağlanır (veri 3 seviyeliyse ikisi de ray+kolon `MegaPanel`ini kullanır, bkz. " +
+            "\"Hover / Dropdown\" story'lerindeki \"Ürünler\"). `onlyIcon` sidebar'ı sadece ikonlarla daraltır. " +
+            "`header` (mobil drawer tarzı bir avatar+karşılama bloğu için) ve `data`daki `heading: true` öğeleri " +
+            "(bölüm etiketleri, tıklanamaz) için bkz. \"Mobil Drawer Deseni\" story'si.",
           a11y:
             "Her öğe gerçek bir `<button>` — Tab/Enter ile erişilebilir. `dropdown`/`mega` modlarında alt panel " +
             "eskiden sadece mouse hover ile açılıyordu; artık aynı düğmeye klavyeyle odaklanmak da (`onFocus`) açar " +
@@ -180,6 +184,42 @@ export const ContentBehindSidebar: Story = {
     );
   },
   args: { variant: "hover", position: "left", dropdown: false, mega: false },
+};
+
+const drawerData: MenuItemType[] = [
+  { key: "best-sellers", title: "Çok Satanlar", route: "/best-sellers", icon: icon(FlameIcon) },
+  { key: "new-arrivals", title: "Yeni Çıkanlar", route: "/new", icon: icon(SparklesIcon) },
+  { key: "section-categories", title: "Kategoriye Göre Alışveriş Yap", heading: true },
+  { key: "electronics", title: "Elektronik", route: "/electronics", icon: icon(AppWindowIcon) },
+  { key: "home-living", title: "Ev ve Yaşam", route: "/home-living", icon: icon(DatabaseIcon) },
+  { key: "clothing", title: "Giyim", route: "/clothing", icon: icon(SettingsIcon) },
+];
+
+export const MobileDrawerPattern: Story = {
+  name: "Mobil Drawer Deseni",
+  ...storyDoc(
+    "Amazon tarzı mobil drawer yapısı: `header` ile avatar + karşılama bloğu, ardından etiketsiz bir öğe grubu " +
+      "(Çok Satanlar/Yeni Çıkanlar), sonra `heading: true` ile bölüm etiketli bir grup (Kategoriye Göre Alışveriş " +
+      "Yap). Bölüm etiketi tıklanamaz, sadece kalın bir başlıktır — akordeon mimarisi değişmeden aynı kalıyor."
+  ),
+  render: (args) => (
+    <div className="relative h-[32rem]">
+      <Sidebar {...args} />
+    </div>
+  ),
+  args: {
+    data: drawerData,
+    variant: "hover",
+    position: "left",
+    dropdown: false,
+    mega: false,
+    header: (
+      <div className="flex items-center gap-3 px-2 py-2">
+        <Avatar size="sm" icon={<UserIcon size={16} />} />
+        <span className="text-sm font-medium">Merhaba, aykut</span>
+      </div>
+    ),
+  },
 };
 
 export const RealWorldAdmin: Story = {

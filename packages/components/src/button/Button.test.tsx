@@ -19,7 +19,11 @@ describe("Button", () => {
     );
     const btn = screen.getByRole("button", { name: "Sil" });
     expect(btn.className).toContain("text-mari-error");
-    expect(btn.className).toContain("border-mari-error-border");
+    expect(btn.className).toContain("border-mari-error");
+    // Kenarlık rolün AÇIK `-border` tonu DEĞİL rengin kendisi (WCAG 1.4.11: ≥3:1).
+    expect(btn.className).not.toContain("border-mari-error-border");
+    // outline tıklanabilir bir öğe — hover geri bildirimi Button tarafından eklenir.
+    expect(btn.className).toContain("hover:bg-mari-error-subtle");
     expect(btn.className).not.toContain("bg-mari-error-solid");
   });
 
@@ -40,7 +44,8 @@ describe("Button", () => {
   it("eski `variant=\"outlined\"` değerini `outline`a çevirir", () => {
     render(<Button variant="outlined">Eski Variant</Button>);
     const btn = screen.getByRole("button", { name: "Eski Variant" });
-    expect(btn.className).toContain("border-mari-primary-border");
+    expect(btn.className).toContain("border-mari-primary");
+    expect(btn.className).not.toContain("border-mari-primary-border");
   });
 
   it("disabled iken onClick tetiklenmez", async () => {

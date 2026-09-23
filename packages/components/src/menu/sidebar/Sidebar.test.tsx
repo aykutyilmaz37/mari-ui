@@ -38,4 +38,32 @@ describe("Sidebar", () => {
     const { container } = render(<Sidebar data={data} onNavigate={() => {}} variant="click" />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("heading öğesi inert render edilir — tıklanamaz, buton değildir", () => {
+    const headingData: MenuItemType[] = [{ key: "section-1", title: "Kategoriye Göre Alışveriş Yap", heading: true }, ...data];
+    render(<Sidebar data={headingData} onNavigate={() => {}} />);
+    const heading = screen.getByText("Kategoriye Göre Alışveriş Yap");
+    expect(heading.tagName).toBe("LI");
+    expect(screen.queryByRole("button", { name: "Kategoriye Göre Alışveriş Yap" })).not.toBeInTheDocument();
+  });
+
+  it("header prop'u verilen ReactNode'u nav listesinin ÜSTÜNDE render eder", () => {
+    render(<Sidebar data={data} onNavigate={() => {}} header={<div>Merhaba, aykut</div>} />);
+    expect(screen.getByText("Merhaba, aykut")).toBeInTheDocument();
+  });
+
+  it("dropdown=true + 3 seviyelik veri MegaPanel içeriğini (ray + kolon başlığı) render eder", async () => {
+    const user = userEvent.setup();
+    const richData: MenuItemType[] = [
+      {
+        key: "products",
+        title: "Ürünler",
+        children: [{ key: "computers", title: "Bilgisayarlar", children: [{ key: "laptop", title: "Laptop", children: [{ key: "lenovo", title: "Lenovo" }] }] }],
+      },
+    ];
+    render(<Sidebar data={richData} onNavigate={() => {}} dropdown />);
+    await user.hover(screen.getByRole("button", { name: "Ürünler" }));
+    expect(await screen.findByText("Bilgisayarlar")).toBeInTheDocument();
+    expect(await screen.findByText("Lenovo")).toBeInTheDocument();
+  });
 });

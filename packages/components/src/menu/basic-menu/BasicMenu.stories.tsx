@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { BriefcaseIcon, CodeIcon, HomeIcon, InfoIcon, MailIcon, PaletteIcon, PhoneIcon, ShoppingCartIcon, TagIcon } from "lucide-react";
+import { BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
 import { BasicMenu } from "./BasicMenu";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
@@ -27,8 +27,11 @@ const meta: Meta<typeof BasicMenu> = {
         component: componentDoc({
           summary:
             "Yatay üst gezinme çubuğu. `data` içindeki `children`'ı olan öğeler üzerine gelindiğinde otomatik " +
-            "olarak bir dropdown açar. `onNavigate` verilmezse `window.location.href` ile tam sayfa geçiş yapar — " +
-            "bir router (örn. Next.js `useRouter`) kullanıyorsanız `onNavigate` ile client-side gezinmeye bağlayın.",
+            "olarak bir dropdown açar: veri düzse (tek seviye) kompakt bir liste, veri gerçekten 3 seviyeliyse " +
+            "(çocukların kendi çocukları varsa) tetikleyiciye sabitlenmiş bir ray+kolon paneli (`MegaPanel`, " +
+            "promosuz — tam genişlikteki hâli için `MegaMenu`ya bakın). `onNavigate` verilmezse `window.location.href` " +
+            "ile tam sayfa geçiş yapar — bir router (örn. Next.js `useRouter`) kullanıyorsanız `onNavigate` ile " +
+            "client-side gezinmeye bağlayın.",
           whenToUse: ["Bir uygulamanın üst seviye sayfaları arasında yatay, her zaman görünür bir gezinme çubuğu gerektiğinde."],
           a11y:
             "Her öğe gerçek bir `<button>` (Button component'i) — Tab ile odaklanılıp Enter/Boşluk ile aktifleştirilebilir. " +
@@ -65,9 +68,33 @@ const ecommerceData: MenuItemType[] = [
     key: "products",
     title: "Ürünler",
     children: [
-      { key: "electronics", title: "Elektronik", route: "/products/electronics", icon: icon(TagIcon) },
-      { key: "clothing", title: "Giyim", route: "/products/clothing", icon: icon(TagIcon) },
-      { key: "home-living", title: "Ev & Yaşam", route: "/products/home", icon: icon(TagIcon) },
+      { key: "electronics", title: "Elektronik", route: "/products/electronics", icon: icon(SmartphoneIcon), description: "Telefon, bilgisayar ve tüm teknoloji ürünleri." },
+      { key: "clothing", title: "Giyim", route: "/products/clothing", icon: icon(ShirtIcon), description: "Kadın, erkek ve çocuk koleksiyonları." },
+      { key: "home-living", title: "Ev & Yaşam", route: "/products/home", icon: icon(SofaIcon), description: "Mobilya, dekorasyon ve mutfak." },
+    ],
+  },
+  {
+    key: "categories",
+    title: "Kategoriler",
+    icon: icon(LayersIcon),
+    children: [
+      {
+        key: "electronics-group",
+        title: "Elektronik",
+        children: [
+          { key: "phones", title: "Telefonlar", route: "/c/phones", icon: icon(SmartphoneIcon), description: "Akıllı telefon ve aksesuarları." },
+          { key: "computers", title: "Bilgisayarlar", route: "/c/computers", icon: icon(LaptopIcon), description: "Dizüstü, masaüstü ve bileşenler." },
+          { key: "audio", title: "Ses Sistemleri", route: "/c/audio", icon: icon(HeadphonesIcon), description: "Kulaklık ve hoparlörler." },
+        ],
+      },
+      {
+        key: "fashion-group",
+        title: "Moda",
+        children: [
+          { key: "women", title: "Kadın", route: "/c/women", icon: icon(ShirtIcon), description: "Elbise, dış giyim ve daha fazlası." },
+          { key: "men", title: "Erkek", route: "/c/men", icon: icon(ShirtIcon), description: "Gömlek, pantolon ve ayakkabı." },
+        ],
+      },
     ],
   },
   { key: "campaigns", title: "Kampanyalar", route: "/campaigns", icon: icon(TagIcon) },
@@ -78,7 +105,8 @@ export const RealWorldEcommerce: Story = {
   name: "Gerçek Kullanım (E-Ticaret)",
   ...storyDoc(
     "Gerçek bir e-ticaret üst menüsü: logo sabit solda, ikonlu gezinme öğeleri ortada, \"Giriş Yap\" + sepet " +
-      "`actions` ile sabit sağda. \"Ürünler\"in üzerine gelin — alt panel öğeleri de ikonlu."
+      "`actions` ile sabit sağda. \"Ürünler\" ikon karosu + açıklamalı satırlardan oluşan bir panel açar; " +
+      "\"Kategoriler\" ise çocukların kendi çocukları olduğu için başlıklı gruplu kolonlara geçer."
   ),
   args: {
     data: ecommerceData,
@@ -105,8 +133,8 @@ const corporateData: MenuItemType[] = [
     title: "Hizmetler",
     icon: icon(BriefcaseIcon),
     children: [
-      { key: "web-dev", title: "Web Geliştirme", route: "/services/web", icon: icon(CodeIcon) },
-      { key: "design", title: "Tasarım", route: "/services/design", icon: icon(PaletteIcon) },
+      { key: "web-dev", title: "Web Geliştirme", route: "/services/web", icon: icon(CodeIcon), description: "Kurumsal siteler ve web uygulamaları." },
+      { key: "design", title: "Tasarım", route: "/services/design", icon: icon(PaletteIcon), description: "Marka kimliği, UI/UX ve grafik tasarım." },
     ],
   },
   { key: "contact", title: "İletişim", route: "/contact", icon: icon(MailIcon) },
@@ -119,8 +147,11 @@ export const RealWorldCorporate: Story = {
     data: corporateData,
     menuItemJustify: "left",
     logo: <span className="text-lg font-bold text-mari-primary">Mari Ajans</span>,
+    // Navbar'daki tek CTA sayfanın en yüksek vurgulu öğesi olmalı — `solid`.
+    // `outline`/`ghost` daha düşük vurgulu ikincil eylemler içindir (bkz.
+    // e-ticaret story'sindeki "Giriş Yap").
     actions: (
-      <Button variant="outline" color="primary">
+      <Button variant="solid" color="primary" size="lg">
         İletişime Geç
       </Button>
     ),
@@ -130,13 +161,14 @@ export const RealWorldCorporate: Story = {
 export const ActiveFromCurrentPath: Story = {
   name: "Mevcut Yoldan Aktif Öğe",
   ...storyDoc(
-    "`currentPath=\"/products\"` verildi — başlangıçta \"Ürünler\" aktif görünür (alt çizgi + kalın metin). " +
-      "`currentPath` verilmezse ilk öğe başlangıçta aktif kabul edilir."
+    "`currentPath=\"/products/electronics\"` verildi — başlangıçta \"Ürünler > Elektronik\" aktif görünür. " +
+      "`currentPath` eşleşen bir `route` bulamazsa (veya hiç verilmezse) hiçbir öğe aktif görünmez — Sidebar'la " +
+      "tutarlı olsun diye \"ilk öğeye geri düş\" davranışı kaldırıldı."
   ),
   args: {
     data: ecommerceData,
     menuItemJustify: "center",
-    currentPath: "/products",
+    currentPath: "/products/electronics",
     logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
   },
 };

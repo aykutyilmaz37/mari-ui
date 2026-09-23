@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { Loader2Icon } from "lucide-react";
 import { cn, resolveColorVariant } from "@mari-ui/core";
-import { colorVariantToClassName } from "../lib/colorClasses";
+import { bgSubtleHoverClass, colorVariantToClassName } from "../lib/colorClasses";
 import { sizeClass } from "../lib/sizeClasses";
 import type { ButtonProps } from "./types";
 import { getShapeClasses, resolveLegacyButtonProps, resolveLoading } from "./utils";
@@ -60,12 +60,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   const resolvedLoadingIcon = loadingIcon ?? <Loader2Icon className="w-4 h-4 animate-spin" aria-hidden />;
 
   const colorClasses = colorVariantToClassName(resolveColorVariant(resolvedColor, resolvedVariant));
+  // `solid` hover'ını `resolveColorVariant` zaten veriyor; `outline`/`ghost`in
+  // ise HİÇ hover durumu yoktu — tıklanabilir bir öğe için geri bildirim
+  // eksikti. Etkileşim geri bildirimi bilinçli olarak burada: aynı `outline`
+  // varyantını `Tag` gibi STATİK component'ler de kullanıyor, onlara hover
+  // dolgusu vermek yanlış olurdu.
+  const interactiveHoverClass = resolvedVariant === "outline" || resolvedVariant === "ghost" ? bgSubtleHoverClass[resolvedColor] : undefined;
 
   const rootClasses = cn(
     "inline-flex items-center justify-center font-medium transition-colors duration-150 select-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
     sizeClass[size],
     getShapeClasses(shape),
     colorClasses,
+    interactiveHoverClass,
     isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
     block && "w-full",
     className,

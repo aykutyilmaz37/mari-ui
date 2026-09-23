@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import { cn } from "@mari-ui/core";
+import { MegaPanel } from "../_shared";
 import type { MenuColorProps, MenuItemType, MenuNavigationProps, SidebarPosition, SidebarVariant } from "../types";
 import { getSidebarWidthClass } from "../utils";
 import { SidebarButton } from "./_components/SidebarButton";
 import { SidebarMenu } from "./_components/SidebarMenu";
-import { MegaSub } from "./_components/MegaSub";
 
 export interface SidebarProps extends MenuNavigationProps, MenuColorProps {
   data: MenuItemType[];
@@ -20,6 +20,13 @@ export interface SidebarProps extends MenuNavigationProps, MenuColorProps {
    * (bkz. plan denetimi). Artık verilmezse hiç logo render edilmez. */
   logo?: React.ReactNode;
   onLogoClick?: () => void;
+  /**
+   * Logo/ayırıcı bloğunun ÜSTÜNDE render edilen keyfi içerik — mobil drawer
+   * tarzı bir "Merhaba, {isim}" başlığı için (bkz. `MobileDrawerPattern`
+   * story'si). Sidebar tüketicinin auth/kullanıcı durumundan habersiz kalır;
+   * tüketici kendi `Avatar`ını + metnini burada geçirir.
+   */
+  header?: React.ReactNode;
 }
 
 /**
@@ -28,7 +35,7 @@ export interface SidebarProps extends MenuNavigationProps, MenuColorProps {
  * çalışıyordu — gerçek bir derleme hatasıydı (bkz. plan denetimi). Artık
  * doğrudan burada, export edilerek tanımlanıyor.
  */
-export function Sidebar({ data, variant = "hover", position = "left", onlyIcon = false, dropdown = false, mega = false, logo, onLogoClick, color = "primary", onNavigate, currentPath }: SidebarProps) {
+export function Sidebar({ data, variant = "hover", position = "left", onlyIcon = false, dropdown = false, mega = false, logo, onLogoClick, header, color = "primary", onNavigate, currentPath }: SidebarProps) {
   const [visible, setVisible] = useState(false);
   const [subItem, setSubItem] = useState<MenuItemType[] | undefined>();
   const [subVisible, setSubVisible] = useState(false);
@@ -60,6 +67,7 @@ export function Sidebar({ data, variant = "hover", position = "left", onlyIcon =
           getSidebarWidthClass(variant, visible)
         )}
       >
+        {header && <div className="overflow-hidden px-1 pb-2 whitespace-nowrap">{header}</div>}
         {logo && (
           <div className="w-12 flex-col items-center justify-center h-12">
             <button type="button" className="cursor-pointer" onClick={onLogoClick}>
@@ -72,7 +80,18 @@ export function Sidebar({ data, variant = "hover", position = "left", onlyIcon =
           <SidebarMenu data={data} setSubItem={setSubItem} setSubVisible={setSubVisible} visible={visible} mega={mega} dropdown={dropdown} position={position} color={color} onNavigate={onNavigate} currentPath={currentPath} />
         </nav>
       </aside>
-      {subItem && <MegaSub setSubVisible={setSubVisible} subVisible={subVisible} subItem={subItem} color={color} onNavigate={onNavigate} />}
+      {subItem && (
+        <div
+          onMouseEnter={() => setSubVisible(true)}
+          onMouseLeave={() => setSubVisible(false)}
+          className={cn(
+            "h-full overflow-hidden bg-mari-surface-alt transition-all duration-300 ease-in-out",
+            subVisible ? "w-full max-w-3xl p-4 opacity-100" : "w-0 opacity-0"
+          )}
+        >
+          <MegaPanel items={subItem} layout="compact" orientation="vertical" color={color} onNavigate={onNavigate} />
+        </div>
+      )}
       {variant === "click" && <SidebarButton visible={visible} setVisible={setVisible} position={position} />}
     </div>
   );

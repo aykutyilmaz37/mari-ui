@@ -3,21 +3,22 @@
 import React from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
-import { Button } from "../../../button";
-import { getItemClass } from "../../utils";
+import { getItemClass, navigateTo } from "../../utils";
 import type { MenuItemType, MenuNavigationProps } from "../../types";
 
 export interface MegaMenuItemProps extends MenuNavigationProps {
   item: MenuItemType;
   className?: string;
   visible: boolean;
-  setVisible: (val: boolean) => void;
-  setSubItem: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
+  /** Bu öğenin alt panelini açar (hover/focus). Bekleyen gecikmeli kapatmayı da iptal eder — bkz. `MegaMenu`. */
+  onOpen: (children: MenuItemType[] | undefined) => void;
+  /** Kapatmayı GECİKMELİ planlar: fare/odak panele geçerken menü kapanmasın. */
+  onClose: () => void;
   subKey: string | undefined;
   color: ColorRole;
 }
 
-export function MegaMenuItem({ item, className, setVisible, visible, setSubItem, subKey, color, onNavigate }: MegaMenuItemProps) {
+export function MegaMenuItem({ item, className, onOpen, onClose, visible, subKey, color, onNavigate }: MegaMenuItemProps) {
   // Eskiden `subKey?.slice(0, 1) === item.key` idi — bu, subKey'in SADECE
   // İLK KARAKTERİNİ item.key'in TAMAMIYLA karşılaştırıyordu. Anahtarlar tek
   // karakter olmadıkça bu karşılaştırma neredeyse hiç eşleşmezdi (gerçek
@@ -26,45 +27,36 @@ export function MegaMenuItem({ item, className, setVisible, visible, setSubItem,
   const isActive = Boolean(subKey?.startsWith(item.key)) && visible;
 
   const handleClick = () => {
-    if (item.disabled || !item.route) return;
-    if (onNavigate) onNavigate(item.route);
-    else window.location.href = item.route;
+    if (item.disabled) return;
+    navigateTo(item.route, onNavigate);
   };
 
-  const openSubmenu = () => {
-    setVisible(true);
-    setSubItem(item.children && item.children.length > 0 ? item.children : undefined);
-  };
+  const openSubmenu = () => onOpen(item.children);
+  // Paneli açık olan üst öğe "aktif" gösterilir — gerçek bir route eşleşmesi değil, açık/kapalı durumu.
+  const activeKey = isActive ? item.key : null;
+  const stateClass = item.disabled ? "cursor-not-allowed opacity-50" : cn("cursor-pointer", getItemClass(item, activeKey, color));
 
-  // Faz 13.5 kullanıcı bulgusu (round 2): "BasicMenu için söylediklerim
-  // MegaMenu için de geçerli" — sarmalayıcı eskiden hover/açıkken
-  // `bg-mari-surface-alt` (arka plan dolgusu) alıyordu, bu da BasicMenu'nün
-  // artık kullanmadığı farklı bir görsel dildi ve ayrıca `color` primary'i
-  // (üstteki `Button`da) arka plan/dolgu olarak değil sadece metin/alt çizgi
-  // rengi olarak kullanma kuralıyla tutarsızdı. Artık BasicMenu'yle AYNI
-  // `getItemClass` (jitter'sız, rezerve edilmiş `border-b-2`, hover/aktifte
-  // sadece renk değişimi) kullanılıyor.
+  // Kullanıcı bulgusu (2026-09-22): öğe `Button variant="ghost"` idi ve
+  // `ghost`a eklenen hover dolgusu burada tetikleyicinin TAMAMINI kaplayan,
+  // alt göstergeden çok daha geniş bir şerit yaratıyordu. Navbar öğesi bir
+  // "buton" gibi görünmemeli — BasicMenuItem'ın aynısı: düz `<button>`,
+  // arka plan yok, sadece metin rengi + alt gösterge değişiyor.
   return (
-    <div className="h-full" onMouseEnter={openSubmenu} onMouseLeave={() => setVisible(false)} onFocus={openSubmenu} onBlur={() => setVisible(false)}>
-      <Button
-        size="lg"
-        variant="ghost"
-        color="neutral"
+    <div className="flex h-full items-center" onMouseEnter={openSubmenu} onMouseLeave={onClose} onFocus={openSubmenu} onBlur={onClose}>
+      <button
+        type="button"
         disabled={item.disabled}
         onClick={handleClick}
         className={cn(
-          "h-full w-full px-3 text-sm transition justify-start",
-          item.disabled ? "cursor-not-allowed" : "cursor-pointer",
-          className,
-          !item.disabled && getItemClass(item, isActive ? item.key : null, color)
+          "inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+          stateClass,
+          className
         )}
       >
-        <div className="flex items-center gap-2">
-          {item.icon}
-          <div>{item.title}</div>
-          {item.children && <ChevronDownIcon className={cn("transition-transform duration-200", isActive && "rotate-180")} size={16} />}
-        </div>
-      </Button>
+        {item.icon}
+        {item.title}
+        {item.children && <ChevronDownIcon aria-hidden="true" size={14} className={cn("opacity-60 transition-transform duration-200", isActive && "rotate-180")} />}
+      </button>
     </div>
   );
 }
