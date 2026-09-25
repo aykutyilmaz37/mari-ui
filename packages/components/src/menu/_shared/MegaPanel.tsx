@@ -38,7 +38,8 @@ export function MegaPanel({ items, color, layout, orientation = "horizontal", on
   const visibleColumns = columns;
   const promoTiles = layout === "full" ? selected.promoTiles : undefined;
   const hasContent = visibleColumns.length > 0 || !!promoTiles?.length;
-  let columnsClass = "columns-2 gap-8 lg:columns-3";
+  // 3 kolon + promosyon ancak `xl`de sığıyor; 1024px'te başlıklar kırılıyordu.
+  let columnsClass = "columns-2 gap-8 xl:columns-3";
   if (orientation === "vertical") columnsClass = "columns-1";
   else if (layout === "compact") columnsClass = "columns-2 gap-8";
 
@@ -59,7 +60,7 @@ export function MegaPanel({ items, color, layout, orientation = "horizontal", on
               ))}
             </div>
           )}
-          {promoTiles && promoTiles.length > 0 && <MegaPanelPromoGrid tiles={promoTiles} onNavigate={onNavigate} />}
+          {promoTiles && promoTiles.length > 0 && <MegaPanelPromoGrid tiles={promoTiles} onNavigate={onNavigate} className="hidden xl:grid" />}
         </div>
       )}
     </div>

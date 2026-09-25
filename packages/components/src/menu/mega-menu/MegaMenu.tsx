@@ -6,6 +6,8 @@ import { cn } from "@mari-ui/core";
 import { MegaPanel } from "../_shared";
 import type { MenuColorProps, MenuItemJustify, MenuItemType, MenuNavigationProps, MenuPosition } from "../types";
 import { getMenuItemJustify, getMenuPosition } from "../utils";
+import { MobileNav } from "../_shared/MobileNav";
+import { DESKTOP_ONLY_CLASS, type MenuMobileBreakpoint } from "../_shared/responsive";
 import { MegaMenuItem } from "./_components/MegaMenuItem";
 
 export interface MegaMenuProps extends MenuNavigationProps, MenuColorProps {
@@ -16,6 +18,12 @@ export interface MegaMenuProps extends MenuNavigationProps, MenuColorProps {
   menuPosition?: MenuPosition;
   /** Sağ tarafta gösterilecek keyfi içerik (örn. "Giriş Yap" düğmesi, sepet ikonu, arama). */
   actions?: React.ReactNode;
+  /**
+   * Bu genişliğin ALTINDA yatay öğeler ve hover'a dayalı mega panel devre
+   * dışı kalır; yerine hamburger + kademeli (drill-down) mobil çekmece gelir.
+   * Varsayılan: `"lg"` (1024px).
+   */
+  mobileBreakpoint?: MenuMobileBreakpoint;
 }
 
 /**
@@ -42,7 +50,7 @@ const HOVER_CLOSE_DELAY_MS = 200;
 /** Panelin viewport'un alt kenarına yapışmaması için bırakılan pay. */
 const VIEWPORT_EDGE_PX = 8;
 
-export function MegaMenu({ data, logo, onLogoClick, menuItemJustify = "center", menuPosition = "default", color = "primary", onNavigate, actions }: MegaMenuProps) {
+export function MegaMenu({ data, logo, onLogoClick, menuItemJustify = "center", menuPosition = "default", color = "primary", onNavigate, currentPath, actions, mobileBreakpoint = "lg" }: MegaMenuProps) {
   const [visible, setVisible] = useState(false);
   const [subItem, setSubItem] = useState<MenuItemType[] | undefined>();
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -113,15 +121,16 @@ export function MegaMenu({ data, logo, onLogoClick, menuItemJustify = "center", 
   return (
     <div className={cn("relative", getMenuPosition(menuPosition))}>
       <div ref={navRef} className="flex flex-row items-center justify-between gap-4 bg-mari-surface px-4 py-3 shadow-md">
-        {logo ? (
-          <button type="button" className="shrink-0 cursor-pointer" onClick={onLogoClick}>
-            {logo}
-          </button>
-        ) : (
-          <span />
-        )}
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
+          <MobileNav data={data} color={color} breakpoint={mobileBreakpoint} logo={logo} onNavigate={onNavigate} currentPath={currentPath} />
+          {logo && (
+            <button type="button" className="shrink-0 cursor-pointer" onClick={onLogoClick}>
+              {logo}
+            </button>
+          )}
+        </div>
 
-        <div className={cn("flex flex-1 flex-row items-center", getMenuItemJustify(menuItemJustify))}>
+        <div className={cn("min-w-0 flex-1 flex-row items-center", DESKTOP_ONLY_CLASS[mobileBreakpoint], getMenuItemJustify(menuItemJustify))}>
           {data.map((menu) => (
             <MegaMenuItem key={menu.key} item={menu} visible={visible} subKey={subItem?.[0]?.key} onOpen={openSubmenu} onClose={scheduleClose} color={color} onNavigate={onNavigate} />
           ))}

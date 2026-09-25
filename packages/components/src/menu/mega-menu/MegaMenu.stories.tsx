@@ -31,12 +31,15 @@ const meta: Meta<typeof MegaMenu> = {
             "plan olarak KULLANILMAZ. Alt panel üst öğe düğmesi klavyeyle odaklanınca (`onFocus`) da açılır, odak " +
             "ayrılınca (`onBlur`) kapanır. Panel açıkken **Escape** kapatır. Panel içeriği (ray/kolon/promosyon " +
             "satırları) gerçek `menuitem`ler değil, bu yüzden sarmalayıcılara `role=\"menuitem\"`/`role=\"menu\"` UYGULANMAZ " +
-            "(kod tabanının geri kalanıyla aynı, belgelenmiş karar).",
+            "(kod tabanının geri kalanıyla aynı, belgelenmiş karar). `mobileBreakpoint` altında hover'a dayalı panel yerine " +
+            "hamburger + kademeli (drill-down) bir `role=\"dialog\"` çekmece gelir: odak içeri taşınır ve içinde döner, " +
+            "seviye değişince odak geri düğmesine / girilen satıra geçer, Escape/scrim kapatır.",
         }),
       },
     },
   },
   argTypes: {
+    mobileBreakpoint: { control: "select", options: ["md", "lg", "xl"], description: "Bu genişliğin altında öğeler gizlenir, hamburger + mobil çekmece gelir. Varsayılan `lg` (1024px)." },
     menuItemJustify: { control: "select", options: ["left", "center", "right"], description: "Menü öğelerinin yatay hizalanması." },
     menuPosition: { control: "select", options: ["default", "sticky", "fixed"], description: "Menünün sayfa kaydırmasına göre konumlanma davranışı." },
     actions: { control: false, description: "Sağ tarafta gösterilecek keyfi içerik (örn. \"Giriş Yap\" düğmesi, sepet ikonu)." },
@@ -167,6 +170,18 @@ export const RealWorldEcommerce: Story = {
       </>
     ),
   },
+};
+
+export const Mobile: Story = {
+  name: "Mobil (Kademeli Çekmece)",
+  ...storyDoc(
+    "`mobileBreakpoint` (varsayılan `lg`, 1024px) altında hover'a dayalı mega panel dokunmatikte kullanılamaz — yerine " +
+      "hamburger + kademeli (drill-down) çekmece gelir: Elektronik → Bilgisayar / Tablet → Laptop → marka. Her alt seviyede " +
+      "geri düğmesi, seviye başlığı ve (üst öğenin route'u varsa) \"Tümünü gör\"; ray öğesinin `promoTiles`'ı listenin altında. " +
+      "Bu story mobil viewport'ta açılır."
+  ),
+  parameters: { viewport: { defaultViewport: "mobile2" } },
+  args: RealWorldEcommerce.args,
 };
 
 export const EcommerceNoPromo: Story = {

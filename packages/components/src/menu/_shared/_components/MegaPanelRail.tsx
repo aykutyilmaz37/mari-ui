@@ -49,7 +49,7 @@ export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation
   const horizontal = orientation === "horizontal";
 
   return (
-    <ul className={cn("flex shrink-0", horizontal ? "w-60 flex-col gap-0.5 border-r border-mari-border pr-3" : "flex-row flex-wrap gap-1 border-b border-mari-border pb-2")}>
+    <ul className={cn("flex shrink-0", horizontal ? "w-52 flex-col xl:w-60 gap-0.5 border-r border-mari-border pr-3" : "flex-row flex-wrap gap-1 border-b border-mari-border pb-2")}>
       {items.map((item) => {
         const selected = item.key === selectedKey;
         const indicatorClass = selected ? INDICATOR_COLOR_CLASS[color] : "before:bg-transparent";

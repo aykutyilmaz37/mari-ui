@@ -106,9 +106,10 @@ export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNaviga
         {item.title}
         <ChevronDownIcon aria-hidden="true" size={14} className="opacity-60 transition-transform duration-200 group-aria-expanded:rotate-180" />
       </DropdownTrigger>
-      <DropdownContent placement="bottom-start" offset={NAVBAR_OFFSET_PX} className={cn("rounded-xl p-2", panelWidth)}>
+      <DropdownContent placement="bottom-start" offset={NAVBAR_OFFSET_PX} className={cn("max-w-[calc(100vw-2rem)] rounded-xl p-2", panelWidth)}>
         {grouped ? (
-          <div className="flex gap-2">
+          // `flex-wrap`: grup sayısı viewport'a sığmıyorsa (panel `max-w`ye takılır) gruplar alt satıra iner.
+          <div className="flex flex-wrap gap-2">
             {children.map((group) => (
               <div key={group.key} className="flex w-64 flex-col">
                 <div className="px-2.5 pt-1.5 pb-1 text-xs font-semibold uppercase tracking-wide text-mari-muted">{group.title}</div>

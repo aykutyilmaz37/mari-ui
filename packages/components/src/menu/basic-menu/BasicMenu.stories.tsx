@@ -36,12 +36,15 @@ const meta: Meta<typeof BasicMenu> = {
           a11y:
             "Her öğe gerçek bir `<button>` (Button component'i) — Tab ile odaklanılıp Enter/Boşluk ile aktifleştirilebilir. " +
             "`children`'ı olan öğeler için alt menü tetikleyicisi de tek bir gerçek `<button>`dır. Alt panel açıkken " +
-            "tetikleyiciden panele geçerken menü kapanmaz (Faz 13.5 round 2 — hover-intent gecikmesi, bkz. Dropdown).",
+            "tetikleyiciden panele geçerken menü kapanmaz (Faz 13.5 round 2 — hover-intent gecikmesi, bkz. Dropdown). " +
+            "`mobileBreakpoint` altında hamburger (`aria-expanded`/`aria-controls`) bir `role=\"dialog\"` çekmece açar: " +
+            "odak içeri taşınır ve içinde döner, Escape/scrim kapatır, kapanınca odak hamburger'e döner; aktif sayfa `aria-current=\"page\"`.",
         }),
       },
     },
   },
   argTypes: {
+    mobileBreakpoint: { control: "select", options: ["md", "lg", "xl"], description: "Bu genişliğin altında öğeler gizlenir, hamburger + mobil çekmece gelir. Varsayılan `lg` (1024px)." },
     menuItemJustify: { control: "select", options: ["left", "center", "right"], description: "Menü öğelerinin yatay hizalanması." },
     menuPosition: { control: "select", options: ["default", "sticky", "fixed"], description: "Menünün sayfa kaydırmasına göre konumlanma davranışı." },
     currentPath: { control: "text", description: "Aktif öğeyi belirlemek için mevcut yol — verilirse ve `data`da eşleşen bir `route` varsa başlangıçta o öğe vurgulanır." },
@@ -123,6 +126,17 @@ export const RealWorldEcommerce: Story = {
       </>
     ),
   },
+};
+
+export const Mobile: Story = {
+  name: "Mobil (Hamburger + Çekmece)",
+  ...storyDoc(
+    "`mobileBreakpoint` (varsayılan `lg`, 1024px) altında yatay öğeler gizlenir, logonun soluna hamburger gelir; `actions` " +
+      "çubukta kalır. Çekmece soldan kayar, alt menüsü olan öğeler bir seviye içeri girer (geri düğmesi + seviye başlığı). " +
+      "Bu story mobil viewport'ta açılır — araç çubuğundaki viewport seçicisiyle genişliği değiştirip geçişi görebilirsiniz."
+  ),
+  parameters: { viewport: { defaultViewport: "mobile2" } },
+  args: { ...RealWorldEcommerce.args, currentPath: "/campaigns" },
 };
 
 const corporateData: MenuItemType[] = [

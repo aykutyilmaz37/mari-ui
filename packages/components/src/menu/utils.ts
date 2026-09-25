@@ -64,7 +64,8 @@ const EXPANDED_TEXT_CLASS: Record<ColorRole, string> = {
 export function getItemClass(item: MenuItemType, activeKey: string | null, color: ColorRole): string {
   const isActive = isMenuItemActive(item, activeKey);
   return cn(
-    "relative font-medium transition-colors duration-150",
+    // `whitespace-nowrap`: dar genişlikte "Ana Sayfa" gibi başlıklar iki satıra kırılıyordu.
+    "relative whitespace-nowrap font-medium transition-colors duration-150",
     "after:pointer-events-none after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:origin-center after:transition-transform after:duration-200 after:ease-out after:content-['']",
     INDICATOR_COLOR_CLASS[color],
     isActive

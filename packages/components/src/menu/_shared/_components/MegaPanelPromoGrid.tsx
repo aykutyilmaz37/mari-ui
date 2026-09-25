@@ -7,6 +7,10 @@ import { navigateTo } from "../../utils";
 
 export interface MegaPanelPromoGridProps extends MenuNavigationProps {
   tiles: MenuPromoTile[];
+  /** Karta tıklanınca `navigateTo`dan ÖNCE çağrılır — host kendi panelini/çekmecesini kapatabilsin diye. */
+  onTileClick?: (tile: MenuPromoTile) => void;
+  /** Varsayılan genişlik (`w-64`) masaüstü paneli için; mobil çekmece tam genişlik ister. */
+  className?: string;
 }
 
 /**
@@ -28,14 +32,17 @@ const SPAN_CLASS: Record<NonNullable<MenuPromoTile["span"]>, string> = {
   full: "col-span-2 aspect-[16/9]",
 };
 
-export function MegaPanelPromoGrid({ tiles, onNavigate }: MegaPanelPromoGridProps) {
+export function MegaPanelPromoGrid({ tiles, onNavigate, onTileClick, className }: MegaPanelPromoGridProps) {
   return (
-    <div className="grid w-64 shrink-0 grid-cols-2 gap-3 self-start">
+    <div className={cn("grid w-64 shrink-0 grid-cols-2 gap-3 self-start", className)}>
       {tiles.map((tile) => (
         <button
           key={tile.title}
           type="button"
-          onClick={() => navigateTo(tile.href, onNavigate)}
+          onClick={() => {
+            onTileClick?.(tile);
+            navigateTo(tile.href, onNavigate);
+          }}
           className={cn(
             "group relative cursor-pointer overflow-hidden rounded-lg border border-mari-border transition-shadow hover:shadow-mari-sm",
             SPAN_CLASS[tile.span ?? "sm"]

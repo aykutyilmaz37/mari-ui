@@ -28,6 +28,8 @@ describe("MegaMenu", () => {
     render(<MegaMenu data={data} onNavigate={() => {}} />);
     expect(screen.queryByText("Web Geliştirme")).not.toBeInTheDocument();
 
+    // Sıra: mobil hamburger (masaüstünde CSS ile gizli; jsdom CSS uygulamaz) → Ana Sayfa → Hizmetler.
+    await user.tab();
     await user.tab();
     await user.tab();
     expect(await screen.findByText("Web Geliştirme")).toBeInTheDocument();
