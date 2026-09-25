@@ -1,60 +1,37 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { cn, type ColorRole } from "@mari-ui/core";
-import type { MenuItemType, MenuNavigationProps, SidebarPosition } from "../../types";
-import { findActiveKeyByRoute } from "../../utils";
-import { SidebarItem } from "./SidebarItem";
+import React from "react";
+import { cn } from "@mari-ui/core";
+import type { MenuItemType } from "../../types";
+import { SidebarItem, type SidebarItemProps } from "./SidebarItem";
 
-export interface SidebarMenuProps extends MenuNavigationProps {
+export interface SidebarMenuProps extends Omit<SidebarItemProps, "item" | "reserveIconSlot"> {
   data: MenuItemType[];
   className?: string;
-  setSubItem?: React.Dispatch<React.SetStateAction<MenuItemType[] | undefined>>;
-  /** Eskiden zorunluydu, ama `DropdownSub`'ın kendi çağrısı bunu HİÇ
-   * geçmiyordu — gerçek bir TS hatasıydı (bkz. plan denetimi). Bu
-   * bağlamda "görünürlük" kavramı anlamlı olmadığı için artık opsiyonel. */
-  setSubVisible?: (value: boolean) => void;
-  visible?: boolean;
-  mega?: boolean;
-  dropdown?: boolean;
-  position?: SidebarPosition;
-  color?: ColorRole;
 }
 
-export function SidebarMenu({ data, className, setSubItem, setSubVisible, visible = true, mega, dropdown, position, color = "primary", onNavigate, currentPath }: SidebarMenuProps) {
-  const [activeKey, setActiveKey] = useState<string | null>(null);
-
-  useEffect(() => {
-    setActiveKey(findActiveKeyByRoute(data, currentPath));
-  }, [currentPath, data]);
+/**
+ * Bir seviyenin listesi. `heading: true` öğeler etkileşimsiz bölüm
+ * etiketleri — ray daraltılmışken yazı yerine ince bir ayraç olurlar.
+ *
+ * Aktif anahtar artık `Sidebar`da TEK yerde tutuluyor: eskiden her iç içe
+ * `SidebarMenu` kendi `activeKey` state'ini tutuyordu, iç seviyede bir öğeye
+ * tıklamak üst öğenin "aktif grup" rengini hiç güncellemiyordu.
+ */
+export function SidebarMenu({ data, className, ...itemProps }: SidebarMenuProps) {
+  const reserveIconSlot = data.some((item) => item.icon && !item.heading);
 
   return (
-    <ul className={cn(className)}>
+    <ul className={cn("flex flex-col gap-0.5", className)}>
       {data.map((item) =>
         item.heading ? (
-          // Amazon tarzı mobil drawer bölüm etiketi: icon/chevron/hover/click
-          // YOK, sadece kalın bir başlık. Gruplama tüketicinin veri dizisinde
-          // bu öğeden SONRA gelen kardeş öğelerle sağlanır — recursive bir
-          // "children'ı sibling'lere yay" mantığı kasıtlı olarak yok (bkz. plan).
-          <li key={item.key} className="overflow-hidden text-nowrap px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wide text-mari-muted first:pt-1">
-            {item.title}
+          <li key={item.key} className="px-3.5 pt-4 pb-1 first:pt-1">
+            {/* Daraltılmış rayda yazı yerine ince bir ayraç — metin ekran okuyucu için DOM'da kalır. */}
+            {itemProps.collapsed && <span aria-hidden="true" className="block h-px w-full bg-mari-border" />}
+            <span className={cn("block truncate text-xs font-semibold tracking-wide text-mari-muted uppercase", itemProps.collapsed && "sr-only")}>{item.title}</span>
           </li>
         ) : (
-          <SidebarItem
-            key={item.key}
-            item={item}
-            activeKey={activeKey}
-            setActiveKey={setActiveKey}
-            setSubItem={setSubItem}
-            setSubVisible={setSubVisible ?? (() => {})}
-            visible={visible}
-            mega={mega}
-            dropdown={dropdown}
-            position={position}
-            color={color}
-            onNavigate={onNavigate}
-            currentPath={currentPath}
-          />
+          <SidebarItem key={item.key} {...itemProps} item={item} reserveIconSlot={reserveIconSlot} />
         )
       )}
     </ul>

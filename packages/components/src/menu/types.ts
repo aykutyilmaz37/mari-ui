@@ -40,7 +40,7 @@ export interface MenuPromoTile {
 
 export type MenuItemJustify = "left" | "center" | "right";
 export type MenuPosition = "default" | "sticky" | "fixed";
-export type SidebarVariant = "hover" | "click";
+export type SidebarVariant = "hover" | "click" | "drawer";
 export type SidebarPosition = "left" | "right";
 
 /**

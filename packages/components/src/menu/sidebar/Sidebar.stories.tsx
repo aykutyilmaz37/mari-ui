@@ -1,54 +1,181 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { AppWindowIcon, DatabaseIcon, FlameIcon, MailIcon, SettingsIcon, SparklesIcon, UserIcon } from "lucide-react";
+import { BarChart3Icon, LayoutDashboardIcon, LifeBuoyIcon, MenuIcon, PackageIcon, ReceiptIcon, SettingsIcon, ShoppingCartIcon, UserIcon, UsersIcon } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
-import { Avatar } from "../../avatar";
+import { Button } from "../../button";
 
 /**
- * Not: eskiden her öğe `iconName: "AppWindowIcon"` gibi bir STRING taşıyordu
- * ve silinmiş bir `mock-data/mockIconData` dosyasından ad->component
- * eşlemesi yapılıyordu (bkz. plan Faz 0/3 — bu import çalışmıyordu). Artık
- * `icon: React.ReactNode` doğrudan geçiliyor.
+ * Kullanıcı bulgusu (2026-09-25): "saçma sapan ikonlar kullanma". Eski demo
+ * verisi ikonları rastgele dağıtıyordu (Ürünler = veritabanı, Tasarım = zarf,
+ * Giyim/Kategoriler = dişli). Kural artık: ikon YALNIZCA anlamını taşıyorsa
+ * — kök seviyedeki gezinme öğelerinde, bir yönetim panelinde herkesin
+ * tanıdığı karşılıklarıyla. Alt öğeler ve Amazon tarzı çekmece ikonsuz;
+ * ikonsuz kök öğe daraltılmış rayda baş harfiyle görünür, uydurma ikonla değil.
  */
-const icon = (Icon: typeof AppWindowIcon) => <Icon size={18} />;
+const icon = (Icon: typeof LayoutDashboardIcon) => <Icon />;
 
-const baseData: MenuItemType[] = [
-  { key: "dashboard", title: "Panel", route: "/dashboard", icon: icon(AppWindowIcon) },
+const adminData: MenuItemType[] = [
+  { key: "dashboard", title: "Genel Bakış", route: "/dashboard", icon: icon(LayoutDashboardIcon) },
+  {
+    key: "orders",
+    title: "Siparişler",
+    icon: icon(ShoppingCartIcon),
+    children: [
+      { key: "all-orders", title: "Tüm Siparişler", route: "/orders", description: "Bekleyen, hazırlanan ve teslim edilen siparişler." },
+      { key: "returns", title: "İadeler", route: "/orders/returns", description: "İade talepleri ve geri ödemeler." },
+      { key: "shipping", title: "Kargo Takibi", route: "/orders/shipping", description: "Gönderilerin anlık durumu." },
+    ],
+  },
   {
     key: "products",
     title: "Ürünler",
-    icon: icon(DatabaseIcon),
+    icon: icon(PackageIcon),
     children: [
-      { key: "all-products", title: "Tüm Ürünler", route: "/products", icon: icon(DatabaseIcon) },
-      { key: "categories", title: "Kategoriler", route: "/products/categories", icon: icon(SettingsIcon) },
+      { key: "product-list", title: "Ürün Listesi", route: "/products", description: "Tüm ürünler, fiyatlar ve varyantlar." },
+      { key: "categories", title: "Kategoriler", route: "/products/categories", description: "Kategori ağacı ve sıralama." },
       {
-        key: "manage",
-        title: "Yönet",
-        icon: icon(SettingsIcon),
+        key: "stock",
+        title: "Stok",
         children: [
-          { key: "create", title: "Oluştur", route: "/products/create", icon: icon(AppWindowIcon) },
-          { key: "inventory", title: "Envanter", route: "/products/inventory", icon: icon(DatabaseIcon) },
+          { key: "stock-status", title: "Stok Durumu", route: "/products/stock" },
+          { key: "warehouses", title: "Depolar", route: "/products/warehouses" },
+          { key: "transfers", title: "Transferler", route: "/products/transfers" },
         ],
       },
     ],
   },
-  {
-    key: "services",
-    title: "Hizmetler",
-    icon: icon(SettingsIcon),
-    children: [
-      { key: "web-dev", title: "Web Geliştirme", route: "/services/web", description: "Frontend ve backend çözümleri", icon: icon(AppWindowIcon) },
-      { key: "design", title: "Tasarım", route: "/services/design", description: "UI/UX ve grafik tasarım", icon: icon(MailIcon) },
-      { key: "consulting", title: "Danışmanlık", route: "/services/consulting", description: "Teknik danışmanlık", icon: icon(SettingsIcon) },
-    ],
-  },
-  { key: "messages", title: "Mesajlar", route: "/messages", icon: icon(MailIcon) },
+  { key: "customers", title: "Müşteriler", route: "/customers", icon: icon(UsersIcon) },
+  { key: "reports", title: "Raporlar", route: "/reports", icon: icon(BarChart3Icon) },
+  { key: "section-system", title: "Sistem", heading: true },
   { key: "settings", title: "Ayarlar", route: "/settings", icon: icon(SettingsIcon) },
+  { key: "help", title: "Yardım", route: "/help", icon: icon(LifeBuoyIcon) },
 ];
 
-const disabledData: MenuItemType[] = [...baseData, { key: "billing", title: "Faturalama (Devre Dışı)", route: "/billing", icon: icon(DatabaseIcon), disabled: true }];
+const disabledData: MenuItemType[] = [...adminData, { key: "billing", title: "Faturalama", route: "/billing", icon: icon(ReceiptIcon), disabled: true }];
+
+/** Mega paneli için gerçek 3 seviye: kök → grup → bağlantılar. */
+const megaData: MenuItemType[] = [
+  { key: "dashboard", title: "Genel Bakış", route: "/dashboard", icon: icon(LayoutDashboardIcon) },
+  {
+    key: "products",
+    title: "Ürünler",
+    icon: icon(PackageIcon),
+    children: [
+      {
+        key: "catalog",
+        title: "Katalog",
+        route: "/products",
+        children: [
+          { key: "product-list", title: "Ürün Listesi", route: "/products" },
+          { key: "categories", title: "Kategoriler", route: "/products/categories" },
+          { key: "brands", title: "Markalar", route: "/products/brands" },
+          { key: "attributes", title: "Özellikler", route: "/products/attributes" },
+        ],
+      },
+      {
+        key: "inventory",
+        title: "Envanter",
+        route: "/inventory",
+        children: [
+          { key: "stock-status", title: "Stok Durumu", route: "/inventory/stock" },
+          { key: "warehouses", title: "Depolar", route: "/inventory/warehouses" },
+          { key: "transfers", title: "Transferler", route: "/inventory/transfers" },
+        ],
+      },
+      {
+        key: "pricing",
+        title: "Fiyatlandırma",
+        route: "/pricing",
+        children: [
+          { key: "price-lists", title: "Fiyat Listeleri", route: "/pricing/lists" },
+          { key: "campaigns", title: "Kampanyalar", route: "/pricing/campaigns" },
+          { key: "coupons", title: "Kuponlar", route: "/pricing/coupons" },
+        ],
+      },
+    ],
+  },
+  adminData[1] as MenuItemType,
+  { key: "customers", title: "Müşteriler", route: "/customers", icon: icon(UsersIcon) },
+  { key: "reports", title: "Raporlar", route: "/reports", icon: icon(BarChart3Icon) },
+];
+
+/**
+ * Amazon'un hamburger menüsünün YAPISI: bölüm başlıkları, ikonsuz satırlar,
+ * alt kategorisi olan satırda chevron ve kademeli (drill-down) geçiş,
+ * altta "Yardım ve Ayarlar". Görünüm kendi token'larımızdan.
+ */
+const amazonData: MenuItemType[] = [
+  { key: "h-trends", title: "Trendler", heading: true },
+  { key: "best-sellers", title: "Çok Satanlar", route: "/best-sellers" },
+  { key: "new-releases", title: "Yeni Çıkanlar", route: "/new-releases" },
+  { key: "movers", title: "Yükselenler", route: "/movers-and-shakers" },
+  { key: "h-digital", title: "Dijital İçerik ve Cihazlar", heading: true },
+  {
+    key: "kindle",
+    title: "Kindle E-Okuyucular ve E-Kitaplar",
+    route: "/kindle",
+    children: [
+      { key: "h-kindle-devices", title: "Kindle E-Okuyucular", heading: true },
+      { key: "kindle-all", title: "Tüm Kindle E-Okuyucular", route: "/kindle/devices" },
+      { key: "kindle-acc", title: "Kindle Aksesuarları", route: "/kindle/accessories" },
+      { key: "h-kindle-books", title: "Kindle Mağazası", heading: true },
+      { key: "ebooks", title: "Kindle E-Kitaplar", route: "/kindle/ebooks" },
+      { key: "unlimited", title: "Kindle Unlimited", route: "/kindle/unlimited" },
+    ],
+  },
+  { key: "prime-video", title: "Prime Video", route: "/prime-video" },
+  { key: "music", title: "Amazon Music", route: "/music" },
+  { key: "h-categories", title: "Kategoriye Göre Alışveriş Yap", heading: true },
+  {
+    key: "electronics",
+    title: "Elektronik",
+    route: "/electronics",
+    children: [
+      {
+        key: "computers",
+        title: "Bilgisayarlar",
+        route: "/electronics/computers",
+        children: [
+          { key: "laptops", title: "Dizüstü Bilgisayarlar", route: "/electronics/computers/laptops" },
+          { key: "monitors", title: "Monitörler", route: "/electronics/computers/monitors" },
+          { key: "components", title: "Bilgisayar Bileşenleri", route: "/electronics/computers/components" },
+        ],
+      },
+      { key: "phones", title: "Cep Telefonları", route: "/electronics/phones" },
+      { key: "tv", title: "Televizyonlar", route: "/electronics/tv" },
+      { key: "headphones", title: "Kulaklıklar", route: "/electronics/headphones" },
+    ],
+  },
+  {
+    key: "home",
+    title: "Ev ve Mutfak",
+    route: "/home",
+    children: [
+      { key: "kitchen", title: "Mutfak Gereçleri", route: "/home/kitchen" },
+      { key: "furniture", title: "Mobilya", route: "/home/furniture" },
+      { key: "decor", title: "Ev Dekorasyonu", route: "/home/decor" },
+    ],
+  },
+  {
+    key: "fashion",
+    title: "Moda",
+    route: "/fashion",
+    children: [
+      { key: "women", title: "Kadın", route: "/fashion/women" },
+      { key: "men", title: "Erkek", route: "/fashion/men" },
+      { key: "kids", title: "Çocuk", route: "/fashion/kids" },
+    ],
+  },
+  { key: "h-help", title: "Yardım ve Ayarlar", heading: true },
+  { key: "account", title: "Hesabınız", route: "/account" },
+  { key: "my-orders", title: "Siparişleriniz", route: "/orders" },
+  { key: "support", title: "Müşteri Hizmetleri", route: "/help" },
+  { key: "sign-out", title: "Çıkış Yap", route: "/sign-out" },
+];
+
+const brandLogo = <span className="text-lg font-bold text-mari-primary">Mari</span>;
 
 const meta: Meta<typeof Sidebar> = {
   title: "Navigasyon/Sidebar",
@@ -60,186 +187,145 @@ const meta: Meta<typeof Sidebar> = {
       description: {
         component: componentDoc({
           summary:
-            "Dikey gezinme menüsü. Alt öğeler `variant=\"hover\"` iken üzerine gelince, `variant=\"click\"` iken " +
-            "tıklanınca açılır; `dropdown`/`mega` ile alt öğelerin akordeon yerine bir dropdown veya mega-panel " +
-            "olarak açılması sağlanır (veri 3 seviyeliyse ikisi de ray+kolon `MegaPanel`ini kullanır, bkz. " +
-            "\"Hover / Dropdown\" story'lerindeki \"Ürünler\"). `onlyIcon` sidebar'ı sadece ikonlarla daraltır. " +
-            "`header` (mobil drawer tarzı bir avatar+karşılama bloğu için) ve `data`daki `heading: true` öğeleri " +
-            "(bölüm etiketleri, tıklanamaz) için bkz. \"Mobil Drawer Deseni\" story'si.",
+            "Dikey gezinme menüsü. `variant=\"hover\"`: 64px ikon rayı, üzerine gelince (kısa bir gecikmeyle) ya da klavyeyle " +
+            "odaklanınca 256px'e genişler ve içeriğin üstüne biner. `variant=\"click\"`: kenardaki sekmeyle açılıp kapanır. " +
+            "`variant=\"drawer\"`: Amazon'un hamburger menüsü gibi kenardan kayan, kademeli (drill-down) bir çekmece — " +
+            "`open`/`onOpenChange` ile kontrol edilir, tetikleyiciyi tüketici koyar. Alt öğeler varsayılanda girintili bir " +
+            "akordeonla, `dropdown` ile satırın yanında açılan panelde (BasicMenu'nün alt menü paneli), `mega` ile " +
+            "sidebar'ın yanında tam yükseklikte bir panelde açılır. `onlyIcon` her zaman ray olarak kalır; alt menüler " +
+            "rayın yanında açılır. İkon yalnızca anlamını taşıyorsa verilmeli — ikonsuz kök öğe rayda baş harfiyle görünür.",
           a11y:
-            "Her öğe gerçek bir `<button>` — Tab/Enter ile erişilebilir. `dropdown`/`mega` modlarında alt panel " +
-            "eskiden sadece mouse hover ile açılıyordu; artık aynı düğmeye klavyeyle odaklanmak da (`onFocus`) açar " +
-            "(Faz 13.5). **Kritik düzeltme:** sarmalayıcı eskiden `w-full` taşıyordu — görünür sidebar dar olsa bile " +
-            "(örn. daraltılmış ikon hâli) bu görünmez `fixed` katman TÜM viewport genişliğini kaplayıp arkasındaki " +
-            "sayfa içeriğinin tıklanmasını engelliyordu; kaldırıldı.",
+            "Her satır gerçek bir `<button>`; akordeon üst öğesi `aria-expanded`, aktif sayfa `aria-current=\"page\"` taşır. " +
+            "Kapalı akordeonun satırları Tab sırasından çıkar. Hover rayı klavye odağıyla da genişler (eskiden Tab'la gezen " +
+            "kullanıcı kesik etiketler görüyordu); daraltılmış raydaki bölüm başlıkları görsel olarak ayraç olsa da metinleri " +
+            "ekran okuyucuya açıktır. `mega` modunda satıra odaklanmak paneli açar, Enter odağı panele taşır, Escape kapatıp " +
+            "satıra döndürür. `drawer` bir `role=\"dialog\"`: odak içeride döner, Escape/scrim kapatır, odak tetikleyiciye döner.",
         }),
       },
     },
   },
   argTypes: {
-    variant: { control: { type: "radio" }, options: ["hover", "click"], description: "Alt menülerin açılma tetikleyicisi." },
+    variant: { control: { type: "radio" }, options: ["hover", "click", "drawer"], description: "Genişleme davranışı." },
     position: { control: { type: "radio" }, options: ["left", "right"], description: "Sidebar'ın ekrandaki kenarı." },
-    onlyIcon: { control: { type: "boolean" }, description: "Sidebar'ı sadece ikonlarla daraltır." },
-    dropdown: { control: { type: "boolean" }, description: "Alt öğeleri akordeon yerine bir dropdown panelde açar." },
-    mega: { control: { type: "boolean" }, description: "Alt öğeleri bir mega-menu panelinde açar." },
+    onlyIcon: { control: { type: "boolean" }, description: "Her zaman ikon rayı olarak kalır." },
+    dropdown: { control: { type: "boolean" }, description: "Alt öğeleri akordeon yerine satırın yanındaki panelde açar." },
+    mega: { control: { type: "boolean" }, description: "Alt öğeleri sidebar'ın yanında tam yükseklikte bir panelde açar." },
   },
   args: {
-    data: baseData,
+    data: adminData,
     onNavigate: () => {},
   },
+  decorators: [
+    (Story) => (
+      <div className="relative h-[36rem]">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
 
 type Story = StoryObj<typeof Sidebar>;
 
-export const HoverLeftAccordion: Story = {
-  name: "Hover / Sol / Akordeon",
-  ...storyDoc("Üzerine gelince genişler, alt öğeler akordeon olarak açılır."),
-  args: { variant: "hover", position: "left", dropdown: false, mega: false },
+export const RealWorldAdmin: Story = {
+  name: "Gerçek Kullanım (Yönetim Paneli)",
+  ...storyDoc(
+    "Hover rayı: 64px'te sadece ikonlar, üzerine gelince genişler. `currentPath` ile aktif sayfa (\"Ürünler\" > \"Ürün " +
+      "Listesi\") başlangıçta vurgulu ve grubu açık; \"Sistem\" bir bölüm başlığı (rayda ince bir ayraç)."
+  ),
+  args: { variant: "hover", currentPath: "/products", logo: brandLogo },
 };
 
-export const HoverRightAccordion: Story = {
-  name: "Hover / Sağ / Akordeon",
-  ...storyDoc("Sağ kenara sabitlenmiş hâli."),
-  args: { variant: "hover", position: "right", dropdown: false, mega: false },
+export const HoverRight: Story = {
+  name: "Hover / Sağ",
+  ...storyDoc("Sağ kenara sabitlenmiş hover rayı — akordeon girintisi ve kılavuz çizgisi de sağa döner."),
+  args: { variant: "hover", position: "right", logo: brandLogo },
 };
 
-export const HoverDropdownLeft: Story = {
-  name: "Hover / Sol / Dropdown",
-  ...storyDoc("Alt öğeler akordeon yerine yan tarafta bir dropdown panelde açılır."),
-  args: { variant: "hover", position: "left", dropdown: true, mega: false },
-};
-
-export const HoverDropdownRight: Story = {
-  name: "Hover / Sağ / Dropdown",
-  ...storyDoc("Dropdown paneli, sağ kenara sabitlenmiş hâli."),
-  args: { variant: "hover", position: "right", dropdown: true, mega: false },
+export const HoverDropdown: Story = {
+  name: "Hover / Dropdown",
+  ...storyDoc(
+    "Alt öğeler satırın TAM yanında, BasicMenu'nün alt menü paneliyle açılır (açıklamalı satırlar; \"Stok\" gibi iç " +
+      "içe öğe kendi flyout'uyla)."
+  ),
+  args: { variant: "hover", dropdown: true, logo: brandLogo },
 };
 
 export const HoverMega: Story = {
   name: "Hover / Mega",
-  ...storyDoc("Alt öğeler açıklamalı kartlardan oluşan bir mega-panelde açılır."),
-  args: { variant: "hover", position: "left", dropdown: false, mega: true },
+  ...storyDoc(
+    "\"Ürünler\" gerçek 3 seviye → sidebar'ın yanında tam yükseklikte bir panel: gruplar kolonlara akar. \"Siparişler\" " +
+      "düz veri → aynı panel açıklamalı satırlarla. Satırdan panele geçerken panel kapanmaz (hover-intent)."
+  ),
+  args: { variant: "hover", mega: true, data: megaData, logo: brandLogo },
+};
+
+export const OnlyIconRail: Story = {
+  name: "Sadece İkon Rayı",
+  ...storyDoc(
+    "`onlyIcon`: ray hiç genişlemez; alt menüsü olan öğeler rayın yanında panel açar (akordeon rayda anlamsız olurdu). " +
+      "Etiket, üzerine gelince `title` ipucu olarak görünür."
+  ),
+  args: { onlyIcon: true, logo: <span className="text-lg font-bold text-mari-primary">M</span> },
 };
 
 export const ClickLeft: Story = {
   name: "Tık / Sol",
-  ...storyDoc("Genişleme hover yerine tetikleyici düğmeye tıklamayla tetiklenir."),
-  args: { variant: "click", position: "left", dropdown: false, mega: false },
+  ...storyDoc("Kenardaki panel ikonuyla açılır/kapanır; kapalıyken ekranda sadece bu sekme kalır."),
+  args: { variant: "click", logo: brandLogo },
 };
 
 export const ClickRight: Story = {
   name: "Tık / Sağ",
-  ...storyDoc("Tık ile genişleme, sağ kenara sabitlenmiş hâli."),
-  args: { variant: "click", position: "right", dropdown: false, mega: false },
-};
-
-export const OnlyIconCollapsed: Story = {
-  name: "Sadece İkon (Daraltılmış)",
-  ...storyDoc("`onlyIcon` ile sidebar her zaman dar kalır, hover'da genişlemez."),
-  args: { variant: "click", position: "left", onlyIcon: true, dropdown: false, mega: false },
+  ...storyDoc("Tık ile açılma, sağ kenara sabitlenmiş hâli."),
+  args: { variant: "click", position: "right", logo: brandLogo },
 };
 
 export const WithDisabledItems: Story = {
   name: "Devre Dışı Öğeler",
-  ...storyDoc("Devre dışı bir öğe tıklanamaz ve görsel olarak soluk görünür."),
-  args: { data: disabledData, variant: "hover", position: "left", dropdown: false, mega: false },
+  ...storyDoc("Devre dışı bir öğe tıklanamaz ve soluk görünür."),
+  args: { data: disabledData, variant: "hover", logo: brandLogo },
 };
 
-export const WithCustomLogo: Story = {
-  name: "Özel Logo",
-  ...storyDoc("Üstte özel bir logo/görsel gösterir."),
-  args: {
-    variant: "hover",
-    position: "left",
-    logo: <img src="/images/avatar-placeholder.svg" alt="logo" className="w-8 h-8 rounded-full" />,
-  },
-};
-
-export const ContentBehindSidebar: Story = {
-  name: "Arkasındaki İçerik Tıklanabilir",
+export const WithoutIcons: Story = {
+  name: "İkonsuz Öğeler",
   ...storyDoc(
-    "Sidebar'ın SAĞINDAKİ sayfa içeriğindeki düğmeye tıklayın (Faz 13.5 kritik bulgu — eskiden sarmalayıcı " +
-      "`w-full` taşıdığı için görünmez bir katman TÜM viewport genişliğini kaplıyordu ve sidebar'ın görsel " +
-      "genişliği ne olursa olsun arkasındaki HİÇBİR ŞEY tıklanamıyordu)."
+    "Anlamlı bir ikonu olmayan öğelere ikon uydurmak gerekmez: daraltılmış rayda baş harfleriyle görünürler, " +
+      "genişleyince normal satırlardır."
   ),
-  render: (args) => {
-    function ClickableBehindContent() {
-      const [clicked, setClicked] = React.useState(false);
-      return (
-        <div className="ml-16 p-8">
-          <button type="button" className="rounded-md bg-mari-primary px-4 py-2 text-white cursor-pointer" onClick={() => setClicked(true)}>
-            Sidebar'ın Arkasındaki Düğme
-          </button>
-          {clicked && <p className="mt-3 text-mari-success">Tıklama başarılı — sidebar arkasındaki içeriği engellemiyor.</p>}
-        </div>
-      );
-    }
+  args: { data: adminData.map(({ icon: _icon, ...item }) => item), variant: "hover", logo: brandLogo },
+};
+
+export const AmazonDrawer: Story = {
+  name: "Çekmece (Amazon Tarzı)",
+  ...storyDoc(
+    "`variant=\"drawer\"`: Amazon'un hamburger menüsünün yapısı. Üstte `header` ile rol renginde bir \"Merhaba\" bandı; " +
+      "bölümler ayraçlarla ayrılır (`heading: true`); satırlar ikonsuz; alt kategorisi olan satır chevron taşır ve bir " +
+      "seviye içeri kayar (\"Ana Menü\"ye dönüş, üst öğenin route'u varsa \"Tümünü gör\"). Tetikleyici tüketiciye ait."
+  ),
+  render: function AmazonDrawerRender(args) {
+    const [open, setOpen] = useState(false);
     return (
-      <div className="relative h-[28rem]">
-        <Sidebar {...args} />
-        <ClickableBehindContent />
+      <div className="p-4">
+        <Button variant="ghost" color="neutral" icon={<MenuIcon size={18} />} onClick={() => setOpen(true)}>
+          Tümü
+        </Button>
+        <Sidebar {...args} open={open} onOpenChange={setOpen} />
       </div>
     );
   },
-  args: { variant: "hover", position: "left", dropdown: false, mega: false },
-};
-
-const drawerData: MenuItemType[] = [
-  { key: "best-sellers", title: "Çok Satanlar", route: "/best-sellers", icon: icon(FlameIcon) },
-  { key: "new-arrivals", title: "Yeni Çıkanlar", route: "/new", icon: icon(SparklesIcon) },
-  { key: "section-categories", title: "Kategoriye Göre Alışveriş Yap", heading: true },
-  { key: "electronics", title: "Elektronik", route: "/electronics", icon: icon(AppWindowIcon) },
-  { key: "home-living", title: "Ev ve Yaşam", route: "/home-living", icon: icon(DatabaseIcon) },
-  { key: "clothing", title: "Giyim", route: "/clothing", icon: icon(SettingsIcon) },
-];
-
-export const MobileDrawerPattern: Story = {
-  name: "Mobil Drawer Deseni",
-  ...storyDoc(
-    "Amazon tarzı mobil drawer yapısı: `header` ile avatar + karşılama bloğu, ardından etiketsiz bir öğe grubu " +
-      "(Çok Satanlar/Yeni Çıkanlar), sonra `heading: true` ile bölüm etiketli bir grup (Kategoriye Göre Alışveriş " +
-      "Yap). Bölüm etiketi tıklanamaz, sadece kalın bir başlıktır — akordeon mimarisi değişmeden aynı kalıyor."
-  ),
-  render: (args) => (
-    <div className="relative h-[32rem]">
-      <Sidebar {...args} />
-    </div>
-  ),
   args: {
-    data: drawerData,
-    variant: "hover",
-    position: "left",
-    dropdown: false,
-    mega: false,
+    variant: "drawer",
+    data: amazonData,
     header: (
-      <div className="flex items-center gap-3 px-2 py-2">
-        <Avatar size="sm" icon={<UserIcon size={16} />} />
-        <span className="text-sm font-medium">Merhaba, aykut</span>
+      <div className="flex items-center gap-3 py-3">
+        {/* Bandın dolgusu rol rengi: siluet `currentColor` ile bandın kontrast rengini alır (Avatar'ın kendi zemini burada kayboluyordu). */}
+        <span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full border-2 border-current">
+          <UserIcon size={18} />
+        </span>
+        <span className="text-base font-semibold">Merhaba, aykut</span>
       </div>
     ),
-  },
-};
-
-export const RealWorldAdmin: Story = {
-  name: "Gerçek Kullanım (Yönetim Paneli)",
-  ...storyDoc(
-    "Gerçek bir kullanım örneği: logo + `currentPath` ile aktif öğe (\"Ürünler\" > \"Tüm Ürünler\") başlangıçta " +
-      "vurgulanmış, gerçek bir yönetim paneli kenar çubuğu."
-  ),
-  render: (args) => (
-    <div className="relative h-[28rem]">
-      <Sidebar {...args} />
-    </div>
-  ),
-  args: {
-    data: baseData,
-    variant: "hover",
-    position: "left",
-    dropdown: false,
-    mega: false,
-    currentPath: "/products",
-    logo: <span className="text-lg font-bold text-mari-primary">M</span>,
   },
 };

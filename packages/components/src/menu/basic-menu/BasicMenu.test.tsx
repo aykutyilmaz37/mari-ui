@@ -85,4 +85,24 @@ describe("BasicMenu", () => {
     expect(active.className).toContain("after:bg-mari-primary");
     expect(active.className).not.toMatch(/border-b-2/);
   });
+
+  it("iç içe flyout kendi ÇOCUKLARINI gösterir (eskiden prop sırası yüzünden üst öğeyi tekrar ediyordu)", async () => {
+    const user = userEvent.setup();
+    const nestedData: MenuItemType[] = [
+      {
+        key: "products",
+        title: "Ürünler",
+        children: [
+          { key: "list", title: "Ürün Listesi", route: "/products" },
+          { key: "stock", title: "Stok", children: [{ key: "warehouses", title: "Depolar", route: "/warehouses" }] },
+        ],
+      },
+    ];
+    render(<BasicMenu data={nestedData} onNavigate={() => {}} />);
+    await user.hover(screen.getByRole("button", { name: /Ürünler/ }));
+    await user.hover(await screen.findByRole("button", { name: /Stok/ }));
+    expect(await screen.findByRole("button", { name: /Depolar/ })).toBeInTheDocument();
+    // Karışık veri gruplu görünüme geçmez: düz öğe kendi başlığıyla tekrar edilmez.
+    expect(screen.getAllByText("Ürün Listesi")).toHaveLength(1);
+  });
 });

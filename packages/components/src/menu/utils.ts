@@ -92,12 +92,19 @@ export function getMenuVerticalItemClass(item: MenuItemType, activeKey: string |
   return isActive ? cn(textClass[color], bgSubtleClass[color], "font-medium") : cn(textHoverClass[color], "hover:bg-mari-surface-alt font-normal");
 }
 
-/** Eskiden `w-2xs`/`w-6xl`/`w-12` gibi bir karışım kullanıyordu — `2xs`/`6xl`
+/**
+ * Eskiden `w-2xs`/`w-6xl`/`w-12` gibi bir karışım kullanıyordu — `2xs`/`6xl`
  * Tailwind'in `w-*` (width) skalasında GERÇEKTEN YOK (Slider'daki
- * `w-lg`/`w-md` hatasının aynısı, bkz. plan). Gerçek genişliklerle düzeltildi. */
-export function getSidebarWidthClass(variant: SidebarVariant, visible: boolean): string {
-  if (variant === "hover") return visible ? "w-64" : "w-12";
-  return visible ? "w-64" : "w-0";
+ * `w-lg`/`w-md` hatasının aynısı, bkz. plan). Gerçek genişliklerle düzeltildi.
+ *
+ * Ray 48px'ten 64px'e çıktı: 20px ikon + iki yanda 14px satır dolgusu + 8px
+ * nav dolgusu; 48px'te ikon ortalanamıyor ve etiketin ilk harfleri görünüyordu.
+ * Hover'da genişleyen ray içeriğin ÜSTÜNE bindiği için gölge alır.
+ */
+export function getSidebarWidthClass(variant: SidebarVariant, expanded: boolean, onlyIcon = false): string {
+  if (onlyIcon) return "w-16";
+  if (variant === "hover") return expanded ? "w-64 shadow-mari-lg" : "w-16";
+  return expanded ? "w-64" : "w-0 border-0";
 }
 
 export function findActiveKeyByRoute(items: MenuItemType[], route: string | undefined): string | null {

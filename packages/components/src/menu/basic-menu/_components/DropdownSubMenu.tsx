@@ -27,11 +27,12 @@ interface RowProps extends MenuNavigationProps {
   activeKey: string | null;
   setActiveKey: (key: string) => void;
   color: ColorRole;
+  /** Yaprak seçildikten sonra — host kendi panelini kapatır. */
+  onAfterSelect?: () => void;
 }
 
-/** Yaprak satır: tıklanınca gider, aktif öğeyi günceller ve kendi panelini kapatır. */
-function LeafRow({ item, activeKey, setActiveKey, color, onNavigate }: RowProps) {
-  const { setVisible } = useDropdown();
+/** Yaprak satır: tıklanınca gider, aktif öğeyi günceller ve paneli kapatır. */
+function LeafRow({ item, activeKey, setActiveKey, color, onNavigate, onAfterSelect }: RowProps) {
   return (
     <button
       type="button"
@@ -41,7 +42,7 @@ function LeafRow({ item, activeKey, setActiveKey, color, onNavigate }: RowProps)
         if (item.disabled) return;
         setActiveKey(item.key);
         navigateTo(item.route, onNavigate);
-        setVisible(false);
+        onAfterSelect?.();
       }}
     >
       <SubMenuRowContent item={item} active={isMenuItemActive(item, activeKey)} color={color} />
@@ -67,9 +68,65 @@ function FlyoutRow(props: RowProps) {
 function RowList({ items, ...rest }: Omit<RowProps, "item"> & { items: MenuItemType[] }) {
   return (
     <>
-      {items.map((child) => (child.children?.length ? <FlyoutRow key={child.key} item={child} {...rest} /> : <LeafRow key={child.key} item={child} {...rest} />))}
+      {/* `item` spread'den SONRA: `FlyoutRow` kendi prop'larını (kendi `item`i dahil) buraya geçiriyor —
+          önce yazıldığında iç içe panel çocukları değil üst öğeyi tekrar tekrar gösteriyordu. */}
+      {items.map((child) => (child.children?.length ? <FlyoutRow key={child.key} {...rest} item={child} /> : <LeafRow key={child.key} {...rest} item={child} />))}
     </>
   );
+}
+
+export type SubMenuPanelBodyProps = Omit<RowProps, "item"> & { items: MenuItemType[] };
+
+/**
+ * Gruplu (başlıklı kolonlar) görünüm yalnızca HER çocuk bir grupsa. Eskiden
+ * tek bir çocuğun alt öğesi olması yetiyordu: karışık veride düz öğeler de
+ * "grup" sayılıp kendi başlıklarıyla tekrar ediliyordu ("ÜRÜN LİSTESİ →
+ * Ürün Listesi") ve panel gereksizce genişleyip viewport'tan taşıyordu.
+ * Karışık veri düz satırlar olarak kalır; alt öğesi olan satır kendi flyout'unu açar.
+ */
+function isGrouped(items: MenuItemType[]): boolean {
+  return items.length > 0 && items.every((child) => child.children && child.children.length > 0);
+}
+
+/** Panelin genişlik sınıfı — veri şekline göre (düz / iki kolon / gruplu). */
+export function getSubMenuPanelWidthClass(items: MenuItemType[]): string {
+  if (isGrouped(items)) return "w-max";
+  return items.length > TWO_COLUMN_THRESHOLD ? "w-[36rem]" : "w-80";
+}
+
+/**
+ * Alt menü panelinin gövdesi (BasicMenu'nün dropdown'ı ve Sidebar'ın
+ * `dropdown` modu aynı paneli kullanıyor). Veri şekline göre:
+ * - Düz (tek seviye) → ikon karosu + başlık + açıklama satırları; öğe sayısı
+ *   `TWO_COLUMN_THRESHOLD`i geçerse iki kolon.
+ * - Gruplu (çocukların kendi çocukları varsa) → her grup küçük bir başlık +
+ *   altında satırlar, gruplar yan yana kolonlar.
+ */
+export function SubMenuPanelBody({ items, ...rowProps }: SubMenuPanelBodyProps) {
+  if (isGrouped(items)) {
+    return (
+      // `flex-wrap`: grup sayısı viewport'a sığmıyorsa (panel `max-w`ye takılır) gruplar alt satıra iner.
+      <div className="flex flex-wrap gap-2">
+        {items.map((group) => (
+          <div key={group.key} className="flex w-64 flex-col">
+            <div className="px-2.5 pt-1.5 pb-1 text-xs font-semibold uppercase tracking-wide text-mari-muted">{group.title}</div>
+            <RowList {...rowProps} items={group.children?.length ? group.children : [group]} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className={cn(items.length > TWO_COLUMN_THRESHOLD && "grid grid-cols-2")}>
+      <RowList {...rowProps} items={items} />
+    </div>
+  );
+}
+
+/** `DropdownContent`in içinde: yaprak seçilince en dıştaki dropdown'ı kapatır. */
+function DropdownPanelBody(props: SubMenuPanelBodyProps) {
+  const { setVisible } = useDropdown();
+  return <SubMenuPanelBody {...props} onAfterSelect={() => setVisible(false)} />;
 }
 
 /**
@@ -87,12 +144,7 @@ export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNaviga
   }
 
   const children = item.children;
-  const grouped = children.some((child) => child.children && child.children.length > 0);
-  const twoColumn = !grouped && children.length > TWO_COLUMN_THRESHOLD;
   const rowProps = { activeKey, setActiveKey, color, onNavigate, currentPath };
-  let panelWidth = "w-80";
-  if (grouped) panelWidth = "w-max";
-  else if (twoColumn) panelWidth = "w-[36rem]";
 
   return (
     <Dropdown hover>
@@ -106,22 +158,8 @@ export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNaviga
         {item.title}
         <ChevronDownIcon aria-hidden="true" size={14} className="opacity-60 transition-transform duration-200 group-aria-expanded:rotate-180" />
       </DropdownTrigger>
-      <DropdownContent placement="bottom-start" offset={NAVBAR_OFFSET_PX} className={cn("max-w-[calc(100vw-2rem)] rounded-xl p-2", panelWidth)}>
-        {grouped ? (
-          // `flex-wrap`: grup sayısı viewport'a sığmıyorsa (panel `max-w`ye takılır) gruplar alt satıra iner.
-          <div className="flex flex-wrap gap-2">
-            {children.map((group) => (
-              <div key={group.key} className="flex w-64 flex-col">
-                <div className="px-2.5 pt-1.5 pb-1 text-xs font-semibold uppercase tracking-wide text-mari-muted">{group.title}</div>
-                <RowList {...rowProps} items={group.children?.length ? group.children : [group]} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className={cn(twoColumn && "grid grid-cols-2")}>
-            <RowList {...rowProps} items={children} />
-          </div>
-        )}
+      <DropdownContent placement="bottom-start" offset={NAVBAR_OFFSET_PX} className={cn("max-w-[calc(100vw-2rem)] rounded-xl p-2", getSubMenuPanelWidthClass(children))}>
+        <DropdownPanelBody {...rowProps} items={children} />
       </DropdownContent>
     </Dropdown>
   );

@@ -64,7 +64,8 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
         {items.map((item) => {
           if (item.heading) {
             return (
-              <li key={item.key} className="px-4 pt-4 pb-1 text-xs font-semibold tracking-wide text-mari-muted uppercase">
+              // Amazon çekmecesinin yapısı: her bölüm bir ayraçla ayrılır, başlığı kalın ve okunur (soluk küçük etiket değil).
+              <li key={item.key} className="mt-2 border-t border-mari-border px-4 pt-4 pb-1 text-base font-semibold text-mari-foreground first:mt-0 first:border-t-0 first:pt-3">
                 {item.title}
               </li>
             );
