@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import { textClass } from "../lib/colorClasses";
+import { skeletonBoxProps } from "../lib/skeleton";
 import type { RateProps } from "./types";
 import { handleClick, handleMouseEnter, handleMouseLeave } from "./utils";
 
@@ -15,6 +16,14 @@ export type { RateProps };
  * `isControlled = value !== undefined` elle hesaplanıp `handleClick`'e
  * ayrıca geçiriliyordu.
  */
+/** Bir yıldızın dolu oranı (0–1). */
+function starFraction(value: number, index: number, allowHalf: boolean, exact: boolean): number {
+  const raw = Math.min(1, Math.max(0, value - index));
+  if (exact) return raw;
+  if (raw >= 1) return 1;
+  return allowHalf && raw >= 0.5 ? 0.5 : 0;
+}
+
 export function Rate({
   allowClear = true,
   allowHalf = false,
@@ -34,6 +43,8 @@ export function Rate({
   color = "warning",
   characterColor,
   "aria-label": ariaLabel = "Puan",
+  readOnly = false,
+  skeleton = false,
 }: RateProps) {
   const [hoverValue, setHoverValue] = useState<number | undefined>(undefined);
   const [displayValue, setDisplayValue] = useControllableState<number>({ value, defaultValue, onChange });
@@ -44,6 +55,17 @@ export function Rate({
   }, [autoFocus]);
 
   const colorClass = textClass[color];
+  const interactive = !disabled && !readOnly;
+
+  if (skeleton) {
+    return (
+      <div aria-hidden className={cn("flex gap-1", className)}>
+        {Array.from({ length: count }, (_, i) => (
+          <span key={i} {...skeletonBoxProps("rounded-sm")} style={{ width: characterSize, height: characterSize }} />
+        ))}
+      </div>
+    );
+  }
   const step = allowHalf ? 0.5 : 1;
 
   /**
@@ -75,76 +97,71 @@ export function Rate({
     }
   };
 
+  const currentValue = hoverValue ?? displayValue;
+  const icon = typeof character === "function" ? character({}) : character ?? <Star fill="currentColor" stroke="currentColor" size={characterSize} />;
+
   const stars = Array.from({ length: count }, (_, i) => {
-    const currentValue = hoverValue ?? displayValue;
-    const isFull = currentValue >= i + 1;
-    const isHalf = !isFull && allowHalf && currentValue >= i + 0.5;
-
-    const icon =
-      typeof character === "function" ? character({}) : character ?? <Star fill="currentColor" stroke="currentColor" size={characterSize} />;
-
-    let starOverlay: React.ReactNode = null;
-    if (isFull) {
-      starOverlay = (
-        <span className={cn("absolute inset-0 w-full h-full pointer-events-none", colorClass)} style={{ color: characterColor }} aria-hidden>
-          {icon}
-        </span>
-      );
-    } else if (isHalf) {
-      starOverlay = (
-        <span
-          className={cn("absolute inset-0 h-full w-1/2 overflow-hidden pointer-events-none", colorClass)}
-          style={{ color: characterColor, left: 0 }}
-          aria-hidden
-        >
-          {icon}
-        </span>
-      );
-    }
+    // Yıldızın dolu oranı (0–1). Etkileşimli modda tam/yarım; salt gösterimde
+    // gerçek ondalık oran (4,3 → 5. yıldızın %30'u).
+    const fraction = starFraction(currentValue, i, allowHalf, readOnly);
 
     return (
       <span
         key={i}
-        // Kök `<div>` artık tek bir ARIA "slider" olarak modelleniyor —
-        // bu span'lar sadece fare/dokunma için görsel/tıklama hedefleri,
-        // ekran okuyucudan gizli (değeri kök zaten `aria-valuetext` ile duyurur).
+        // Kök tek bir ARIA "slider" (ya da salt gösterimde "img"); bu span'lar
+        // yalnızca görsel/tıklama hedefi, ekran okuyucudan gizli.
         aria-hidden="true"
-        onClick={(e) => {
-          if (!disabled) {
-            // `onChange` burada BİLİNÇLİ OLARAK geçirilmiyor: `setDisplayValue`
-            // (useControllableState'ten) zaten kendi `onChange`'ini tetikliyor —
-            // ikisini birden geçirmek tüketicinin callback'ini ÇİFT çağırırdı.
-            handleClick(e, i, { allowHalf, allowClear, displayValue, isControlled: false, setInternalValue: setDisplayValue });
-          }
-        }}
-        onMouseEnter={(e) => !disabled && handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange)}
-        onMouseMove={(e) => !disabled && handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange)}
-        onMouseLeave={() => !disabled && handleMouseLeave(setHoverValue, onHoverChange)}
+        onClick={
+          interactive
+            ? (e) =>
+                // `onChange` BİLİNÇLİ OLARAK geçirilmiyor: `setDisplayValue` zaten
+                // kendi `onChange`'ini tetikliyor — ikisi birden ÇİFT çağırırdı.
+                handleClick(e, i, { allowHalf, allowClear, displayValue, isControlled: false, setInternalValue: setDisplayValue })
+            : undefined
+        }
+        onMouseEnter={interactive ? (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange) : undefined}
+        onMouseMove={interactive ? (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange) : undefined}
+        onMouseLeave={interactive ? () => handleMouseLeave(setHoverValue, onHoverChange) : undefined}
         className={cn(
-          "relative inline-flex items-center justify-center select-none",
-          !isFull && !isHalf && "text-mari-border",
-          (isFull || isHalf) && colorClass,
-          disabled ? "cursor-not-allowed" : "cursor-pointer",
-          className
+          "relative inline-flex select-none items-center justify-center text-mari-border",
+          // Dokunmatikte her yıldız 44px yüksek, komşusuyla boşluksuz bir hedef.
+          interactive && "cursor-pointer pointer-coarse:before:absolute pointer-coarse:before:-inset-x-1 pointer-coarse:before:-inset-y-2.5",
+          disabled && "cursor-not-allowed"
         )}
         style={{ fontSize: characterSize }}
       >
-        <span className="absolute inset-0 w-full h-full text-mari-border pointer-events-none" aria-hidden>
+        {/* Boş yıldız yer tutar; dolu kısım üstte, genişliği orana göre kırpılır. */}
+        <span className="inline-flex" aria-hidden>
           {icon}
         </span>
-        {starOverlay}
-        <span className="invisible" aria-hidden>
-          {icon}
-        </span>
+        {fraction > 0 && (
+          <span
+            className={cn("pointer-events-none absolute inset-y-0 left-0 inline-flex overflow-hidden", colorClass)}
+            style={{ width: `${Math.round(fraction * 1000) / 10}%`, color: characterColor }}
+            aria-hidden
+          >
+            {icon}
+          </span>
+        )}
       </span>
     );
   });
+
+  const valueText = `${displayValue.toLocaleString("tr-TR")} / ${count}`;
+
+  if (readOnly) {
+    return (
+      <div role="img" aria-label={`${ariaLabel}: ${valueText}`} className={cn("flex gap-1", className)}>
+        {stars}
+      </div>
+    );
+  }
 
   return (
     <div
       ref={rootRef}
       className={cn(
-        "flex gap-1 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+        "flex gap-1 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring pointer-coarse:gap-2",
         className
       )}
       tabIndex={disabled ? -1 : 0}
@@ -156,7 +173,7 @@ export function Rate({
       aria-valuemin={0}
       aria-valuemax={count}
       aria-valuenow={displayValue}
-      aria-valuetext={`${displayValue} / ${count}`}
+      aria-valuetext={valueText}
       aria-disabled={disabled || undefined}
     >
       {stars}

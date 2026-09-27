@@ -1,3 +1,5 @@
+import type { SkeletonableProps } from "../lib/skeleton";
+
 export type ListType = "list" | "review";
 export type InputType = "button" | "dragDrop" | "review";
 export type ReviewType = "square" | "circle";
@@ -14,11 +16,18 @@ export interface UploadFileItem {
   progress: number;
 }
 
-export interface UploadProps {
+export interface UploadProps extends SkeletonableProps {
   inputType?: InputType;
   fileSize?: number;
   fileType?: string;
   max?: number;
   listType?: ListType;
   reviewType?: ReviewType;
+  /**
+   * Liste her değiştiğinde (ekleme, silme, yükleme tamamlandı) çağrılır.
+   * `files`: listedeki dosyalar; `items`: durum/ilerleme bilgisiyle.
+   * Eskiden HİÇ yoktu — bileşen seçilen dosyaları tüketiciye veremiyordu.
+   */
+  onChange?: (files: File[], items: UploadFileItem[]) => void;
+  disabled?: boolean;
 }

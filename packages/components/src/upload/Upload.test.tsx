@@ -1,6 +1,6 @@
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { ComponentProps } from "react";
 import { ToastProvider } from "../toast";
 import { Upload } from "./Upload";
@@ -70,5 +70,27 @@ describe("Upload", () => {
 
     const grid = container.querySelector(".flex-wrap");
     expect(grid?.children.length).toBe(2); // 1 dosya karosu + 1 "ekle" karosu
+  });
+
+  it("onChange seçilen dosyalarla çağrılır (eskiden bileşen dosyaları dışarı veremiyordu)", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { container } = renderUpload({ max: 3, onChange });
+    await user.upload(container.querySelector('input[type="file"]') as HTMLInputElement, [makeFile("fatura.png")]);
+    await waitFor(() => expect(onChange).toHaveBeenCalled());
+    const [files] = onChange.mock.calls.at(-1)!;
+    expect(files.map((f: File) => f.name)).toEqual(["fatura.png"]);
+  });
+
+  it("disabled: seçim butonu ve gizli input devre dışı", () => {
+    const { container, getByRole } = renderUpload({ disabled: true });
+    expect(getByRole("button")).toBeDisabled();
+    expect(container.querySelector('input[type="file"]')).toBeDisabled();
+  });
+
+  it("dokunmatikte sürükle-bırak metni yerine 'dokunun' metni", () => {
+    const { container } = renderUpload({ inputType: "dragDrop" });
+    expect(container.textContent).toContain("Dosya seçmek için dokunun");
+    expect(container.querySelector(".pointer-coarse\\:hidden")).not.toBeNull();
   });
 });

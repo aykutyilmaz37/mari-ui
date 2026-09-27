@@ -60,21 +60,32 @@ export function ReviewList({ item, reviewType, handleDelete }: ReviewListProps) 
           )}
           <div
             className={cn(
-              "absolute inset-0 z-10 flex items-center justify-center gap-3 bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+              "absolute inset-0 z-10 flex items-center justify-center gap-3 bg-black/40 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100",
+              // Dokunmatikte hover yok: karartma yerine köşede hep görünür küçük butonlar.
+              "pointer-coarse:items-start pointer-coarse:justify-end pointer-coarse:gap-1 pointer-coarse:bg-transparent pointer-coarse:p-1 pointer-coarse:opacity-100",
               shapeClass
             )}
           >
             {isImage && objectUrl && (
               <Button
                 variant="ghost"
-                className="p-0 text-white hover:text-white"
+                shape="circle"
+                size="sm"
+                className="text-white hover:text-white pointer-coarse:bg-black/55"
                 aria-label={`${file.name} dosyasını önizle`}
                 onClick={() => window.open(objectUrl, "_blank", "noopener,noreferrer")}
               >
                 <EyeIcon size={18} />
               </Button>
             )}
-            <Button variant="ghost" className="p-0 text-white hover:text-white" aria-label={`${file.name} dosyasını kaldır`} onClick={() => handleDelete(item.id)}>
+            <Button
+              variant="ghost"
+              shape="circle"
+              size="sm"
+              className="text-white hover:text-white pointer-coarse:bg-black/55"
+              aria-label={`${file.name} dosyasını kaldır`}
+              onClick={() => handleDelete(item.id)}
+            >
               <XIcon size={18} />
             </Button>
           </div>

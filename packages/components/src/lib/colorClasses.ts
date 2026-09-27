@@ -215,3 +215,50 @@ export function colorVariantToClassName(style: ColorVariantStyle): string {
 
   return cn(bg, hoverBg, text, border, border && "border");
 }
+
+/**
+ * Faz 15 — işaretlenebilir kontroller (Checkbox/Radio) için `checked:` önekli
+ * literal tablolar. Önek runtime'da birleştirilmez (Tailwind taraması).
+ * Kenarlık dolguyla AYNI (`-solid`): eskiden açık `-border` tonuydu, dolu
+ * kutunun etrafında soluk bir hare gibi duruyordu ve 3:1'i geçmiyordu.
+ */
+export const checkedBgSolidClass: Record<ColorRole, string> = {
+  primary: "checked:bg-mari-primary-solid",
+  accent: "checked:bg-mari-accent-solid",
+  success: "checked:bg-mari-success-solid",
+  error: "checked:bg-mari-error-solid",
+  warning: "checked:bg-mari-warning-solid",
+  info: "checked:bg-mari-info-solid",
+  neutral: "checked:bg-mari-neutral-solid",
+};
+
+export const checkedBgSolidHoverClass: Record<ColorRole, string> = {
+  primary: "checked:hover:bg-mari-primary-solid-hover",
+  accent: "checked:hover:bg-mari-accent-solid-hover",
+  success: "checked:hover:bg-mari-success-solid-hover",
+  error: "checked:hover:bg-mari-error-solid-hover",
+  warning: "checked:hover:bg-mari-warning-solid-hover",
+  info: "checked:hover:bg-mari-info-solid-hover",
+  neutral: "checked:hover:bg-mari-neutral-solid-hover",
+};
+
+export const checkedBorderSolidClass: Record<ColorRole, string> = {
+  primary: "checked:border-mari-primary-solid",
+  accent: "checked:border-mari-accent-solid",
+  success: "checked:border-mari-success-solid",
+  error: "checked:border-mari-error-solid",
+  warning: "checked:border-mari-warning-solid",
+  info: "checked:border-mari-info-solid",
+  neutral: "checked:border-mari-neutral-solid",
+};
+
+/** Radio'nun dış halkası seçiliyken rol rengi (outline varyantı — içi boş, nokta ayrı). */
+export const checkedBorderStrongClass: Record<ColorRole, string> = {
+  primary: "checked:border-mari-primary",
+  accent: "checked:border-mari-accent",
+  success: "checked:border-mari-success",
+  error: "checked:border-mari-error",
+  warning: "checked:border-mari-warning",
+  info: "checked:border-mari-info",
+  neutral: "checked:border-mari-neutral",
+};

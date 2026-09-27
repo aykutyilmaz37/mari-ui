@@ -1,12 +1,13 @@
 import type React from "react";
 import type { ColorRole, Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 /** Tek değer ya da aralık `[başlangıç, bitiş]`. Aralık verilince iki tutamaç çizilir. */
 export type SliderValue = number | [number, number];
 export type SliderIconItem = { icon: React.ReactNode; value: number };
 export type SliderIconPosition = "top" | "bottom";
 
-export interface SliderProps {
+export interface SliderProps extends SkeletonableProps {
   value?: SliderValue;
   /** Uncontrolled başlangıç. Aralık için `[20, 80]` gibi bir dizi verin. Varsayılan: `0`. */
   defaultValue?: SliderValue;

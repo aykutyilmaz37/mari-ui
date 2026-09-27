@@ -1,8 +1,9 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useId, useImperativeHandle, useRef } from "react";
 import { cn, useControllableState } from "@mari-ui/core";
-import { fontSizeClass } from "../lib/sizeClasses";
+import { skeletonBoxProps } from "../lib/skeleton";
+import { checkableTouchTargetClass, fontSizeClass } from "../lib/sizeClasses";
 import type { RadioChangeEvent, RadioProps } from "./types";
 import { getDotSizeClasses, getSizeClasses, getVariantClasses, getVariantDotClasses, resolveRadioColor } from "./utils";
 
@@ -15,6 +16,8 @@ export type { RadioProps };
  * kullandığı için bu effect'in render üzerinde hiçbir etkisi yoktu (ölü
  * senkronizasyon). `useControllableState` bunu tek, doğru bir mekanizmaya indirger.
  */
+const DESCRIPTION_INDENT_CLASS = { sm: "pl-5", md: "pl-6", lg: "pl-7" } as const;
+
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
   (
     {
@@ -37,6 +40,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       id,
       value,
       name,
+      skeleton = false,
     },
     ref
   ) => {
@@ -45,24 +49,34 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     useImperativeHandle(ref, () => inputRef.current!, []);
 
     const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked });
+    const descriptionId = useId();
 
     const handleChange = (e: RadioChangeEvent) => {
       setIsChecked(e.target.checked);
       onChange?.(e);
     };
 
+    if (skeleton) {
+      return (
+        <span aria-hidden className={cn("inline-flex items-center gap-2", classNames.wrapper)}>
+          <span {...skeletonBoxProps(cn("shrink-0 rounded-full", getSizeClasses(size)))} />
+          {label && <span {...skeletonBoxProps(cn("rounded-sm", fontSizeClass[size]))}>{label}</span>}
+        </span>
+      );
+    }
+
     const baseClasses = cn(
-      "relative appearance-none border rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+      "relative shrink-0 cursor-pointer appearance-none rounded-full border transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
       getSizeClasses(size),
       getVariantClasses(variant, resolvedColor),
-      disabled && "opacity-50",
+      disabled && "opacity-50 cursor-not-allowed",
       classNames.radio,
       className
     );
 
     return (
       <label className={cn("inline-flex flex-col gap-1 cursor-pointer", disabled && "cursor-not-allowed", classNames.wrapper)}>
-        <span className="inline-flex items-center gap-2">
+        <span className={cn("relative inline-flex items-center gap-2", checkableTouchTargetClass[size])}>
           <span className="relative inline-flex items-center justify-center">
             <input
               ref={inputRef}
@@ -74,13 +88,21 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
               disabled={disabled}
               value={value}
               name={name}
+              aria-describedby={description ? descriptionId : undefined}
               onChange={handleChange}
               onBlur={onBlur}
               onFocus={onFocus}
               className={baseClasses}
             />
             {isChecked && (
-              <span className={cn("absolute rounded-full pointer-events-none", getDotSizeClasses(size), getVariantDotClasses(variant, resolvedColor))} />
+              // Nokta küçükten büyür (@starting-style) — seçim anlık "belirmez".
+              <span
+                className={cn(
+                  "pointer-events-none absolute rounded-full transition-[scale] duration-150 starting:scale-0 motion-reduce:transition-none",
+                  getDotSizeClasses(size),
+                  getVariantDotClasses(variant, resolvedColor)
+                )}
+              />
             )}
           </span>
           {label && (
@@ -89,7 +111,12 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
             </span>
           )}
         </span>
-        {description && <span className="text-xs text-mari-muted">{description}</span>}
+        {description && (
+          // Etiket hizasında başlar (kutu genişliği + gap): sm 12+8, md 16+8, lg 20+8px.
+          <span id={descriptionId} className={cn("text-xs text-mari-muted", DESCRIPTION_INDENT_CLASS[size])}>
+            {description}
+          </span>
+        )}
       </label>
     );
   }

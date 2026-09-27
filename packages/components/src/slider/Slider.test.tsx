@@ -143,4 +143,9 @@ describe("Slider", () => {
     );
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("dokunmatikte ray alanı görünmez biçimde genişler", () => {
+    const { container } = render(<Slider aria-label="Ses" />);
+    expect(container.querySelector("[class*='pointer-coarse:before:-inset-y-2.5']")).not.toBeNull();
+  });
 });

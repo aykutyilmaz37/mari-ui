@@ -19,14 +19,15 @@ describe("Checkbox", () => {
     const user = userEvent.setup();
     render(<Checkbox label="Kabul ediyorum" />);
     const checkbox = screen.getByRole("checkbox");
-    expect(checkbox.className).toContain("checked:border-mari-primary-border");
+    // Faz 15: işaretliyken kenarlık dolguyla aynı (-solid); açık -border tonu <3:1'di.
+    expect(checkbox.className).toContain("checked:border-mari-primary-solid");
     await user.click(checkbox);
     expect(checkbox).toBeChecked();
   });
 
   it("color=\"error\" AÇIKÇA verildiyse dinlenme halinde de o renk kalıcıdır", () => {
     render(<Checkbox label="Zorunlu alan" color="error" />);
-    expect(screen.getByRole("checkbox").className).toContain("border-mari-error-border");
+    expect(screen.getByRole("checkbox").className.split(" ")).toContain("border-mari-error");
   });
 
   it("label varsayılan olarak boyut ölçeğinden bir font-size taşır (eskiden ambient/büyük boyuttaydı)", () => {
@@ -42,5 +43,40 @@ describe("Checkbox", () => {
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {
     const { container } = render(<Checkbox label="Kabul ediyorum" />);
     expect(await getA11yViolations(container)).toEqual([]);
+  });
+
+  it("indeterminate iken kutu dolgulu (eskiden boş görünüyordu) ve yatay çizgi gösterir", () => {
+    const { container } = render(<Checkbox label="Tümünü seç" indeterminate />);
+    const box = screen.getByRole("checkbox");
+    expect(box.className.split(" ")).toContain("bg-mari-primary-solid");
+    expect((box as HTMLInputElement).indeterminate).toBe(true);
+    expect(container.querySelector(".h-0\\.5")).not.toBeNull();
+  });
+
+  it("çentik ikonu kutu boyutuyla orantılı", () => {
+    const { container } = render(<Checkbox label="A" size="sm" defaultChecked />);
+    expect(container.querySelector("svg")).toHaveClass("size-2.5");
+  });
+
+  it("pill şekli yatay dolgu almaz (kutu ovale dönüşmüyor)", () => {
+    render(<Checkbox label="A" shape="pill" />);
+    expect(screen.getByRole("checkbox")).not.toHaveClass("px-4");
+  });
+
+  it("açıklama aria-describedby ile bağlı", () => {
+    render(<Checkbox label="Bülten" description="Haftada bir e-posta" />);
+    expect(screen.getByRole("checkbox")).toHaveAccessibleDescription("Haftada bir e-posta");
+  });
+
+  it("skeleton: checkbox yok, gizli yer tutucu; etiket şeffaf yerinde", () => {
+    const { container } = render(<Checkbox label="Bülten" skeleton />);
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("Bülten")).toHaveClass("text-transparent");
+  });
+
+  it("dokunmatik hedef satıra uygulanır", () => {
+    render(<Checkbox label="A" />);
+    expect(screen.getByText("A").parentElement!.className).toContain("pointer-coarse:before:-inset-y-3");
   });
 });

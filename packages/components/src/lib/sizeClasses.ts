@@ -60,3 +60,15 @@ export const touchTargetSquareClass: Record<ExtendedSize, string> = {
   lg: "pointer-coarse:before:absolute pointer-coarse:before:-inset-0.5",
   xl: "",
 };
+
+/**
+ * Checkbox/Radio satırı (kutu + etiket) için dokunmatik hedef: satır
+ * yüksekliği etiketin satır yüksekliğidir (sm 16 / md 20 / lg 24px) → 44px'e
+ * tamamlar. `<label>` içindeki bir öğeye uygulanır; pseudo alana dokunmak
+ * etikete dokunmak sayılır ve kontrolü değiştirir.
+ */
+export const checkableTouchTargetClass: Record<"sm" | "md" | "lg", string> = {
+  sm: "pointer-coarse:before:absolute pointer-coarse:before:-inset-x-1 pointer-coarse:before:-inset-y-3.5",
+  md: "pointer-coarse:before:absolute pointer-coarse:before:-inset-x-1 pointer-coarse:before:-inset-y-3",
+  lg: "pointer-coarse:before:absolute pointer-coarse:before:-inset-x-1 pointer-coarse:before:-inset-y-2.5",
+};

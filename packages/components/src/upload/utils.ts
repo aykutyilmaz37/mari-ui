@@ -20,14 +20,31 @@ export function getFileKey(file: File): string {
   return `${file.lastModified}-${file.name}`;
 }
 
+/** Dosya adının uzantısı (küçük harf, noktasız). */
+function nameExtension(file: File): string {
+  const dot = file.name.lastIndexOf(".");
+  return dot > 0 ? file.name.slice(dot + 1).toLowerCase() : "";
+}
+
+const EXTENSION_ALIASES: Record<string, string> = { jpg: "jpeg", jpeg: "jpg", tif: "tiff", tiff: "tif" };
+
+/** Tek bir `accept` belirteciyle eşleşme: "image/*", "image/png", ".png" ya da "png". */
+function matchesAcceptToken(file: File, token: string): boolean {
+  const type = file.type.toLowerCase();
+  if (token.endsWith("/*")) return type.startsWith(token.slice(0, -1));
+  if (token.includes("/")) return type === token;
+  const ext = token.replace(/^\./, "");
+  const candidates = new Set([nameExtension(file), getFileExtension(file).toLowerCase()]);
+  return candidates.has(ext) || candidates.has(EXTENSION_ALIASES[ext] ?? "");
+}
+
 /**
- * `allowedType` hem bir uzantı ("png") hem bir MIME türü ("image/png")
- * olarak dokümante edilmiş/kullanılmıştı (bkz. Upload.stories.tsx'in
- * `fileType` argType açıklaması ve `WithCustomFileType` örneği) ama burada
- * her zaman ÇIPLAK uzantıyla (`getFileExtension`) karşılaştırılıyordu —
- * "image/png" verilince `"png" !== "image/png"` hep true çıkıyor, yani
- * dokümante edilen kullanım her dosyayı GEÇERSİZ sayıyordu. İkisini de
- * uzantıya normalize ediyoruz.
+ * `allowedType` native `accept` sözdizimini izler: virgülle ayrılmış MIME
+ * türleri ("image/png"), joker ("image/*") ve uzantılar (".png" ya da "png").
+ *
+ * Faz 15: eskiden yalnız TEK bir değer ve MIME alt türüyle karşılaştırma vardı —
+ * "image/*" (en yaygın değer) her dosyayı reddediyor ("*" ≠ "png"), ".jpg"
+ * MIME'daki "jpeg" ile eşleşmiyor, "image/png,image/jpeg" hiç çalışmıyordu.
  */
 export function isFileValid({
   file,
@@ -38,9 +55,22 @@ export function isFileValid({
   allowedType?: string;
   maxSize?: number;
 }): { valid: boolean; reason?: "invalid-type" | "size-exceeded" } {
-  const extension = getFileExtension(file);
-  const allowedExtension = allowedType?.includes("/") ? allowedType.split("/")[1] : allowedType;
-  if (allowedExtension && extension !== allowedExtension) return { valid: false, reason: "invalid-type" };
+  const tokens = (allowedType ?? "")
+    .split(",")
+    .map((t) => t.trim().toLowerCase())
+    .filter(Boolean);
+  if (tokens.length > 0 && !tokens.some((t) => matchesAcceptToken(file, t))) return { valid: false, reason: "invalid-type" };
   if (maxSize && file.size > maxSize) return { valid: false, reason: "size-exceeded" };
   return { valid: true };
+}
+
+/** `fileType` → native `accept` özniteliği (çıplak "png" → ".png"; tarayıcı çıplak uzantıyı yok sayar). */
+export function toAcceptAttribute(fileType: string | undefined): string | undefined {
+  if (!fileType) return undefined;
+  return fileType
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map((t) => (t.includes("/") || t.startsWith(".") ? t : `.${t}`))
+    .join(",");
 }

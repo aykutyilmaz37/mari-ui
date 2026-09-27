@@ -42,6 +42,32 @@ describe("Switch", () => {
     expect(label.className).toContain("inset-y-0");
     expect(label.className).toContain("items-center");
   });
+
+  it("top her renkte beyaz (success/info'da siyah çıkıyordu) ve basılıyken uzar, odakta değil", () => {
+    const { container } = render(<Switch aria-label="Yedek" color="success" defaultChecked />);
+    const knob = container.querySelector("[role=switch] > span")!;
+    expect(knob).toHaveClass("bg-white");
+    expect(knob.className).toContain("group-active:scale-x-[1.166]");
+    expect(knob.className).not.toContain("group-focus:");
+  });
+
+  it("kapalı track kenarlıksız nötr gri (kenarlık topu taşırıyordu)", () => {
+    render(<Switch aria-label="Yedek" />);
+    const track = screen.getByRole("switch");
+    expect(track).toHaveClass("bg-mari-input");
+    expect(track.className.split(" ")).not.toContain("border");
+  });
+
+  it("loading iken aria-busy; etiket yoksa aria-label", () => {
+    render(<Switch aria-label="Yedek" loading />);
+    expect(screen.getByRole("switch", { name: "Yedek" })).toHaveAttribute("aria-busy", "true");
+  });
+
+  it("skeleton: switch yok, gizli yer tutucu", () => {
+    const { container } = render(<Switch label="Yedek" skeleton />);
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
+  });
 });
 
 
@@ -57,4 +83,5 @@ it("klavye ile açılıp kapatıldığında odağı korur", async () => {
   await user.keyboard(" ");
   expect(control).toHaveAttribute("aria-checked", "false");
   expect(control).toHaveFocus();
+
 });

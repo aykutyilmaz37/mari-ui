@@ -30,7 +30,9 @@ export function UploadList({ item, handleDelete }: UploadListProps) {
           variant="ghost"
           color="neutral"
           size="sm"
-          className="shrink-0 p-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+          shape="circle"
+          // Dokunmatikte hover yok — sil butonu orada hep görünür (eskiden görünmez ama dokunulabilir bir hedefti).
+          className="shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-coarse:opacity-100"
           aria-label={`${item.file.name} dosyasını kaldır`}
           onClick={() => handleDelete(item.id)}
         >

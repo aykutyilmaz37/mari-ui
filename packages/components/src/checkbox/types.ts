@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, SlotClassNames, Size, Variant } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type CheckboxChangeEvent = React.ChangeEvent<HTMLInputElement>;
 export type CheckboxSlot = "wrapper" | "checkbox" | "label";
@@ -9,7 +10,7 @@ export type CheckboxShape = "default" | "pill" | "square";
 /** @deprecated Eski `type` prop'unun değerleri. "secondary" -> `neutral`. */
 export type LegacyCheckboxType = "primary" | "secondary";
 
-export interface CheckboxProps {
+export interface CheckboxProps extends SkeletonableProps {
   autoFocus?: boolean;
   checked?: boolean;
   defaultChecked?: boolean;
@@ -25,7 +26,10 @@ export interface CheckboxProps {
   size?: Size;
   shape?: CheckboxShape;
   id?: string;
-  /** Varsayılan: `solid`. Sadece `solid`/`outline` anlamlı. */
+  name?: string;
+  value?: string;
+  required?: boolean;
+  /** Varsayılan: `outline`. Sadece `solid`/`outline` anlamlı. */
   variant?: Extract<Variant, "solid" | "outline">;
   /**
    * Semantik renk. Varsayılan: `primary`.

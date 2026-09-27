@@ -1,5 +1,12 @@
 import { cn, type ColorRole, type Size, type Variant } from "@mari-ui/core";
-import { borderColorClass, textSolidContrastClass } from "../lib/colorClasses";
+import {
+  bgSolidClass,
+  borderStrongColorClass,
+  checkedBgSolidClass,
+  checkedBgSolidHoverClass,
+  checkedBorderSolidClass,
+  textSolidContrastClass,
+} from "../lib/colorClasses";
 import type { CheckboxShape, LegacyCheckboxType } from "./types";
 
 const LEGACY_TYPE_TO_COLOR: Record<LegacyCheckboxType, ColorRole> = {
@@ -36,10 +43,18 @@ const SIZE_CLASS: Record<Size, string> = {
   lg: "h-5 w-5 text-base",
 };
 
+/** Çentik ikonu kutuyla orantılı — eskiden her boyutta sabit 16px'ti (sm'nin 12px kutusundan taşıyordu). */
+const CHECK_ICON_CLASS: Record<Size, string> = {
+  sm: "size-2.5",
+  md: "size-3",
+  lg: "size-3.5",
+};
+
+/** Belirsiz (indeterminate) hal: dolu kutunun ortasında yatay bir çizgi. */
 const INDETERMINATE_SIZE_CLASS: Record<Size, string> = {
-  sm: "h-1.5 w-1.5",
-  md: "h-2.5 w-2.5",
-  lg: "h-3 w-3",
+  sm: "h-0.5 w-1.5",
+  md: "h-0.5 w-2",
+  lg: "h-0.5 w-2.5",
 };
 
 export function getSizeClasses(size: Size): string {
@@ -50,48 +65,15 @@ export function getIndeterminateSizeClasses(size: Size): string {
   return INDETERMINATE_SIZE_CLASS[size];
 }
 
-export function getShapeClasses(shape: CheckboxShape): string {
-  return { square: "rounded-none", pill: "rounded-full px-4", default: "rounded-md" }[shape];
+export function getCheckIconClass(size: Size): string {
+  return CHECK_ICON_CLASS[size];
 }
 
-/**
- * `checked:` pseudo-class varyantları — literal string, `${role}`
- * interpolasyonu YOK. `colorClasses.ts`'teki tablolar zaten "hover:" önekli
- * geliyor; onları çalışma zamanında `.replace()` edip yeniden birleştirmek
- * ("checked:" + temizlenmiş sonuç) Tailwind'in tarayıcısının asla
- * göremeyeceği bir string üretirdi — Skeleton/Loading'i bozan hatanın
- * üçüncü tekrarı olurdu. Bunun yerine ayrı, tam literal bir tablo.
- */
-const CHECKED_BG_SOLID_CLASS: Record<ColorRole, string> = {
-  primary: "checked:bg-mari-primary-solid",
-  accent: "checked:bg-mari-accent-solid",
-  success: "checked:bg-mari-success-solid",
-  error: "checked:bg-mari-error-solid",
-  warning: "checked:bg-mari-warning-solid",
-  info: "checked:bg-mari-info-solid",
-  neutral: "checked:bg-mari-neutral-solid",
-};
-
-const CHECKED_BG_SOLID_HOVER_CLASS: Record<ColorRole, string> = {
-  primary: "checked:hover:bg-mari-primary-solid-hover",
-  accent: "checked:hover:bg-mari-accent-solid-hover",
-  success: "checked:hover:bg-mari-success-solid-hover",
-  error: "checked:hover:bg-mari-error-solid-hover",
-  warning: "checked:hover:bg-mari-warning-solid-hover",
-  info: "checked:hover:bg-mari-info-solid-hover",
-  neutral: "checked:hover:bg-mari-neutral-solid-hover",
-};
-
-/** Sadece İŞARETLİYKEN kenarlığı renklendirir — dinlenme halinde nötr/gri kalır. */
-const CHECKED_BORDER_CLASS: Record<ColorRole, string> = {
-  primary: "checked:border-mari-primary-border",
-  accent: "checked:border-mari-accent-border",
-  success: "checked:border-mari-success-border",
-  error: "checked:border-mari-error-border",
-  warning: "checked:border-mari-warning-border",
-  info: "checked:border-mari-info-border",
-  neutral: "checked:border-mari-neutral-border",
-};
+export function getShapeClasses(shape: CheckboxShape): string {
+  // `pill` eskiden `px-4` da taşıyordu — 16px'lik kutu 34px'lik bir ovale dönüşüyordu.
+  // Kutu köşesi, kontrol ölçeğinde (`rounded-sm`), radius preset'ini izler.
+  return { square: "rounded-none", pill: "rounded-full", default: "rounded-sm" }[shape];
+}
 
 /**
  * `color` verilmediyse (yani gerçek bir doğrulama durumu YOKSA) dinlenme
@@ -100,11 +82,15 @@ const CHECKED_BORDER_CLASS: Record<ColorRole, string> = {
  * AÇIKÇA verildiyse (örn. `error`) o renk işaretli/işaretsiz HER ZAMAN
  * kalıcıdır (bkz. `input/utils.ts`'teki aynı desen).
  */
-export function getVariantClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole | undefined): string {
+export function getVariantClasses(variant: Extract<Variant, "solid" | "outline">, color: ColorRole | undefined, indeterminate = false): string {
   const fillColor = color ?? "primary";
+  // Belirsiz hal native `checked` DEĞİL — eskiden hiçbir dolgu almıyordu, iç
+  // çubuk da yüzey renginde olduğu için kutu BOŞ görünüyordu.
+  const indeterminateClass = indeterminate && cn(bgSolidClass[fillColor], "border-transparent");
   if (variant === "solid") {
-    return cn(CHECKED_BG_SOLID_CLASS[fillColor], CHECKED_BG_SOLID_HOVER_CLASS[fillColor], "border-transparent bg-mari-surface-alt");
+    return cn("border-transparent bg-mari-surface-alt", checkedBgSolidClass[fillColor], checkedBgSolidHoverClass[fillColor], indeterminateClass);
   }
-  const restBorderClass = color ? borderColorClass[color] : "border-mari-input";
-  return cn("bg-mari-surface", restBorderClass, CHECKED_BG_SOLID_CLASS[fillColor], CHECKED_BORDER_CLASS[fillColor], textSolidContrastClass[fillColor]);
+  // Açıkça verilen renk (doğrulama durumu) dinlenmede de rol renginde (≥3:1).
+  const restBorderClass = color ? borderStrongColorClass[color] : "border-mari-input";
+  return cn("bg-mari-surface", restBorderClass, checkedBgSolidClass[fillColor], checkedBorderSolidClass[fillColor], textSolidContrastClass[fillColor], indeterminateClass);
 }

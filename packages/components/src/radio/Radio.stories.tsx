@@ -58,14 +58,18 @@ export const Playground: StoryObj<RadioProps> = {
 
 export const AllVariants: StoryObj = {
   name: "Tüm Renk × Varyant × Boyut",
-  ...storyDoc("`md` boyutlar önceden seçili — dinlenme (gri) ve seçili (renkli) halleri yan yana karşılaştırın."),
+  ...storyDoc(
+    "`md` boyutlar önceden seçili — dinlenme (gri) ve seçili (renkli) halleri yan yana. `solid`'de seçilmemiş radio artık dolu değil (eskiden hepsi seçili görünüyordu).",
+    `<Radio name="plan" value="aylik" label="Aylık" variant="outline" />
+<Radio name="plan" value="yillik" label="Yıllık" variant="solid" defaultChecked />`
+  ),
   render: () => {
     const colors = ["primary", "neutral", "error", "warning"] as const;
     const variants = ["outline", "solid"] as const;
     const sizes = ["sm", "md", "lg"] as const;
 
     return (
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-6">
         {colors.map((color) => (
           <div key={color} className="space-y-4">
             <h3 className="font-semibold capitalize">{color}</h3>
@@ -87,16 +91,22 @@ export const AllVariants: StoryObj = {
 };
 
 const ControlledExample = () => {
-  const [selected, setSelected] = useState("secenek-a");
+  const [selected, setSelected] = useState("kart");
   return (
-    <div className="flex flex-col gap-2 p-4">
-      <Radio label="Seçenek A" value="secenek-a" checked={selected === "secenek-a"} onChange={() => setSelected("secenek-a")} />
-      <Radio label="Seçenek B" value="secenek-b" checked={selected === "secenek-b"} onChange={() => setSelected("secenek-b")} />
+    <div role="radiogroup" aria-label="Ödeme" className="flex flex-col gap-2">
+      <Radio name="odeme" label="Kredi kartı" value="kart" checked={selected === "kart"} onChange={() => setSelected("kart")} />
+      <Radio name="odeme" label="Havale / EFT" value="havale" checked={selected === "havale"} onChange={() => setSelected("havale")} />
     </div>
   );
 };
 export const Controlled: StoryObj = {
   name: "Controlled Örneği",
-  ...storyDoc("Tek tek `Radio` ile elle kurulan bir grup — genelde bunun yerine `RadioGroup` tercih edilir."),
+  ...storyDoc(
+    "Tek tek `Radio` ile elle kurulan bir grup — aynı `name` ve bir `role=\"radiogroup\"` sarmalayıcı şart (ok tuşlarıyla gezinme bunlara bağlı). Genelde `RadioGroup` daha kolaydır.",
+    `<div role="radiogroup" aria-label="Ödeme">
+  <Radio name="odeme" value="kart" label="Kredi kartı" checked={v === "kart"} onChange={() => setV("kart")} />
+  <Radio name="odeme" value="havale" label="Havale / EFT" checked={v === "havale"} onChange={() => setV("havale")} />
+</div>`
+  ),
   render: () => <ControlledExample />,
 };

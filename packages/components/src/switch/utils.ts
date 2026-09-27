@@ -56,12 +56,29 @@ const BALL_LEFT_ON_CLASS: Record<Size, string> = {
 // varsayılanı artık topun kendisinden büyük olurdu.
 const SPINNER_SIZE: Record<Size, number> = { sm: 10, md: 14, lg: 20 };
 
+/**
+ * Dokunmatik hedef: track yüksekliği sm 16 / md 22 / lg 28px → 44px'e tamamlar.
+ * `sm` track'i (32px) yatayda da 44'e genişler.
+ */
+export const SWITCH_TOUCH_TARGET_CLASS: Record<Size, string> = {
+  sm: "pointer-coarse:before:absolute pointer-coarse:before:-inset-x-1.5 pointer-coarse:before:-inset-y-3.5",
+  md: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-2.5",
+  lg: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-2",
+};
+
+export function getTrackSizeClass(size: Size, hasLabel: boolean): string {
+  return hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size];
+}
+
 export function getSpinnerSize(size: Size): number {
   return SPINNER_SIZE[size];
 }
 
 export function getTrackClass(size: Size, color: ColorRole, checked: boolean, hasLabel: boolean): string {
-  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-surface-alt border border-mari-input");
+  // Kapalı track'te KENARLIK YOK (Faz 15): 1px kenarlık iç kutuyu 2px
+  // küçültüyor, top (track − 4px) kutuya sığmayıp alttan/soldan taşıyordu.
+  // Kapalı hal her renkte aynı nötr gri — renk yalnızca "açık"ı anlatır.
+  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-input");
 }
 
 export function getBallClass(size: Size, checked: boolean): string {

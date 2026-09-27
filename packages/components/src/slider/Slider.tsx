@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { cn, useControllableState, type ColorRole } from "@mari-ui/core";
+import { skeletonBoxProps } from "../lib/skeleton";
+import { cn, useControllableState, type ColorRole, type Size } from "@mari-ui/core";
 import { Input } from "../input";
 import { bgSolidClass, textClass } from "../lib/colorClasses";
 import type { SliderProps, SliderValue } from "./types";
@@ -57,6 +58,50 @@ function formatText(format: SliderProps["formatValue"], value: number): string |
   return typeof out === "string" || typeof out === "number" ? String(out) : undefined;
 }
 
+/** Bir tutamacın gidebileceği aralık — aralıkta diğer tutamacı geçemez. */
+function thumbBounds(vals: number[], index: number, isRange: boolean, min: number, max: number): [number, number] {
+  if (!isRange) return [min, max];
+  return index === 0 ? [min, vals[1] ?? max] : [vals[0] ?? min, max];
+}
+
+/** Dokunmatikte ray alanı görünmez biçimde 44px'e genişler (tutamaç ve ray aynı kalır). */
+const TRACK_TOUCH_TARGET_CLASS = {
+  horizontal: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-2.5",
+  vertical: "pointer-coarse:before:absolute pointer-coarse:before:inset-y-0 pointer-coarse:before:-inset-x-2.5",
+} as const;
+
+/** Dolu kısmın [başlangıç, bitiş] yüzdesi — tekte 0'dan tutamaca, aralıkta iki tutamaç arası. */
+function fillRange(percents: number[], isRange: boolean): [number, number] {
+  if (isRange) return [percents[0] ?? 0, percents[1] ?? 0];
+  return [0, percents[0] ?? 0];
+}
+
+function resolveThumbLabels(thumbLabels: [string, string] | undefined, ariaLabel: string | undefined): [string, string] | undefined {
+  if (thumbLabels) return thumbLabels;
+  return ariaLabel ? [`${ariaLabel} en az`, `${ariaLabel} en çok`] : undefined;
+}
+
+/** Ray + tek tutamaç yer tutucusu — gerçek ray kutusuyla aynı kalınlıkta. */
+function SliderSkeleton({ size, vertical, className }: { size: Size; vertical: boolean; className?: string }) {
+  const thumb = THUMB_SIZE[size];
+  const cross = `max(${thumb}, 1.5rem)`;
+  return (
+    <div aria-hidden className={cn("relative flex items-center justify-center", vertical ? "" : "w-full", className)} style={vertical ? { width: cross, height: getVerticalLength(size) } : { height: cross }}>
+      <span {...skeletonBoxProps(cn("rounded-full", vertical ? "h-full" : "w-full"))} style={vertical ? { width: TRACK_HEIGHT[size] } : { height: TRACK_HEIGHT[size] }} />
+      <span {...skeletonBoxProps("absolute rounded-full")} style={{ width: thumb, height: thumb, ...(vertical ? { bottom: "40%" } : { left: "40%" }) }} />
+    </div>
+  );
+}
+
+function getBubbleClass(vertical: boolean, visible: boolean): string {
+  return cn(
+    "pointer-events-none absolute whitespace-nowrap rounded-md bg-mari-neutral-solid px-2 py-1 text-xs font-medium tabular-nums text-mari-neutral-solid-contrast shadow-mari-sm",
+    "transition-opacity duration-150 motion-reduce:transition-none",
+    vertical ? "left-full top-1/2 ml-3 -translate-y-1/2" : "bottom-full left-1/2 mb-2 -translate-x-1/2",
+    visible ? "opacity-100" : "opacity-0 group-hover/thumb:opacity-100 group-focus-visible/thumb:opacity-100"
+  );
+}
+
 export function Slider({
   value,
   defaultValue = 0,
@@ -79,6 +124,7 @@ export function Slider({
   "aria-label": ariaLabel,
   thumbLabels,
   className,
+  skeleton = false,
 }: SliderProps) {
   const [current, setCurrent] = useControllableState<SliderValue>({ value, defaultValue, onChange });
   const values = toArray(current);
@@ -93,11 +139,12 @@ export function Slider({
 
   const emit = (vals: number[]): SliderValue => (isRange ? [vals[0] ?? min, vals[1] ?? max] : (vals[0] ?? min));
 
+  const boundsOf = (vals: number[], index: number) => thumbBounds(vals, index, isRange, min, max);
+
   /** Tutamacı taşır; aralıkta diğer tutamacı geçemez. Değişmediyse onChange çağrılmaz. */
   const moveThumb = (index: number, raw: number) => {
     const vals = [...latest.current];
-    const lo = isRange && index === 1 ? (vals[0] ?? min) : min;
-    const hi = isRange && index === 0 ? (vals[1] ?? max) : max;
+    const [lo, hi] = boundsOf(vals, index);
     const next = Math.min(hi, Math.max(lo, snap(raw, min, max, step)));
     if (next === vals[index]) return;
     vals[index] = next;
@@ -136,8 +183,7 @@ export function Slider({
 
   const handleKeyDown = (index: number) => (event: React.KeyboardEvent<HTMLDivElement>) => {
     const vals = latest.current;
-    const lo = isRange && index === 1 ? (vals[0] ?? min) : min;
-    const hi = isRange && index === 0 ? (vals[1] ?? max) : max;
+    const [lo, hi] = boundsOf(vals, index);
     const next = valueFromKey(event.key, vals[index] ?? min, lo, hi, step, min, max);
     if (next === null) return;
     event.preventDefault();
@@ -151,13 +197,14 @@ export function Slider({
     onChangeEnd?.(emit(latest.current));
   };
 
+  if (skeleton) return <SliderSkeleton size={size} vertical={vertical} className={className} />;
+
   const percents = values.map((v) => toPercent(v, min, max));
-  const fillStart = isRange ? (percents[0] ?? 0) : 0;
-  const fillEnd = isRange ? (percents[1] ?? 0) : (percents[0] ?? 0);
+  const [fillStart, fillEnd] = fillRange(percents, isRange);
   const thumbSize = THUMB_SIZE[size];
   const trackHeight = TRACK_HEIGHT[size];
   const length = getVerticalLength(size);
-  const labels = thumbLabels ?? (ariaLabel ? [`${ariaLabel} en az`, `${ariaLabel} en çok`] : undefined);
+  const labels = resolveThumbLabels(thumbLabels, ariaLabel);
   const showBubble = tooltipVisible !== false;
 
   // Ray kutusu en az 24px kalın — küçük tutamaçta da dokunma hedefi yeterli olsun.
@@ -177,8 +224,8 @@ export function Slider({
         role="slider"
         tabIndex={disabled ? -1 : 0}
         aria-label={label}
-        aria-valuemin={isRange && index === 1 ? values[0] : min}
-        aria-valuemax={isRange && index === 0 ? values[1] : max}
+        aria-valuemin={boundsOf(values, index)[0]}
+        aria-valuemax={boundsOf(values, index)[1]}
         aria-valuenow={v}
         aria-valuetext={formatText(formatValue, v)}
         aria-orientation={vertical ? "vertical" : "horizontal"}
@@ -201,12 +248,7 @@ export function Slider({
         {showBubble && (
           <span
             aria-hidden
-            className={cn(
-              "pointer-events-none absolute whitespace-nowrap rounded-md bg-mari-neutral-solid px-2 py-1 text-xs font-medium tabular-nums text-mari-neutral-solid-contrast shadow-mari-sm",
-              "transition-opacity duration-150 motion-reduce:transition-none",
-              vertical ? "left-full top-1/2 ml-3 -translate-y-1/2" : "bottom-full left-1/2 mb-2 -translate-x-1/2",
-              tooltipAlwaysVisible || isActive ? "opacity-100" : "opacity-0 group-hover/thumb:opacity-100 group-focus-visible/thumb:opacity-100"
-            )}
+            className={getBubbleClass(vertical, Boolean(tooltipAlwaysVisible) || isActive)}
           >
             {display}
           </span>
@@ -225,7 +267,11 @@ export function Slider({
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      className={cn("relative touch-none select-none", disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
+      className={cn(
+        "relative touch-none select-none",
+        TRACK_TOUCH_TARGET_CLASS[vertical ? "vertical" : "horizontal"],
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      )}
       style={vertical ? { width: crossSize, height: length } : { width: "100%", height: crossSize }}
     >
       {/* Ray + dolu kısım — salt görsel. */}

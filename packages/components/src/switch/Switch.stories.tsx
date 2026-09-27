@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Switch } from "./Switch";
@@ -35,20 +35,17 @@ const meta: Meta<typeof Switch> = {
     switchFalseLabel: { control: "text", description: "Kapalı durumdayken toggle'ın içinde gösterilecek metin." },
     size: baseSizeArgType,
     color: { ...colorArgType, description: "Açık durumdaki track rengi. Varsayılan: `primary`." },
-    loading: { control: "boolean", description: "Yükleniyor durumu — toggle devre dışı kalır ve bir spinner gösterir." },
+    loading: { control: "boolean", description: "Yükleniyor durumu — toggle devre dışı kalır ve bir spinner gösterir (`aria-busy`)." },
+    skeleton: { control: "boolean", description: "Veri yokken track boyutunda iskelet.", table: { defaultValue: { summary: "false" } } },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Switch>;
 
-const PlaygroundStory = () => {
-  const [value, setValue] = useState(false);
-  return <Switch checked={value} onChange={setValue} label="Bildirimler" />;
-};
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
-  render: () => <PlaygroundStory />,
+  args: { label: "Bildirimler", defaultChecked: false, size: "md", color: "primary", disabled: false, loading: false, skeleton: false },
 };
 
 const WithLabelsStory = () => {
@@ -57,23 +54,36 @@ const WithLabelsStory = () => {
 };
 export const WithLabels: Story = {
   name: "İç Etiketli",
-  ...storyDoc("`switchTrueLabel`/`switchFalseLabel` ile track içine kısa bir durum metni eklenebilir."),
+  ...storyDoc(
+    "`switchTrueLabel`/`switchFalseLabel` ile track içine kısa bir durum metni eklenebilir; track bu metne yer açmak için genişler.",
+    `<Switch label="Bildirim" switchTrueLabel="Açık" switchFalseLabel="Kapalı" />`
+  ),
   render: () => <WithLabelsStory />,
 };
 
-const ColorsStory = () => {
-  const [value, setValue] = useState(true);
-  return (
-    <div className="flex flex-col gap-4">
-      {(["primary", "accent", "success", "warning", "error", "info", "neutral"] as const).map((color) => (
-        <Switch key={color} checked={value} onChange={setValue} color={color} label={color} />
-      ))}
-    </div>
-  );
-};
+const COLORS = ["primary", "accent", "success", "warning", "error", "info", "neutral"] as const;
+
+const ColorsStory = () => (
+  <div className="grid w-fit grid-cols-[auto_auto_auto] items-center gap-x-6 gap-y-3 text-sm">
+    <span />
+    <span className="text-xs text-mari-muted">Açık</span>
+    <span className="text-xs text-mari-muted">Kapalı</span>
+    {COLORS.map((color) => (
+      <React.Fragment key={color}>
+        <span className="text-mari-foreground">{color}</span>
+        <Switch defaultChecked color={color} aria-label={`${color} açık`} />
+        <Switch color={color} aria-label={`${color} kapalı`} />
+      </React.Fragment>
+    ))}
+  </div>
+);
 export const Colors: Story = {
   name: "Renkler",
-  ...storyDoc("7 renk rolünün tamamı — açık durumdaki track rengini belirler."),
+  ...storyDoc(
+    "`color` yalnızca AÇIK durumun track rengini belirler; top her renkte beyazdır. Kapalı hal bilinçli olarak her renkte aynı nötr gridir — " +
+      "renk \"açık\" bilgisini taşır, kapalıyken renk göstermek iki durumu karıştırırdı.",
+    `<Switch defaultChecked color="success" aria-label="Otomatik yedekleme" />`
+  ),
   render: () => <ColorsStory />,
 };
 
@@ -89,23 +99,117 @@ const SizesStory = () => {
 };
 export const Sizes: Story = {
   name: "Boyutlar",
-  ...storyDoc("`sm`/`md`/`lg`."),
+  ...storyDoc(
+    "`sm`/`md`/`lg` (16/22/28px track). Dokunmatikte her boyutun tıklama alanı görünmez biçimde 44px'e genişler.",
+    `<Switch size="sm" label="Küçük" />
+<Switch size="md" label="Orta" />
+<Switch size="lg" label="Büyük" />`
+  ),
   render: () => <SizesStory />,
 };
 
 const LoadingStory = () => {
   const [value, setValue] = useState(true);
-  return <Switch checked={value} onChange={setValue} loading label="Yükleniyor" />;
+  const [saving, setSaving] = useState(false);
+  const save = (next: boolean) => {
+    setSaving(true);
+    setTimeout(() => {
+      setValue(next);
+      setSaving(false);
+    }, 1200);
+  };
+  return <Switch checked={value} onChange={save} loading={saving} label="İki adımlı doğrulama" />;
 };
 export const Loading: Story = {
   name: "Yükleniyor",
-  ...storyDoc("`loading` sırasında toggle devre dışı kalır ve topun üzerinde bir spinner döner."),
+  ...storyDoc(
+    "Ayar sunucuya kaydedilirken `loading`: toggle kilitlenir, topun üzerinde spinner döner (`aria-busy`); yanıt gelince yeni durum uygulanır. Tıklayıp deneyin.",
+    `const [on, setOn] = useState(true);
+const [saving, setSaving] = useState(false);
+
+<Switch
+  checked={on}
+  loading={saving}
+  onChange={async (next) => { setSaving(true); await save(next); setOn(next); setSaving(false); }}
+  label="İki adımlı doğrulama"
+/>`
+  ),
   render: () => <LoadingStory />,
 };
 
-const DisabledStory = () => <Switch checked={true} onChange={() => {}} disabled label="Devre Dışı" />;
+const DisabledStory = () => (
+  <div className="flex flex-col gap-3">
+    <Switch defaultChecked disabled label="Açık, devre dışı (primary)" />
+    <Switch defaultChecked disabled color="success" label="Açık, devre dışı (success)" />
+    <Switch disabled label="Kapalı, devre dışı" />
+  </div>
+);
 export const Disabled: Story = {
   name: "Devre Dışı",
-  ...storyDoc("`disabled` — tıklanamaz, soluk görünür."),
+  ...storyDoc(
+    "`disabled` — tıklanamaz; mevcut durum ve rengi KORUNUR, sadece soluklaşır (%50). Böylece kullanıcı ayarın açık mı kapalı mı olduğunu yine görür.",
+    `<Switch defaultChecked disabled label="Otomatik yedekleme" />`
+  ),
   render: () => <DisabledStory />,
 };
+
+const SETTINGS = [
+  { id: "orders", title: "Sipariş güncellemeleri", desc: "Kargo ve teslimat bildirimleri", on: true },
+  { id: "campaigns", title: "Kampanyalar", desc: "Size özel indirimler", on: false },
+  { id: "stock", title: "Stok bildirimleri", desc: "Favorileriniz stoğa girince", on: true },
+];
+
+function SettingsDemo({ skeleton = false }: { skeleton?: boolean }) {
+  return (
+    <ul className="max-w-md divide-y divide-mari-border rounded-lg border border-mari-border">
+      {SETTINGS.map((s) => (
+        <li key={s.id} className="flex items-center justify-between gap-4 px-4 py-3">
+          <div className="min-w-0">
+            <p id={`${s.id}-t`} className="text-sm font-medium text-mari-foreground">
+              {s.title}
+            </p>
+            <p className="text-xs text-mari-muted">{s.desc}</p>
+          </div>
+          <div className="shrink-0">
+            <Switch defaultChecked={s.on} aria-label={s.title} skeleton={skeleton} />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export const SettingsList: Story = {
+  name: "Ayarlar Listesi",
+  ...storyDoc(
+    "En yaygın kullanım: başlık + açıklama solda, switch sağda. Görünür etiket satırdaki başlık olduğu için switch'e `aria-label` verilir.",
+    `<li className="flex items-center justify-between gap-4">
+  <div>
+    <p>Sipariş güncellemeleri</p>
+    <p className="text-xs text-mari-muted">Kargo ve teslimat bildirimleri</p>
+  </div>
+  <Switch defaultChecked aria-label="Sipariş güncellemeleri" />
+</li>`
+  ),
+  render: () => <SettingsDemo />,
+};
+
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="flex flex-col gap-4">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Veri yüklendi
+      </label>
+      <SettingsDemo skeleton={!loaded} />
+    </div>
+  );
+}
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc("`skeleton` — kayıtlı ayar gelene kadar track boyutunda yer tutucu (hangi durumda olduğu bilinmeden açık/kapalı göstermemek için).", `<Switch skeleton={isLoading} defaultChecked={prefs.orders} aria-label="Sipariş güncellemeleri" />`),
+  render: () => <SkeletonDemo />,
+};
+

@@ -7,6 +7,7 @@ import type { ReviewType } from "../types";
 export interface UploadReviewButtonProps {
   handleClick: () => void;
   reviewType: ReviewType;
+  disabled?: boolean;
 }
 
 /**
@@ -14,10 +15,11 @@ export interface UploadReviewButtonProps {
  * eskiden ayrı bir satırda/boyutta duruyordu, artık küçük resimlerle AYNI
  * grid'e (bkz. `Upload.tsx`) akıp aynı boyutta bir "ekle" karosu oluyor.
  */
-export function UploadReviewButton({ handleClick, reviewType }: UploadReviewButtonProps) {
+export function UploadReviewButton({ handleClick, reviewType, disabled }: UploadReviewButtonProps) {
   return (
     <Button
       onClick={handleClick}
+      disabled={disabled}
       variant="ghost"
       color="neutral"
       icon={<PlusIcon size={18} />}

@@ -14,7 +14,7 @@ describe("Radio", () => {
 
   it("color=\"error\" AÇIKÇA verildiyse dinlenme halinde de o renk kalıcıdır", () => {
     render(<Radio label="Seçenek A" name="grp" color="error" />);
-    expect(screen.getByRole("radio").className).toContain("border-mari-error-border");
+    expect(screen.getByRole("radio").className.split(" ")).toContain("border-mari-error");
   });
 
   it("label varsayılan olarak boyut ölçeğinden bir font-size taşır (eskiden ambient/büyük boyuttaydı)", () => {

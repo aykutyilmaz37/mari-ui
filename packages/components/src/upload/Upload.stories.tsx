@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Upload } from "./Upload";
@@ -57,7 +58,7 @@ export const Basic: Story = {
 
 export const WithDragDrop: Story = {
   name: "Sürükle-Bırak",
-  ...storyDoc("dragDrop modu: dosyaları alana bırakarak da yükleyebilirsiniz."),
+  ...storyDoc("dragDrop modu: dosyaları alana bırakarak da yükleyebilirsiniz. Dokunmatik cihazda sürükle-bırak olmadığı için metin \"Dosya seçmek için dokunun\" olur."),
   args: {
     inputType: "dragDrop",
   },
@@ -65,7 +66,7 @@ export const WithDragDrop: Story = {
 
 export const WithReviewListSquare: Story = {
   name: "Önizlemeli Liste (Kare)",
-  ...storyDoc("listType=review + reviewType=square: resim önizlemeleri kare çerçevede."),
+  ...storyDoc("listType=review + reviewType=square: resim önizlemeleri kare çerçevede. Dokunmatikte önizle/sil butonları hover beklemeden köşede görünür. `max`'a ulaşınca \"Yükle\" karosu gizlenir."),
   args: {
     listType: "review",
     inputType: "review",
@@ -106,3 +107,43 @@ export const MaxFilesLimit: Story = {
     max: 2,
   },
 };
+
+function ClaimFormDemo() {
+  const [files, setFiles] = useState<File[]>([]);
+  return (
+    <form className="flex max-w-md flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
+      <div>
+        <p className="text-sm font-medium text-mari-foreground">Hasarlı ürün fotoğrafları</p>
+        <p className="text-xs text-mari-muted">En fazla 3 fotoğraf, her biri en çok 5 MB.</p>
+      </div>
+      <Upload listType="review" inputType="review" fileType="image/*" max={3} onChange={(next) => setFiles(next)} />
+      <p className="text-xs text-mari-muted" aria-live="polite">
+        {files.length ? `${files.length} dosya: ${files.map((f) => f.name).join(", ")}` : "Henüz dosya eklenmedi."}
+      </p>
+    </form>
+  );
+}
+
+export const WithOnChange: Story = {
+  name: "İade Formu (onChange)",
+  ...storyDoc(
+    "`onChange(files, items)` liste her değiştiğinde (ekleme, silme, yükleme bitti) çağrılır — formun dosyaları alması için. Eskiden bu callback yoktu.",
+    `const [files, setFiles] = useState<File[]>([]);
+
+<Upload listType="review" inputType="review" fileType="image/*" max={3} onChange={(next) => setFiles(next)} />`
+  ),
+  render: () => <ClaimFormDemo />,
+};
+
+export const Disabled: Story = {
+  name: "Devre Dışı",
+  ...storyDoc("`disabled` — seçim butonu, sürükle-bırak alanı ve gizli input kilitlenir.", `<Upload inputType="dragDrop" disabled />`),
+  args: { inputType: "dragDrop", disabled: true },
+};
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc("`skeleton` — form yüklenirken seçim alanının boyutunda yer tutucu.", `<Upload inputType="dragDrop" skeleton={isLoading} />`),
+  args: { inputType: "dragDrop", skeleton: true },
+};
+

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
@@ -56,11 +57,11 @@ export const AllowHalf: Story = {
 
 export const AllColors: Story = {
   name: "Tüm Renkler",
-  ...storyDoc("7 renk rolünün tamamı."),
+  ...storyDoc("7 renk rolünün tamamı. Varsayılan `warning` (geleneksel amber yıldız).", `<Rate color="warning" defaultValue={3} aria-label="Puan" />`),
   render: () => (
     <div className="flex flex-col gap-3">
       {(["warning", "primary", "accent", "success", "error", "info", "neutral"] as const).map((color) => (
-        <Rate key={color} color={color} defaultValue={3} />
+        <Rate key={color} color={color} defaultValue={3} aria-label={`${color} puan`} />
       ))}
     </div>
   ),
@@ -68,7 +69,7 @@ export const AllColors: Story = {
 
 export const Disabled: Story = {
   name: "Devre Dışı",
-  ...storyDoc("`disabled` — ne fare ne klavye ile değişir."),
+  ...storyDoc("`disabled` — ne fare ne klavye ile değişir; imleç \"izin yok\". Salt puan GÖSTERMEK için `disabled` değil `readOnly` kullanın."),
   args: {
     defaultValue: 4.5,
     allowHalf: true,
@@ -77,11 +78,71 @@ export const Disabled: Story = {
   },
 };
 
-export const WithAutoFocus: Story = {
-  name: "Otomatik Odak",
-  ...storyDoc("`autoFocus` — mount olduğunda doğrudan klavye ile puanlamaya hazır."),
-  args: {
-    defaultValue: 2,
-    autoFocus: true,
-  },
+const PRODUCTS = [
+  { name: "Kablosuz kulaklık", rating: 4.3, reviews: 1284, price: "1.899 ₺" },
+  { name: "Mekanik klavye", rating: 4.8, reviews: 312, price: "2.450 ₺" },
+  { name: "USB-C hub", rating: 3.6, reviews: 58, price: "649 ₺" },
+];
+
+export const ReadOnly: Story = {
+  name: "Salt Gösterim (ürün kartı)",
+  ...storyDoc(
+    "`readOnly` — ortalama puanı göstermek için: etkileşim ve odak yok, ondalık değer yıldızın o oranına kadar dolar (4,3 → 5. yıldızın %30'u). " +
+      "Ekran okuyucu tek bir görsel olarak \"Ortalama puan: 4,3 / 5\" okur.",
+    `<Rate readOnly value={4.3} characterSize="1rem" aria-label="Ortalama puan" />
+<span>4,3 (1.284 değerlendirme)</span>`
+  ),
+  render: () => (
+    <div className="grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
+      {PRODUCTS.map((p) => (
+        <div key={p.name} className="flex flex-col gap-1.5 rounded-lg border border-mari-border p-4">
+          <p className="text-sm font-medium text-mari-foreground">{p.name}</p>
+          <div className="flex items-center gap-1.5">
+            <Rate readOnly value={p.rating} characterSize="1rem" aria-label="Ortalama puan" />
+            <span className="text-xs text-mari-muted">
+              {p.rating.toLocaleString("tr-TR")} ({p.reviews.toLocaleString("tr-TR")})
+            </span>
+          </div>
+          <p className="text-sm font-semibold text-mari-foreground">{p.price}</p>
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+const LABELS = ["", "Çok kötü", "Kötü", "Fena değil", "İyi", "Mükemmel"];
+
+function ReviewDemo() {
+  const [value, setValue] = useState(0);
+  const [hover, setHover] = useState(0);
+  const shown = hover || value;
+  return (
+    <div className="flex flex-col gap-2">
+      <span id="rate-review" className="text-sm font-medium text-mari-foreground">
+        Ürünü puanlayın
+      </span>
+      <div className="flex items-center gap-3">
+        <Rate value={value} onChange={setValue} onHoverChange={setHover} characterSize="2rem" aria-label="Ürünü puanlayın" />
+        <span className="min-w-24 text-sm text-mari-muted" aria-live="polite">
+          {LABELS[Math.ceil(shown)] || "Seçilmedi"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export const ReviewForm: Story = {
+  name: "Değerlendirme Formu",
+  ...storyDoc(
+    "Puan verirken üzerine gelinen yıldızın anlamı yanda yazar (`onHoverChange`). Dokunmatikte yıldızlar arası boşluk artar ve her yıldız 44px yüksek bir hedeftir.",
+    `<Rate value={value} onChange={setValue} onHoverChange={setHover} characterSize="2rem" aria-label="Ürünü puanlayın" />
+<span aria-live="polite">{LABELS[hover || value]}</span>`
+  ),
+  render: () => <ReviewDemo />,
+};
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc("`skeleton` — puan gelene kadar yıldız boyutunda yer tutucular.", `<Rate readOnly skeleton={isLoading} value={product.rating} />`),
+  args: { skeleton: true, characterSize: "1rem" },
 };
