@@ -95,8 +95,16 @@ export function computePanelPosition(
   else origin = align === "start" ? cross.start : cross.start + cross.length - cross.size;
 
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), Math.max(min, max));
-  const top = clamp(vertical ? mainStart(side) : origin, edge, viewport.height - panel.height - edge);
-  const left = clamp(vertical ? origin : mainStart(side), edge, viewport.width - panel.width - edge);
+  // Çapraz eksen: önce ekran içine kıstır, SONRA tetikleyiciye bağlılığı
+  // zorla — panel her koşulda tetikleyicinin ortasını (ok payıyla) kapsamalı.
+  // Eskiden yalnızca ekrana kıstırılıyordu: tetikleyici ekranın alt/üst
+  // kenarına yaklaşınca panel kayıp tetikleyiciden kopuyor, komşu satırın
+  // balonuna biniyordu (kaydırırken, kullanıcı bulgusu). Kenara yakınken panel
+  // ekrandan biraz taşar ama asla tetikleyicisinden ayrılmaz.
+  const attach = (value: number) => clamp(value, center - cross.size + inset, center - inset);
+  const crossPos = attach(clamp(origin, edge, (vertical ? viewport.width - panel.width : viewport.height - panel.height) - edge));
+  const top = vertical ? clamp(mainStart(side), edge, viewport.height - panel.height - edge) : crossPos;
+  const left = vertical ? crossPos : clamp(mainStart(side), edge, viewport.width - panel.width - edge);
 
   // Ok: varsayılan olarak hizalanan kenardan sabit `inset` içeride (ant.design);
   // `pointAtCenter` ise tetikleyicinin ortasında. Köşeye taşmasın diye kelepçelenir.

@@ -90,15 +90,15 @@ export const AllPlacements: Story = {
 };
 
 export const EdgeOfScreen: Story = {
-  name: "Ekran Kenarında (yön çevirme)",
+  name: "Uzun İçerik (solda, sağa açılır)",
   ...storyDoc(
-    "Sol kenardaki bir tetikleyicide `placement=\"left\"` istense de solda yer olmadığı için balon sağa döner; uzun içerik kırılır, balon ekranın içinde kalır. Dar ekranda sağa da sığmazsa üste/alta geçer.",
-    `<Tooltip placement="left" content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir." trigger={<InfoButton label="Kampanya koşulları" />} />`
+    "Solda duran bir tetikleyici, balon sağa açılır (`placement=\"right\"`); uzun içerik 20rem'de kırılır. Sağda yer kalmazsa (dar ekran) balon sola, o da yoksa üste/alta döner ve her zaman ekran içinde, tetikleyicisine bağlı kalır.",
+    `<Tooltip placement="right" content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir." trigger={<InfoButton label="Kampanya koşulları" />} />`
   ),
   render: () => (
     <div className="flex justify-start py-10">
       <Tooltip
-        placement="left"
+        placement="right"
         alwaysVisible
         content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir. Diğer indirimlerle birleştirilemez."
         trigger={<InfoButton label="Kampanya koşulları" />}

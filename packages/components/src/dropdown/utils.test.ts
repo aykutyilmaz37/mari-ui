@@ -118,4 +118,14 @@ describe("computePanelPosition", () => {
     expect(pos.left).toBeGreaterThanOrEqual(8);
     expect(pos.left + 320).toBeLessThanOrEqual(375 - 8);
   });
+
+  it("çapraz eksende ekrana kıstırma paneli tetikleyiciden koparmaz (kenara yakın tetikleyici)", () => {
+    const vp = { width: 1000, height: 600 };
+    // Sağa açılan 40px'lik panel; tetikleyici ekranın alt kenarında (y 580–596).
+    const anchor = { top: 580, left: 100, width: 16, height: 16 };
+    const pos = computePanelPosition(anchor, { width: 120, height: 40 }, "right", vp, 8, 8, { inset: 12, pointAtCenter: true });
+    const anchorCenter = anchor.top + anchor.height / 2;
+    expect(pos.top).toBeLessThanOrEqual(anchorCenter - 12);
+    expect(pos.top + 40).toBeGreaterThanOrEqual(anchorCenter + 12);
+  });
 });
