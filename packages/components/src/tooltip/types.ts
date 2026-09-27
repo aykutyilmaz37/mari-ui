@@ -15,6 +15,12 @@ export interface TooltipProps extends SkeletonableProps {
   placement?: Placement;
   /** Fare üzerine gelince açılma gecikmesi (ms) — üzerinden geçerken titremesin. Odakla açılış anlıktır. Varsayılan: 100. */
   openDelay?: number;
+  /**
+   * `hover` (varsayılan): üzerine gelince/odaklanınca açılır. `click`: tetikleyiciye
+   * tıklayınca açılır, tekrar tıklayınca, dışarı tıklayınca ya da Escape ile kapanır
+   * (dokunmatik ekranlarda ve uzun açıklamalarda kullanışlı).
+   */
+  openOn?: "hover" | "click";
   /** Varsayılan: `neutral` (koyu tooltip). */
   color?: ColorRole;
   /** Varsayılan: `solid` (dolu, koyu balon — geleneksel tooltip görünümü). `soft` daha az göze batan, tonlanmış bir arka plan kullanır. */

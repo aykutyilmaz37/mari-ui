@@ -87,7 +87,8 @@ describe("Tooltip", () => {
     const tooltip = screen.getByRole("tooltip");
     expect(container.contains(tooltip)).toBe(false);
     expect(tooltip.parentElement).toBe(document.body);
-    expect(tooltip.className).toContain("fixed");
+    // Sayfa koordinatında `absolute` — pencere kaydırılınca tarayıcı taşır (gecikmesiz).
+    expect(tooltip.className).toContain("absolute");
   });
 
   it("fareyle açılış gecikmeli (üzerinden geçerken titremez)", () => {
@@ -141,5 +142,35 @@ describe("Tooltip", () => {
     const wrapper = screen.getByRole("button").parentElement!;
     vi.spyOn(wrapper, "getBoundingClientRect").mockReturnValue({ top: 5000, bottom: 5030, left: 10, right: 60, width: 50, height: 30, x: 10, y: 5000, toJSON: () => ({}) });
     await waitFor(() => expect(screen.getByRole("tooltip", { hidden: true }).style.visibility).toBe("hidden"));
+  });
+
+  it("openOn=click: tıklayınca açılır, tekrar tıklayınca kapanır; aria-expanded durumu bildirir", async () => {
+    const user = userEvent.setup();
+    render(<Tooltip openOn="click" content="İade 14 gün içinde ücretsiz." trigger={<button type="button">Koşullar</button>} />);
+    const trigger = screen.getByRole("button", { name: "Koşullar" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await user.hover(trigger);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    await user.click(trigger);
+    expect(screen.getByRole("tooltip", { hidden: true })).toBeInTheDocument();
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.click(trigger);
+    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+  });
+
+  it("openOn=click: dışarı tıklamak ve Escape kapatır", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <Tooltip openOn="click" content="Bilgi" trigger={<button type="button">Aç</button>} />
+        <button type="button">Dışarı</button>
+      </>
+    );
+    await user.click(screen.getByRole("button", { name: "Aç" }));
+    await user.click(screen.getByRole("button", { name: "Dışarı" }));
+    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Aç" }));
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip", { hidden: true })).not.toBeInTheDocument();
   });
 });

@@ -38,6 +38,7 @@ const meta: Meta<typeof Tooltip> = {
     },
     alwaysVisible: { control: "boolean", description: "Hover/focus beklemeden her zaman görünür yapar." },
     disabled: { control: "boolean", description: "Tooltip'i tamamen devre dışı bırakır (hiç render edilmez)." },
+    openOn: { control: "inline-radio", options: ["hover", "click"], description: "`click`: tıklayınca açılır/kapanır; dışarı tıklama ve Escape kapatır.", table: { defaultValue: { summary: "hover" } } },
     openDelay: { control: "number", description: "Fareyle açılma gecikmesi (ms).", table: { defaultValue: { summary: "100" } } },
     skeleton: { control: "boolean", description: "İçerik yüklenirken balonda yer tutucu çizgiler (`aria-busy`).", table: { defaultValue: { summary: "false" } } },
   },
@@ -89,19 +90,47 @@ export const AllPlacements: Story = {
 };
 
 export const EdgeOfScreen: Story = {
-  name: "Ekran Kenarında (mobil)",
+  name: "Ekran Kenarında (yön çevirme)",
   ...storyDoc(
-    "Sağ kenardaki bir tetikleyicide `placement=\"right\"` istense de yer olmadığı için balon sola döner; uzun içerik kırılır ve balon ekranın içinde kalır. Pencereyi daraltın.",
-    `<Tooltip placement="right" content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir." trigger={<InfoButton />} />`
+    "Sol kenardaki bir tetikleyicide `placement=\"left\"` istense de solda yer olmadığı için balon sağa döner; uzun içerik kırılır, balon ekranın içinde kalır. Dar ekranda sağa da sığmazsa üste/alta geçer.",
+    `<Tooltip placement="left" content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir." trigger={<InfoButton label="Kampanya koşulları" />} />`
   ),
   render: () => (
-    <div className="flex justify-end pt-24">
+    <div className="flex justify-start py-10">
       <Tooltip
-        placement="right"
+        placement="left"
         alwaysVisible
         content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir. Diğer indirimlerle birleştirilemez."
         trigger={<InfoButton label="Kampanya koşulları" />}
       />
+    </div>
+  ),
+};
+
+export const ClickToToggle: Story = {
+  name: "Tıklayınca Aç/Kapat",
+  ...storyDoc(
+    "`openOn=\"click\"` — üzerine gelmek açmaz; tetikleyiciye tıklamak açar, tekrar tıklamak, dışarı tıklamak ya da Escape kapatır. Dokunmatik ekranlarda ve " +
+      "okunması zaman alan açıklamalarda (form alanı yardımı) uygundur. Tetikleyici `aria-expanded` ile açık/kapalı durumunu duyurur.",
+    `<Tooltip
+  openOn="click"
+  placement="right"
+  content="Kart üzerindeki 3 haneli güvenlik kodu, imza alanının yanındadır."
+  trigger={<InfoButton label="CVV nedir?" />}
+/>`
+  ),
+  render: () => (
+    <div className="flex max-w-sm flex-col gap-1.5 py-6">
+      <span className="flex items-center gap-1 text-sm font-medium text-mari-foreground">
+        CVV
+        <Tooltip
+          openOn="click"
+          placement="right"
+          content="Kart üzerindeki 3 haneli güvenlik kodu, imza alanının yanındadır."
+          trigger={<InfoButton label="CVV nedir?" />}
+        />
+      </span>
+      <input aria-label="CVV" className="h-8 w-24 rounded-md border border-mari-input bg-mari-surface px-3 text-sm" inputMode="numeric" maxLength={3} />
     </div>
   ),
 };

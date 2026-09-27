@@ -47,27 +47,12 @@ interface Position {
  * kapsayıcıda kırpılmaz), `role="tooltip"` + tetikleyiciye `aria-describedby`,
  * Escape kapatır, sarmalayıcı `self-start` (flex'te gerilmesin).
  */
-export function Tooltip({
-  content,
-  trigger,
-  placement = "top",
-  color = "neutral",
-  variant = "solid",
-  className,
-  style,
-  alwaysVisible,
-  disabled = false,
-  triggerClassName,
-  openDelay = 100,
-  skeleton = false,
-}: TooltipProps) {
-  const wrapperRef = useRef<HTMLSpanElement>(null);
-  const bubbleRef = useRef<HTMLSpanElement>(null);
+type ElRef = React.RefObject<HTMLSpanElement | null>;
+
+/** Açık/kapalı durumu: fare gecikmeleri (hover) ya da dışarı tıklama (click). */
+function useVisibility(alwaysVisible: boolean | undefined, openOn: "hover" | "click", wrapperRef: ElRef, bubbleRef: ElRef) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [visible, setVisible] = useState(alwaysVisible ?? false);
-  const [position, setPosition] = useState<Position | null>(null);
-  const tooltipId = useId();
-  const showTooltip = (visible || Boolean(alwaysVisible)) && !disabled;
 
   const clearTimer = () => clearTimeout(timerRef.current);
   const open = useCallback((delay: number) => {
@@ -86,6 +71,24 @@ export function Tooltip({
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
+  // `openOn="click"`: dışarı tıklamak kapatır (tetikleyici ve balon hariç).
+  useEffect(() => {
+    if (openOn !== "click" || !visible) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (wrapperRef.current?.contains(target) || bubbleRef.current?.contains(target)) return;
+      setVisible(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [openOn, visible, wrapperRef, bubbleRef]);
+
+  return { visible, setVisible, open, close, closeNow, clearTimer };
+}
+
+/** Görünürken balonun sayfa konumunu her karede takip eder. */
+function useTrackedPosition(showTooltip: boolean, wrapperRef: ElRef, bubbleRef: ElRef, placement: TooltipProps["placement"] & string) {
+  const [position, setPosition] = useState<Position | null>(null);
   // Konum: balon önce görünmez çizilir, boyutu ölçülür, sonra yerleştirilir.
   const updatePosition = useCallback(() => {
     const anchor = wrapperRef.current?.getBoundingClientRect();
@@ -108,10 +111,18 @@ export function Tooltip({
       EDGE_PX,
       { inset: ARROW_INSET_PX, pointAtCenter: true }
     );
+    // SAYFA koordinatı (`absolute`): pencere kaydırılınca balonu tarayıcı
+    // kendisi taşır. Eskiden `fixed` + her karede JS ile yeniden konum vardı —
+    // bir kare geriden geldiği için kaydırırken balonlar titriyor, komşu
+    // satırlara biniyordu (kullanıcı bulgusu, docs sayfası).
+    const pageTop = next.top + window.scrollY;
+    const pageLeft = next.left + window.scrollX;
     setPosition((prev) =>
-      prev && prev.top === next.top && prev.left === next.left && prev.side === next.side && prev.arrowOffset === next.arrowOffset ? prev : next
+      prev && prev.top === pageTop && prev.left === pageLeft && prev.side === next.side && prev.arrowOffset === next.arrowOffset
+        ? prev
+        : { ...next, top: pageTop, left: pageLeft }
     );
-  }, [placement]);
+  }, [placement, wrapperRef, bubbleRef]);
 
   useLayoutEffect(() => {
     if (!showTooltip) {
@@ -131,30 +142,49 @@ export function Tooltip({
     return () => cancelAnimationFrame(frame);
   }, [showTooltip, updatePosition]);
 
-  const decoratedTrigger =
-    isValidElement<{ "aria-describedby"?: string }>(trigger) && showTooltip
-      ? React.cloneElement(trigger, {
-          "aria-describedby": [trigger.props["aria-describedby"], tooltipId].filter(Boolean).join(" "),
-        })
-      : trigger;
+  return position;
+}
 
+/** Tetikleyiciye `aria-describedby` (açıkken) ve tıklamalı modda `aria-expanded` ekler. */
+function decorateTrigger(trigger: React.ReactNode, showTooltip: boolean, tooltipId: string, isClick: boolean): React.ReactNode {
+  if (!isValidElement<{ "aria-describedby"?: string; "aria-expanded"?: boolean }>(trigger)) return trigger;
+  const extra: Record<string, unknown> = {};
+  if (showTooltip) extra["aria-describedby"] = [trigger.props["aria-describedby"], tooltipId].filter(Boolean).join(" ");
+  // Tıklamalı modda tetikleyici bir aç/kapa düğmesidir — durumunu duyurur.
+  if (isClick) extra["aria-expanded"] = showTooltip;
+  return React.cloneElement(trigger, extra);
+}
+
+interface TooltipBubbleProps {
+  bubbleRef: ElRef;
+  id: string;
+  position: Position | null;
+  skeleton: boolean;
+  content: React.ReactNode;
+  color: NonNullable<TooltipProps["color"]>;
+  variant: NonNullable<TooltipProps["variant"]>;
+  className?: string;
+  style?: React.CSSProperties;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}
+
+function TooltipBubble({ bubbleRef, id, position, skeleton, content, color, variant, className, style, onMouseEnter, onMouseLeave }: TooltipBubbleProps) {
   const side = position?.side ?? "top";
   const vertical = side === "top" || side === "bottom";
-
-  const bubble = showTooltip ? (
-    // Fare takibi yalnızca "üzerine gelinebilirlik" (WCAG 1.4.13) için.
+  return (
     <span
       ref={bubbleRef}
       role="tooltip"
-      id={tooltipId}
+      id={id}
       aria-busy={skeleton || undefined}
-      onMouseEnter={clearTimer}
-      onMouseLeave={close}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
         // Boyutlar ant.design'ın gerçek Tooltip'inden: padding 6px 8px,
         // radius 6px, line-height 22px. Genişlik en çok 20rem ve HİÇBİR ZAMAN
         // ekran genişliği − 2×kenar payından fazla değil (mobilde taşmaz).
-        "fixed z-mari-tooltip w-max max-w-[min(20rem,calc(100vw-1rem))] rounded-md px-2 py-1.5 text-sm leading-[1.375rem] text-wrap",
+        "absolute z-mari-tooltip w-max max-w-[min(20rem,calc(100vw-1rem))] rounded-md px-2 py-1.5 text-sm leading-[1.375rem] text-wrap",
         // Yalnızca solma: ölçek animasyonu oku da kaydırıyordu (kullanıcı bulgusu).
         "transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none",
         getVariantClasses(color, variant),
@@ -178,6 +208,52 @@ export function Tooltip({
         style={vertical ? { left: position?.arrowOffset } : { top: position?.arrowOffset }}
       />
     </span>
+  );
+}
+
+export function Tooltip({
+  content,
+  trigger,
+  placement = "top",
+  color = "neutral",
+  variant = "solid",
+  className,
+  style,
+  alwaysVisible,
+  disabled = false,
+  triggerClassName,
+  openDelay = 100,
+  openOn = "hover",
+  skeleton = false,
+}: TooltipProps) {
+  const wrapperRef = useRef<HTMLSpanElement>(null);
+  const bubbleRef = useRef<HTMLSpanElement>(null);
+  const { visible, setVisible, open, close, closeNow, clearTimer } = useVisibility(alwaysVisible, openOn, wrapperRef, bubbleRef);
+  const tooltipId = useId();
+  const showTooltip = (visible || Boolean(alwaysVisible)) && !disabled;
+  const position = useTrackedPosition(showTooltip, wrapperRef, bubbleRef, placement);
+
+  const isClick = openOn === "click";
+  const decoratedTrigger = decorateTrigger(trigger, showTooltip, tooltipId, isClick);
+  const hoverHandlers = isClick
+    ? { onClick: () => setVisible((v) => !v) }
+    : { onMouseEnter: () => open(openDelay), onMouseLeave: close, onFocus: () => open(0), onBlur: closeNow };
+
+  const bubble = showTooltip ? (
+    <TooltipBubble
+      bubbleRef={bubbleRef}
+      id={tooltipId}
+      position={position}
+      skeleton={skeleton}
+      content={content}
+      color={color}
+      variant={variant}
+      className={className}
+      style={style}
+      // Fare takibi yalnızca "üzerine gelinebilirlik" (WCAG 1.4.13) için; tıklamalı modda yok.
+      onMouseEnter={isClick ? undefined : clearTimer}
+      onMouseLeave={isClick ? undefined : close}
+    />
   ) : null;
 
   return (
@@ -189,12 +265,12 @@ export function Tooltip({
       <span
         ref={wrapperRef}
         className={cn("inline-block self-start", triggerClassName)}
-        onMouseEnter={() => open(openDelay)}
-        onMouseLeave={close}
-        onFocus={() => open(0)}
-        onBlur={closeNow}
+        {...hoverHandlers}
         onKeyDown={(event) => {
-          if (event.key === "Escape") closeNow();
+          if (event.key === "Escape") {
+            clearTimer();
+            if (!alwaysVisible) setVisible(false);
+          }
         }}
       >
         {decoratedTrigger}
