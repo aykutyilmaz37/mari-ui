@@ -1,21 +1,18 @@
-import type { Placement } from "@mari-ui/core";
-import { cn, resolveColorVariant, type ColorRole } from "@mari-ui/core";
-import { colorVariantToClassName, fillSolidClass, fillSubtleClass, strokeSolidClass, strokeSubtleClass } from "../lib/colorClasses";
+import { cn, type ColorRole } from "@mari-ui/core";
+import { bgSolidClass, bgSubtleClass, textSolidContrastClass, textSubtleContrastClass } from "../lib/colorClasses";
 import type { TooltipVariant } from "./types";
 
+/**
+ * Balon STATİK: dolgu + üzerindeki kontrast metin, hover durumu YOK. Eskiden
+ * butonlar için olan renk varyantı (`resolveColorVariant`) kullanılıyordu —
+ * `hover:` arka planı taşıyordu; fare balonun üzerine gelince balon koyulaşıyor,
+ * ayrı bir öğe olan ok ise eski renkte kalıyordu (kullanıcı bulgusu).
+ */
 export function getVariantClasses(color: ColorRole, variant: TooltipVariant): string {
-  return colorVariantToClassName(resolveColorVariant(color, variant));
+  return variant === "soft" ? cn(bgSubtleClass[color], textSubtleContrastClass[color]) : cn(bgSolidClass[color], textSolidContrastClass[color]);
 }
 
-/** Ok işareti balonun arka planıyla eşleşsin diye aynı varyantı kullanır. */
+/** Ok balonun dolgusuyla birebir aynı sınıf. */
 export function getArrowClasses(color: ColorRole, variant: TooltipVariant): string {
-  return variant === "soft" ? cn(fillSubtleClass[color], strokeSubtleClass[color]) : cn(fillSolidClass[color], strokeSolidClass[color]);
-}
-
-/** 12 değerli `Placement`i bu component'in desteklediği 4 ana yöne indirger. */
-export function toBaseDirection(placement: Placement): "top" | "bottom" | "left" | "right" {
-  if (placement.startsWith("top")) return "top";
-  if (placement.startsWith("bottom")) return "bottom";
-  if (placement.startsWith("left")) return "left";
-  return "right";
+  return variant === "soft" ? bgSubtleClass[color] : bgSolidClass[color];
 }

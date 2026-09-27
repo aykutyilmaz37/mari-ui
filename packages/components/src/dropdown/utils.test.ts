@@ -109,4 +109,13 @@ describe("computePanelPosition", () => {
     const nearLeft = { top: 400, left: 0, width: 30, height: 40 };
     expect(place("bottom", nearLeft).left).toBe(EDGE);
   });
+
+  it("yatayda iki yön de sığmıyorsa dik yöne (üst/alt) geçer — tetikleyiciyi örtmez", () => {
+    const narrow = { width: 375, height: 800 };
+    const anchor = { top: 400, left: 330, width: 30, height: 30 };
+    const pos = computePanelPosition(anchor, { width: 320, height: 80 }, "right", narrow, 8, 8);
+    expect(pos.side).toBe("top");
+    expect(pos.left).toBeGreaterThanOrEqual(8);
+    expect(pos.left + 320).toBeLessThanOrEqual(375 - 8);
+  });
 });

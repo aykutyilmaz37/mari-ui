@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Tooltip } from "./Tooltip";
 import { getA11yViolations } from "../testUtils/a11y";
 
@@ -88,5 +88,51 @@ describe("Tooltip", () => {
     expect(container.contains(tooltip)).toBe(false);
     expect(tooltip.parentElement).toBe(document.body);
     expect(tooltip.className).toContain("fixed");
+  });
+
+  it("fareyle açılış gecikmeli (üzerinden geçerken titremez)", () => {
+    vi.useFakeTimers();
+    render(<Tooltip content="Yardım" trigger={<button type="button">Tetik</button>} openDelay={100} />);
+    fireEvent.mouseEnter(screen.getByRole("button").parentElement!);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(110));
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
+  it("balonun üzerine gelinebilir: tetikleyiciden balona geçince kapanmaz (WCAG 1.4.13)", () => {
+    vi.useFakeTimers();
+    render(<Tooltip content="Yardım" trigger={<button type="button">Tetik</button>} openDelay={0} />);
+    const wrapper = screen.getByRole("button").parentElement!;
+    fireEvent.mouseEnter(wrapper);
+    fireEvent.mouseLeave(wrapper);
+    fireEvent.mouseEnter(screen.getByRole("tooltip"));
+    act(() => vi.advanceTimersByTime(500));
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    fireEvent.mouseLeave(screen.getByRole("tooltip"));
+    act(() => vi.advanceTimersByTime(500));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
+  it("genişlik mobilde ekranı aşamaz", () => {
+    render(<Tooltip content="Yardım" trigger={<button type="button">Tetik</button>} alwaysVisible />);
+    expect(screen.getByRole("tooltip").className).toContain("max-w-[min(20rem,calc(100vw-1rem))]");
+  });
+
+  it("skeleton: içerik yerine yer tutucu çizgiler, balon aria-busy", () => {
+    render(<Tooltip content="Ada Lovelace" trigger={<button type="button">Tetik</button>} alwaysVisible skeleton />);
+    const tip = screen.getByRole("tooltip");
+    expect(tip).toHaveAttribute("aria-busy", "true");
+    expect(tip).not.toHaveTextContent("Ada Lovelace");
+  });
+
+  it("balonda hover rengi yok; ok balonla aynı dolguyu taşır", () => {
+    render(<Tooltip content="Yardım" trigger={<button type="button">Tetik</button>} alwaysVisible />);
+    const tip = screen.getByRole("tooltip");
+    expect(tip.className).not.toContain("hover:");
+    const arrow = tip.lastElementChild as HTMLElement;
+    expect(arrow.className).toContain("bg-mari-neutral-solid");
+    expect(tip.className).toContain("bg-mari-neutral-solid");
   });
 });

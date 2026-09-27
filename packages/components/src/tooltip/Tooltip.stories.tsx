@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bold, Info, Italic, Underline } from "lucide-react";
 import { Button } from "../button";
@@ -17,10 +18,10 @@ const meta: Meta<typeof Tooltip> = {
           whenToUse: ["Bir ikon-only butonun/kontrolün ne işe yaradığını kısaca açıklamak için."],
           whenNotToUse: ["Kritik bilgi taşıyorsa — tooltip'ler dokunmatik cihazlarda güvenilir açılmaz, önemli bilgiyi görünür metinde tutun."],
           a11y:
-            "Fare (`hover`) kadar klavye/odak (`focus`) ile de açılır; balon `role=\"tooltip\"` taşır ve trigger'a " +
-            "`aria-describedby` ile bağlanır; görünürken `Escape` kapatır. **Not:** eskiden her trigger `<Button>` " +
-            "içine sarılıyordu — bir ikon/link'e tooltip eklendiğinde iç içe buton render ediliyordu (gerçek bir " +
-            "a11y/DOM bug'ıydı). Artık trigger düz bir `<span>` içinde; kendi bir buton/link ise davranışı korunur.",
+            "Fare (`hover`, `openDelay` sonra) kadar klavye/odak (`focus`, anında) ile de açılır; balon `role=\"tooltip\"` taşır ve trigger'a " +
+            "`aria-describedby` ile bağlanır; `Escape` kapatır. Balonun **üzerine gelinebilir** (WCAG 1.4.13) — fare tetikleyiciden balona geçerken kapanmaz. " +
+            "Tetikleyici odaklanabilir olmalı (buton/link); çıplak bir ikon klavyeyle hiç açılamaz. Konum 12 yönlüdür, yer yoksa karşı yöne döner ve " +
+            "balon her zaman ekran içinde kalır (mobilde en fazla ekran genişliği).",
         }),
       },
     },
@@ -37,35 +38,70 @@ const meta: Meta<typeof Tooltip> = {
     },
     alwaysVisible: { control: "boolean", description: "Hover/focus beklemeden her zaman görünür yapar." },
     disabled: { control: "boolean", description: "Tooltip'i tamamen devre dışı bırakır (hiç render edilmez)." },
+    openDelay: { control: "number", description: "Fareyle açılma gecikmesi (ms).", table: { defaultValue: { summary: "100" } } },
+    skeleton: { control: "boolean", description: "İçerik yüklenirken balonda yer tutucu çizgiler (`aria-busy`).", table: { defaultValue: { summary: "false" } } },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Tooltip>;
 
+// Tooltip tetikleyiciye `aria-describedby` ekler — özel bir bileşen bunu
+// gerçek DOM öğesine İLETMELİ (`...rest`), yoksa açıklama ekran okuyucuya ulaşmaz.
+const InfoButton = ({ label, ...rest }: { label: string } & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+  <button
+    type="button"
+    aria-label={label}
+    className="rounded-full p-1 text-mari-muted hover:text-mari-foreground focus-visible:outline-2 focus-visible:outline-mari-ring"
+    {...rest}
+  >
+    <Info size={18} />
+  </button>
+);
+
 export const Playground: Story = {
-  ...storyDoc("Fareyle üzerine gelin veya Tab'layarak odaklanın — ikisi de tooltip'i açar."),
-  // `pt-16`: varsayılan `placement="top"` balonu tetikleyicinin ÜSTÜNE açar —
-  // yeterli boşluk olmadan Storybook'un kendi araç çubuğuyla (yakınlaştırma/
-  // arama ikonları) çakışıp kesiliyordu (kullanıcının ekran görüntüsünde
-  // yakalanan gerçek bir görsel bug).
-  render: (args) => (
-    <div className="pt-16">
-      <Tooltip {...args} trigger={<Button variant="soft">Üzerine gel / Tab'la</Button>} />
-    </div>
-  ),
-  args: { content: "Bu bir tooltip", placement: "top", color: "neutral" },
+  ...storyDoc("Fareyle üzerine gelin veya Tab'layarak odaklanın — ikisi de tooltip'i açar. Fareyi balona taşıyın: kapanmaz."),
+  args: { content: "Bu bir tooltip", placement: "top", color: "neutral", trigger: <Button variant="soft">Üzerine gel / Tab&apos;la</Button> },
+  // Balon üste açıldığı için üstte boşluk — Storybook araç çubuğuyla çakışmasın.
+  decorators: [(Story) => <div className="pt-16">{Story()}</div>],
 };
 
+const PLACEMENTS = [
+  ["top-start", "top", "top-end"],
+  ["left-start", "left", "left-end"],
+  ["right-start", "right", "right-end"],
+  ["bottom-start", "bottom", "bottom-end"],
+] as const;
+
 export const AllPlacements: Story = {
-  name: "Tüm Konumlar",
-  ...storyDoc("4 ana yön (`top`/`bottom`/`left`/`right`) — 12 değerli `Placement` sözleşmesindeki `-start`/`-end` sonekleri temel yöne indirgenir."),
+  name: "Tüm Konumlar (12)",
+  ...storyDoc(
+    "12 yerleşim: ana yön + hiza (`-start`/`-end` balonu tetikleyicinin o kenarına yaslar). Ok her zaman tetikleyicinin ortasını gösterir. Tab ile gezinin.",
+    `<Tooltip placement="bottom-start" content="Dışa aktar" trigger={<Button>…</Button>} />`
+  ),
   render: () => (
-    <div className="flex flex-wrap gap-8 justify-center items-center p-10 mt-20">
-      <Tooltip content="Üst tooltip" placement="top" trigger={<Info />} />
-      <Tooltip content="Alt tooltip, biraz daha uzun bir metin içeriyor" placement="bottom" trigger={<Info />} />
-      <Tooltip content="Sol tooltip" placement="left" trigger={<Info />} />
-      <Tooltip content="Sağ tooltip" placement="right" trigger={<Info />} />
+    <div className="grid w-fit grid-cols-3 gap-x-10 gap-y-12 px-24 py-16">
+      {PLACEMENTS.flat().map((placement) => (
+        <Tooltip key={placement} placement={placement} content={placement} trigger={<Button size="sm" variant="outline" color="neutral">{placement}</Button>} />
+      ))}
+    </div>
+  ),
+};
+
+export const EdgeOfScreen: Story = {
+  name: "Ekran Kenarında (mobil)",
+  ...storyDoc(
+    "Sağ kenardaki bir tetikleyicide `placement=\"right\"` istense de yer olmadığı için balon sola döner; uzun içerik kırılır ve balon ekranın içinde kalır. Pencereyi daraltın.",
+    `<Tooltip placement="right" content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir." trigger={<InfoButton />} />`
+  ),
+  render: () => (
+    <div className="flex justify-end pt-24">
+      <Tooltip
+        placement="right"
+        alwaysVisible
+        content="Bu kampanya yalnızca uygulama üzerinden verilen ve 500 TL üzeri siparişlerde geçerlidir. Diğer indirimlerle birleştirilemez."
+        trigger={<InfoButton label="Kampanya koşulları" />}
+      />
     </div>
   ),
 };
@@ -73,18 +109,16 @@ export const AllPlacements: Story = {
 export const AllVariants: Story = {
   name: "Tüm Varyantlar",
   ...storyDoc(
-    "`solid` (varsayılan, dolu koyu balon) ve `soft` (tonlanmış, daha az göze batan arka plan) — her renk " +
-      "rolüyle birlikte kullanılabilir. `alwaysVisible` balonlar yan yana bir satırda sığmadığı için (her biri " +
-      "kendi genişliğinde) her renk kendi satırında, balon sağa doğru açılacak şekilde (`placement=\"right\"`) " +
-      "listeleniyor — kullanıcının ekran görüntüsünde yakalanan gerçek bir üst üste binme bug'ıydı."
+    "`solid` (varsayılan, dolu koyu balon) ve `soft` (tonlanmış, daha az göze batan) — her renk rolüyle kullanılabilir.",
+    `<Tooltip variant="soft" color="info" content="Bilgi" trigger={<InfoButton />} />`
   ),
   render: () => (
-    <div className="flex gap-24 p-4">
+    <div className="flex flex-wrap gap-x-24 gap-y-6 p-4">
       {(["solid", "soft"] as const).map((variant) => (
         <div key={variant} className="flex flex-col gap-4">
           <span className="text-sm font-medium text-mari-muted">{variant}</span>
           {(["primary", "accent", "success", "warning", "error", "info", "neutral"] as const).map((color) => (
-            <Tooltip key={color} content={color} color={color} variant={variant} alwaysVisible placement="right" trigger={<Info />} />
+            <Tooltip key={color} content={color} color={color} variant={variant} alwaysVisible placement="right" trigger={<InfoButton label={`${variant} ${color}`} />} />
           ))}
         </div>
       ))}
@@ -94,27 +128,56 @@ export const AllVariants: Story = {
 
 export const IconToolbar: Story = {
   name: "İkon Araç Çubuğu",
-  ...storyDoc("İkon-only butonların görünür bir etiketi yok — tooltip hem görsel ipucu hem (trigger'a `aria-label` verildiyse) ekran okuyucu için tek açıklama kaynağı."),
+  ...storyDoc(
+    "İkon-only butonların görünür bir etiketi yok — tooltip görsel ipucu, `aria-label` ekran okuyucu adı. Araç çubuğunda gezinirken tooltip'ler 100ms gecikmeyle açılır, titremez.",
+    `<Tooltip content="Kalın" trigger={<Button variant="ghost" size="sm" aria-label="Kalın" icon={<Bold size={16} />} />} />`
+  ),
   render: () => (
-    <div className="flex items-center gap-1 rounded-lg border border-mari-border p-1">
-      <Tooltip content="Kalın" trigger={<Button variant="ghost" size="sm" aria-label="Kalın" icon={<Bold size={16} />} />} />
-      <Tooltip content="İtalik" trigger={<Button variant="ghost" size="sm" aria-label="İtalik" icon={<Italic size={16} />} />} />
-      <Tooltip content="Altı Çizili" trigger={<Button variant="ghost" size="sm" aria-label="Altı Çizili" icon={<Underline size={16} />} />} />
+    <div className="pt-12">
+      <div className="flex w-fit items-center gap-1 rounded-lg border border-mari-border p-1">
+        <Tooltip content="Kalın (Ctrl+B)" trigger={<Button variant="ghost" size="sm" aria-label="Kalın" icon={<Bold size={16} />} />} />
+        <Tooltip content="İtalik (Ctrl+I)" trigger={<Button variant="ghost" size="sm" aria-label="İtalik" icon={<Italic size={16} />} />} />
+        <Tooltip content="Altı çizili (Ctrl+U)" trigger={<Button variant="ghost" size="sm" aria-label="Altı Çizili" icon={<Underline size={16} />} />} />
+      </div>
     </div>
   ),
 };
 
-export const AllColors: Story = {
-  name: "Tüm Renkler",
-  ...storyDoc(
-    "7 renk rolü — varsayılan `neutral` (koyu balon) dışındakiler vurgu amaçlı kullanılabilir. `alwaysVisible` " +
-      "balonlar yan yana sığmadığı için her biri kendi satırında, sağa doğru açılacak şekilde listeleniyor."
-  ),
-  render: () => (
-    <div className="flex flex-col gap-4 p-4">
-      {(["primary", "accent", "success", "warning", "error", "info", "neutral"] as const).map((color) => (
-        <Tooltip key={color} content={`${color} tooltip`} color={color} alwaysVisible placement="right" trigger={<Info />} />
-      ))}
+function UserPreview() {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (loaded) return;
+    const t = setTimeout(() => setLoaded(true), 1500);
+    return () => clearTimeout(t);
+  }, [loaded]);
+  return (
+    <div className="pt-20">
+      <Tooltip
+        placement="top-start"
+        skeleton={!loaded}
+        alwaysVisible
+        content={
+          <span className="flex flex-col">
+            <span className="font-medium">Aykut Yılmaz</span>
+            <span className="text-xs opacity-80">Ürün tasarımcısı · İstanbul</span>
+          </span>
+        }
+        trigger={
+          <button type="button" className="font-medium text-mari-primary underline" onClick={() => setLoaded(false)}>
+            @aykut
+          </button>
+        }
+      />
+      <p className="mt-3 text-xs text-mari-muted">Bağlantıya tıklayınca yükleme baştan başlar.</p>
     </div>
+  );
+}
+
+export const Skeleton: Story = {
+  name: "İskelet (yüklenen içerik)",
+  ...storyDoc(
+    "`skeleton` — balon içeriği sunucudan geliyorsa (kullanıcı önizlemesi gibi) önce yer tutucu çizgiler, sonra içerik. Balon `aria-busy`.",
+    `<Tooltip skeleton={!user} content={<UserCard user={user} />} trigger={<a href="/u/aykut">@aykut</a>} />`
   ),
+  render: () => <UserPreview />,
 };

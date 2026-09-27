@@ -1,42 +1,51 @@
 "use client";
 
-import React, { isValidElement, useEffect, useId, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play } from "lucide-react";
 import { cn } from "@mari-ui/core";
+import { computePanelPosition, type Side } from "../lib/floating";
+import { skeletonFill } from "../lib/skeleton";
 import type { TooltipProps } from "./types";
-import { getArrowClasses, getVariantClasses, toBaseDirection } from "./utils";
+import { getArrowClasses, getVariantClasses } from "./utils";
 
 export type { TooltipProps };
 
-/** Tetikleyiciyle balon arasındaki boşluk — eskiden `mt-2`/`mb-2`/`ml-2`/`mr-2` (0.5rem) idi, aynı değer artık JS'te. */
+/** Tetikleyiciyle balon arası (px) ve balonun ekran kenarından en az uzaklığı. */
 const GAP_PX = 8;
+const EDGE_PX = 8;
+/** Balondan/tetikleyiciden çıkınca kapanma gecikmesi — fare aradaki boşluğu geçebilsin. */
+const CLOSE_DELAY_MS = 120;
+/** Ok, balonun hizalandığı kenardan bu kadar içeride durur (radius'a binmesin). */
+const ARROW_INSET_PX = 12;
+
+const ARROW_SIDE_CLASS: Record<Side, string> = {
+  top: "top-full -translate-x-1/2 -translate-y-1/2",
+  bottom: "bottom-full -translate-x-1/2 translate-y-1/2",
+  left: "left-full -translate-x-1/2 -translate-y-1/2",
+  right: "right-full translate-x-1/2 -translate-y-1/2",
+};
+
+interface Position {
+  top: number;
+  left: number;
+  side: Side;
+  arrowOffset: number;
+}
 
 /**
- * Eskiden HER trigger `<Button>` içine sarılıyordu — bir ikon veya link'e
- * tooltip eklendiğinde iç içe buton render ediliyordu (bkz. plan Faz 3
- * denetimi, somut a11y/DOM bug'ı). Artık trigger düz bir `<span>` içinde;
- * kendi bir buton/link ise davranışı korunur.
+ * Faz 15 (yeniden yazım):
+ * - Konum `lib/floating`'deki `computePanelPosition` ile (Dropdown'la ORTAK):
+ *   12 yerleşim, yer yoksa karşı yöne döner, ekran içinde kıstırılır. Eskiden
+ *   4 sabit yön + kıstırma yoktu: mobilde 672px'e kadar genişleyen balon
+ *   ekrandan taşıyor, üstteki bir tetikleyicide ekranın dışına çıkıyordu.
+ * - Balonun ÜZERİNE gelinebilir (WCAG 1.4.13): fare tetikleyiciden balona
+ *   geçerken kapanmaz; kısa bir kapanma gecikmesi aradaki boşluğu köprüler.
+ * - Fareyle açılış `openDelay` kadar gecikir (üzerinden geçerken titremesin);
+ *   odakla açılış anlık.
  *
- * Faz 13.4: tooltip SADECE `onMouseEnter`/`onMouseLeave` ile açılıyordu —
- * klavye/odak kullanıcıları içeriği hiçbir zaman göremiyordu (AutoComplete/
- * Rate/Switch'te bulunanlarla aynı "fare olmadan kullanılamaz" sınıfı gerçek
- * bug). ant.design'ın gerçek Tooltip'i trigger'a her zaman (hover'dan önce
- * bile) `aria-describedby` bağlar (bkz. `getComputedStyle`/DOM incelemesi,
- * ant.design/components/tooltip) — aynı desen burada da uygulanıyor: sarmalayıcı
- * artık `onFocus`/`onBlur`'u da dinliyor (React'te bubble eder, trigger'ın
- * içindeki herhangi bir odaklanabilir eleman için de çalışır), balon
- * `role="tooltip"` + kararlı bir `id` alıyor, trigger tek bir React elementiyse
- * `aria-describedby` ona klonlanıyor, ve Escape tuşu görünürken kapatıyor.
- *
- * Kullanıcı bulgusu: balon eskiden tetikleyicinin `position: relative`
- * ebeveynine göre `absolute` konumlanıyordu — bu ebeveyn `overflow-x-auto`
- * olan bir tablo gibi bir kapsayıcının İÇİNDEYSE (örn. Table'ın son satırı),
- * balon o kapsayıcının `overflow`u tarafından KIRPILIYORDU; kullanıcı onu
- * görmek için container'ı kaydırmak zorunda kalıyordu. Artık balon
- * `document.body`'e portal ediliyor ve `position: fixed` + tetikleyicinin
- * `getBoundingClientRect()`'inden hesaplanan koordinatlarla konumlanıyor —
- * hiçbir atanın `overflow`u tarafından kırpılamaz.
+ * Önceki kararlar korunur: `document.body`'e portal + `fixed` (kaydırılabilir
+ * kapsayıcıda kırpılmaz), `role="tooltip"` + tetikleyiciye `aria-describedby`,
+ * Escape kapatır, sarmalayıcı `self-start` (flex'te gerilmesin).
  */
 export function Tooltip({
   content,
@@ -49,49 +58,70 @@ export function Tooltip({
   alwaysVisible,
   disabled = false,
   triggerClassName,
+  openDelay = 100,
+  skeleton = false,
 }: TooltipProps) {
   const wrapperRef = useRef<HTMLSpanElement>(null);
+  const bubbleRef = useRef<HTMLSpanElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [visible, setVisible] = useState(alwaysVisible ?? false);
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
-  const direction = toBaseDirection(placement);
+  const [position, setPosition] = useState<Position | null>(null);
   const tooltipId = useId();
-  const showTooltip = visible && !disabled;
+  const showTooltip = (visible || Boolean(alwaysVisible)) && !disabled;
 
-  useEffect(() => {
-    if (!showTooltip) return;
+  const clearTimer = () => clearTimeout(timerRef.current);
+  const open = useCallback((delay: number) => {
+    clearTimeout(timerRef.current);
+    if (delay <= 0) setVisible(true);
+    else timerRef.current = setTimeout(() => setVisible(true), delay);
+  }, []);
+  const close = useCallback(() => {
+    clearTimeout(timerRef.current);
+    if (!alwaysVisible) timerRef.current = setTimeout(() => setVisible(false), CLOSE_DELAY_MS);
+  }, [alwaysVisible]);
+  const closeNow = () => {
+    clearTimer();
+    if (!alwaysVisible) setVisible(false);
+  };
 
-    const updatePosition = () => {
-      const el = wrapperRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      switch (direction) {
-        case "top":
-          setCoords({ top: rect.top - GAP_PX, left: rect.left + rect.width / 2 });
-          break;
-        case "bottom":
-          setCoords({ top: rect.bottom + GAP_PX, left: rect.left + rect.width / 2 });
-          break;
-        case "left":
-          setCoords({ top: rect.top + rect.height / 2, left: rect.left - GAP_PX });
-          break;
-        case "right":
-          setCoords({ top: rect.top + rect.height / 2, left: rect.right + GAP_PX });
-          break;
-      }
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  // Konum: balon önce görünmez çizilir, boyutu ölçülür, sonra yerleştirilir.
+  const updatePosition = useCallback(() => {
+    const anchor = wrapperRef.current?.getBoundingClientRect();
+    const bubble = bubbleRef.current;
+    if (!anchor || !bubble) return;
+    const next = computePanelPosition(
+      { top: anchor.top, left: anchor.left, width: anchor.width, height: anchor.height },
+      { width: bubble.offsetWidth, height: bubble.offsetHeight },
+      placement,
+      { width: window.innerWidth, height: window.innerHeight },
+      GAP_PX,
+      EDGE_PX,
+      { inset: ARROW_INSET_PX, pointAtCenter: true }
+    );
+    setPosition((prev) =>
+      prev && prev.top === next.top && prev.left === next.left && prev.side === next.side && prev.arrowOffset === next.arrowOffset ? prev : next
+    );
+  }, [placement]);
+
+  useLayoutEffect(() => {
+    if (!showTooltip) {
+      setPosition(null);
+      return;
+    }
+    // Görünür olduğu sürece HER KAREDE takip: yalnızca scroll/resize dinlemek
+    // yetmiyordu — sayfa düzeni sonradan değişince (ör. Storybook docs'ta
+    // story'ler geç yerleşince) `alwaysVisible` balonlar eski koordinatta
+    // asılı kalıyordu. Konum değişmediyse state güncellenmez (render yok).
+    let frame = 0;
+    const tick = () => {
+      updatePosition();
+      frame = requestAnimationFrame(tick);
     };
-
-    updatePosition();
-    // `capture: true` — iç içe kaydırılabilir bir kapsayıcının (örn. Table'ın
-    // `overflow-x-auto`'su) scroll olayı normalde YUKARI BUBBLE ETMEZ; capture
-    // fazında `window`'a eklenen dinleyici olayı AŞAĞI inerken yakalar, bu
-    // yüzden iç kapsayıcı kaydırıldığında da balon tetikleyiciyi takip eder.
-    window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
-    return () => {
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
-    };
-  }, [showTooltip, direction]);
+    tick();
+    return () => cancelAnimationFrame(frame);
+  }, [showTooltip, updatePosition]);
 
   const decoratedTrigger =
     isValidElement<{ "aria-describedby"?: string }>(trigger) && showTooltip
@@ -100,68 +130,63 @@ export function Tooltip({
         })
       : trigger;
 
-  const bubble =
-    showTooltip && coords ? (
+  const side = position?.side ?? "top";
+  const vertical = side === "top" || side === "bottom";
+
+  const bubble = showTooltip ? (
+    // Fare takibi yalnızca "üzerine gelinebilirlik" (WCAG 1.4.13) için.
+    <span
+      ref={bubbleRef}
+      role="tooltip"
+      id={tooltipId}
+      aria-busy={skeleton || undefined}
+      onMouseEnter={clearTimer}
+      onMouseLeave={close}
+      className={cn(
+        // Boyutlar ant.design'ın gerçek Tooltip'inden: padding 6px 8px,
+        // radius 6px, line-height 22px. Genişlik en çok 20rem ve HİÇBİR ZAMAN
+        // ekran genişliği − 2×kenar payından fazla değil (mobilde taşmaz).
+        "fixed z-mari-tooltip w-max max-w-[min(20rem,calc(100vw-1rem))] rounded-md px-2 py-1.5 text-sm leading-[1.375rem] text-wrap",
+        // Yalnızca solma: ölçek animasyonu oku da kaydırıyordu (kullanıcı bulgusu).
+        "transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none",
+        getVariantClasses(color, variant),
+        className
+      )}
+      // Ölçülene kadar görünmez (yanlış yerde bir kare parlamasın).
+      style={{ top: position?.top ?? 0, left: position?.left ?? 0, visibility: position ? undefined : "hidden", ...style }}
+    >
+      {skeleton ? (
+        <span className="flex flex-col gap-1.5 py-1" aria-hidden>
+          <span className={cn("block h-2.5 w-32 rounded-sm opacity-60", skeletonFill(true))} />
+          <span className={cn("block h-2.5 w-20 rounded-sm opacity-60", skeletonFill(true))} />
+        </span>
+      ) : (
+        content
+      )}
+      {/* Ok: balonla aynı renkte döndürülmüş kare; tetikleyicinin ortasını gösterir. */}
       <span
-        role="tooltip"
-        id={tooltipId}
-        className={cn(
-          // `w-max` KASITLI: sabit `left`/`top` + transform ile konumlanan bir
-          // `fixed` elemanın shrink-to-fit genişlik hesabı normal şartlarda
-          // viewport'a göre yapılır (bu yüzden eski `absolute` sürümündeki
-          // "yarım genişlik" bug'ı burada oluşmaz), ama `w-max` yine de
-          // genişliği doğrudan içeriğin gerçek boyutuna sabitleyip garantiye
-          // alır. Boyutlar ant.design'ın gerçek Tooltip'inden
-          // (`getComputedStyle`): `padding: 6px 8px`, `border-radius: 6px`,
-          // `line-height: 22px`.
-          "fixed text-wrap z-mari-tooltip w-max px-2 py-1.5 max-w-2xl rounded-md text-sm leading-[1.375rem] transition-opacity duration-200",
-          direction === "top" && "-translate-x-1/2 -translate-y-full",
-          direction === "bottom" && "-translate-x-1/2",
-          direction === "left" && "-translate-x-full -translate-y-1/2",
-          direction === "right" && "-translate-y-1/2",
-          getVariantClasses(color, variant),
-          className
-        )}
-        style={{ top: coords.top, left: coords.left, ...style }}
-      >
-        {content}
-        <Play
-          size={10}
-          className={cn(
-            "absolute",
-            direction === "bottom" && "top-[2.5px] left-1/2 -translate-x-1/2 -translate-y-full -rotate-90",
-            direction === "top" && "bottom-[2.5px] left-1/2 -translate-x-1/2 translate-y-full rotate-90",
-            direction === "right" && "left-[2.5px] top-1/2 -translate-y-1/2 -translate-x-full rotate-180",
-            direction === "left" && "right-[2.5px] top-1/2 -translate-y-1/2 translate-x-full",
-            getArrowClasses(color, variant)
-          )}
-        />
-      </span>
-    ) : null;
+        aria-hidden
+        className={cn("absolute size-2 rotate-45", ARROW_SIDE_CLASS[side], getArrowClasses(color, variant))}
+        style={vertical ? { left: position?.arrowOffset } : { top: position?.arrowOffset }}
+      />
+    </span>
+  ) : null;
 
   return (
     <>
-      {/* Bu `<span>` KENDİSİ interaktif değil — sadece hover/focus bölgesi
-          sınırlayan pasif bir sarmalayıcı. Gerçek interaktiflik `trigger`ın
-          kendisinde (bir buton/link vb. olabilir) yaşıyor; `onKeyDown` burada
-          sadece görünürken Escape'i yakalamak için (focus zaten trigger'da,
-          olay buraya bubble ediyor) — span'a odaklanılabilirlik EKLEMİYOR. */}
+      {/* Sarmalayıcı KENDİSİ interaktif değil — hover/focus bölgesi. Gerçek
+          etkileşim `trigger`da; `onKeyDown` yalnızca Escape için (odak
+          trigger'da, olay buraya bubble eder). */}
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <span
         ref={wrapperRef}
-        // `self-start` KASITLI: bu sarmalayıcı bir `flex` konteynerin (örn.
-        // `flex flex-col`) DOĞRUDAN çocuğu olduğunda, flex'in varsayılan
-        // `align-items: stretch`i `inline-block`u blockify edip konteynerin
-        // TAM GENİŞLİĞİNE geriyordu. `self-start` bu geriyi flex/grid
-        // bağlamlarında engeller; flex/grid OLMAYAN normal akışta hiçbir
-        // etkisi yok (yok sayılır).
         className={cn("inline-block self-start", triggerClassName)}
-        onMouseEnter={() => setVisible(true)}
-        onMouseLeave={() => !alwaysVisible && setVisible(false)}
-        onFocus={() => setVisible(true)}
-        onBlur={() => !alwaysVisible && setVisible(false)}
+        onMouseEnter={() => open(openDelay)}
+        onMouseLeave={close}
+        onFocus={() => open(0)}
+        onBlur={closeNow}
         onKeyDown={(event) => {
-          if (event.key === "Escape" && !alwaysVisible) setVisible(false);
+          if (event.key === "Escape") closeNow();
         }}
       >
         {decoratedTrigger}

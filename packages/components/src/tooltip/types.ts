@@ -1,18 +1,20 @@
 import type React from "react";
 import type { ColorRole, Placement } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type TooltipVariant = "solid" | "soft";
 
-export interface TooltipProps {
+export interface TooltipProps extends SkeletonableProps {
   content: React.ReactNode;
   trigger: React.ReactNode;
   /**
-   * Not: core'un 12 değerli `Placement` sözleşmesini kullanır ama bu
-   * component şu an sadece 4 ana yönü (top/bottom/left/right) render eder —
-   * `-start`/`-end` sonekleri temel yöne indirgenir. Gerçek floating-ui
-   * tabanlı konumlandırma kapsam dışı (plan madde 10).
+   * 12 değerli yerleşim (`top`, `top-start`, `bottom-end`, `left` …). Tercih
+   * edilen yönde yer yoksa karşı yöne döner; balon her zaman ekran içinde kalır.
+   * Varsayılan: `top`.
    */
   placement?: Placement;
+  /** Fare üzerine gelince açılma gecikmesi (ms) — üzerinden geçerken titremesin. Odakla açılış anlıktır. Varsayılan: 100. */
+  openDelay?: number;
   /** Varsayılan: `neutral` (koyu tooltip). */
   color?: ColorRole;
   /** Varsayılan: `solid` (dolu, koyu balon — geleneksel tooltip görünümü). `soft` daha az göze batan, tonlanmış bir arka plan kullanır. */
