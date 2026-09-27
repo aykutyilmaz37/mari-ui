@@ -1,7 +1,7 @@
 import React from "react";
 import { cn, type Size } from "@mari-ui/core";
 import type { SkeletonButtonShape } from "./types";
-import { INPUT_SIZE_CLASS } from "./utils";
+import { BUTTON_SIZE_CLASS, skeletonFill } from "./utils";
 
 export interface SkeletonButtonProps {
   active?: boolean;
@@ -15,10 +15,10 @@ export interface SkeletonButtonProps {
 export function SkeletonButton({ active = false, block = false, shape = "default", size = "md", className }: SkeletonButtonProps) {
   return (
     <div
+      aria-hidden
       className={cn(
-        "bg-mari-border transition-colors duration-300",
-        active && "animate-pulse",
-        INPUT_SIZE_CLASS[size],
+        skeletonFill(active),
+        BUTTON_SIZE_CLASS[size],
         shape === "circle" && "rounded-full",
         shape === "round" && "rounded-lg",
         shape === "square" && "rounded-none",

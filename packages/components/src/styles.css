@@ -12,3 +12,16 @@
  */
 @import "@mari-ui/tokens/tailwind-theme.css";
 @source "./**/*.{ts,tsx}";
+
+/*
+ * Skeleton parıltısı (ant.design `active`). Gradyan 4 kat geniş, konumu
+ * sağdan sola kayar. Hareket azaltma tercihinde `motion-reduce:animate-none`.
+ */
+@keyframes mari-skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

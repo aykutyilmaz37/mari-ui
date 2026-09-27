@@ -42,12 +42,34 @@ export function widthToStyle(width: number | string | undefined): React.CSSPrope
   return { width: typeof width === "number" ? `${width}px` : width };
 }
 
+/**
+ * Faz 13.6: iskeletler gerçek bileşenlerin yüksekliğiyle hizalı (Button/Input
+ * sm 24 / md 32 / lg 40px) — eskiden md input iskeleti 40px'ti, yüklenince
+ * içerik 8px zıplıyordu.
+ */
 export const INPUT_SIZE_CLASS: Record<Size, string> = {
-  sm: "h-6 w-32",
-  md: "h-10 w-48",
-  lg: "h-12 w-64",
+  sm: "h-6 w-full",
+  md: "h-8 w-full",
+  lg: "h-10 w-full",
 };
 
-export function getLineClass(round: boolean | undefined, extra?: string): string {
-  return cn("bg-mari-border", round ? "rounded-full" : "rounded", extra);
+export const BUTTON_SIZE_CLASS: Record<Size, string> = {
+  sm: "h-6 w-16",
+  md: "h-8 w-20",
+  lg: "h-10 w-24",
+};
+
+/**
+ * Tek kaynak dolgu: `active` → parıltı (gradyan kayar), değilse düz.
+ * Eskiden Skeleton `animate-pulse`'u `active`ten BAĞIMSIZ her zaman
+ * uyguluyordu — `active={false}` da animasyonluydu.
+ */
+export function skeletonFill(active: boolean | undefined): string {
+  return active
+    ? "bg-linear-to-r from-mari-border/70 via-mari-surface-alt to-mari-border/70 bg-[length:400%_100%] animate-[mari-skeleton-shimmer_1.4s_ease_infinite] motion-reduce:animate-none"
+    : "bg-mari-border/70";
+}
+
+export function getLineClass(round: boolean | undefined, extra?: string, active?: boolean): string {
+  return cn(skeletonFill(active), round ? "rounded-full" : "rounded-md", extra);
 }
