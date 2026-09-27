@@ -19,17 +19,11 @@ export interface TableEditDrawerProps {
  */
 export function TableEditDrawer({ title, description, open, onClose, children }: TableEditDrawerProps) {
   return (
-    <Drawer
-      open={open}
-      onClose={onClose}
-      header={
-        <div>
-          <span>{title}</span>
-          <span>{description}</span>
-        </div>
-      }
-    >
-      <div>{children}</div>
+    // Faz 13.6: eskiden `header`'a yan yana iki <span> veriliyordu (başlık ve
+    // açıklama arasında boşluk bile yoktu, ortalanmıştı). Artık Drawer'ın
+    // kendi `title`/`description`'ı — dialog'un erişilebilir adı da başlık.
+    <Drawer open={open} onClose={onClose} title={title} description={description} aria-label={title ? undefined : "Kaydı düzenle"}>
+      {children}
     </Drawer>
   );
 }

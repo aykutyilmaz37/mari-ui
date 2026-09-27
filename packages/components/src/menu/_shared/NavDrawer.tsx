@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { XIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { bgSolidClass, textSolidContrastClass } from "../../lib/colorClasses";
+import { useModalBehavior, usePresence } from "../../lib/overlay";
 import type { MenuItemType, MenuNavigationProps } from "../types";
 import { findActiveKeyByRoute, navigateTo } from "../utils";
 import { MegaPanelPromoGrid } from "./_components/MegaPanelPromoGrid";
@@ -12,7 +13,6 @@ import { MobileNavLevel } from "./_components/MobileNavLevel";
 
 /** Kapanış animasyonu bitene kadar çekmece DOM'da kalır. */
 const CLOSE_ANIMATION_MS = 250;
-const FOCUSABLE_SELECTOR = 'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export interface NavDrawerProps extends MenuNavigationProps {
   /** Dialog'un `id`si — tetikleyicinin `aria-controls`u için. Verilmezse üretilir. */
@@ -66,12 +66,12 @@ export function NavDrawer({
   label = "Ana menü",
   className,
 }: NavDrawerProps) {
-  const [mounted, setMounted] = useState(false);
   const [trail, setTrail] = useState<MenuItemType[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  // Portal/kaydırma kilidi/odak tuzağı/Escape — Drawer ile ortak (lib/overlay).
+  const mounted = usePresence(open, CLOSE_ANIMATION_MS);
+  useModalBehavior(open, panelRef, onClose);
   /** Bir seviye geri dönüldüğünde odağın döneceği satırın anahtarı. */
   const returnKeyRef = useRef<string | null>(null);
   const generatedId = useId();
@@ -79,54 +79,10 @@ export function NavDrawer({
 
   const resolvedActiveKey = activeKey !== undefined ? activeKey : findActiveKeyByRoute(data, currentPath);
 
-  // Açılışta hemen mount; kapanışta animasyon bitince unmount + kök seviyeye dön.
+  // Kapanış animasyonu bitip unmount olunca kök seviyeye dön.
   useEffect(() => {
-    if (open) {
-      setMounted(true);
-      return;
-    }
-    const timer = setTimeout(() => {
-      setMounted(false);
-      setTrail([]);
-    }, CLOSE_ANIMATION_MS);
-    return () => clearTimeout(timer);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const panel = panelRef.current;
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    panel?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onCloseRef.current();
-        return;
-      }
-      if (event.key !== "Tab" || !panel) return;
-      const focusables = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (!first || !last) return;
-      if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-      previouslyFocused?.focus();
-    };
-  }, [open]);
+    if (!mounted) setTrail([]);
+  }, [mounted]);
 
   useEffect(() => {
     if (!open) return;
@@ -154,7 +110,7 @@ export function NavDrawer({
     setTrail((prev) => prev.slice(0, -1));
   };
 
-  if (!(open || mounted) || typeof document === "undefined") return null;
+  if (!mounted || typeof document === "undefined") return null;
 
   const parent = trail[trail.length - 1];
   const items = parent ? (parent.children ?? []) : data;
