@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { Card } from "./Card";
+import { Card, CardMeta } from "./Card";
 import { getA11yViolations } from "../testUtils/a11y";
 
 describe("Card", () => {
@@ -34,6 +34,56 @@ describe("Card", () => {
     render(<Card onClick={onClick}>Tıklanabilir kart</Card>);
     await user.click(screen.getByRole("button", { name: /tıklanabilir kart/i }));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("href verilince kartın tamamı bir link olur ve varsayılan olarak hoverable'dır", () => {
+    render(
+      <Card href="/urun/42" title="Kulaklık">
+        2.499 ₺
+      </Card>
+    );
+    const link = screen.getByRole("link", { name: /Kulaklık/ });
+    expect(link).toHaveAttribute("href", "/urun/42");
+    expect(link.className).toContain("hover:shadow-mari-md");
+  });
+
+  it("target=_blank iken rel=noopener noreferrer eklenir", () => {
+    render(
+      <Card href="https://example.com" target="_blank">
+        Dış link
+      </Card>
+    );
+    expect(screen.getByRole("link")).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("hoverable gölgeyi sadece üzerine gelince verir (eskiden her zaman veriyordu)", () => {
+    const { container } = render(<Card hoverable>İçerik</Card>);
+    const card = container.firstElementChild as HTMLElement;
+    expect(card.className).toContain("hover:shadow-mari-md");
+    expect(card.className.split(" ")).not.toContain("shadow-mari-sm");
+  });
+
+  it("actions eşit bölünmüş bir liste olarak render edilir", () => {
+    render(<Card actions={[<button key="e">Düzenle</button>, <button key="s">Sil</button>]}>İçerik</Card>);
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Sil" })).toBeInTheDocument();
+  });
+
+  it("loading iken içerik yerine iskelet gösterilir, başlık korunur", () => {
+    render(
+      <Card title="Gelir" loading>
+        Gizli içerik
+      </Card>
+    );
+    expect(screen.getByText("Gelir")).toBeInTheDocument();
+    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+  });
+
+  it("CardMeta avatar, başlık ve açıklama gösterir", () => {
+    render(<CardMeta avatar={<span>AY</span>} title="Aykut Yılmaz" description="Geliştirici" />);
+    expect(screen.getByText("Aykut Yılmaz")).toBeInTheDocument();
+    expect(screen.getByText("Geliştirici")).toBeInTheDocument();
   });
 
   it("erişilebilirlik ihlali içermez — ne düz ne tıklanabilir halde (axe-core, Faz 9)", async () => {
