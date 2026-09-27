@@ -4,7 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 import { Input } from "./Input";
+import { OtpSingleField } from "./_components/OtpSingleField";
 import type { InputShape, InputVariant } from "./types";
+import { resolveInputColor, resolveLegacyInputVariant } from "./utils";
 
 export interface OtpInputProps extends SkeletonableProps {
   length?: number;
@@ -30,6 +32,12 @@ export interface OtpInputProps extends SkeletonableProps {
    * harf içeren kodlar için `"text"`.
    */
   inputMode?: "numeric" | "text";
+  /**
+   * `separated` (varsayılan): her hane ayrı bir kutucuk. `single`: tek bir
+   * alan içinde hane yuvaları — arkada tek bir gerçek `<input>` (yapıştırma,
+   * SMS otomatik doldurma, ekran okuyucu için en sade yapı).
+   */
+  layout?: "separated" | "single";
 }
 
 const WIDTH_CLASS: Record<Size, string> = { sm: "w-6 p-0", md: "w-8 p-0", lg: "w-10 p-0" };
@@ -60,6 +68,7 @@ export function OtpInput({
   "aria-label": ariaLabel = "Doğrulama kodu",
   inputMode = "numeric",
   skeleton = false,
+  layout = "separated",
 }: OtpInputProps) {
   const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -138,6 +147,29 @@ export function OtpInput({
   // kullanıcı nereye yazacağını göremiyordu. OTP için `ghost`, `underlined`e
   // (en azından bir alt çizgi kalır) düşürülür.
   const resolvedVariant = variant === "ghost" ? "underlined" : variant;
+
+  if (layout === "single") {
+    return (
+      <OtpSingleField
+        length={length}
+        value={value}
+        defaultValue={defaultValue}
+        disabled={disabled}
+        size={size}
+        shape={shape}
+        variant={resolveLegacyInputVariant(resolvedVariant)}
+        color={resolveInputColor(color, status)}
+        onChange={onChange}
+        onInput={onInput}
+        display={(raw) => resolveDisplayValue(raw, formatter, mask)}
+        separator={separator}
+        className={className}
+        ariaLabel={ariaLabel}
+        inputMode={inputMode}
+        skeleton={skeleton}
+      />
+    );
+  }
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, i: number) => {
     e.preventDefault();

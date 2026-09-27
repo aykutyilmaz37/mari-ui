@@ -60,4 +60,49 @@ describe("OtpInput", () => {
     const { container } = render(<OtpInput length={4} separator="-" />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  describe("layout=\"single\"", () => {
+    it("tek bir adlandırılmış alan; SMS kodu önerisi ve sayısal klavye", () => {
+      render(<OtpInput layout="single" length={6} aria-label="SMS kodu" />);
+      const inputs = screen.getAllByRole("textbox");
+      expect(inputs).toHaveLength(1);
+      expect(inputs[0]).toHaveAccessibleName("SMS kodu");
+      expect(inputs[0]).toHaveAttribute("autocomplete", "one-time-code");
+      expect(inputs[0]).toHaveAttribute("inputmode", "numeric");
+    });
+
+    it("yazılan haneler yuvalara çizilir; tamamlanınca onChange", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const { container } = render(<OtpInput layout="single" length={4} onChange={onChange} />);
+      await user.type(screen.getByRole("textbox"), "7351");
+      expect(onChange).toHaveBeenCalledWith("7351");
+      const slots = [...container.querySelectorAll("span[aria-hidden]")].map((s) => s.textContent).join("");
+      expect(slots).toBe("7351");
+    });
+
+    it("yapıştırmada boşluk ve harfleri atar, fazlasını kırpar", async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<OtpInput layout="single" length={6} onChange={onChange} />);
+      await user.click(screen.getByRole("textbox"));
+      await user.paste("48 29-13 99");
+      expect(screen.getByRole("textbox")).toHaveValue("482913");
+      expect(onChange).toHaveBeenCalledWith("482913");
+    });
+
+    it("mask ile yuvalarda • gösterir, error ile aria-invalid", async () => {
+      const user = userEvent.setup();
+      const { container } = render(<OtpInput layout="single" length={4} mask color="error" />);
+      await user.type(screen.getByRole("textbox"), "12");
+      expect(container.textContent).toContain("••");
+      expect(container.textContent).not.toContain("12");
+      expect(screen.getByRole("textbox")).toHaveAttribute("aria-invalid", "true");
+    });
+
+    it("erişilebilirlik ihlali içermez (axe-core)", async () => {
+      const { container } = render(<OtpInput layout="single" length={6} separator="-" />);
+      expect(await getA11yViolations(container)).toEqual([]);
+    });
+  });
 });

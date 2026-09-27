@@ -35,6 +35,7 @@ const meta: Meta<typeof OtpInput> = {
     separator: { control: "text", description: "Kutucuklar arası ayırıcı (örn. \"-\")." },
     onChange: { action: "onChange", description: "Tüm kutucuklar dolduğunda, birleşik değerle çağrılır." },
     onInput: { action: "onInput" },
+    layout: { control: "inline-radio", options: ["separated", "single"], description: "`separated`: ayrı kutucuklar. `single`: tek alan içinde hane yuvaları.", table: { defaultValue: { summary: "separated" } } },
     inputMode: { control: "select", options: ["numeric", "text"], description: "Mobil klavye — rakam kodları için `numeric` (varsayılan).", table: { defaultValue: { summary: "numeric" } } },
     skeleton: { control: "boolean", description: "Veri yokken aynı boyutta iskelet.", table: { defaultValue: { summary: "false" } } },
   },
@@ -49,6 +50,7 @@ export const Playground: Story = {
     disabled: false,
     size: "md",
     variant: "outline",
+    layout: "separated",
     skeleton: false,
   },
 };
@@ -165,3 +167,34 @@ export const Skeleton: Story = {
   ...storyDoc("`skeleton` — kutucuklarla aynı boyutta yer tutucular.", `<OtpInput length={6} size="lg" skeleton={isLoading} />`),
   render: () => <SkeletonDemo />,
 };
+
+function SingleLayoutDemo() {
+  const [code, setCode] = useState("");
+  return (
+    <div className="flex max-w-sm flex-col gap-6">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <div key={size} className="flex flex-col gap-1.5">
+          <span className="text-xs text-mari-muted">{size}</span>
+          <OtpInput layout="single" length={6} size={size} aria-label={`Doğrulama kodu ${size}`} />
+        </div>
+      ))}
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium text-mari-foreground">E-postanıza gelen kod</span>
+        <OtpInput layout="single" length={6} size="lg" separator="-" variant="soft" aria-label="E-postanıza gelen kod" onInput={(v) => setCode(v.join(""))} />
+        <span className="text-xs text-mari-muted">Girilen: {code || "—"}</span>
+      </div>
+    </div>
+  );
+}
+
+export const SingleField: Story = {
+  name: "Tek Alan Görünümü",
+  ...storyDoc(
+    "`layout=\"single\"` — haneler ayrı kutucuklar yerine tek bir alanın içindeki yuvalarda. Boş yuvalarda ince bir çizgi, aktif yuvada yanıp sönen imleç. " +
+      "Arkada TEK bir gerçek `<input>` vardır: yapıştırma ve SMS otomatik doldurma doğal çalışır, ekran okuyucu tek bir adlandırılmış alan duyar. " +
+      "`inputMode=\"numeric\"` iken harf ve boşluklar atılır. Tüm varyant/boyut/renk/`mask`/`separator` seçenekleri geçerli.",
+    `<OtpInput layout="single" length={6} size="lg" aria-label="Doğrulama kodu" onChange={verify} />`
+  ),
+  render: () => <SingleLayoutDemo />,
+};
+
