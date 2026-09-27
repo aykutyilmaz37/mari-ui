@@ -39,6 +39,21 @@
   }
 }
 
+/*
+ * Metin imleci: adımlı aç/kapa (yumuşak solma değil) — gerçek bir imleç gibi.
+ * OtpInput `layout="single"`'daki çizilmiş imleç kullanır.
+ */
+@keyframes mari-caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
 /* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
 @layer base {
   body { font-family: var(--mari-font-sans); }

@@ -36,6 +36,7 @@ const meta: Meta<typeof OtpInput> = {
     onChange: { action: "onChange", description: "Tüm kutucuklar dolduğunda, birleşik değerle çağrılır." },
     onInput: { action: "onInput" },
     layout: { control: "inline-radio", options: ["separated", "single"], description: "`separated`: ayrı kutucuklar. `single`: tek alan içinde hane yuvaları.", table: { defaultValue: { summary: "separated" } } },
+    linePosition: { control: "inline-radio", options: ["center", "bottom"], description: "`layout=\"single\"`'da yuva çizgisi: `center` boş yuvada ortada, `bottom` hanenin altında (dolu olsa da).", table: { defaultValue: { summary: "center" } } },
     inputMode: { control: "select", options: ["numeric", "text"], description: "Mobil klavye — rakam kodları için `numeric` (varsayılan).", table: { defaultValue: { summary: "numeric" } } },
     skeleton: { control: "boolean", description: "Veri yokken aynı boyutta iskelet.", table: { defaultValue: { summary: "false" } } },
   },
@@ -51,6 +52,7 @@ export const Playground: Story = {
     size: "md",
     variant: "outline",
     layout: "separated",
+    linePosition: "center",
     skeleton: false,
   },
 };
@@ -179,6 +181,10 @@ function SingleLayoutDemo() {
         </div>
       ))}
       <div className="flex flex-col gap-1.5">
+        <span className="text-xs text-mari-muted">linePosition=&quot;bottom&quot; — çizgi hanenin altında, dolu yuvada da kalır</span>
+        <OtpInput layout="single" length={6} size="lg" linePosition="bottom" defaultValue="48" aria-label="Doğrulama kodu (alt çizgi)" />
+      </div>
+      <div className="flex flex-col gap-1.5">
         <span className="text-sm font-medium text-mari-foreground">E-postanıza gelen kod</span>
         <OtpInput layout="single" length={6} size="lg" separator="-" variant="soft" aria-label="E-postanıza gelen kod" onInput={(v) => setCode(v.join(""))} />
         <span className="text-xs text-mari-muted">Girilen: {code || "—"}</span>
@@ -190,10 +196,12 @@ function SingleLayoutDemo() {
 export const SingleField: Story = {
   name: "Tek Alan Görünümü",
   ...storyDoc(
-    "`layout=\"single\"` — haneler ayrı kutucuklar yerine tek bir alanın içindeki yuvalarda. Boş yuvalarda ince bir çizgi, aktif yuvada yanıp sönen imleç. " +
+    "`layout=\"single\"` — haneler ayrı kutucuklar yerine tek bir alanın içindeki yuvalarda. Aktif yuvada yanıp sönen imleç. " +
+      "Yuva çizgisi `linePosition` ile: `center` (boş yuvada ortada) ya da `bottom` (hanenin altında, dolu olsa da). " +
       "Arkada TEK bir gerçek `<input>` vardır: yapıştırma ve SMS otomatik doldurma doğal çalışır, ekran okuyucu tek bir adlandırılmış alan duyar. " +
       "`inputMode=\"numeric\"` iken harf ve boşluklar atılır. Tüm varyant/boyut/renk/`mask`/`separator` seçenekleri geçerli.",
-    `<OtpInput layout="single" length={6} size="lg" aria-label="Doğrulama kodu" onChange={verify} />`
+    `<OtpInput layout="single" length={6} size="lg" aria-label="Doğrulama kodu" onChange={verify} />
+<OtpInput layout="single" linePosition="bottom" length={6} size="lg" aria-label="Doğrulama kodu" />`
   ),
   render: () => <SingleLayoutDemo />,
 };

@@ -100,6 +100,23 @@ describe("OtpInput", () => {
       expect(screen.getByRole("textbox")).toHaveAttribute("aria-invalid", "true");
     });
 
+    it("linePosition: center dolu yuvada çizgiyi kaldırır, bottom dolu yuvada da alt çizgi bırakır", () => {
+      const slots = (c: HTMLElement) => [...c.querySelectorAll("span[aria-hidden]")] as HTMLElement[];
+      const center = render(<OtpInput layout="single" length={3} defaultValue="4" />);
+      expect(slots(center.container)[0]!.className).not.toContain("after:absolute");
+      expect(slots(center.container)[1]!.className).toContain("after:top-1/2");
+      center.unmount();
+      const bottom = render(<OtpInput layout="single" length={3} defaultValue="4" linePosition="bottom" />);
+      expect(slots(bottom.container)[0]!.className).toContain("after:bottom-[18%]");
+    });
+
+    it("imleç adımlı yanıp söner (yumuşak solma değil)", async () => {
+      const user = userEvent.setup();
+      const { container } = render(<OtpInput layout="single" length={4} />);
+      await user.click(screen.getByRole("textbox"));
+      expect(container.querySelector("[class*='mari-caret-blink']")).not.toBeNull();
+    });
+
     it("erişilebilirlik ihlali içermez (axe-core)", async () => {
       const { container } = render(<OtpInput layout="single" length={6} separator="-" />);
       expect(await getA11yViolations(container)).toEqual([]);

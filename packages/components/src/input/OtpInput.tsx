@@ -38,6 +38,12 @@ export interface OtpInputProps extends SkeletonableProps {
    * SMS otomatik doldurma, ekran okuyucu için en sade yapı).
    */
   layout?: "separated" | "single";
+  /**
+   * Yalnızca `layout="single"`: yuva çizgisinin yeri. `center` (varsayılan):
+   * boş yuvada dikeyde ortalı çizgi, hane girilince kaybolur. `bottom`:
+   * hanenin altında, dolu yuvada da kalan alt çizgi.
+   */
+  linePosition?: "center" | "bottom";
 }
 
 const WIDTH_CLASS: Record<Size, string> = { sm: "w-6 p-0", md: "w-8 p-0", lg: "w-10 p-0" };
@@ -69,6 +75,7 @@ export function OtpInput({
   inputMode = "numeric",
   skeleton = false,
   layout = "separated",
+  linePosition = "center",
 }: OtpInputProps) {
   const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -167,6 +174,7 @@ export function OtpInput({
         ariaLabel={ariaLabel}
         inputMode={inputMode}
         skeleton={skeleton}
+        linePosition={linePosition}
       />
     );
   }

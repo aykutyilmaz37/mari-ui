@@ -24,6 +24,7 @@ export interface OtpSingleFieldProps {
   ariaLabel: string;
   inputMode: "numeric" | "text";
   skeleton: boolean;
+  linePosition: "center" | "bottom";
 }
 
 /** Kutu yüksekliği + yatay dolgu; yuva genişliği ve rakam boyutu. */
@@ -56,6 +57,7 @@ export function OtpSingleField({
   ariaLabel,
   inputMode,
   skeleton,
+  linePosition,
 }: OtpSingleFieldProps) {
   const [code, setCode] = useControllableState<string>({ value, defaultValue: defaultValue.slice(0, length) });
   const [focused, setFocused] = useState(false);
@@ -106,6 +108,10 @@ export function OtpSingleField({
       {Array.from({ length }, (_, i) => {
         const char = code[i];
         const isActive = focused && i === activeIndex;
+        // `center`: yalnızca BOŞ yuvada ortada çizgi (dolu hanenin üstünü çizmesin).
+        // `bottom`: hanenin altında, dolu olsa da kalan alt çizgi.
+        // Aktif boş yuvada `center` çizgisi imleçle kesişip "+" çiziyordu — orada imleç yeterli.
+        const showLine = linePosition === "bottom" || (!char && !isActive);
         return (
           <React.Fragment key={i}>
             <span
@@ -113,14 +119,19 @@ export function OtpSingleField({
               className={cn(
                 "relative flex h-full items-center justify-center font-medium tabular-nums text-mari-foreground",
                 SLOT_CLASS[size],
-                // Boş yuva: dikeyde ortalı ince bir çizgi — kaç hane kaldığı görünür.
-                !char && "after:absolute after:inset-x-0.5 after:top-1/2 after:h-px after:-translate-y-1/2 after:bg-mari-input",
-                isActive && !char && "after:bg-mari-primary"
+                showLine && "after:absolute after:inset-x-0.5 after:h-px after:bg-mari-input",
+                showLine && (linePosition === "bottom" ? "after:bottom-[18%]" : "after:top-1/2 after:-translate-y-1/2"),
+                showLine && isActive && "after:bg-mari-primary"
               )}
             >
               {char ? display(char) : null}
               {isActive && code.length < length && (
-                <span className="absolute h-[45%] w-px animate-pulse bg-mari-foreground motion-reduce:animate-none" />
+                // `key`: her yazışta animasyon baştan başlar — yazarken imleç
+                // hep görünür, durunca yanıp söner (gerçek imleç davranışı).
+                <span
+                  key={code.length}
+                  className="absolute h-[45%] w-px bg-mari-foreground animate-[mari-caret-blink_1.06s_step-end_infinite] motion-reduce:animate-none"
+                />
               )}
             </span>
             {separator && i < length - 1 && (
