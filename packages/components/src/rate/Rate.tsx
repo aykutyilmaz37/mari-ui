@@ -107,11 +107,11 @@ export function Rate({
   let filledIcon: React.ReactNode = customIcon;
   if (usePalette) filledIcon = <Star size={characterSize} fill="var(--mari-color-rating)" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />;
   else if (isDefaultStar) filledIcon = <Star size={characterSize} fill="currentColor" stroke="currentColor" />;
-  const emptyIcon = isDefaultStar ? (
-    <Star size={characterSize} fill="var(--mari-color-surface-alt)" stroke="var(--mari-color-input)" strokeWidth={1.5} />
-  ) : (
-    customIcon
-  );
+  // Boş yıldız: varsayılan palette dolgusuz SARI kontur (kullanıcı kararı);
+  // rol rengi verildiyse dolgusuz gri kontur.
+  let emptyIcon: React.ReactNode = customIcon;
+  if (usePalette) emptyIcon = <Star size={characterSize} fill="none" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />;
+  else if (isDefaultStar) emptyIcon = <Star size={characterSize} fill="none" stroke="var(--mari-color-input)" strokeWidth={1.5} />;
 
   const stars = Array.from({ length: count }, (_, i) => {
     // Yıldızın dolu oranı (0–1). Etkileşimli modda tam/yarım; salt gösterimde

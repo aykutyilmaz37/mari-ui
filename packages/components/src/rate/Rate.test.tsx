@@ -91,4 +91,11 @@ describe("Rate", () => {
     expect(filled.getAttribute("fill")).toBe("var(--mari-color-rating)");
     expect(filled.getAttribute("stroke")).toBe("var(--mari-color-rating-stroke)");
   });
+
+  it("varsayılan palette boş yıldız dolgusuz ve sarı konturlu", () => {
+    const { container } = render(<Rate defaultValue={0} count={1} />);
+    const empty = container.querySelector("svg")!;
+    expect(empty.getAttribute("fill")).toBe("none");
+    expect(empty.getAttribute("stroke")).toBe("var(--mari-color-rating-stroke)");
+  });
 });
