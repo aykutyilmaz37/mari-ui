@@ -91,6 +91,14 @@ export function Tooltip({
     const anchor = wrapperRef.current?.getBoundingClientRect();
     const bubble = bubbleRef.current;
     if (!anchor || !bubble) return;
+    // Tetikleyici görünür alanın DIŞINDAYSA balon gizlenir. Aksi halde kıstırma
+    // onu ekran kenarına yapıştırıyor, tetikleyiciden kopuk havada asılı
+    // kalıyordu (Storybook docs'ta aşağıdaki `alwaysVisible` story'ler).
+    const offscreen = anchor.bottom < 0 || anchor.top > window.innerHeight || anchor.right < 0 || anchor.left > window.innerWidth;
+    if (offscreen) {
+      setPosition(null);
+      return;
+    }
     const next = computePanelPosition(
       { top: anchor.top, left: anchor.left, width: anchor.width, height: anchor.height },
       { width: bubble.offsetWidth, height: bubble.offsetHeight },

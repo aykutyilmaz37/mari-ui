@@ -42,7 +42,7 @@ export function TableAccordion<T extends { id: string }>({ data, columns, emptyS
   if (data.length === 0) {
     return (
       <div className={cn("rounded-md border border-mari-border", className)}>
-        <Empty title={emptyState?.title ?? "Veri Bulunamadı"} description={emptyState?.description} />
+        <Empty size="sm" title={emptyState?.title ?? "Veri Bulunamadı"} description={emptyState?.description} />
       </div>
     );
   }

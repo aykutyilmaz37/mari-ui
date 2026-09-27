@@ -35,7 +35,7 @@ export function TableBody<T extends { id: string }>({ data, columns, emptyState 
       <tbody>
         <tr>
           <td colSpan={columns.length} className="p-0 text-start">
-            <Empty title={emptyState?.title ?? "Veri Bulunamadı"} description={emptyState?.description} />
+            <Empty size="sm" title={emptyState?.title ?? "Veri Bulunamadı"} description={emptyState?.description} />
           </td>
         </tr>
       </tbody>

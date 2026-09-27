@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Tooltip } from "./Tooltip";
@@ -134,5 +134,12 @@ describe("Tooltip", () => {
     const arrow = tip.lastElementChild as HTMLElement;
     expect(arrow.className).toContain("bg-mari-neutral-solid");
     expect(tip.className).toContain("bg-mari-neutral-solid");
+  });
+
+  it("tetikleyici görünür alanın dışındaysa balon gizlenir (ekran kenarına yapışıp kopuk kalmaz)", async () => {
+    render(<Tooltip content="Yardım" trigger={<button type="button">Tetik</button>} alwaysVisible />);
+    const wrapper = screen.getByRole("button").parentElement!;
+    vi.spyOn(wrapper, "getBoundingClientRect").mockReturnValue({ top: 5000, bottom: 5030, left: 10, right: 60, width: 50, height: 30, x: 10, y: 5000, toJSON: () => ({}) });
+    await waitFor(() => expect(screen.getByRole("tooltip", { hidden: true }).style.visibility).toBe("hidden"));
   });
 });
