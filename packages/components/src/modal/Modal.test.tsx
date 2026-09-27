@@ -1,97 +1,134 @@
 import { useCallback, useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Modal } from "./Modal";
 import { getA11yViolations } from "../testUtils/a11y";
 
-describe("Modal (Faz 9 — üç gerçek a11y hatasının düzeltmesi, bkz. Modal.tsx'teki not)", () => {
-  it("role=dialog + aria-modal + aria-labelledby taşır (eskiden role=none ile TAMAMEN siliniyordu)", () => {
+afterEach(() => {
+  document.body.style.overflow = "";
+});
+
+function Wrapper(props: Partial<React.ComponentProps<typeof Modal>>) {
+  const [open, setOpen] = useState(false);
+  const handleClose = useCallback(() => setOpen(false), []);
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Aç</button>
+      <Modal open={open} onClose={handleClose} title="Başlık" cancelButtonText="Vazgeç" confirmButtonText="Kaydet" {...props}>
+        <input aria-label="Ad" />
+      </Modal>
+    </>
+  );
+}
+
+describe("Modal", () => {
+  it("role=dialog + aria-modal + başlık erişilebilir ad, açıklama aria-describedby", () => {
     render(
-      <Modal open onClose={() => {}} title="Örnek Başlık">
+      <Modal open onClose={() => {}} title="Örnek Başlık" description="Kısa açıklama">
         İçerik
       </Modal>
     );
     const dialog = screen.getByRole("dialog", { name: "Örnek Başlık" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveAccessibleDescription("Kısa açıklama");
   });
 
-  it("open=false iken kök kapsayıcı `inert` olur (jsdom `inert`in gerçek odak/AT-gizleme davranışını UYGULAMIYOR — bkz. not, bu yüzden sadece attribute'un VARLIĞI doğrulanıyor; gerçek odak-engelleme davranışı Storybook'ta GERÇEK bir tarayıcıda ayrıca doğrulandı, bkz. ACCESSIBILITY.md)", () => {
-    const { container } = render(
+  it("kapalıyken DOM'da değildir (eskiden inert ile DOM'da kalıyordu)", () => {
+    render(
       <Modal open={false} onClose={() => {}} title="Başlık" confirmButtonText="Onayla">
         İçerik
       </Modal>
     );
-    expect(container.firstElementChild).toHaveAttribute("inert");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("open=true iken kök kapsayıcıda `inert` YOKTUR", () => {
-    const { container } = render(
-      <Modal open onClose={() => {}} title="Başlık" confirmButtonText="Onayla">
-        İçerik
-      </Modal>
-    );
-    expect(container.firstElementChild).not.toHaveAttribute("inert");
-  });
-
-  it("open=true iken açılınca odak diyalog paneline taşınır", () => {
-    render(
-      <Modal open onClose={() => {}} title="Başlık">
-        İçerik
-      </Modal>
-    );
-    expect(screen.getByRole("dialog")).toHaveFocus();
-  });
-
-  it("Escape tuşuna basınca onClose çağrılır", async () => {
+  it("açılınca odak gövdedeki ilk alana gider; kapanınca tetikleyiciye döner", async () => {
     const user = userEvent.setup();
-    const onClose = vi.fn();
-    render(
-      <Modal open onClose={onClose} title="Başlık">
-        İçerik
-      </Modal>
-    );
-    await user.keyboard("{Escape}");
-    expect(onClose).toHaveBeenCalledTimes(1);
-  });
-
-  it("açılınca odak diyaloğa gider, kapanınca tetikleyici elemana geri döner", async () => {
-    const user = userEvent.setup();
-    function Wrapper() {
-      const [open, setOpen] = useState(false);
-      const handleClose = useCallback(() => setOpen(false), []);
-      return (
-        <>
-          <button onClick={() => setOpen(true)}>Aç</button>
-          <Modal open={open} onClose={handleClose} title="Başlık">
-            İçerik
-          </Modal>
-        </>
-      );
-    }
     render(<Wrapper />);
-
     await user.click(screen.getByRole("button", { name: "Aç" }));
-    expect(screen.getByRole("dialog")).toHaveFocus();
-
+    expect(screen.getByRole("textbox", { name: "Ad" })).toHaveFocus();
     await user.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "Aç" })).toHaveFocus();
   });
 
-  it("erişilebilirlik ihlali içermez, açıkken de kapalıyken de (axe-core)", async () => {
-    const open = render(
-      <Modal open onClose={() => {}} title="Başlık" confirmButtonText="Tamam">
-        İçerik
-      </Modal>
-    );
-    expect(await getA11yViolations(open.container)).toEqual([]);
-    open.unmount();
+  it("Tab modalın içinde döner (eskiden odak tuzağı yoktu, Tab sayfaya kaçıyordu) ve sayfa kaydırması kilitlenir", async () => {
+    const user = userEvent.setup();
+    render(<Wrapper />);
+    await user.click(screen.getByRole("button", { name: "Aç" }));
+    const dialog = screen.getByRole("dialog");
+    expect(document.body.style.overflow).toBe("hidden");
+    for (let i = 0; i < 5; i++) {
+      await user.tab();
+      expect(dialog).toContainElement(document.activeElement as HTMLElement);
+    }
+  });
 
-    const closed = render(
-      <Modal open={false} onClose={() => {}} title="Başlık">
+  it("error/warning + onay düğmesi → alertdialog ve ilk odak Vazgeç'e gider (yıkıcı işlem Enter'la tetiklenmesin)", async () => {
+    const user = userEvent.setup();
+    render(<Wrapper color="error" title="Projeyi sil" confirmButtonText="Sil" />);
+    await user.click(screen.getByRole("button", { name: "Aç" }));
+    expect(screen.getByRole("alertdialog", { name: "Projeyi sil" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Vazgeç" })).toHaveFocus();
+  });
+
+  it("initialFocus=\"confirm\" — Vazgeç konumundaki düğme yıkıcıysa odak onaya gider", async () => {
+    const user = userEvent.setup();
+    render(<Wrapper color="warning" title="Oturum" cancelButtonText="Çıkış yap" confirmButtonText="Oturumu uzat" initialFocus="confirm" />);
+    await user.click(screen.getByRole("button", { name: "Aç" }));
+    expect(screen.getByRole("button", { name: "Oturumu uzat" })).toHaveFocus();
+  });
+
+  it("onConfirm Promise dönerse çözülene kadar onay düğmesi yükleniyor olur", async () => {
+    const user = userEvent.setup();
+    let resolve!: () => void;
+    const onConfirm = vi.fn(() => new Promise<void>((r) => (resolve = r)));
+    render(
+      <Modal open onClose={() => {}} title="Kaydet" confirmButtonText="Kaydet" onConfirm={onConfirm}>
         İçerik
       </Modal>
     );
-    expect(await getA11yViolations(closed.container)).toEqual([]);
+    const confirm = screen.getByRole("button", { name: /Kaydet/ });
+    await user.click(confirm);
+    expect(confirm).toBeDisabled();
+    expect(confirm).toHaveAttribute("aria-busy", "true");
+    resolve();
+    await vi.waitFor(() => expect(confirm).toBeEnabled());
+  });
+
+  it("footer={null} alt çubuğu kaldırır; özel footer düğmelerin yerine geçer", () => {
+    const { rerender } = render(
+      <Modal open onClose={() => {}} title="A" confirmButtonText="Tamam" footer={null}>
+        İçerik
+      </Modal>
+    );
+    expect(screen.queryByRole("button", { name: "Tamam" })).not.toBeInTheDocument();
+    rerender(
+      <Modal open onClose={() => {}} title="A" footer={<button>Özel</button>}>
+        İçerik
+      </Modal>
+    );
+    expect(screen.getByRole("button", { name: "Özel" })).toBeInTheDocument();
+  });
+
+  it("keyboard={false} ise Escape kapatmaz", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(
+      <Modal open onClose={onClose} title="Başlık" keyboard={false}>
+        İçerik
+      </Modal>
+    );
+    await user.keyboard("{Escape}");
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("erişilebilirlik ihlali içermez (axe-core)", async () => {
+    render(
+      <Modal open onClose={() => {}} title="Başlık" description="Açıklama" color="warning" cancelButtonText="Vazgeç" confirmButtonText="Tamam">
+        İçerik
+      </Modal>
+    );
+    expect(await getA11yViolations(document.body)).toEqual([]);
   });
 });

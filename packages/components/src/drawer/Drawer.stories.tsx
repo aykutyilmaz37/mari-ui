@@ -624,28 +624,35 @@ export const Positions: Story = {
   name: "Konumlar ve Boyutlar",
   ...storyDoc("Dört kenar × üç boyut.", `<Drawer position="left" size="lg" open={open} onClose={close} title="Başlık">…</Drawer>`),
   render: () => {
-    const [state, setState] = useState<{ position: "top" | "right" | "bottom" | "left"; size: "sm" | "md" | "lg" } | null>(null);
+    // Açık/kapalı ayrı state: kapanırken konum/boyut sabit kalsın (yoksa
+    // kapanış animasyonu varsayılan sağ/md çekmecede oynuyordu).
+    const [open, setOpen] = useState(false);
+    const [state, setState] = useState<{ position: "top" | "right" | "bottom" | "left"; size: "sm" | "md" | "lg" }>({ position: "right", size: "md" });
     return (
       <div className="flex flex-col gap-3">
         {(["sm", "md", "lg"] as const).map((size) => (
           <div key={size} className="flex flex-wrap items-center gap-2">
             <span className="w-8 font-mono text-xs text-mari-muted">{size}</span>
             {(["right", "left", "top", "bottom"] as const).map((position) => (
-              <Button key={position} size="sm" variant="outline" color="neutral" onClick={() => setState({ position, size })}>
+              <Button key={position} size="sm" variant="outline" color="neutral" onClick={() => {
+                  setState({ position, size });
+                  setOpen(true);
+                }}
+              >
                 {position}
               </Button>
             ))}
           </div>
         ))}
         <Drawer
-          open={state !== null}
-          onClose={() => setState(null)}
-          position={state?.position ?? "right"}
-          size={state?.size ?? "md"}
-          title={state ? `position="${state.position}" · size="${state.size}"` : ""}
+          open={open}
+          onClose={() => setOpen(false)}
+          position={state.position}
+          size={state.size}
+          title={`position="${state.position}" · size="${state.size}"`}
           footer={
             <div className="flex justify-end">
-              <Button onClick={() => setState(null)}>Tamam</Button>
+              <Button onClick={() => setOpen(false)}>Tamam</Button>
             </div>
           }
         >

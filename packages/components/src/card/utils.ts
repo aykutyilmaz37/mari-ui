@@ -32,7 +32,7 @@ export function getBaseClassname({ bordered = true, hoverable, interactive, size
     (bordered || inset) && "border border-mari-border",
     // Eskiden `hoverable` gölgeyi HER ZAMAN veriyordu (`hover:` öneki yoktu).
     hoverable &&
-      "transition-[box-shadow,transform,border-color] duration-200 hover:shadow-mari-md motion-safe:hover:-translate-y-0.5",
+      "transition-[box-shadow,translate,border-color] duration-200 hover:shadow-mari-md motion-safe:hover:-translate-y-0.5",
     interactive && "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
     className
   );

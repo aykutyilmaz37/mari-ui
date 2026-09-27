@@ -156,7 +156,7 @@ export function MegaMenu({ data, logo, onLogoClick, menuItemJustify = "center", 
             className={cn(
               // `overscroll-contain`: panel kendi içinde sonuna geldiğinde
               // kaydırma arkadaki sayfaya ZİNCİRLENMEZ.
-              "fixed z-mari-dropdown origin-top overflow-y-auto overscroll-contain border-t border-mari-border bg-mari-surface shadow-mari-lg transition-[opacity,transform] duration-200",
+              "fixed z-mari-dropdown origin-top overflow-y-auto overscroll-contain border-t border-mari-border bg-mari-surface shadow-mari-lg transition-[opacity,translate] duration-200",
               visible ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
             )}
           >

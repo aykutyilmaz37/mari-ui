@@ -37,7 +37,7 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
   const reserveIconSlot = items.some((item) => item.icon && !item.heading);
 
   return (
-    <div className="flex flex-col pb-4 transition-[opacity,transform] duration-200 ease-out starting:translate-x-3 starting:opacity-0">
+    <div className="flex flex-col pb-4 transition-[opacity,translate] duration-200 ease-out starting:translate-x-3 starting:opacity-0">
       {parent && (
         <>
           <button
