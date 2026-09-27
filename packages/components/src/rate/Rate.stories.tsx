@@ -56,12 +56,23 @@ export const AllowHalf: Story = {
 };
 
 export const AllColors: Story = {
-  name: "Tüm Renkler",
-  ...storyDoc("7 renk rolünün tamamı. Varsayılan `warning` (geleneksel amber yıldız).", `<Rate color="warning" defaultValue={3} aria-label="Puan" />`),
+  name: "Renkler",
+  ...storyDoc(
+    "`color` verilmezse (önerilen) yıldız puan token'larıyla çizilir: parlak sarı dolgu + koyu altın kontur — sarı tek başına beyaz zeminde 3:1 veremediği için kontur erişilebilirliği sağlar. Bir rol verilirse düz o renk.",
+    `<Rate defaultValue={3} aria-label="Puan" />            {/* varsayılan: puan sarısı */}
+<Rate color="primary" defaultValue={3} aria-label="Puan" />`
+  ),
   render: () => (
     <div className="flex flex-col gap-3">
-      {(["warning", "primary", "accent", "success", "error", "info", "neutral"] as const).map((color) => (
-        <Rate key={color} color={color} defaultValue={3} aria-label={`${color} puan`} />
+      <div className="flex items-center gap-3">
+        <Rate defaultValue={3.5} allowHalf aria-label="Varsayılan puan" />
+        <span className="text-xs text-mari-muted">varsayılan (puan sarısı)</span>
+      </div>
+      {(["primary", "accent", "success", "error", "info", "neutral"] as const).map((color) => (
+        <div key={color} className="flex items-center gap-3">
+          <Rate color={color} defaultValue={3} aria-label={`${color} puan`} />
+          <span className="text-xs text-mari-muted">{color}</span>
+        </div>
       ))}
     </div>
   ),

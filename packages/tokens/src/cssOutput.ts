@@ -100,6 +100,8 @@ const THEME_TOKEN_KEYS = [
   "foreground",
   "muted",
   "disabled",
+  "rating",
+  "rating-stroke",
 ];
 
 function buildThemeInlineBlock(theme: Theme): string {

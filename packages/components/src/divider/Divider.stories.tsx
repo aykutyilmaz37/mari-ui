@@ -204,3 +204,14 @@ export const LongLabel: StoryObj = {
   ),
 };
 
+export const Skeleton: StoryObj = {
+  name: "İskelet",
+  ...storyDoc("`skeleton` — çizgi parıldayan ince bir çubuk olur, etiket kendi genişliğinde yer tutucu.", `<Divider skeleton={isLoading}>Tercihler</Divider>`),
+  render: () => (
+    <div className="w-full max-w-2xl">
+      <Divider skeleton>Tercihler</Divider>
+      <Divider skeleton />
+    </div>
+  ),
+};
+

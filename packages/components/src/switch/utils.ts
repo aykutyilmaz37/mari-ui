@@ -78,7 +78,12 @@ export function getTrackClass(size: Size, color: ColorRole, checked: boolean, ha
   // Kapalı track'te KENARLIK YOK (Faz 15): 1px kenarlık iç kutuyu 2px
   // küçültüyor, top (track − 4px) kutuya sığmayıp alttan/soldan taşıyordu.
   // Kapalı hal her renkte aynı nötr gri — renk yalnızca "açık"ı anlatır.
-  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-input");
+  // İç etiketliyken kapalı track `neutral` dolgusu: `input` grisi üstünde ne
+  // koyu (okunmuyordu) ne beyaz (3.6:1) metin yeterli; neutral dolgu + onun
+  // kontrast rengi 5.6:1 (koyu temada otomatik tersine döner).
+  let offTrack = "bg-mari-input";
+  if (hasLabel) offTrack = bgSolidClass.neutral;
+  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : offTrack);
 }
 
 export function getBallClass(size: Size, checked: boolean): string {

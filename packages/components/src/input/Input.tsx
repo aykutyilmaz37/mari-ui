@@ -30,6 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       skeleton = false,
       classNames = {},
       className = "",
+      style,
       count,
       defaultValue = "",
       disabled = false,
@@ -113,7 +114,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const geometryClass = cn("flex w-full items-center gap-2", getSizeClasses(size), getShapeClasses(shape, resolvedVariant));
 
     if (skeleton) {
-      return <div {...skeletonBoxProps(cn(geometryClass, classNames.wrapper, className))} />;
+      return <div {...skeletonBoxProps(cn(geometryClass, classNames.wrapper, className))} style={style} />;
     }
 
     const wrapperClass = cn(
@@ -148,7 +149,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       // Fare kısayolu; klavye kullanıcısı zaten doğrudan <input>'a sekmeyle gelir.
       // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-      <div className={wrapperClass} onMouseDown={handleWrapperMouseDown}>
+      <div className={wrapperClass} style={style} onMouseDown={handleWrapperMouseDown}>
         {/* Boşluk wrapper'ın `gap-*`'ından gelir — eskiden ayrıca `mr-2` vardı, ikon ile metin arası 2 katıydı. */}
         {icon && iconPosition === "start" && <span className={cn(adornmentClass, classNames.icon)}>{icon}</span>}
 

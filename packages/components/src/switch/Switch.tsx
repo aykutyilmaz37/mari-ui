@@ -128,7 +128,8 @@ export function Switch({
             </span>
             <span
               className={cn(
-                "absolute inset-y-0 flex items-center text-xs leading-none whitespace-nowrap transition-all duration-300 text-mari-foreground",
+                "absolute inset-y-0 flex items-center text-xs leading-none whitespace-nowrap transition-all duration-300",
+                textSolidContrastClass.neutral,
                 !isChecked ? "right-1.5" : "-right-20"
               )}
             >

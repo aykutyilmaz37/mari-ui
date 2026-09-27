@@ -74,6 +74,8 @@ export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   id?: string;
   classNames?: InputClassNames;
   className?: string;
+  /** Kutuya (sarmalayıcı) uygulanan satır içi stil — ör. içeriğe göre hesaplanan genişlik. */
+  style?: React.CSSProperties;
   mask?: string;
   replacement?: Record<string, RegExp>;
   visibilityToggle?: boolean | { visible?: boolean };

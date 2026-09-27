@@ -66,7 +66,7 @@ describe("Rate", () => {
     const { container } = render(<Rate readOnly value={4.3} />);
     const img = screen.getByRole("img", { name: "Puan: 4,3 / 5" });
     expect(img).not.toHaveAttribute("tabindex");
-    const fills = [...container.querySelectorAll<HTMLElement>("span[style*='width']")].map((el) => el.style.width);
+    const fills = [...container.querySelectorAll<HTMLElement>("span.overflow-hidden")].map((el) => el.style.width);
     expect(fills.at(-1)).toMatch(/^30(\.\d+)?%$/);
   });
 
@@ -74,5 +74,21 @@ describe("Rate", () => {
     const { container } = render(<Rate count={5} skeleton />);
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
     expect(container.querySelectorAll("[data-skeleton]")).toHaveLength(5);
+  });
+
+  it("yarım yıldız KIRPILIR, küçülmez: kırpma kutusu %50, içindeki yıldız tam boyutta", () => {
+    const { container } = render(<Rate allowHalf defaultValue={2.5} characterSize="1.5rem" />);
+    const clips = [...container.querySelectorAll<HTMLElement>("span.overflow-hidden")];
+    const half = clips.at(-1)!;
+    expect(half.style.width).toBe("50%");
+    expect(half).toHaveClass("block");
+    expect((half.firstElementChild as HTMLElement).style.width).toBe("1.5rem");
+  });
+
+  it("renk verilmezse yıldız puan token'larıyla (sarı dolgu + kontur) çizilir", () => {
+    const { container } = render(<Rate defaultValue={1} count={1} />);
+    const filled = container.querySelector("span.overflow-hidden svg")!;
+    expect(filled.getAttribute("fill")).toBe("var(--mari-color-rating)");
+    expect(filled.getAttribute("stroke")).toBe("var(--mari-color-rating-stroke)");
   });
 });

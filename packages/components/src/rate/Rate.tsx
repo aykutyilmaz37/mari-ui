@@ -40,7 +40,7 @@ export function Rate({
   onHoverChange,
   onKeyDown,
   characterSize = "1.5rem",
-  color = "warning",
+  color,
   characterColor,
   "aria-label": ariaLabel = "Puan",
   readOnly = false,
@@ -54,7 +54,7 @@ export function Rate({
     if (autoFocus) rootRef.current?.focus();
   }, [autoFocus]);
 
-  const colorClass = textClass[color];
+  const colorClass = color ? textClass[color] : "text-mari-rating";
   const interactive = !disabled && !readOnly;
 
   if (skeleton) {
@@ -98,7 +98,20 @@ export function Rate({
   };
 
   const currentValue = hoverValue ?? displayValue;
-  const icon = typeof character === "function" ? character({}) : character ?? <Star fill="currentColor" stroke="currentColor" size={characterSize} />;
+  // Varsayılan yıldız: dolu = sarı dolgu + koyu altın kontur (sarı tek başına
+  // beyazda 3:1 veremez); boş = yüzey dolgusu + form-alanı gri kontur (eskiden
+  // `border` rengi, neredeyse görünmüyordu). Rol/ham renk verilirse düz o renk.
+  const isDefaultStar = character === undefined;
+  const usePalette = isDefaultStar && !color && !characterColor;
+  const customIcon = typeof character === "function" ? character({}) : character;
+  let filledIcon: React.ReactNode = customIcon;
+  if (usePalette) filledIcon = <Star size={characterSize} fill="var(--mari-color-rating)" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />;
+  else if (isDefaultStar) filledIcon = <Star size={characterSize} fill="currentColor" stroke="currentColor" />;
+  const emptyIcon = isDefaultStar ? (
+    <Star size={characterSize} fill="var(--mari-color-surface-alt)" stroke="var(--mari-color-input)" strokeWidth={1.5} />
+  ) : (
+    customIcon
+  );
 
   const stars = Array.from({ length: count }, (_, i) => {
     // Yıldızın dolu oranı (0–1). Etkileşimli modda tam/yarım; salt gösterimde
@@ -123,24 +136,29 @@ export function Rate({
         onMouseMove={interactive ? (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange) : undefined}
         onMouseLeave={interactive ? () => handleMouseLeave(setHoverValue, onHoverChange) : undefined}
         className={cn(
-          "relative inline-flex select-none items-center justify-center text-mari-border",
+          "relative inline-flex select-none items-center justify-center text-mari-input",
           // Dokunmatikte her yıldız 44px yüksek, komşusuyla boşluksuz bir hedef.
           interactive && "cursor-pointer pointer-coarse:before:absolute pointer-coarse:before:-inset-x-1 pointer-coarse:before:-inset-y-2.5",
           disabled && "cursor-not-allowed"
         )}
         style={{ fontSize: characterSize }}
       >
-        {/* Boş yıldız yer tutar; dolu kısım üstte, genişliği orana göre kırpılır. */}
+        {/* Boş yıldız yer tutar; dolu yıldız üstte, orana göre KIRPILIR. */}
         <span className="inline-flex" aria-hidden>
-          {icon}
+          {emptyIcon}
         </span>
         {fraction > 0 && (
           <span
-            className={cn("pointer-events-none absolute inset-y-0 left-0 inline-flex overflow-hidden", colorClass)}
+            // Kırpma kutusu `block` + içerik SABİT genişlikte: eskiden kutu
+            // `inline-flex` idi, içindeki yıldız %50'lik kutuya sığmak için
+            // KÜÇÜLÜYORDU (yarım yıldız yerine minik tam yıldız görünüyordu).
+            className={cn("pointer-events-none absolute inset-y-0 left-0 block overflow-hidden", colorClass)}
             style={{ width: `${Math.round(fraction * 1000) / 10}%`, color: characterColor }}
             aria-hidden
           >
-            {icon}
+            <span className="flex h-full shrink-0 items-center" style={{ width: characterSize }}>
+              {filledIcon}
+            </span>
           </span>
         )}
       </span>

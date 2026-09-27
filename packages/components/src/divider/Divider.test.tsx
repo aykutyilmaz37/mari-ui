@@ -43,4 +43,11 @@ describe("Divider", () => {
     const plain = render(<Divider orientation="vertical" />);
     expect(await getA11yViolations(plain.container)).toEqual([]);
   });
+
+  it("skeleton: separator rolü yok, gizli; etiket şeffaf yerinde", () => {
+    const { container } = render(<Divider skeleton>Tercihler</Divider>);
+    expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("Tercihler")).toHaveClass("text-transparent");
+  });
 });

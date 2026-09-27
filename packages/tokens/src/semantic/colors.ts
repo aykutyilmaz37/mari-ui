@@ -51,6 +51,14 @@ export interface CanvasTokens {
   foreground: string;
   muted: string;
   disabled: string;
+  /**
+   * Puan yıldızı dolgusu (Faz 15, kullanıcı kararı): `warning`'den BAĞIMSIZ,
+   * parlak sarı. Sarı beyaz zeminde 3:1 veremeyeceği için yıldız ayrıca
+   * `ratingStroke` konturu taşır — görünüm sarı, sınır erişilebilir.
+   */
+  rating: string;
+  /** Yıldız konturu — açık temada koyu altın (beyazda ≥3:1), koyu temada dolguyla aynı. */
+  ratingStroke: string;
 }
 
 export interface SemanticColorTokens {
@@ -65,6 +73,9 @@ export interface SemanticColorTokens {
 }
 
 const LIGHT_SURFACE = neutralRamp[50];
+/** Puan yıldızı sarısı (Tailwind yellow-400 / -700) — rol paletinden bağımsız sabit. */
+const RATING_YELLOW: HexColor = "#facc15";
+const RATING_YELLOW_DEEP: HexColor = "#a16207";
 const DARK_SURFACE: HexColor = neutralRamp[950];
 
 function buildCanvas(mode: ThemeMode): CanvasTokens {
@@ -79,6 +90,8 @@ function buildCanvas(mode: ThemeMode): CanvasTokens {
       foreground: neutralRamp[900],
       muted: neutralRamp[600],
       disabled: neutralRamp[300],
+      rating: RATING_YELLOW,
+      ratingStroke: RATING_YELLOW_DEEP,
     };
   }
   return {
@@ -91,6 +104,8 @@ function buildCanvas(mode: ThemeMode): CanvasTokens {
     foreground: neutralRamp[100],
     muted: neutralRamp[300],
     disabled: neutralRamp[700],
+    rating: RATING_YELLOW,
+    ratingStroke: RATING_YELLOW,
   };
 }
 
@@ -102,10 +117,16 @@ export function buildSemanticColors(mode: ThemeMode, rampOverrides: Partial<Reco
   return {
     primary,
     accent: deriveColorRole(rampOverrides.accent ?? accentRamp, surface, mode, undefined, surfaceAlt),
-    success: deriveColorRole(rampOverrides.success ?? successRamp, surface, mode, undefined, surfaceAlt),
+    // Faz 15: açık temada 600 tonu beyaz metinle 4.5:1'i geçemiyor (success 3.8,
+    // info 4.1) ve otomatik SİYAH metne düşüyordu — dolgulu başlık/rozet/switch
+    // topu siyah görünüyordu. 700 tonu beyazla 5.5 / 5.9:1.
+    success: deriveColorRole(rampOverrides.success ?? successRamp, surface, mode, mode === "light" ? 700 : 300, surfaceAlt),
     error: deriveColorRole(rampOverrides.error ?? errorRamp, surface, mode, undefined, surfaceAlt),
-    warning: deriveColorRole(rampOverrides.warning ?? warningRamp, surface, mode, mode === "light" ? 700 : 300, surfaceAlt),
-    info: deriveColorRole(rampOverrides.info ?? infoRamp, surface, mode, undefined, surfaceAlt),
+    // Faz 15 (kullanıcı kararı): warning dolgusu SARI (400) — 700 kahverengi-
+    // turuncu görünüyordu. Sarı zeminde beyaz metin erişilebilir olamaz;
+    // otomatik koyu mürekkep seçilir. Metin rengi (`text`) okunurluk için koyu amber kalır.
+    warning: deriveColorRole(rampOverrides.warning ?? warningRamp, surface, mode, mode === "light" ? 400 : 300, surfaceAlt),
+    info: deriveColorRole(rampOverrides.info ?? infoRamp, surface, mode, mode === "light" ? 700 : 300, surfaceAlt),
     neutral: deriveColorRole(rampOverrides.neutral ?? neutralRamp, surface, mode, undefined, surfaceAlt),
     canvas: { ...buildCanvas(mode), ring: primary.text },
   };

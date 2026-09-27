@@ -1,5 +1,6 @@
 import type React from "react";
 import type { Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 /** Çizgi stili — `@mari-ui/core`'un `Variant` (dolgu) ekseniyle KASITLI OLARAK ayrı: "dashed bir çizgi" bir dolgu stili değil, geometrik bir özellik. */
 export type DividerLineStyle = "solid" | "dashed" | "dotted";
@@ -10,7 +11,7 @@ export type DividerOrientation = "horizontal" | "vertical";
  * hem buna hem yön eksenine veriliyordu — ikisi ayrıştırıldı. */
 export type DividerLabelAlign = "start" | "center" | "end";
 
-export interface DividerProps {
+export interface DividerProps extends SkeletonableProps {
   children?: React.ReactNode;
   className?: string;
   lineStyle?: DividerLineStyle;

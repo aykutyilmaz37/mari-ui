@@ -323,6 +323,7 @@ export function Slider({
     </div>
   );
 
+  const inputWidth = `calc(${Math.max(String(min).length, String(max).length, String(step).length)}ch + 1.5rem)`;
   const inputs = showInput && (
     <div className="flex items-center gap-1.5">
       {values.map((v, i) => (
@@ -335,7 +336,11 @@ export function Slider({
           <Input
             type="number"
             size="sm"
-            className="w-16"
+            // Genişlik en uzun değerin hane sayısından (eskiden sabit w-16 —
+            // "10000" sığmıyordu). Tarayıcının sayı okları gizli: yer kaplıyor,
+            // klavye Ok tuşları yine çalışır.
+            style={{ width: inputWidth }}
+            classNames={{ input: "tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" }}
             value={String(v)}
             disabled={disabled}
             min={min}

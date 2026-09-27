@@ -48,6 +48,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   vars["--mari-color-foreground"] = c.foreground;
   vars["--mari-color-muted"] = c.muted;
   vars["--mari-color-disabled"] = c.disabled;
+  vars["--mari-color-rating"] = c.rating;
+  vars["--mari-color-rating-stroke"] = c.ratingStroke;
 
   for (const [key, value] of Object.entries(theme.spacing)) vars[`--mari-space-${cssSafeKey(key)}`] = value;
   for (const [key, value] of Object.entries(theme.radius)) vars[`--mari-radius-${key}`] = value;

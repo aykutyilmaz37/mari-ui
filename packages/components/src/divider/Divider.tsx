@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@mari-ui/core";
+import { skeletonBoxProps, skeletonFill } from "../lib/skeleton";
 import type { DividerProps } from "./types";
 import { getBaseClass, getLabelClass, getLabelMarginStyle, getLineClass } from "./utils";
 
@@ -20,6 +21,7 @@ export function Divider({
   // Dikey divider varsayılan yüksekliği — `rem` (4K ekranlarda `px` kök
   // font'la ölçeklenmiyordu). Sayı verilirse `px` kabul edilir (kaçış).
   height = "3rem",
+  skeleton = false,
 }: DividerProps) {
   const isHorizontal = orientation === "horizontal";
   const baseClass = getBaseClass(isHorizontal, size, className);
@@ -30,6 +32,30 @@ export function Divider({
   // uygulanır — `border-style` CSS'te KALITILMAZ, bu yüzden eskiden
   // kapsayıcıya konunca hep solid görünüyordu.
   const lineClass = cn("border-mari-border", getLineClass(lineStyle));
+
+  // İskelet: çizgi aynı yerde parıldayan ince bir çubuk; etiket varsa kendi
+  // genişliğinde şeffaf yer tutucu — yüklenince satır kaymaz.
+  if (skeleton) {
+    const bar = cn("rounded-full", skeletonFill(true));
+    if (!isHorizontal) {
+      return (
+        <div aria-hidden className={baseClass} style={style}>
+          <span className={cn("inline-block w-px", bar)} style={{ height: typeof height === "number" ? `${height}px` : height }} />
+        </div>
+      );
+    }
+    return (
+      <div aria-hidden className={baseClass} style={style}>
+        <span className={cn("h-px flex-1", bar)} />
+        {children && (
+          <>
+            <span {...skeletonBoxProps(cn("mx-3 rounded-sm", labelClass))}>{children}</span>
+            <span className={cn("h-px flex-1", bar)} />
+          </>
+        )}
+      </div>
+    );
+  }
 
   if (!isHorizontal) {
     return (
