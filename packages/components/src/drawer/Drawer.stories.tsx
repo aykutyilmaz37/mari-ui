@@ -34,6 +34,7 @@ import { Drawer } from "./Drawer";
 import { Button } from "../button";
 import { Checkbox } from "../checkbox";
 import { Input } from "../input";
+import { Slider } from "../slider";
 
 const meta: Meta<typeof Drawer> = {
   title: "Geri Bildirim/Drawer",
@@ -331,13 +332,22 @@ export const Filters: Story = {
           {/* Bölüm çizgisi fieldset'te değil sarmalayıcıda — fieldset'in kenarlığı legend'in içinden geçer. */}
           <div className="mt-6 border-t border-mari-border pt-6">
             <fieldset>
-              <legend className="mb-3 text-sm font-semibold text-mari-foreground">Fiyat (₺)</legend>
-              {/* Not: Slider henüz aralık (iki tutamaç) desteklemiyor — bu yüzden iki alan. */}
-              <div className="flex items-center gap-2">
-                <Input type="number" aria-label="En az fiyat" value={String(price[0])} onChange={(e) => setPrice([Number(e.target.value) || 0, price[1]])} />
-                <span aria-hidden className="text-mari-muted">–</span>
-                <Input type="number" aria-label="En çok fiyat" value={String(price[1])} onChange={(e) => setPrice([price[0], Number(e.target.value) || 0])} />
-              </div>
+              <legend className="mb-3 flex w-full items-baseline justify-between gap-2 text-sm">
+                <span className="font-semibold text-mari-foreground">Fiyat</span>
+                <span className="tabular-nums text-mari-muted">
+                  {price[0].toLocaleString("tr-TR")} – {price[1].toLocaleString("tr-TR")} ₺
+                </span>
+              </legend>
+              <Slider
+                aria-label="Fiyat"
+                min={0}
+                max={10000}
+                step={250}
+                value={price}
+                onChange={(v) => setPrice(v as [number, number])}
+                formatValue={(v) => `${v.toLocaleString("tr-TR")} ₺`}
+                marks={{ 0: "0 ₺", 10000: "10.000 ₺" }}
+              />
             </fieldset>
           </div>
 

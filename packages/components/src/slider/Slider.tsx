@@ -1,178 +1,331 @@
 "use client";
 
-import React from "react";
-import { cn, useControllableState } from "@mari-ui/core";
+import React, { useRef, useState } from "react";
+import { cn, useControllableState, type ColorRole } from "@mari-ui/core";
 import { Input } from "../input";
-import { Tooltip } from "../tooltip";
+import { bgSolidClass, textClass } from "../lib/colorClasses";
 import type { SliderProps, SliderValue } from "./types";
-import { getLength, TRACK_HEIGHT, THUMB_SIZE } from "./utils";
+import { getVerticalLength, nearestThumb, snap, THUMB_SIZE, toPercent, TRACK_HEIGHT, valueFromKey, valueFromPointer } from "./utils";
 
 export type { SliderProps };
 
 /**
- * Eskiden `types.ts` tamamen boştu, `index.ts` da boştu — bu component
- * `@mari-ui/components/slider`den import EDİLEMİYORDU (bkz. plan denetimi).
- * Ayrıca `Tooltip`e `disabled={tooltipVisible}` geçiriliyordu: `tooltipVisible`
- * true iken tooltip'i GİZLEMEK gibi TERS bir mantıktı (isimle davranış
- * uyuşmuyordu). `tooltipVisible === false` olarak düzeltildi.
+ * Faz 13.6 — yapı ant.design Slider'ından, görünüm kendi token'larımızdan.
  *
- * Faz 13 (kullanıcı geri bildirimi): eskiden görünen track/thumb doğrudan
- * native `<input type="range">`ın kendisiydi — tarayıcının varsayılan
- * çizimiydi, `size` sadece kapsayıcının UZUNLUĞUNU değiştiriyordu, kalınlık/
- * thumb çapı her zaman aynı kalıyordu ("hepsi aynı boyutta" görünümü).
- * Artık track/thumb kendi çizdiğimiz (token renkli, `size`'a göre ölçeklenen)
- * `<div>`ler — native `<input>` GÖRÜNMEZ ama tam boyutlu ve en üstte kalıyor,
- * tüm klavye/fare/dokunma etkileşimini o karşılıyor (erişilebilirlik native
- * range'in kendisinden gelir, sadece görünümü özelleştirdik).
+ * Eski sürüm görünmez tek bir native `<input type="range">`ın üstüne çizilmiş
+ * ray/tutamaçtan ibaretti:
+ * - `SliderValue` `[number, number]` kabul ettiği halde ARALIK HİÇ
+ *   ÇALIŞMIYORDU — sadece ilk değer çiziliyordu (koddaki eski not bunu
+ *   itiraf ediyordu). Üst üste iki tam boyutlu görünmez input'ta tıklamayı
+ *   yalnız üstteki alacağı için o mimaride düzgün eklenemezdi.
+ * - `step` yoktu; dikey mod bütün bileşeni `-rotate-90` ile döndürüyordu.
  *
- * Dikey mod, yatay içeriği `-rotate-90` ile döndürerek elde edilir (native
- * range input'u cross-browser dikeyleştirmenin standart yolu). Eskiden bu
- * transform DOĞRUDAN normal akıştaki elemana uygulanıyordu — CSS transform
- * LAYOUT'U etkilemez, yalnızca ÇİZİMİ, bu yüzden ebeveyn hâlâ elemanı
- * (kısa/geniş) YATAY kutusuna göre hizalıyordu ve döndürülmüş (uzun/dar)
- * görsel kutu, kendi merkezi etrafında döndüğü için üst kenarın DIŞINA
- * taşıyordu. Artık dış kutu döndürülmüş görselin GERÇEK boyutlarını
- * (`thumbSize` × `length`) rezerve ediyor, iç eleman bu kutunun ortasında
- * mutlak konumlanıp döndürülüyor — çevresindeki içeriğe taşmaz.
+ * Artık tutamaçlar `role="slider"` (tam ARIA: valuenow/valuetext/min/max/
+ * orientation), sürükleme Pointer Events + pointer capture ile, klavye
+ * WAI-ARIA Slider desenine göre (oklar, PageUp/Down, Home/End). Aralıkta
+ * tutamaçlar birbirini geçmez; raya basınca en yakın tutamaç gelir.
  */
+
+// Tutamaç halkası rengi rol başına — Tailwind tarayıcısı için literal.
+const thumbBorderClass: Record<ColorRole, string> = {
+  primary: "border-mari-primary-solid",
+  accent: "border-mari-accent-solid",
+  success: "border-mari-success-solid",
+  error: "border-mari-error-solid",
+  warning: "border-mari-warning-solid",
+  info: "border-mari-info-solid",
+  neutral: "border-mari-neutral-solid",
+};
+
+function toArray(value: SliderValue): number[] {
+  return typeof value === "number" ? [value] : [value[0], value[1]];
+}
+
+/** Ortalanmış işaret; uçtakiler içeri hizalı. */
+function markAlign(v: number, min: number, max: number, vertical: boolean): string {
+  if (vertical) {
+    if (v <= min) return "translate-y-0";
+    return v >= max ? "translate-y-full" : "translate-y-1/2";
+  }
+  if (v <= min) return "translate-x-0";
+  return v >= max ? "-translate-x-full" : "-translate-x-1/2";
+}
+
+function formatText(format: SliderProps["formatValue"], value: number): string | undefined {
+  if (!format) return undefined;
+  const out = format(value);
+  return typeof out === "string" || typeof out === "number" ? String(out) : undefined;
+}
+
 export function Slider({
   value,
   defaultValue = 0,
   size = "md",
   min = 0,
   max = 100,
+  step = 1,
   vertical = false,
   disabled = false,
+  color = "primary",
   tooltipVisible,
   tooltipAlwaysVisible,
+  formatValue,
+  marks,
   iconList = [],
   iconPosition = "bottom",
   showInput = false,
   onChange,
+  onChangeEnd,
   "aria-label": ariaLabel,
+  thumbLabels,
+  className,
 }: SliderProps) {
-  const [internalValue, setInternalValue] = useControllableState<SliderValue>({ value, defaultValue, onChange });
-  // Not: `SliderValue` bir aralık (`[number, number]`) da kabul eder ama
-  // gerçek render mantığı hep tekil bir sayı varsaymıştı (bkz. plan denetimi
-  // — bu Faz 13'ün kapsamı dışında, önceden var olan bir eksiklik). Burada
-  // aynı varsayımı koruyoruz.
-  const numericValue = typeof internalValue === "number" ? internalValue : internalValue[0];
-  const percent = ((numericValue - min) / (max - min)) * 100;
+  const [current, setCurrent] = useControllableState<SliderValue>({ value, defaultValue, onChange });
+  const values = toArray(current);
+  const isRange = values.length === 2;
 
-  const length = getLength(size, vertical);
-  const trackHeight = TRACK_HEIGHT[size];
+  const areaRef = useRef<HTMLDivElement>(null);
+  const thumbRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const latest = useRef(values);
+  latest.current = values;
+  const keyChanged = useRef(false);
+  const [dragging, setDragging] = useState<number | null>(null);
+
+  const emit = (vals: number[]): SliderValue => (isRange ? [vals[0] ?? min, vals[1] ?? max] : (vals[0] ?? min));
+
+  /** Tutamacı taşır; aralıkta diğer tutamacı geçemez. Değişmediyse onChange çağrılmaz. */
+  const moveThumb = (index: number, raw: number) => {
+    const vals = [...latest.current];
+    const lo = isRange && index === 1 ? (vals[0] ?? min) : min;
+    const hi = isRange && index === 0 ? (vals[1] ?? max) : max;
+    const next = Math.min(hi, Math.max(lo, snap(raw, min, max, step)));
+    if (next === vals[index]) return;
+    vals[index] = next;
+    latest.current = vals;
+    setCurrent(emit(vals));
+  };
+
+  const readPointer = (event: React.PointerEvent) => {
+    const rect = areaRef.current?.getBoundingClientRect();
+    return rect ? valueFromPointer(event.clientX, event.clientY, rect, min, max, vertical) : null;
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (disabled || event.button !== 0) return;
+    const raw = readPointer(event);
+    if (raw === null) return;
+    const index = isRange ? nearestThumb(latest.current, raw) : 0;
+    event.preventDefault(); // metin seçimini ve odağın raya kaçmasını engelle
+    areaRef.current?.setPointerCapture?.(event.pointerId);
+    setDragging(index);
+    moveThumb(index, raw);
+    thumbRefs.current[index]?.focus({ preventScroll: true });
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragging === null) return;
+    const raw = readPointer(event);
+    if (raw !== null) moveThumb(dragging, raw);
+  };
+
+  const endDrag = () => {
+    if (dragging === null) return;
+    setDragging(null);
+    onChangeEnd?.(emit(latest.current));
+  };
+
+  const handleKeyDown = (index: number) => (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const vals = latest.current;
+    const lo = isRange && index === 1 ? (vals[0] ?? min) : min;
+    const hi = isRange && index === 0 ? (vals[1] ?? max) : max;
+    const next = valueFromKey(event.key, vals[index] ?? min, lo, hi, step, min, max);
+    if (next === null) return;
+    event.preventDefault();
+    keyChanged.current = true;
+    moveThumb(index, next);
+  };
+
+  const handleKeyUp = () => {
+    if (!keyChanged.current) return;
+    keyChanged.current = false;
+    onChangeEnd?.(emit(latest.current));
+  };
+
+  const percents = values.map((v) => toPercent(v, min, max));
+  const fillStart = isRange ? (percents[0] ?? 0) : 0;
+  const fillEnd = isRange ? (percents[1] ?? 0) : (percents[0] ?? 0);
   const thumbSize = THUMB_SIZE[size];
+  const trackHeight = TRACK_HEIGHT[size];
+  const length = getVerticalLength(size);
+  const labels = thumbLabels ?? (ariaLabel ? [`${ariaLabel} en az`, `${ariaLabel} en çok`] : undefined);
+  const showBubble = tooltipVisible !== false;
 
-  const trackAndMarkers = (
-    <>
-      <Tooltip
-        content={<div className={cn(vertical && "transform rotate-90")}>{numericValue}</div>}
-        disabled={tooltipVisible === false}
-        alwaysVisible={tooltipAlwaysVisible}
-        placement={iconPosition === "top" ? "bottom" : "top"}
-        color="neutral"
-        className="absolute"
-        style={{ left: `${percent}%` }}
-        // `Tooltip` trigger'ı `inline-block` bir <span>'e sarar (içeriğe göre
-        // BÜZÜLÜR) — track/thumb'ın `w-full`ü buna göre %0'a çözülüyordu
-        // (eski native-range sürümünde de AYNI kök nedenden dolayı track hep
-        // tarayıcının sabit varsayılan genişliğindeydi, `size` hiç etkilemiyordu).
-        // `block w-full` ile trigger'ı kapsayıcının tam genişliğine geriyoruz.
-        triggerClassName="block w-full"
-        trigger={
-          <div className={cn("relative flex items-center", disabled && "opacity-50")} style={{ height: thumbSize }}>
-            {/* Görsel track — dolu (primary) + boş (nötr) kısım. Salt görsel, tıklama native input'a düşer. */}
-            <div className="absolute w-full rounded-full bg-mari-border pointer-events-none" style={{ height: trackHeight }}>
-              <div className="h-full rounded-full bg-mari-primary-solid" style={{ width: `${percent}%` }} />
-            </div>
-            {/* Native range — GÖRÜNMEZ ama tam boyutlu, tüm etkileşimi (klavye dahil) o taşır. */}
-            <input
-              type="range"
-              className="peer absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-              min={min}
-              max={max}
-              disabled={disabled}
-              value={numericValue}
-              onChange={(e) => setInternalValue(Number(e.target.value))}
-              aria-label={ariaLabel}
-            />
-            {/* Görsel thumb — native input'un ÜSTÜNDE (DOM sırası sayesinde) ama
-                `pointer-events-none` olduğu için tıklamayı yine input alır. */}
-            <div
-              className={cn(
-                "absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-mari-primary-solid border-2 border-mari-surface shadow pointer-events-none transition-shadow",
-                "peer-focus-visible:ring-2 peer-focus-visible:ring-mari-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-mari-surface"
-              )}
-              style={{ left: `${percent}%`, width: thumbSize, height: thumbSize }}
-            />
-          </div>
-        }
-      />
-      {iconList.length > 0 && (
-        <div className="relative">
-          {iconList.map((item, i) => {
-            const itemPercent = ((item.value - min) / (max - min)) * 100;
-            return (
-              <div
-                key={i}
-                className={cn(
-                  "absolute transform -translate-x-1/2",
-                  vertical && "rotate-90",
-                  // Kullanıcı geri bildirimi: ikonlar track'e "yapışık" duruyordu —
-                  // bu `<div>` sıfır yükseklikli (mutlak konumlu çocuklar kendi
-                  // yüksekliğine katkı yapmaz), bir önceki (track'i taşıyan)
-                  // kardeşin HEMEN altında başlıyor; küçük bir ofset gerçek bir
-                  // boşluk gibi görünmüyordu. Belirgin bir boşluk için büyütüldü.
-                  iconPosition === "bottom" && "top-3",
-                  iconPosition === "top" && "-top-7",
-                  numericValue >= item.value ? "opacity-100 text-mari-primary" : "opacity-50 text-mari-muted"
-                )}
-                style={{ left: `${itemPercent}%` }}
-              >
-                {item.icon}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </>
+  // Ray kutusu en az 24px kalın — küçük tutamaçta da dokunma hedefi yeterli olsun.
+  const crossSize = `max(${thumbSize}, 1.5rem)`;
+
+  const renderThumb = (v: number, index: number) => {
+    const percent = percents[index] ?? 0;
+    const label = isRange ? labels?.[index] : ariaLabel;
+    const display = formatValue ? formatValue(v) : v;
+    const isActive = dragging === index;
+    return (
+      <div
+        key={index}
+        ref={(el) => {
+          thumbRefs.current[index] = el;
+        }}
+        role="slider"
+        tabIndex={disabled ? -1 : 0}
+        aria-label={label}
+        aria-valuemin={isRange && index === 1 ? values[0] : min}
+        aria-valuemax={isRange && index === 0 ? values[1] : max}
+        aria-valuenow={v}
+        aria-valuetext={formatText(formatValue, v)}
+        aria-orientation={vertical ? "vertical" : "horizontal"}
+        aria-disabled={disabled || undefined}
+        onKeyDown={disabled ? undefined : handleKeyDown(index)}
+        onKeyUp={handleKeyUp}
+        className={cn(
+          "group/thumb absolute rounded-full border-2 bg-mari-surface shadow-mari-sm outline-none",
+          "transition-[scale,box-shadow] duration-150 motion-reduce:transition-none",
+          "focus-visible:ring-2 focus-visible:ring-mari-ring focus-visible:ring-offset-2 focus-visible:ring-offset-mari-surface",
+          thumbBorderClass[color],
+          vertical ? "left-1/2 -translate-x-1/2 translate-y-1/2" : "top-1/2 -translate-x-1/2 -translate-y-1/2",
+          !disabled && "cursor-grab hover:scale-110",
+          isActive && "scale-110 cursor-grabbing",
+          // Üst üste binen aralık tutamaçlarında sürüklenen üstte kalsın.
+          isActive ? "z-20" : "z-10"
+        )}
+        style={{ width: thumbSize, height: thumbSize, ...(vertical ? { bottom: `${percent}%` } : { left: `${percent}%` }) }}
+      >
+        {showBubble && (
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute whitespace-nowrap rounded-md bg-mari-neutral-solid px-2 py-1 text-xs font-medium tabular-nums text-mari-neutral-solid-contrast shadow-mari-sm",
+              "transition-opacity duration-150 motion-reduce:transition-none",
+              vertical ? "left-full top-1/2 ml-3 -translate-y-1/2" : "bottom-full left-1/2 mb-2 -translate-x-1/2",
+              tooltipAlwaysVisible || isActive ? "opacity-100" : "opacity-0 group-hover/thumb:opacity-100 group-focus-visible/thumb:opacity-100"
+            )}
+          >
+            {display}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  const markEntries = marks ? Object.entries(marks).map(([k, node]) => [Number(k), node] as const) : [];
+  const inRange = (v: number) => (isRange ? v >= (values[0] ?? min) && v <= (values[1] ?? max) : v <= (values[0] ?? min));
+
+  const track = (
+    <div
+      ref={areaRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      className={cn("relative touch-none select-none", disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
+      style={vertical ? { width: crossSize, height: length } : { width: "100%", height: crossSize }}
+    >
+      {/* Ray + dolu kısım — salt görsel. */}
+      <div
+        aria-hidden
+        className={cn("absolute rounded-full bg-mari-border", vertical ? "inset-y-0 left-1/2 -translate-x-1/2" : "inset-x-0 top-1/2 -translate-y-1/2")}
+        style={vertical ? { width: trackHeight } : { height: trackHeight }}
+      >
+        <div
+          className={cn("absolute rounded-full", bgSolidClass[color], vertical ? "inset-x-0" : "inset-y-0")}
+          style={vertical ? { bottom: `${fillStart}%`, height: `${fillEnd - fillStart}%` } : { left: `${fillStart}%`, width: `${fillEnd - fillStart}%` }}
+        />
+      </div>
+      {values.map(renderThumb)}
+    </div>
   );
 
+  const markers = (markEntries.length > 0 || iconList.length > 0) && (
+    <div aria-hidden className={cn("relative", vertical ? "ml-2 h-full w-12" : "h-6 w-full")}>
+      {markEntries.map(([v, node]) => (
+        <span
+          key={`m-${v}`}
+          className={cn(
+            "absolute whitespace-nowrap text-xs",
+            // Uçtaki etiketler ortalanırsa rayın dışına taşar (yanındaki
+            // sayı girişine biner) — uçlarda içeri doğru hizala.
+            vertical ? "left-0" : "top-1",
+            markAlign(v, min, max, vertical),
+            inRange(v) ? "text-mari-foreground" : "text-mari-muted"
+          )}
+          style={vertical ? { bottom: `${toPercent(v, min, max)}%` } : { left: `${toPercent(v, min, max)}%` }}
+        >
+          {node}
+        </span>
+      ))}
+      {iconList.map((item, i) => (
+        <span
+          key={`i-${i}`}
+          className={cn(
+            "absolute transition-opacity",
+            vertical ? "left-0 translate-y-1/2" : "top-1 -translate-x-1/2",
+            inRange(item.value) ? cn("opacity-100", textClass[color]) : "text-mari-muted opacity-50"
+          )}
+          style={vertical ? { bottom: `${toPercent(item.value, min, max)}%` } : { left: `${toPercent(item.value, min, max)}%` }}
+        >
+          {item.icon}
+        </span>
+      ))}
+    </div>
+  );
+
+  const inputs = showInput && (
+    <div className="flex items-center gap-1.5">
+      {values.map((v, i) => (
+        <React.Fragment key={i}>
+          {i === 1 && (
+            <span aria-hidden className="text-mari-muted">
+              –
+            </span>
+          )}
+          <Input
+            type="number"
+            size="sm"
+            className="w-16"
+            value={String(v)}
+            disabled={disabled}
+            min={min}
+            max={max}
+            aria-label={`${(isRange ? labels?.[i] : ariaLabel) ?? "Değer"} (sayısal giriş)`}
+            onChange={(e) => {
+              const n = Number(e.target.value);
+              if (Number.isFinite(n)) moveThumb(i, n);
+            }}
+          />
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
+  const markersFirst = iconPosition === "top" && !vertical;
+
   return (
-    <div className="flex items-center gap-3">
+    // Yatayda yer yetmezse (mobil + showInput) sayı girişleri alt satıra iner —
+    // ray en az 10rem kalır, işaret etiketleri üst üste binmez.
+    <div className={cn("flex gap-x-3 gap-y-2", vertical ? "items-start" : "w-full flex-wrap items-center", className)}>
       {vertical ? (
-        // Dış kutu döndürülmüş görselin GERÇEK (dikey) alanını rezerve eder;
-        // iç kutu bu alanın ortasında döner — çevreye taşmaz (bkz. üstteki not).
-        <div className="relative shrink-0" style={{ width: thumbSize, height: length }}>
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90"
-            style={{ width: length, height: thumbSize }}
-          >
-            {trackAndMarkers}
-          </div>
+        <div className="flex" style={{ height: length }}>
+          {track}
+          {markers}
         </div>
       ) : (
-        <div className="relative" style={{ width: length }}>
-          {trackAndMarkers}
+        // Yatay: kapsayıcının tam genişliği (ant.design gibi) — eskiden `size`
+        // uzunluğu da sabitliyordu (16rem vb.), formda genişletmek için hile gerekiyordu.
+        <div className="flex min-w-40 flex-1 flex-col">
+          {markersFirst && markers}
+          {track}
+          {!markersFirst && markers}
         </div>
       )}
-      {showInput && (
-        // Not: `className`'e elle "border rounded p-1 text-sm" EKLEMİYORUZ —
-        // Input zaten kendi `size`/`variant`'ından bunları üretiyor; üstüne
-        // aynı özellikleri tekrar yazmak `cn`/twMerge sırasına göre boyut
-        // ölçeğini SESSİZCE eziyordu (bkz. Faz 13 denetimi).
-        <Input
-          type="number"
-          size="sm"
-          className="w-14"
-          value={String(numericValue)}
-          disabled={disabled}
-          min={min}
-          max={max}
-          aria-label={ariaLabel ? `${ariaLabel} (sayısal giriş)` : undefined}
-          onChange={(e) => setInternalValue(Number(e.target.value))}
-        />
-      )}
+      {inputs}
     </div>
   );
 }
