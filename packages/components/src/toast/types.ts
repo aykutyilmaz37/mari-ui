@@ -1,32 +1,46 @@
+import type React from "react";
 import type { ColorRole } from "@mari-ui/core";
 
 export type ToastPosition = "top" | "bottom" | "topRight" | "topLeft" | "bottomLeft" | "bottomRight";
 /**
  * @deprecated `ToastPosition` kullanın — isim değişti, değerler aynı.
- * Kasıtlı geriye dönük uyumluluk shim'i (Faz 3'ün deprecated-alias
- * stratejisi) — SonarJS'in "gereksiz" dediği bu değil; silinirse eski
- * adı kullanan tüketici kodu derlenmez.
  */
 // eslint-disable-next-line sonarjs/redundant-type-aliases
 export type PositionType = ToastPosition;
 
-/** `success`/`info`/`error`/`warning` zaten birer ColorRole; `"none"` = ikon/renk vurgusu yok. */
+/** `success`/`info`/`error`/`warning` bir ColorRole; `"none"` = ikon/renk vurgusu yok. */
 export type ToastType = ColorRole | "none";
 
-export interface ToastData {
-  /** `crypto.randomUUID()` ile üretilir — eskiden `Date.now() + Math.random()` idi. */
-  id: string;
-  title: string;
-  description?: string;
-  type?: ToastType;
-  position?: ToastPosition;
-  closeIcon?: boolean;
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
 }
 
-export interface ToastProps {
+export interface ToastOptions {
   title: string;
-  description?: string;
-  closeIcon?: boolean;
+  description?: React.ReactNode;
   type?: ToastType;
+  position?: ToastPosition;
+  /** Kapat düğmesi. Varsayılan: `true`. */
+  closeIcon?: boolean;
+  /**
+   * Otomatik kapanma (ms). `0` = kendiliğinden kapanmaz. Varsayılan: 5000
+   * (aksiyon düğmesi varsa 8000). Üzerine gelince/odaklanınca SAYAÇ DURUR.
+   */
+  duration?: number;
+  /** Toast içinde tek bir aksiyon — ör. "Geri al". Tıklanınca toast kapanır. */
+  action?: ToastAction;
+  /** Toast kapandığında (otomatik ya da kullanıcı). */
   onClose?: () => void;
+}
+
+export interface ToastData extends ToastOptions {
+  /** `crypto.randomUUID()` ile üretilir. */
+  id: string;
+}
+
+export interface ToastProps extends Omit<ToastOptions, "position" | "onClose"> {
+  onClose?: () => void;
+  /** Çıkış animasyonu oynuyor. */
+  exiting?: boolean;
 }
