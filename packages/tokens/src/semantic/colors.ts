@@ -57,7 +57,7 @@ export interface CanvasTokens {
    * `ratingStroke` konturu taşır — görünüm sarı, sınır erişilebilir.
    */
   rating: string;
-  /** Yıldız konturu — açık temada koyu altın (beyazda ≥3:1), koyu temada dolguyla aynı. */
+  /** Yıldız konturu — açık temada dolguya yakın koyu sarı (açık zeminde ≥3:1), koyu temada dolguyla aynı. */
   ratingStroke: string;
 }
 
@@ -73,9 +73,14 @@ export interface SemanticColorTokens {
 }
 
 const LIGHT_SURFACE = neutralRamp[50];
-/** Puan yıldızı sarısı (Tailwind yellow-400 / -700) — rol paletinden bağımsız sabit. */
+/**
+ * Puan yıldızı sarısı — rol paletinden bağımsız sabit. Kontur, dolguyla AYNI ton
+ * ailesinde (hue ~46°) açık zeminde WCAG 1.4.11'in 3:1'ini geçen EN AÇIK renk
+ * (#b28903 = 3.06:1). Önceki #a16207 (4.65:1) gereğinden koyuydu, kahverengiye
+ * kaçıyordu (kullanıcı geri bildirimi).
+ */
 const RATING_YELLOW: HexColor = "#facc15";
-const RATING_YELLOW_DEEP: HexColor = "#a16207";
+const RATING_YELLOW_DEEP: HexColor = "#b28903";
 const DARK_SURFACE: HexColor = neutralRamp[950];
 
 function buildCanvas(mode: ThemeMode): CanvasTokens {
