@@ -20,8 +20,8 @@ export interface RateProps extends SkeletonableProps {
   /** Yıldız ikonunun boyutu. Varsayılan `"1.5rem"` (4K ekranlarda `px` ölçeklenmiyor). Sayı verilirse `px`. */
   characterSize?: number | string;
   /**
-   * Verilmezse (önerilen) yıldızlar `rating` token'larıyla çizilir: parlak sarı
-   * dolgu + koyu altın kontur (beyazda ≥3:1). Bir rol verilirse düz o renk.
+   * Verilmezse (önerilen) yıldızlar `rating`/`ratingStroke` token'larıyla çizilir
+   * (varsayılan: ikisi de parlak sarı). Bir rol verilirse düz o renk.
    */
   color?: ColorRole;
   /** İleri düzey kaçış: token yerine ham bir CSS rengi zorlar (inline style). */

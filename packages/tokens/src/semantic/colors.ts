@@ -57,7 +57,7 @@ export interface CanvasTokens {
    * `ratingStroke` konturu taşır — görünüm sarı, sınır erişilebilir.
    */
   rating: string;
-  /** Yıldız konturu — açık temada dolguya yakın koyu sarı (açık zeminde ≥3:1), koyu temada dolguyla aynı. */
+  /** Yıldız konturu — varsayılan olarak dolguyla aynı (kullanıcı kararı); temalar ayrı bir kontur verebilir. */
   ratingStroke: string;
 }
 
@@ -74,13 +74,14 @@ export interface SemanticColorTokens {
 
 const LIGHT_SURFACE = neutralRamp[50];
 /**
- * Puan yıldızı sarısı — rol paletinden bağımsız sabit. Kontur, dolguyla AYNI ton
- * ailesinde (hue ~46°) açık zeminde WCAG 1.4.11'in 3:1'ini geçen EN AÇIK renk
- * (#b28903 = 3.06:1). Önceki #a16207 (4.65:1) gereğinden koyuydu, kahverengiye
- * kaçıyordu (kullanıcı geri bildirimi).
+ * Puan yıldızı sarısı — rol paletinden bağımsız sabit. Kullanıcı kararı
+ * (2026-09-28): kontur DOLGUYLA AYNI renk — koyu konturlu denemeler (#a16207,
+ * #b28903) görsel olarak beğenilmedi. Bilinen ödünleşim: açık zeminde yıldızın
+ * sınır kontrastı 1.45:1 (WCAG 1.4.11 3:1'in altı); puan değeri ekran okuyucuya
+ * metin olarak verilir (`aria-valuetext` / readOnly'de `aria-label`) ve boş
+ * yıldızlar gri konturla ayrışır. Token ayrı tutuldu — tema bunu değiştirebilir.
  */
 const RATING_YELLOW: HexColor = "#facc15";
-const RATING_YELLOW_DEEP: HexColor = "#b28903";
 const DARK_SURFACE: HexColor = neutralRamp[950];
 
 function buildCanvas(mode: ThemeMode): CanvasTokens {
@@ -96,7 +97,7 @@ function buildCanvas(mode: ThemeMode): CanvasTokens {
       muted: neutralRamp[600],
       disabled: neutralRamp[300],
       rating: RATING_YELLOW,
-      ratingStroke: RATING_YELLOW_DEEP,
+      ratingStroke: RATING_YELLOW,
     };
   }
   return {

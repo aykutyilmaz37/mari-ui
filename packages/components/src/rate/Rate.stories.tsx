@@ -58,7 +58,7 @@ export const AllowHalf: Story = {
 export const AllColors: Story = {
   name: "Renkler",
   ...storyDoc(
-    "`color` verilmezse (önerilen) yıldız puan token'larıyla çizilir: parlak sarı dolgu + koyu altın kontur — sarı tek başına beyaz zeminde 3:1 veremediği için kontur erişilebilirliği sağlar. Bir rol verilirse düz o renk.",
+    "`color` verilmezse (önerilen) yıldız puan token'ıyla (`--mari-color-rating`, parlak sarı) çizilir; boş yıldızlar gri konturla ayrışır. Puan değeri ekran okuyucuya metin olarak da verilir. Bir rol verilirse düz o renk.",
     `<Rate defaultValue={3} aria-label="Puan" />            {/* varsayılan: puan sarısı */}
 <Rate color="primary" defaultValue={3} aria-label="Puan" />`
   ),
