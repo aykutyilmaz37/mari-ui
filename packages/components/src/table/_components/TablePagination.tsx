@@ -29,8 +29,9 @@ export function TablePagination({ pagination, className }: TablePaginationProps)
         currentPage={page}
         pageSize={pageSize}
         totalItems={total}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        // Table'ın kendi sözleşmesi tek argümanlı — Pagination'ın ek `pageSize`/`page` argümanları sızmasın.
+        onPageChange={(next) => onPageChange(next)}
+        onPageSizeChange={onPageSizeChange && ((next) => onPageSizeChange(next))}
         pageSizeOptions={pageSizeOptions}
         showTotal
       />

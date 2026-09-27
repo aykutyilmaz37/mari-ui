@@ -65,8 +65,18 @@ export function componentDoc(input: ComponentDocInput): string {
  * Tek bir story'nin autodocs açıklaması (ant'ın her demo'sunun altındaki
  * başlık + paragraf). `export const Foo: Story = { ...storyDoc("...") }`.
  */
-export function storyDoc(description: string): { parameters: { docs: { description: { story: string } } } } {
-  return { parameters: { docs: { description: { story: description } } } };
+export function storyDoc(
+  description: string,
+  code?: string
+): { parameters: { docs: { description: { story: string }; source?: { code: string; language: string } } } } {
+  return {
+    parameters: {
+      docs: {
+        description: { story: description },
+        ...(code ? { source: { code: code.trim(), language: "tsx" } } : {}),
+      },
+    },
+  };
 }
 
 /**
@@ -76,8 +86,13 @@ export function storyDoc(description: string): { parameters: { docs: { descripti
  * nesnesini (`{ name: "...", ...storyDoc(...), render: () => <HelperComponent
  * /> }`) olduğu gibi basıyor — tüketiciye component'i NASIL KULLANACAĞINI
  * değil, bizim iç test/hikaye iskeletimizi gösteriyor. Bu yüzden interaktif
- * story'lerde `useState` gibi hook'lar DAİMA `render` callback'inin İÇİNE
- * inline yazılmalı, ayrı bir isimlendirilmiş component'e ÇIKARILMAMALI —
- * "Show code" o zaman gerçek, kopyalanabilir kullanım kodunu gösterir (bkz.
- * `pagination/Pagination.stories.tsx`, `steps/Steps.stories.tsx`).
+ * story'lerde `useState` gibi hook'lar `render` callback'inin İÇİNE inline
+ * yazılmalı, ayrı bir isimlendirilmiş component'e ÇIKARILMAMALI.
+ *
+ * Faz 13.6 kullanıcı bulgusu: inline `render` de YETMİYOR — Storybook 8,
+ * özel `render`'lı her story'de dinamik JSX üretemeyip yine ham CSF nesnesini
+ * basıyor. Bu yüzden `storyDoc`'un ikinci argümanıyla kopyalanabilir kod
+ * parçası AÇIKÇA verilir: `...storyDoc("açıklama", \`<Foo ... />\`)`
+ * (bkz. `pagination/Pagination.stories.tsx`). `render`'sız, sadece `args`
+ * kullanan story'lerde (Playground) buna gerek yok — orada dinamik JSX çalışır.
  */
