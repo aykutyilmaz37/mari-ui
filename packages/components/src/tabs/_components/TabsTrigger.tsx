@@ -2,38 +2,45 @@
 
 import React, { forwardRef } from "react";
 import { cn } from "@mari-ui/core";
-import { Button } from "../../button";
-import { useTabs } from "../useTabs";
-import { getTabsTriggerClassNames } from "../utils";
+import { getTabId, useTabs } from "../useTabs";
+import { getCountClass, getTriggerClass } from "../utils";
 import type { TabsTriggerProps } from "../types";
 
 /**
- * Faz 13.5 kullanıcı bulgusu: hiçbir ARIA sekme semantiği (`role="tab"`,
- * `aria-selected`, `id`/`aria-controls` eşleşmesi) uygulanmıyordu — ekran
- * okuyucu kullanıcıları için bunlar sadece bir dizi düğme gibi görünüyordu,
- * "sekme" oldukları ve hangisinin aktif olduğu hiç anons edilmiyordu.
- * Tam WAI-ARIA Tabs deseni (ok tuşlarıyla roving-tabindex gezinme) kapsam
- * dışı bırakıldı — her tetikleyici zaten gerçek bir `<button>` olduğundan
- * Tab ile tek tek erişilebilir; sadece semantik roller/nitelikler eklendi.
+ * Faz 13.6: artık `Button`'ı sarmalamıyor — Button'ın `h-8` sabit yüksekliği
+ * ve kendi `px-*` dolgusu sekme ölçüleriyle çakışıyor, ikonla etiket ALT
+ * ALTA düşüyordu. Yerel `<button role="tab">`:
+ * - roving tabindex (yalnız aktif sekme Tab durağı; diğerlerine ok tuşları),
+ * - `useId` tabanlı id'ler (iki Tabs aynı `value`'yu kullanınca çakışıyordu),
+ * - `icon` / `count` / `disabled`.
  */
-export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ children, value, cardTabs = false }, ref) => {
-  const { activeTab, setActiveTab, color } = useTabs();
+export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ children, value, icon, count, disabled, className }, ref) => {
+  const { activeTab, setActiveTab, baseId, color, variant, orientation, size, fill } = useTabs();
   const active = activeTab === value;
 
   return (
-    <Button
+    <button
       ref={ref}
-      variant="ghost"
+      type="button"
       role="tab"
-      id={`tab-${value}`}
+      id={getTabId(baseId, value, "tab")}
       aria-selected={active}
-      aria-controls={`tabpanel-${value}`}
-      className={cn(getTabsTriggerClassNames(active, cardTabs, color))}
+      aria-controls={getTabId(baseId, value, "panel")}
+      tabIndex={active ? 0 : -1}
+      disabled={disabled}
       data-value={value}
+      data-state={active ? "active" : "inactive"}
       onClick={() => setActiveTab(value)}
+      className={cn(getTriggerClass({ active, variant, orientation, size, color, fill }), className)}
     >
-      {children}
-    </Button>
+      {icon && (
+        <span aria-hidden className="inline-flex shrink-0 [&>svg]:size-4">
+          {icon}
+        </span>
+      )}
+      <span>{children}</span>
+      {count !== undefined && <span className={getCountClass(active, color)}>{count}</span>}
+    </button>
   );
 });
 
