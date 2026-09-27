@@ -16,6 +16,36 @@ export type { RateProps };
  * `isControlled = value !== undefined` elle hesaplanıp `handleClick`'e
  * ayrıca geçiriliyordu.
  */
+/**
+ * Yıldız ikonları. Varsayılan palet (renk verilmedi): dolu = puan sarısı,
+ * boş = dolgusuz sarı kontur. Rol/ham renk: dolu = o renk, boş = dolgusuz o
+ * renkte kontur (`currentColor`, `tintEmpty` ile boyanır). Özel `character`
+ * olduğu gibi kullanılır. Kullanıcı kararı: kontur her zaman dolgunun rengi.
+ */
+function resolveStarIcons(
+  character: RateProps["character"],
+  color: RateProps["color"],
+  characterColor: string | undefined,
+  size: number | string
+): { filledIcon: React.ReactNode; emptyIcon: React.ReactNode; tintEmpty: boolean } {
+  if (character !== undefined) {
+    const icon = typeof character === "function" ? character({}) : character;
+    return { filledIcon: icon, emptyIcon: icon, tintEmpty: false };
+  }
+  if (!color && !characterColor) {
+    return {
+      filledIcon: <Star size={size} fill="var(--mari-color-rating)" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />,
+      emptyIcon: <Star size={size} fill="none" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />,
+      tintEmpty: false,
+    };
+  }
+  return {
+    filledIcon: <Star size={size} fill="currentColor" stroke="currentColor" />,
+    emptyIcon: <Star size={size} fill="none" stroke="currentColor" strokeWidth={1.5} />,
+    tintEmpty: true,
+  };
+}
+
 /** Bir yıldızın dolu oranı (0–1). */
 function starFraction(value: number, index: number, allowHalf: boolean, exact: boolean): number {
   const raw = Math.min(1, Math.max(0, value - index));
@@ -98,20 +128,20 @@ export function Rate({
   };
 
   const currentValue = hoverValue ?? displayValue;
-  // Varsayılan yıldız: dolu = sarı dolgu + koyu altın kontur (sarı tek başına
-  // beyazda 3:1 veremez); boş = yüzey dolgusu + form-alanı gri kontur (eskiden
-  // `border` rengi, neredeyse görünmüyordu). Rol/ham renk verilirse düz o renk.
-  const isDefaultStar = character === undefined;
-  const usePalette = isDefaultStar && !color && !characterColor;
-  const customIcon = typeof character === "function" ? character({}) : character;
-  let filledIcon: React.ReactNode = customIcon;
-  if (usePalette) filledIcon = <Star size={characterSize} fill="var(--mari-color-rating)" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />;
-  else if (isDefaultStar) filledIcon = <Star size={characterSize} fill="currentColor" stroke="currentColor" />;
-  // Boş yıldız: varsayılan palette dolgusuz SARI kontur (kullanıcı kararı);
-  // rol rengi verildiyse dolgusuz gri kontur.
-  let emptyIcon: React.ReactNode = customIcon;
-  if (usePalette) emptyIcon = <Star size={characterSize} fill="none" stroke="var(--mari-color-rating-stroke)" strokeWidth={1.5} />;
-  else if (isDefaultStar) emptyIcon = <Star size={characterSize} fill="none" stroke="var(--mari-color-input)" strokeWidth={1.5} />;
+  const { filledIcon, emptyIcon, tintEmpty } = resolveStarIcons(character, color, characterColor, characterSize);
+
+  // Etkileşimsizken (disabled/readOnly) yıldızlar hiçbir olay dinlemez.
+  const starHandlers = (i: number): React.HTMLAttributes<HTMLSpanElement> =>
+    interactive
+      ? {
+          // `onChange` BİLİNÇLİ OLARAK geçirilmiyor: `setDisplayValue` zaten
+          // kendi `onChange`'ini tetikliyor — ikisi birden ÇİFT çağırırdı.
+          onClick: (e) => handleClick(e, i, { allowHalf, allowClear, displayValue, isControlled: false, setInternalValue: setDisplayValue }),
+          onMouseEnter: (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange),
+          onMouseMove: (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange),
+          onMouseLeave: () => handleMouseLeave(setHoverValue, onHoverChange),
+        }
+      : {};
 
   const stars = Array.from({ length: count }, (_, i) => {
     // Yıldızın dolu oranı (0–1). Etkileşimli modda tam/yarım; salt gösterimde
@@ -124,17 +154,7 @@ export function Rate({
         // Kök tek bir ARIA "slider" (ya da salt gösterimde "img"); bu span'lar
         // yalnızca görsel/tıklama hedefi, ekran okuyucudan gizli.
         aria-hidden="true"
-        onClick={
-          interactive
-            ? (e) =>
-                // `onChange` BİLİNÇLİ OLARAK geçirilmiyor: `setDisplayValue` zaten
-                // kendi `onChange`'ini tetikliyor — ikisi birden ÇİFT çağırırdı.
-                handleClick(e, i, { allowHalf, allowClear, displayValue, isControlled: false, setInternalValue: setDisplayValue })
-            : undefined
-        }
-        onMouseEnter={interactive ? (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange) : undefined}
-        onMouseMove={interactive ? (e) => handleMouseEnter(e, i, allowHalf, setHoverValue, onHoverChange) : undefined}
-        onMouseLeave={interactive ? () => handleMouseLeave(setHoverValue, onHoverChange) : undefined}
+        {...starHandlers(i)}
         className={cn(
           "relative inline-flex select-none items-center justify-center text-mari-input",
           // Dokunmatikte her yıldız 44px yüksek, komşusuyla boşluksuz bir hedef.
@@ -144,7 +164,7 @@ export function Rate({
         style={{ fontSize: characterSize }}
       >
         {/* Boş yıldız yer tutar; dolu yıldız üstte, orana göre KIRPILIR. */}
-        <span className="inline-flex" aria-hidden>
+        <span className={cn("inline-flex", tintEmpty && colorClass)} style={tintEmpty ? { color: characterColor } : undefined} aria-hidden>
           {emptyIcon}
         </span>
         {fraction > 0 && (

@@ -98,4 +98,12 @@ describe("Rate", () => {
     expect(empty.getAttribute("fill")).toBe("none");
     expect(empty.getAttribute("stroke")).toBe("var(--mari-color-rating-stroke)");
   });
+
+  it("rol rengi verilince boş yıldızın konturu da o renk", () => {
+    const { container } = render(<Rate color="success" defaultValue={0} count={1} />);
+    const empty = container.querySelector("svg")!;
+    expect(empty.getAttribute("fill")).toBe("none");
+    expect(empty.getAttribute("stroke")).toBe("currentColor");
+    expect(empty.parentElement).toHaveClass("text-mari-success");
+  });
 });
