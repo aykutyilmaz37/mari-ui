@@ -1,6 +1,7 @@
 import type React from "react";
 import { cn, type Size } from "@mari-ui/core";
 import type { SkeletonAvatarShape } from "./types";
+import { skeletonFill } from "../lib/skeleton";
 
 /**
  * Eskiden `getSizeClassSkeleton` sayısal boyutlar için
@@ -59,16 +60,7 @@ export const BUTTON_SIZE_CLASS: Record<Size, string> = {
   lg: "h-10 w-24",
 };
 
-/**
- * Tek kaynak dolgu: `active` → parıltı (gradyan kayar), değilse düz.
- * Eskiden Skeleton `animate-pulse`'u `active`ten BAĞIMSIZ her zaman
- * uyguluyordu — `active={false}` da animasyonluydu.
- */
-export function skeletonFill(active: boolean | undefined): string {
-  return active
-    ? "bg-linear-to-r from-mari-border/70 via-mari-surface-alt to-mari-border/70 bg-[length:400%_100%] animate-[mari-skeleton-shimmer_1.4s_ease_infinite] motion-reduce:animate-none"
-    : "bg-mari-border/70";
-}
+export { skeletonFill };
 
 export function getLineClass(round: boolean | undefined, extra?: string, active?: boolean): string {
   return cn(skeletonFill(active), round ? "rounded-full" : "rounded-md", extra);

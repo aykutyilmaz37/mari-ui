@@ -28,7 +28,7 @@ function hexToRgb(hex: HexColor): [number, number, number] {
 
 function srgbChannelToLinear(channel255: number): number {
   const c = channel255 / 255;
-  return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 }
 
 /** WCAG göreli parlaklık, 0 (siyah) – 1 (beyaz) arası. */

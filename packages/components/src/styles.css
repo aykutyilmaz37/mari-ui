@@ -25,3 +25,13 @@
     background-position: 0% 50%;
   }
 }
+
+/* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
+@layer base {
+  body { font-family: var(--mari-font-sans); }
+  h1, h2, h3, h4, h5, h6 { font-family: var(--mari-font-heading); }
+  input::placeholder, textarea::placeholder { color: var(--mari-color-muted); opacity: 1; }
+  code, pre, kbd, samp { font-family: var(--mari-font-mono); }
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}

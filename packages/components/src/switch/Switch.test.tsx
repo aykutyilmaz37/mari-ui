@@ -43,3 +43,18 @@ describe("Switch", () => {
     expect(label.className).toContain("items-center");
   });
 });
+
+
+it("klavye ile açılıp kapatıldığında odağı korur", async () => {
+  const user = userEvent.setup();
+  render(<Switch label="Koyu tema" />);
+  const control = screen.getByRole("switch", { name: "Koyu tema" });
+  await user.tab();
+  expect(control).toHaveFocus();
+  await user.keyboard(" ");
+  expect(control).toHaveAttribute("aria-checked", "true");
+  expect(control).toHaveFocus();
+  await user.keyboard(" ");
+  expect(control).toHaveAttribute("aria-checked", "false");
+  expect(control).toHaveFocus();
+});

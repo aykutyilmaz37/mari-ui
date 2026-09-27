@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { lightTheme, darkTheme, resolveThemeConfig } from "../theme";
+import { lightTheme, darkTheme, resolveThemeConfig, defaultThemeConfig } from "../theme";
 import { meetsAA } from "../contrast";
+import { radius, scaleRadius } from "../primitives/scale";
+import { themeToCssVariables } from "../cssVariables";
 
 describe("resolveThemeConfig", () => {
   it("boş config: lightTheme/darkTheme ile BİREBİR aynı sonucu üretir (regresyon — override yoksa davranış değişmemeli)", () => {
@@ -77,6 +79,42 @@ describe("resolveThemeConfig", () => {
       });
       // `brand` kendi override'ını vermedi -> varsayılan primary'yi (üst seviyedeki #000000'ı DEĞİL) taşımalı.
       expect(resolved.themes.brand?.color.primary).toEqual(lightTheme.color.primary);
+    });
+  });
+});
+
+
+it("CLI / stüdyo varsayılan config'i özgün iris rampalarını korur", () => {
+  const resolved = resolveThemeConfig(defaultThemeConfig);
+  expect(resolved.light).toEqual(lightTheme);
+  expect(resolved.dark).toEqual(darkTheme);
+});
+
+it("özel primary odak halkasına da yansır", () => {
+  const resolved = resolveThemeConfig({ color: { primary: "#0f766e" } });
+  for (const theme of [resolved.light, resolved.dark]) {
+    expect(theme.color.canvas.ring).toBe(theme.color.primary.text);
+  }
+
+  describe("density.radius (Faz 15 preset)", () => {
+    it("md skalayı olduğu gibi bırakır", () => {
+      expect(scaleRadius("md")).toEqual(radius);
+    });
+
+    it("none her şeyi 0 yapar, full'e dokunmaz", () => {
+      expect(scaleRadius("none")).toEqual({ none: "0px", sm: "0px", md: "0px", lg: "0px", xl: "0px", full: radius.full });
+    });
+
+    it("sm yarıya, lg 1.5 katına ölçekler", () => {
+      expect(scaleRadius("sm")).toMatchObject({ sm: "0.125rem", md: "0.25rem", lg: "0.375rem", xl: "0.5rem" });
+      expect(scaleRadius("lg")).toMatchObject({ sm: "0.375rem", md: "0.75rem", lg: "1.125rem", xl: "1.5rem" });
+    });
+
+    it("light, dark ve isimli temaların hepsine ve CSS değişkenlerine yansır", () => {
+      const resolved = resolveThemeConfig({ density: { radius: "none" }, themes: { brand: { base: "light" } } });
+      expect(resolved.radiusDensity).toBe("none");
+      for (const theme of [resolved.light, resolved.dark, resolved.themes.brand]) expect(theme?.radius.md).toBe("0px");
+      expect(themeToCssVariables(resolved.light)["--mari-radius-lg"]).toBe("0px");
     });
   });
 });

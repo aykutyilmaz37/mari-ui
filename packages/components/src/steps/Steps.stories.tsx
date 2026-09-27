@@ -213,7 +213,7 @@ const go = (next: number) => {
 
     if (placed) {
       return (
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 rounded-2xl border border-mari-border bg-mari-surface px-8 py-12 text-center">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 rounded-xl border border-mari-border bg-mari-surface px-8 py-12 text-center">
           <span className="flex size-14 items-center justify-center rounded-full bg-mari-success-subtle text-mari-success">
             <CircleCheckBigIcon size={28} aria-hidden />
           </span>
@@ -238,7 +238,7 @@ const go = (next: number) => {
     }
 
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-mari-border bg-mari-surface p-5 sm:p-8">
+      <div className="mx-auto max-w-2xl rounded-xl border border-mari-border bg-mari-surface p-5 sm:p-8">
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-mari-foreground">Ödeme</h3>
           <p className="text-sm text-mari-muted">Siparişinizi 4 adımda tamamlayın.</p>
@@ -396,7 +396,7 @@ const [step, setStep] = useState(2);
     const [title, subtitle] = headings[step - 1] ?? headings[0];
 
     return (
-      <div className="mx-auto grid max-w-4xl grid-cols-1 overflow-hidden rounded-2xl border border-mari-border bg-mari-surface md:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-4xl grid-cols-1 overflow-hidden rounded-xl border border-mari-border bg-mari-surface md:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="border-b border-mari-border bg-mari-surface-alt p-5 md:border-b-0 md:border-r md:p-6">
           <p className="mb-4 hidden text-xs font-medium uppercase tracking-wide text-mari-muted md:mb-6 md:block">Kurulum · {step}/4</p>
           {/* Masaüstü: açıklamalı dikey liste. Mobil: tek satır kompakt gösterge. */}
@@ -505,7 +505,7 @@ export const OrderTracking: Story = {
 />`
   ),
   render: () => (
-    <div className="mx-auto max-w-md rounded-2xl border border-mari-border bg-mari-surface">
+    <div className="mx-auto max-w-md rounded-xl border border-mari-border bg-mari-surface">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-mari-border p-5">
         <div className="flex items-center gap-3">
           <span className="flex size-10 items-center justify-center rounded-xl bg-mari-primary-subtle text-mari-primary">
@@ -558,7 +558,7 @@ const [failed, setFailed] = useState(true);
   render: () => {
     const [failed, setFailed] = useState(true);
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-mari-border bg-mari-surface p-5 sm:p-8">
+      <div className="mx-auto max-w-2xl rounded-xl border border-mari-border bg-mari-surface p-5 sm:p-8">
         <h3 className="mb-6 text-lg font-semibold text-mari-foreground">Kimlik doğrulama</h3>
         <Steps
           data={kycSteps}
@@ -629,7 +629,7 @@ export const DeployPipeline: Story = {
     const percent = Math.round((done / total) * 100);
 
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-mari-border bg-mari-surface">
+      <div className="mx-auto max-w-2xl rounded-xl border border-mari-border bg-mari-surface">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-mari-border px-5 py-4">
           <div>
             <p className="text-sm font-semibold text-mari-foreground">web-app · main</p>

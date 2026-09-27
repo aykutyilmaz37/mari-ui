@@ -20,7 +20,7 @@ export interface InputProps {
   size?: Size;
   shape?: InputShape;
   variant?: InputVariant;
-  /** Semantik renk. Varsayılan: `primary`. `error`/`warning` doğrulama durumu olarak da işlev görür. */
+  /** Verilmezse nötr sınır, odakta primary. `error`/`warning` kalıcı doğrulama rengidir. */
   color?: ColorRole;
   icon?: ReactNode;
   iconPosition?: "start" | "end";

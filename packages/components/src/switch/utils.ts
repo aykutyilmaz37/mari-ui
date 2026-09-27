@@ -61,7 +61,7 @@ export function getSpinnerSize(size: Size): number {
 }
 
 export function getTrackClass(size: Size, color: ColorRole, checked: boolean, hasLabel: boolean): string {
-  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-border");
+  return cn(hasLabel ? TRACK_SIZE_WITH_LABEL_CLASS[size] : TRACK_SIZE_CLASS[size], checked ? bgSolidClass[color] : "bg-mari-surface-alt border border-mari-input");
 }
 
 export function getBallClass(size: Size, checked: boolean): string {

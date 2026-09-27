@@ -34,6 +34,17 @@ export const bgSolidHoverClass: Record<ColorRole, string> = {
   neutral: "hover:bg-mari-neutral-solid-hover",
 };
 
+/** Dolgu üzerindeki ikon/anahtar topu, solidContrast ile aynı kontrastı korur. */
+export const bgSolidContrastClass: Record<ColorRole, string> = {
+  primary: "bg-mari-primary-solid-contrast",
+  accent: "bg-mari-accent-solid-contrast",
+  success: "bg-mari-success-solid-contrast",
+  error: "bg-mari-error-solid-contrast",
+  warning: "bg-mari-warning-solid-contrast",
+  info: "bg-mari-info-solid-contrast",
+  neutral: "bg-mari-neutral-solid-contrast",
+};
+
 export const textSolidContrastClass: Record<ColorRole, string> = {
   primary: "text-mari-primary-solid-contrast",
   accent: "text-mari-accent-solid-contrast",

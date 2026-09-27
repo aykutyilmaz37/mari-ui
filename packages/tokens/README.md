@@ -43,3 +43,26 @@ npx mari-ui theme
 - **`@mari-ui/native`**: `lightTheme`/`darkTheme`i (veya `createNamedTheme()`in ürettiği özel bir temayı) doğrudan JS objesi olarak tüketir — `ThemeProvider theme={...}` herhangi bir `Theme` şeklindeki objeyi kabul eder.
 - **`@mari-ui/cli`**: `resolveThemeConfig()` ile `mari-ui.config.json`ı gerçek `Theme` objelerine çözer; `theme` komutu bunları CSS/TS dosyalarına yazar.
 - **`apps/studio`** (Faz 6): `generateRamp()`/`resolveThemeConfig()` ile canlı önizleme — bugün sadece varsayılan light/dark çiftini düzenliyor, 3. tema ekleme UI'ı henüz yok (altyapı — bu paket + CLI — hazır, stüdyo arayüzü ileride eklenebilir).
+
+## Yumuşak iris ve fontlar
+
+Varsayılan palet: açık modda `#6951CE`, koyu modda `#B7A5FF` birincil dolgu.
+`solidContrast` her zaman dolgu ile birlikte kullanılmalıdır. `canvas.border`
+dekoratif çizgiler; `canvas.input` görünür form sınırları; `canvas.ring` odak
+halkası içindir. Açık ve koyu moddaki metin / hover çiftleri 4,5:1, kontrol
+sınırları 3:1 eşikleriyle test edilir; bu tüm ürün için WCAG sertifikası değildir.
+
+```tsx
+import "@mari-ui/tokens/fonts.css"; // isteğe bağlı, yerel font dosyaları
+import "@mari-ui/components/styles.css";
+```
+
+Geist gövde/UI, Manrope başlık, Geist Mono kod ailesidir. Fontlar otomatik ağ
+isteği yapmaz. `fonts.css` yüklenmezse web sistem fontuna düşer. Font ve lisans
+kaynakları `fonts/README.md` içindedir. CSS token değerleri somut aile
+listeleridir; kendi değişkenlerine referans vermezler.
+
+`defaultThemeConfig`, CLI ve stüdyo varsayılanlarının ortak kaynağıdır.
+`fontFamilyHeading` ile başlık ailesi de özelleştirilebilir. İç içe açık/koyu
+bölgeler `data-theme="light"` / `data-theme="dark"` ile kendi renk ve font
+kapsamını kurar.

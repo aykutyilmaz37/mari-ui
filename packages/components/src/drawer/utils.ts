@@ -26,9 +26,9 @@ export function getPanelClass(position: DrawerPosition, size: DrawerSize, custom
     "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none",
     position === "right" && "inset-y-0 right-0 border-l border-mari-border",
     position === "left" && "inset-y-0 left-0 border-r border-mari-border",
-    position === "top" && "inset-x-0 top-0 rounded-b-2xl border-b border-mari-border",
+    position === "top" && "inset-x-0 top-0 rounded-b-xl border-b border-mari-border",
     // Alt çekmece = mobil "bottom sheet": yuvarlak üst köşeler + tutamaç.
-    position === "bottom" && "inset-x-0 bottom-0 rounded-t-2xl border-t border-mari-border pb-[env(safe-area-inset-bottom)]",
+    position === "bottom" && "inset-x-0 bottom-0 rounded-t-xl border-t border-mari-border pb-[env(safe-area-inset-bottom)]",
     !custom && (side ? SIDE_WIDTH[size] : EDGE_HEIGHT[size])
   );
 }

@@ -10,7 +10,7 @@ describe("buildPlainThemeCss", () => {
     expect(css).toContain("@media (prefers-color-scheme: dark)");
   });
 
-  it("dark blok sadece --mari-color-* değişkenlerini taşır, spacing/radius'u TEKRARLAMAZ (regresyon — bir kere %45 şişirmişti)", () => {
+  it("dark blok renk/font ailelerini taşır, spacing/radius'u TEKRARLAMAZ (regresyon — bir kere %45 şişirmişti)", () => {
     const css = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
     const darkBlockStart = css.indexOf('[data-theme="dark"] {');
     const darkBlockEnd = css.indexOf("}", darkBlockStart);
@@ -53,10 +53,11 @@ describe("buildPlainThemeCss", () => {
       expect(css).not.toContain("@media (prefers-color-scheme: dark)");
     });
 
-    it("named olmadan (sadece default) da çalışır — sadece :root üretir", () => {
+    it("named olmadan varsayılan temayı kök ve açık seçim için üretir", () => {
       const css = buildPlainThemeCss({ default: lightTheme });
       expect(css).toContain(":root {");
-      expect(css).not.toContain("[data-theme=");
+      expect(css).toContain('[data-theme="light"]');
+      expect(css).not.toContain('[data-theme="dark"]');
     });
 
     it("createNamedTheme: base='dark' iken kontrast araması dark yönünde çalışır (mode korunur, sadece name değişir)", () => {
@@ -81,5 +82,21 @@ describe("buildTailwindThemeCss", () => {
     const css = buildTailwindThemeCss(lightTheme);
     expect(css).toContain("@theme inline {");
     expect(css).toContain("--color-mari-primary-solid: var(--mari-color-primary-solid);");
+  });
+});
+
+
+describe("Tema sınırları", () => {
+  it("sistem koyu tercihi açıkça seçilmiş özel temayı geçersiz kılmaz", () => {
+    const css = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
+    expect(css).toContain(":root:not([data-theme])");
+    expect(css).toContain('[data-theme="light"]');
+  });
+  it("özel başlık fontunu üretir; varsayılan fontlar kendi CSS değişkenlerine referans vermez", () => {
+    const custom = createNamedTheme("brand", "light", { typography: { fontFamilyHeading: "Custom Heading" } });
+    const css = buildPlainThemeCss({ default: lightTheme, named: { brand: custom } });
+    expect(css).toContain("--mari-font-heading: Custom Heading;");
+    expect(css).not.toContain("--mari-font-sans: var(--mari-font-sans");
+    expect(buildTailwindThemeCss(lightTheme)).toContain("--font-heading: var(--mari-font-heading)");
   });
 });

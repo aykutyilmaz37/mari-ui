@@ -36,8 +36,9 @@ export const radius = {
 } as const;
 
 export const fontFamily = {
-  sans: "var(--mari-font-sans, ui-sans-serif, system-ui, -apple-system, sans-serif)",
-  mono: "var(--mari-font-mono, ui-monospace, SFMono-Regular, monospace)",
+  sans: '"Geist", ui-sans-serif, system-ui, -apple-system, sans-serif',
+  mono: '"Geist Mono", ui-monospace, SFMono-Regular, monospace',
+  heading: '"Manrope", "Geist", ui-sans-serif, system-ui, sans-serif',
 } as const;
 
 /** Ölçek 1.125 (major second) oranıyla, 14px taban üzerine kurulu. */
@@ -112,3 +113,23 @@ export const breakpoint = {
 export type SpacingScale = keyof typeof spacing;
 export type RadiusScale = keyof typeof radius;
 export type FontSizeScale = keyof typeof fontSize;
+
+/**
+ * Faz 15 — `density.radius` preset'i. Tüm radius skalasını orantılı ölçekler
+ * (`none` = tamamen keskin, `md` = varsayılan, skala olduğu gibi). `full` ve
+ * `none` anahtarları ölçeklenmez: `full` geometrik olarak yuvarlak şeyler
+ * (avatar, switch) içindir, preset'ten etkilenmemeli.
+ */
+export const radiusDensities = ["none", "sm", "md", "lg"] as const;
+export type RadiusDensity = (typeof radiusDensities)[number];
+
+const RADIUS_DENSITY_FACTOR: Record<RadiusDensity, number> = { none: 0, sm: 0.5, md: 1, lg: 1.5 };
+
+export type RadiusTokens = Record<RadiusScale, string>;
+
+export function scaleRadius(density: RadiusDensity = "md"): RadiusTokens {
+  const factor = RADIUS_DENSITY_FACTOR[density];
+  if (factor === 1) return { ...radius };
+  const scale = (value: string) => (factor === 0 ? "0px" : `${Number.parseFloat(value) * factor}rem`);
+  return { none: radius.none, sm: scale(radius.sm), md: scale(radius.md), lg: scale(radius.lg), xl: scale(radius.xl), full: radius.full };
+}

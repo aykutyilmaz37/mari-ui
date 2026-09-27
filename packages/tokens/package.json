@@ -1,7 +1,7 @@
 {
   "name": "@mari-ui/tokens",
   "version": "0.1.0",
-  "description": "mari-ui design system'inin platform-agnostic token kaynağı (renk, spacing, radius, typography, shadow, z-index, motion).",
+  "description": "mari-ui design system'inin platform-agnostic token kayna\u011f\u0131 (renk, spacing, radius, typography, shadow, z-index, motion).",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -17,10 +17,14 @@
     "./theme.css": "./dist/theme.css",
     "./tailwind-theme.css": "./dist/tailwind-theme.css",
     "./schema.json": "./dist/schema.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./fonts.css": "./fonts.css",
+    "./fonts/*": "./fonts/*"
   },
   "files": [
-    "dist"
+    "dist",
+    "fonts.css",
+    "fonts"
   ],
   "scripts": {
     "build": "tsup && tsx scripts/build-css.ts && tsx scripts/build-schema.ts",

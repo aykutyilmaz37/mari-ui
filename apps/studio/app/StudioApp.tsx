@@ -2,26 +2,24 @@
 
 import { useMemo, useState } from "react";
 import {
-  accentRamp,
+  defaultThemeConfig,
   contrastRatio,
   lightTheme,
   meetsAA,
-  primaryRamp,
   resolveThemeConfig,
   themeToCssVariables,
   type HexColor,
   type MariUiThemeConfig,
-  type RadiusScale,
+  radiusDensities,
+  type RadiusDensity,
 } from "@mari-ui/tokens";
 import { PreviewPanel } from "./PreviewPanel";
 
-const RADIUS_OPTIONS: RadiusScale[] = ["none", "sm", "md", "lg", "xl", "full"];
-
 const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
-function ContrastRow({ label, bg, fg }: { label: string; bg: HexColor; fg: HexColor }) {
+function ContrastRow({ label, bg, fg, threshold = 4.5 }: { label: string; bg: HexColor; fg: HexColor; threshold?: number }) {
   const ratio = contrastRatio(bg, fg);
-  const pass = meetsAA(bg, fg);
+  const pass = meetsAA(bg, fg, threshold);
   return (
     <tr>
       <td>{label}</td>
@@ -62,20 +60,21 @@ function downloadJson(filename: string, data: unknown) {
 }
 
 export function StudioApp() {
-  const [primaryHex, setPrimaryHex] = useState<string>(primaryRamp[400]);
-  const [accentHex, setAccentHex] = useState<string>(accentRamp[500]);
+  const [primaryHex, setPrimaryHex] = useState<string>(defaultThemeConfig.color.primary);
+  const [accentHex, setAccentHex] = useState<string>(defaultThemeConfig.color.accent);
   const [fontFamilySans, setFontFamilySans] = useState<string>(lightTheme.fontFamily.sans);
   const [fontFamilyMono, setFontFamilyMono] = useState<string>(lightTheme.fontFamily.mono);
-  const [radiusDensity, setRadiusDensity] = useState<RadiusScale>("md");
+  const [fontFamilyHeading, setFontFamilyHeading] = useState(lightTheme.fontFamily.heading ?? lightTheme.fontFamily.sans);
+  const [radiusDensity, setRadiusDensity] = useState<RadiusDensity>("md");
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
 
   const config: MariUiThemeConfig = useMemo(
     () => ({
       color: { primary: primaryHex as HexColor, accent: accentHex as HexColor },
-      typography: { fontFamilySans, fontFamilyMono },
+      typography: { fontFamilySans, fontFamilyMono, fontFamilyHeading },
       density: { radius: radiusDensity },
     }),
-    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, radiusDensity]
+    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity]
   );
 
   const resolved = useMemo(() => resolveThemeConfig(config), [config]);
@@ -132,9 +131,13 @@ export function StudioApp() {
             <input id="font-sans" className="studio-input" type="text" value={fontFamilySans} onChange={(e) => setFontFamilySans(e.target.value)} />
           </div>
           <div className="studio-field">
+            <label htmlFor="font-heading">Başlık / marka font ailesi</label>
+            <input id="font-heading" className="studio-input" type="text" value={fontFamilyHeading} onChange={(e) => setFontFamilyHeading(e.target.value)} />
+          </div>
+          <div className="studio-field">
             <label htmlFor="font-mono">Kod/monospace font ailesi</label>
             <input id="font-mono" className="studio-input" type="text" value={fontFamilyMono} onChange={(e) => setFontFamilyMono(e.target.value)} />
-            <p className="studio-field-hint">Not: bugün `@mari-ui/components` içinde monospace fontu kullanan bir bileşen yok — sadece config'e kaydedilir.</p>
+
           </div>
         </div>
 
@@ -142,16 +145,15 @@ export function StudioApp() {
           <h2 className="studio-section-title">Yoğunluk</h2>
           <div className="studio-field">
             <label htmlFor="radius-density">Köşe yuvarlaklığı (radius)</label>
-            <select id="radius-density" className="studio-select" value={radiusDensity} onChange={(e) => setRadiusDensity(e.target.value as RadiusScale)}>
-              {RADIUS_OPTIONS.map((option) => (
+            <select id="radius-density" className="studio-select" value={radiusDensity} onChange={(e) => setRadiusDensity(e.target.value as RadiusDensity)}>
+              {radiusDensities.map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
               ))}
             </select>
             <p className="studio-field-hint">
-              `@mari-ui/native`de canlı yansır (`buildComponentSize`). Web `@mari-ui/components`te bugün Tailwind'de statik gömülü olduğu için AŞAĞIDAKİ
-              önizlemede YANSIMAZ — sadece dışa aktarılan config'e kaydedilir (bilinen sınırlama, bkz. README).
+              Tüm radius skalasını orantılı ölçekler: `none` tamamen keskin, `md` varsayılan. Avatar/switch gibi geometrik olarak yuvarlak öğeler etkilenmez.
             </p>
           </div>
         </div>
@@ -176,8 +178,7 @@ export function StudioApp() {
         <div className="studio-section" style={{ marginTop: "2rem" }}>
           <h2 className="studio-section-title">WCAG Kontrast Kontrolü</h2>
           <p className="studio-section-hint">
-            `deriveColorRole` her zaman bir AA-geçen adayı ÖNCELİKLİ dener; ama en uç renklerde (örn. çok açık bir sarı) hiçbir aday geçemeyip en iyi
-            seçenekte kalabilir — bu tablo o durumu SESSİZCE bırakmaz, açıkça gösterir.
+            Metin için en az 4,5:1; kontrol sınırları ve odak halkası için en az 3:1 kontrast kontrol edilir.
           </p>
           <table className="studio-contrast-table">
             <thead>
@@ -190,6 +191,11 @@ export function StudioApp() {
               </tr>
             </thead>
             <tbody>
+              <ContrastRow label="Gövde metni" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.foreground as HexColor} />
+              <ContrastRow label="Yardımcı metin" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.muted as HexColor} />
+              <ContrastRow label="Alan sınırı (3:1)" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.input as HexColor} threshold={3} />
+              <ContrastRow label="Odak halkası (3:1)" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.ring as HexColor} threshold={3} />
+              <ContrastRow label="primary hover" bg={activeTheme.color.primary.solidHover} fg={activeTheme.color.primary.solidContrast} />
               <ContrastRow label="primary solid" bg={activeTheme.color.primary.solid} fg={activeTheme.color.primary.solidContrast} />
               <ContrastRow label="primary subtle" bg={activeTheme.color.primary.subtle} fg={activeTheme.color.primary.subtleContrast} />
               <ContrastRow label="accent solid" bg={activeTheme.color.accent.solid} fg={activeTheme.color.accent.solidContrast} />

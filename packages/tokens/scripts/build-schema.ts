@@ -10,7 +10,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { accentRamp, primaryRamp } from "../src/primitives/ramps";
-import { radius, fontFamily } from "../src/primitives/scale";
+import { radiusDensities, fontFamily } from "../src/primitives/scale";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_FILE = resolve(__dirname, "../dist/schema.json");
@@ -26,7 +26,7 @@ const schema = {
       primary: {
         type: "color",
         description: "Birincil marka rengi (anchor tonu — kullanıcının 'gördüğü' ton).",
-        default: primaryRamp[400],
+        default: primaryRamp[600],
       },
       accent: {
         type: "color",
@@ -34,7 +34,7 @@ const schema = {
           "İkincil vurgu rengi (anchor tonu, örn. 500). Kontrastı otomatik hesaplanır — " +
           "kullanıcı bu rengi farklı bir tona çevirse bile solid/subtle metin renkleri " +
           "WCAG AA'yı geçecek şekilde yeniden hesaplanır.",
-        default: accentRamp[500],
+        default: accentRamp[600],
       },
     },
     typography: {
@@ -48,12 +48,17 @@ const schema = {
         description: "Kod/monospace metin için font ailesi.",
         default: fontFamily.mono,
       },
+      fontFamilyHeading: {
+        type: "string",
+        description: "Başlık ve marka font ailesi.",
+        default: fontFamily.heading,
+      },
     },
     density: {
       radius: {
         type: "select",
-        description: "Bileşenlerin köşe yuvarlaklığı yoğunluğu.",
-        options: Object.keys(radius),
+        description: "Köşe yuvarlaklığı preset'i — tüm radius skalasını orantılı ölçekler (none = keskin).",
+        options: [...radiusDensities],
         default: "md",
       },
     },

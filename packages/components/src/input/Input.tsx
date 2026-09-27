@@ -87,7 +87,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     };
 
     const wrapperClass = cn(
-      "flex items-center gap-2 rounded-md group transition-colors duration-300",
+      "flex items-center gap-2 rounded-md group transition-colors duration-300 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-mari-ring",
       getSizeClasses(size),
       getVariantClasses(resolvedVariant, resolvedColor),
       getShapeClasses(shape),

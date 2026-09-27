@@ -108,7 +108,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     }, [currentValue, autoSize]);
 
     const wrapperClass = cn(
-      "flex gap-2 items-start rounded-md transition-colors duration-300",
+      "flex gap-2 items-start rounded-md transition-colors duration-300 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-mari-ring",
       getTextareaSizeClasses(size),
       getVariantClasses(resolvedVariant, resolvedColor),
       getShapeClasses(shape),

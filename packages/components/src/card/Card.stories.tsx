@@ -76,7 +76,7 @@ const meta: Meta<typeof Card> = {
     bordered: { control: "boolean", description: "Kenarlık. Varsayılan: `true`.", table: { category: "Görünüm" } },
     hoverable: { control: "boolean", description: "Üzerine gelince gölge + hafif yükselme. `href`'te varsayılan açık.", table: { category: "Görünüm" } },
     inset: { control: "boolean", description: "Gömülü kart — tonlu zemin.", table: { category: "Görünüm" } },
-    loading: { control: "boolean", description: "Gövde yerine iskelet." },
+    skeleton: { control: "boolean", description: "Veri gelene kadar gövde yerine iskelet (eski adı `loading`)." },
     size: { ...baseSizeArgType, description: "Dolgu: 12 / 24 / 32px. Varsayılan: `md`." },
     href: { control: "text", description: "Kartın tamamı bir link olur." },
     onClick: { description: "Kartın tamamı `role=\"button\"` olur.", table: { category: "Olaylar" } },
@@ -191,10 +191,10 @@ function Sparkline({ points, positive }: { points: number[]; positive: boolean }
 export const KpiCards: Story = {
   name: "KPI Kartları (Dashboard)",
   ...storyDoc(
-    "Dashboard özet kartları: büyük değer, dönem karşılaştırması ve eğilim çizgisi. `loading` ile veri gelene " +
+    "Dashboard özet kartları: büyük değer, dönem karşılaştırması ve eğilim çizgisi. `skeleton` ile veri gelene " +
       "kadar iskelet — düğmeyle deneyin.",
     `
-<Card size="sm" loading={isLoading}>
+<Card size="sm" skeleton={isLoading}>
   <p className="text-sm text-mari-muted">Gelir</p>
   <p className="text-2xl font-semibold">₺482.310</p>
   <Tag color="success">+12,4%</Tag>
@@ -223,7 +223,7 @@ export const KpiCards: Story = {
             const positive = k.delta >= 0;
             const DeltaIcon = positive ? ArrowUpRightIcon : ArrowDownRightIcon;
             return (
-              <Card key={k.label} size="sm" loading={loading} classNames={{ body: "p-5" }}>
+              <Card key={k.label} size="sm" skeleton={loading} classNames={{ body: "p-5" }}>
                 <p className="text-sm text-mari-muted">{k.label}</p>
                 <div className="mt-1 flex items-end justify-between gap-3">
                   <p className="text-2xl font-semibold tabular-nums tracking-tight text-mari-foreground">{k.value}</p>
@@ -561,7 +561,7 @@ export const Surfaces: Story = {
 <Card title="Gömülü" inset>…</Card>
 <Card title="Hoverable" hoverable>…</Card>`),
   render: () => (
-    <div className="grid max-w-5xl gap-4 rounded-2xl bg-mari-surface-alt p-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid max-w-5xl gap-4 rounded-xl bg-mari-surface-alt p-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card title="Varsayılan" size="sm">
         <p className="text-sm text-mari-muted">Kenarlık + yüzey.</p>
       </Card>
@@ -588,7 +588,7 @@ export const Playground: Story = {
     size: "md",
     bordered: true,
     hoverable: false,
-    loading: false,
+    skeleton: false,
     inset: false,
   },
 };

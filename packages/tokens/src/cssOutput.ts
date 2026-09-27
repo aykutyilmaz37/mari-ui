@@ -20,16 +20,11 @@ function varsToLines(vars: Record<string, string>): string[] {
   return Object.entries(vars).map(([name, value]) => `  ${name}: ${value};`);
 }
 
-/**
- * `[data-theme="dark"]` bloğu sadece MODA GÖRE DEĞİŞEN (`--mari-color-*`)
- * değişkenleri taşımalı — spacing/radius/fontSize/shadow/zIndex/duration/
- * easing/fontFamily light ve dark'ta ZATEN aynı, `:root`te bir kez yeterli.
- * `themeToCssVariables` ikisini birden döndürdüğü için burada filtreleniyor;
- * filtrelenmezse her mod bloğunda gereksiz yere tekrarlanıp çıktı boyutu
- * ciddi şişer (fiilen ~%45, bkz. git geçmişi).
- */
-function onlyColorVars(vars: Record<string, string>): Record<string, string> {
-  return Object.fromEntries(Object.entries(vars).filter(([name]) => name.startsWith("--mari-color-")));
+/** Renk ve font aileleri tema sınırında yeniden bağlanır; boyut ölçeği kökte kalır. */
+function scopedThemeVars(theme: Theme): Record<string, string> {
+  return Object.fromEntries(Object.entries(themeToCssVariables(theme)).filter(([name]) =>
+    name.startsWith("--mari-color-") || ["--mari-font-sans", "--mari-font-mono", "--mari-font-heading"].includes(name)
+  ));
 }
 
 export interface CssOutputOptions {
@@ -63,8 +58,8 @@ export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOpti
   const header = options.header ?? DEFAULT_HEADER;
   const lines: string[] = [header, ":root {", ...varsToLines(themeToCssVariables(themeSet.default)), "}", ""];
 
-  for (const [name, theme] of Object.entries(themeSet.named ?? {})) {
-    lines.push(`[data-theme="${name}"] {`, ...varsToLines(onlyColorVars(themeToCssVariables(theme))), "}", "");
+  for (const [name, theme] of Object.entries({ [themeSet.default.name]: themeSet.default, ...themeSet.named })) {
+    lines.push(`[data-theme="${name}"] {`, ...varsToLines(scopedThemeVars(theme)), "}", "");
   }
 
   // `prefers-color-scheme` tarayıcının kendi İKİ değerli (light/dark)
@@ -75,8 +70,8 @@ export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOpti
   if (darkTheme) {
     lines.push(
       "@media (prefers-color-scheme: dark) {",
-      '  :root:not([data-theme="light"]) {',
-      ...varsToLines(onlyColorVars(themeToCssVariables(darkTheme))).map((l) => `  ${l}`),
+      '  :root:not([data-theme]) {',
+      ...varsToLines(scopedThemeVars(darkTheme)).map((l) => `  ${l}`),
       "  }",
       "}",
       ""
@@ -120,7 +115,14 @@ function buildThemeInlineBlock(theme: Theme): string {
   // Bugün component'ler `shadow-lg`/`shadow-2xl` gibi Tailwind built-in'lerini
   // rastgele kullanıyordu (Faz 13 audit) — hepsi bu tek skaladan okuyacak.
   const shadowLines = Object.keys(theme.shadow).map((key) => `  --shadow-mari-${key}: var(--mari-shadow-${key});`);
-  return ["@theme inline {", ...colorLines, ...spacingLines, ...radiusLines, ...zIndexLines, ...shadowLines, "}"].join("\n");
+  return ["@theme inline {", ...colorLines, ...spacingLines, ...radiusLines, ...zIndexLines, ...shadowLines,
+    "  --font-sans: var(--mari-font-sans);",
+    "  --font-mono: var(--mari-font-mono);",
+    "  --font-heading: var(--mari-font-heading);",
+    "  --default-font-family: var(--mari-font-sans);",
+    "  --default-mono-font-family: var(--mari-font-mono);",
+    ...["sm", "md", "lg", "xl"].map((key) => `  --radius-${key}: var(--mari-radius-${key});`),
+    "}"].join("\n");
 }
 
 /**

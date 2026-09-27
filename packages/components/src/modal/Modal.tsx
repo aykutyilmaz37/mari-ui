@@ -196,7 +196,7 @@ export function Modal({
           // soluyordu ("kapatırken tekliyor" kullanıcı bulgusu). Aynı hata
           // Card hover, MegaMenu ve MobileNavLevel'da da düzeltildi.
           className={cn(
-            "pointer-events-auto relative flex max-h-[calc(100dvh-1.5rem)] w-full flex-col rounded-2xl border border-mari-border bg-mari-surface text-mari-foreground shadow-mari-xl outline-none sm:max-h-[calc(100dvh-3rem)]",
+            "pointer-events-auto relative flex max-h-[calc(100dvh-1.5rem)] w-full flex-col rounded-xl border border-mari-border bg-mari-surface text-mari-foreground shadow-mari-xl outline-none sm:max-h-[calc(100dvh-3rem)]",
             "transition-[opacity,translate,scale] duration-200 ease-out motion-reduce:transition-none starting:translate-y-2 starting:scale-[0.98] starting:opacity-0",
             open ? "translate-y-0 scale-100 opacity-100" : "translate-y-2 scale-[0.98] opacity-0",
             width === undefined && sizeMap[size],

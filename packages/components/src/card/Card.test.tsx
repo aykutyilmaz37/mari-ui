@@ -70,13 +70,22 @@ describe("Card", () => {
     expect(screen.getByRole("button", { name: "Sil" })).toBeInTheDocument();
   });
 
-  it("loading iken içerik yerine iskelet gösterilir, başlık korunur", () => {
+  it("skeleton iken içerik yerine iskelet gösterilir, başlık korunur", () => {
+    render(
+      <Card title="Gelir" skeleton>
+        Gizli içerik
+      </Card>
+    );
+    expect(screen.getByText("Gelir")).toBeInTheDocument();
+    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+  });
+
+  it("eski `loading` adı skeleton'ın takma adı olarak çalışmaya devam eder", () => {
     render(
       <Card title="Gelir" loading>
         Gizli içerik
       </Card>
     );
-    expect(screen.getByText("Gelir")).toBeInTheDocument();
     expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
   });
 

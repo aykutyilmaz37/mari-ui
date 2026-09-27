@@ -60,6 +60,7 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   for (const [key, value] of Object.entries(theme.easing)) vars[`--mari-easing-${key}`] = value;
   vars["--mari-font-sans"] = theme.fontFamily.sans;
   vars["--mari-font-mono"] = theme.fontFamily.mono;
+  vars["--mari-font-heading"] = theme.fontFamily.heading ?? theme.fontFamily.sans;
 
   return vars;
 }

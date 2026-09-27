@@ -1,71 +1,70 @@
 import { Meta } from "@storybook/blocks";
+import { lightTheme, darkTheme, contrastRatio } from "@mari-ui/tokens";
 
 <Meta title="Foundations/Renkler" />
 
-# Renkler
+# Yumuşak iris
 
-mari-ui'ın renk sistemi `@mari-ui/tokens`'ta **hesaplanır** — elle "bu maviye şu
-metin yakışır" kararı yoktur. Her semantik rol bir renk rampasından WCAG AA'yı
-geçen tonları `deriveColorRole` ile seçer.
+Marka rengi açık temada derin iris, koyu temada açık lavantadır. Gövde metni,
+kontrol sınırları ve odak halkası her modda kendi zeminine göre seçilir.
+Web ve React Native aynı `@mari-ui/tokens` kaynağını kullanır.
 
-## Palet
+## Semantik palet
 
-Faz 13'te palet blue-grey'e geçti; turuncu accent kaldırıldı.
-
-<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px", margin: "16px 0" }}>
-  {[
-    ["primary", "#88BDF2", "Birincil marka — buton, link, aktif durum"],
-    ["accent", "#6A89A7", "İkincil vurgu — muted steel-blue"],
-    ["neutral", "#384959", "Nötr bileşen rengi (gri Tag/Badge)"],
-    ["success", "#059669", "Olumlu / tamamlandı"],
-    ["error", "#dc2626", "Hata / yıkıcı aksiyon"],
-    ["warning", "#b45309", "Uyarı / dikkat"],
-    ["info", "#0284c7", "Bilgilendirme"],
-  ].map(([role, hex, desc]) => (
-    <div key={role} style={{ border: "1px solid var(--mari-color-border)", borderRadius: "8px", overflow: "hidden" }}>
-      <div style={{ height: "56px", background: `var(--mari-color-${role}-solid)` }} />
-      <div style={{ padding: "8px 10px", fontSize: "13px" }}>
-        <strong>{role}</strong> <code>{hex}</code>
-        <div style={{ color: "var(--mari-color-muted)", marginTop: "2px" }}>{desc}</div>
-      </div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+  {["primary", "accent", "neutral", "success", "error", "warning", "info"].map((role) => (
+    <div key={role} style={{ border: "1px solid var(--mari-color-border)", borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ padding: 12, background: `var(--mari-color-${role}-solid)`, color: `var(--mari-color-${role}-solid-contrast)` }}>{role}</div>
+      <div style={{ padding: 12, fontSize: 12 }}>Açık: {lightTheme.color[role].solid}<br />Koyu: {darkTheme.color[role].solid}</div>
     </div>
   ))}
 </div>
 
-## Her rolün 7 slotu
+## Renk rolleri
 
-| Slot | CSS değişkeni | Kullanım |
-|---|---|---|
-| `text` | `--mari-color-<rol>` | Sayfa yüzeyinde metin/ikon |
-| `solid` | `--mari-color-<rol>-solid` | Dolgulu bileşen arka planı (buton) — **tema-bağımsız** |
-| `solid-contrast` | `--mari-color-<rol>-solid-contrast` | `solid` üzerinde AA geçen metin |
-| `solid-hover` | `--mari-color-<rol>-solid-hover` | `solid`in hover tonu |
-| `subtle` | `--mari-color-<rol>-subtle` | Yumuşak arka plan (seçili satır, bilgi kutusu) |
-| `subtle-contrast` | `--mari-color-<rol>-subtle-contrast` | `subtle` üzerinde AA geçen metin |
-| `border` | `--mari-color-<rol>-border` | Kenarlık |
+| Slot | Kullanım |
+|---|---|
+| `text` | Sayfa yüzeyinde okunabilir metin ve ikon |
+| `solid` / `solidContrast` | Birlikte kullanılan dolgu ve metin |
+| `solidHover` | Aynı metin rengini koruyan erişilebilir hover / pressed dolgusu |
+| `subtle` / `subtleContrast` | Lavanta gibi yumuşak dolgu ve üzerindeki metin |
+| `border` | Rolün işlevsel sınırı; sayfa ve kendi yumuşak zemininde en az 3:1 |
 
-Tailwind tarafında: `bg-mari-primary-solid`, `text-mari-primary`, `border-mari-primary-border` …
+Örnek: `bg-mari-primary-solid text-mari-primary-solid-contrast`.
+Koyu temada otomatik olarak açık iris + koyu metne dönüşür; `text-white`
+sabitlemeyin. Hata, başarı ve seçim durumlarını metin veya ikonla da belirtin.
 
-## Sayfa yüzeyi (canvas) token'ları
+## Yüzey ve kontrol sınırları
 
-Bir component'in `color` prop'undan bağımsız, her zaman var olan zemin/metin
-değerleri.
+<table>
+  <thead><tr><th>Token</th><th>Açık</th><th>Koyu</th></tr></thead>
+  <tbody>{["surface", "surfaceAlt", "foreground", "muted", "border", "input", "ring"].map((token) => (
+    <tr key={token}><td>{token}</td><td><code>{lightTheme.color.canvas[token]}</code></td><td><code>{darkTheme.color.canvas[token]}</code></td></tr>
+  ))}</tbody>
+</table>
 
-| Token | Açık | Koyu | Kullanım |
-|---|---|---|---|
-| `--mari-color-surface` | `#ffffff` | `#141d26` | Sayfa / kart zemini. **Koyu tema saf siyah değil.** |
-| `--mari-color-surface-alt` | `#f4f6f8` | `#1e2a35` | İkincil zemin (gömülü kart, tablo başlığı) |
-| `--mari-color-border` | `#d0d8df` | `#384959` | Genel kenarlık |
-| `--mari-color-input` | `#b0bdc8` | `#4a5a6b` | **Form alanı kenarlığı** — `border`den belirgin; koyu temada input kaybolmasın diye ayrı token (Faz 13) |
-| `--mari-color-ring` | `#5b9fe0` | `#88bdf2` | Klavye odak halkası |
-| `--mari-color-scrim` | `rgb(20 29 38 / .45)` | `rgb(3 7 12 / .7)` | Modal / Drawer karartma katmanı (tek kaynak) |
-| `--mari-color-foreground` | `#1e2a35` | `#f4f6f8` | Gövde metni (AAA) |
-| `--mari-color-muted` | `#5f7183` | `#8395a5` | İkincil metin (AA) |
-| `--mari-color-disabled` | `#b0bdc8` | `#384959` | Devre dışı öğe |
+`border` dekoratif ayırıcılar içindir. Input, checkbox ve diğer kontrol
+sınırlarında **`input`** kullanılır. Bu ayrım, görünümü yumuşak tutarken form
+alanlarının kaybolmasını önler. Odak halkası **`ring`** ile çizilir.
 
-## Koyu tema
+## Ölçülen kontrastlar
 
-Tema geçişi `data-theme="dark"` attribute'u ile. `solid` tonlar tema-bağımsızdır
-(birincil buton her iki temada aynı mavi); değişen şey `text` / `subtle` /
-`border` ve canvas token'larıdır. Sağ üstteki tema switcher'ıyla her sayfayı iki
-modda da kontrol edin.
+<table>
+  <thead><tr><th>Tema</th><th>Gövde metni</th><th>Düğme metni</th><th>Alan sınırı</th></tr></thead>
+  <tbody>{[lightTheme, darkTheme].map((theme) => (
+    <tr key={theme.name}>
+      <td>{theme.mode === "light" ? "Açık" : "Koyu"}</td>
+      <td>{contrastRatio(theme.color.canvas.foreground, theme.color.canvas.surface).toFixed(2)}:1</td>
+      <td>{contrastRatio(theme.color.primary.solidContrast, theme.color.primary.solid).toFixed(2)}:1</td>
+      <td>{contrastRatio(theme.color.canvas.input, theme.color.canvas.surface).toFixed(2)}:1</td>
+    </tr>
+  ))}</tbody>
+</table>
+
+Normal metin için AA eşiği **4,5:1**, kontrol sınırları için **3:1**.
+Testler her iki temada metin, hover, soft, input ve odak eşleşmelerini kontrol
+eder. Renk kontrolleri bütün uygulamanın WCAG uyumluluğu anlamına gelmez;
+klavye, etiket, odak sırası ve durum bildirimleri ayrıca doğrulanmalıdır.
+
+Kaynaklar: [WCAG metin kontrastı](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html),
+[metin dışı kontrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).

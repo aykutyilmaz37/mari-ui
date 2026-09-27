@@ -44,7 +44,7 @@ export interface CanvasTokens {
   ring: string;
   /**
    * Modal/Drawer arkasındaki karartma katmanı. Tek token — Modal `bg-black/50`,
-   * Drawer `bg-black/30` kullanıyordu (tutarsız, token'sız). Hafif blue-grey
+   * Drawer `bg-black/30` kullanıyordu (tutarsız, token'sız). Hafif mor
    * tint taşır, saf siyah değil.
    */
   scrim: string;
@@ -64,20 +64,20 @@ export interface SemanticColorTokens {
   canvas: CanvasTokens;
 }
 
-const LIGHT_SURFACE = WHITE;
-const DARK_SURFACE: HexColor = neutralRamp[950]; // #141d26 — palete özgü koyu, saf siyah değil
+const LIGHT_SURFACE = neutralRamp[50];
+const DARK_SURFACE: HexColor = neutralRamp[950];
 
 function buildCanvas(mode: ThemeMode): CanvasTokens {
   if (mode === "light") {
     return {
       surface: LIGHT_SURFACE,
-      surfaceAlt: neutralRamp[50],
+      surfaceAlt: neutralRamp[100],
       border: neutralRamp[200],
-      input: neutralRamp[300],
-      ring: primaryRamp[500],
-      scrim: "rgb(20 29 38 / 0.45)",
+      input: neutralRamp[400],
+      ring: primaryRamp[600],
+      scrim: "rgb(25 24 34 / 0.45)",
       foreground: neutralRamp[900],
-      muted: neutralRamp[500],
+      muted: neutralRamp[600],
       disabled: neutralRamp[300],
     };
   }
@@ -85,43 +85,29 @@ function buildCanvas(mode: ThemeMode): CanvasTokens {
     surface: DARK_SURFACE,
     surfaceAlt: neutralRamp[900],
     border: neutralRamp[700],
-    input: neutralRamp[600],
+    input: neutralRamp[500],
     ring: primaryRamp[400],
-    scrim: "rgb(3 7 12 / 0.7)",
-    foreground: neutralRamp[50],
-    muted: neutralRamp[400],
+    scrim: "rgb(25 24 34 / 0.7)",
+    foreground: neutralRamp[100],
+    muted: neutralRamp[300],
     disabled: neutralRamp[700],
   };
 }
 
-/**
- * Tüm semantic renk rollerini bir tema modu için türetir. `warning` rolünün
- * `preferredSolidShade`i kasıtlı olarak 700'dür (diğerleri 600): amber-600
- * üzerinde beyaz metin ~3.19:1 kontrast verir ve AA'yı (4.5) geçemez —
- * amber-700 ile ~5.02:1'e çıkar. Bu, mevcut Button component'inin
- * `bg-warning text-white` kombinasyonunun aslında WCAG'yi geçmediğinin
- * (contrast.test.ts ile doğrulanan) somut kanıtıdır. `neutral` rolü de
- * aynı `deriveColorRole` fonksiyonundan geçer, sadece nötr rampayla.
- *
- * `rampOverrides` (Faz 6 — tema stüdyosu): şemanın (`schema.json`)
- * `editable.color` alanı sadece `primary`/`accent`i düzenlenebilir işaretler
- * — bu yüzden stüdyo sadece bu iki rol için `generateRamp(anchor)` çıktısını
- * geçirir, ama imza herhangi bir rolü (hatta hepsini) geçersiz kılmaya izin
- * verecek kadar genel: gelecekte şema genişlerse burada değişiklik gerekmez.
- * Override VERİLMEZSE davranış birebir eskisiyle aynıdır (regresyon testi:
- * `colors.test.ts`).
- */
+/** Aynı renk sözleşmesi web, native ve tema stüdyosunda kullanılır. */
 export function buildSemanticColors(mode: ThemeMode, rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {}): SemanticColorTokens {
   const surface = mode === "light" ? LIGHT_SURFACE : DARK_SURFACE;
+  const surfaceAlt = buildCanvas(mode).surfaceAlt as HexColor;
+  const primary = deriveColorRole(rampOverrides.primary ?? primaryRamp, surface, mode, mode === "light" ? 600 : 400, surfaceAlt);
   return {
-    primary: deriveColorRole(rampOverrides.primary ?? primaryRamp, surface, mode, 700),
-    accent: deriveColorRole(rampOverrides.accent ?? accentRamp, surface, mode, 600),
-    success: deriveColorRole(rampOverrides.success ?? successRamp, surface, mode, 600),
-    error: deriveColorRole(rampOverrides.error ?? errorRamp, surface, mode, 600),
-    warning: deriveColorRole(rampOverrides.warning ?? warningRamp, surface, mode, 700),
-    info: deriveColorRole(rampOverrides.info ?? infoRamp, surface, mode, 600),
-    neutral: deriveColorRole(rampOverrides.neutral ?? neutralRamp, surface, mode, 600),
-    canvas: buildCanvas(mode),
+    primary,
+    accent: deriveColorRole(rampOverrides.accent ?? accentRamp, surface, mode, undefined, surfaceAlt),
+    success: deriveColorRole(rampOverrides.success ?? successRamp, surface, mode, undefined, surfaceAlt),
+    error: deriveColorRole(rampOverrides.error ?? errorRamp, surface, mode, undefined, surfaceAlt),
+    warning: deriveColorRole(rampOverrides.warning ?? warningRamp, surface, mode, mode === "light" ? 700 : 300, surfaceAlt),
+    info: deriveColorRole(rampOverrides.info ?? infoRamp, surface, mode, undefined, surfaceAlt),
+    neutral: deriveColorRole(rampOverrides.neutral ?? neutralRamp, surface, mode, undefined, surfaceAlt),
+    canvas: { ...buildCanvas(mode), ring: primary.text },
   };
 }
 

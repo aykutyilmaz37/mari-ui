@@ -1,3 +1,4 @@
+import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
 import { componentSize, resolveColorVariant, type ColorRole, type ColorVariantStyle, type Size } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
@@ -6,7 +7,7 @@ import { resolveComponentSize } from "../../theme/sizeToRNStyle";
 import type { InputShape, InputVariant } from "../../Input/types";
 
 export interface InputRecipeOptions {
-  color: ColorRole;
+  color?: ColorRole;
   variant: InputVariant;
   size: Size;
   shape: InputShape;
@@ -48,9 +49,11 @@ function resolveInputColorRefs(color: ColorRole, variant: InputVariant): ColorVa
 
 export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRecipeResult {
   const { color, variant, size, shape, disabled, focused } = options;
-  const colorStyle = resolveColorVariantStyle(theme, resolveInputColorRefs(color, variant));
+  const colorStyle = resolveColorVariantStyle(theme, resolveInputColorRefs(color ?? "primary", variant));
   const sizeStyle = resolveComponentSize(componentSize[size]);
-  const hasBorderColor = Boolean(colorStyle.container.borderColor);
+  const hasBorderColor = variant !== "ghost";
+  const borderColor = color ? theme.color[color].border : theme.color.canvas.input;
+  const activeBorder = focused ? theme.color[color ?? "primary"].border : borderColor;
   const borderWidth = resolveBorderWidth(hasBorderColor && variant !== "underlined", focused);
   const underlineWidth = resolveBorderWidth(hasBorderColor && variant === "underlined", focused);
 
@@ -64,10 +67,13 @@ export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRec
     borderWidth,
     borderBottomWidth: variant === "underlined" ? underlineWidth : borderWidth,
     ...colorStyle.container,
+    backgroundColor: variant === "soft" ? theme.color.canvas.surfaceAlt : theme.color.canvas.surface,
+    ...(hasBorderColor && { borderColor: activeBorder }),
     ...(disabled && { opacity: 0.5 }),
   };
 
   const input: TextStyle = {
+    fontFamily: nativeFontFamily(theme.fontFamily.sans),
     flex: 1,
     fontSize: sizeStyle.label.fontSize,
     color: theme.color.canvas.foreground,

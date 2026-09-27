@@ -1,5 +1,7 @@
 # mari-ui
 
+<img src="assets/brand/mari-ui-logo.png" alt="mari-ui" width="320" />
+
 Yayınlanabilir bir tasarım sistemi ve component kütüphanesi monorepo'su. Web (React / Next.js, RSC uyumlu) ve React Native'i aynı token ve prop sözleşmesinden besler.
 
 ## Paket grafiği

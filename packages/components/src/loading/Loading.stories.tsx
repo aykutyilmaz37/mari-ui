@@ -94,7 +94,7 @@ export const RefreshCard: Story = {
       setLoading(false);
     };
     return (
-      <div className="max-w-md rounded-2xl border border-mari-border bg-mari-surface p-5">
+      <div className="max-w-md rounded-xl border border-mari-border bg-mari-surface p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <p className="text-sm text-mari-muted">Haftalık ziyaretçi</p>
@@ -137,7 +137,7 @@ export const FormSubmit: Story = {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     return (
-      <div className="max-w-md rounded-2xl border border-mari-border bg-mari-surface p-6">
+      <div className="max-w-md rounded-xl border border-mari-border bg-mari-surface p-6">
         <Loading spinning={saving} tip="Kaydediliyor…">
           <form
             className="space-y-4"
@@ -204,7 +204,7 @@ export const FullscreenSetup: Story = {
     const phase = phases[Math.min(phases.length - 1, Math.floor(progress / 34))];
     return (
       <>
-        <div className="max-w-md rounded-2xl border border-mari-border bg-mari-surface p-6">
+        <div className="max-w-md rounded-xl border border-mari-border bg-mari-surface p-6">
           <p className="mb-1 font-semibold text-mari-foreground">Kuzey Yazılım</p>
           <p className="mb-4 text-sm text-mari-muted">Çalışma alanınız birkaç saniye içinde hazır olacak.</p>
           <Button
@@ -243,7 +243,7 @@ export const Inline: Story = {
     }, [text]);
     return (
       <div className="flex max-w-md flex-col gap-6">
-        <div className="rounded-2xl border border-mari-border bg-mari-surface p-4">
+        <div className="rounded-xl border border-mari-border bg-mari-surface p-4">
           <div className="mb-3 flex h-5 items-center justify-between">
             <span className="text-xs font-medium uppercase tracking-wide text-mari-muted">Belge</span>
             {saving ? (
@@ -257,7 +257,7 @@ export const Inline: Story = {
           <Input value={text} onChange={(e) => setText(e.target.value)} aria-label="Belge başlığı" />
         </div>
 
-        <div className="rounded-2xl border border-mari-border bg-mari-surface">
+        <div className="rounded-xl border border-mari-border bg-mari-surface">
           <ul className="divide-y divide-mari-border">
             {Array.from({ length: items }, (_, i) => (
               <li key={i} className="px-4 py-3 text-sm text-mari-foreground">
@@ -313,7 +313,7 @@ export const Delay: Story = {
           { label: "delay yok", spinning: a, delay: 0, onClick: () => run(setA) },
           { label: "delay={300}", spinning: b, delay: 300, onClick: () => run(setB) },
         ].map((c) => (
-          <div key={c.label} className="rounded-2xl border border-mari-border bg-mari-surface p-4">
+          <div key={c.label} className="rounded-xl border border-mari-border bg-mari-surface p-4">
             <div className="mb-3 flex items-center justify-between">
               <code className="text-xs text-mari-muted">{c.label}</code>
               <Button size="sm" variant="outline" color="neutral" onClick={c.onClick}>

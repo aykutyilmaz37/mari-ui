@@ -4,7 +4,10 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 // Component'lerin gerçekten DERLENMİŞ CSS'i — tüketicinin de import edeceği
 // aynı dosya. Kaynak Tailwind class'larını değil, tam olarak paketin
 // yayınlayacağı çıktıyı önizliyoruz.
+import "@mari-ui/tokens/fonts.css";
 import "@mari-ui/components/styles.css";
+import "./preview.css";
+import { DocsContainer } from "./DocsContainer";
 
 /**
  * Tema geçişi `data-theme` attribute'u üzerinden — `@mari-ui/tokens`'ın
@@ -19,6 +22,8 @@ import "@mari-ui/components/styles.css";
  */
 const preview: Preview = {
   parameters: {
+    docs: { container: DocsContainer },
+    backgrounds: { disable: true },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -30,7 +35,7 @@ const preview: Preview = {
         order: [
           "Genel Bakış",
           "Foundations",
-          ["Renkler", "Tipografi", "Spacing", "Elevation"],
+          ["Yumuşak İris", "Renkler", "Tipografi", "Spacing", "Elevation"],
           "Genel",
           "Navigasyon",
           "Veri Girişi",
@@ -46,21 +51,13 @@ const preview: Preview = {
       defaultTheme: "light",
       attributeName: "data-theme",
     }),
-    // Component'lerin çoğu (Button gibi) kendi kökünde bir sayfa arka planı
-    // taşımaz — `solid` bir buton her iki temada da BİLİNÇLİ OLARAK aynı
-    // renkte kalır (deriveColorRole'ün tasarımı). Bu sarmalayıcı olmadan
-    // tema toggle'ı görsel olarak hemen hemen HİÇBİR ŞEY değiştirmiyor gibi
-    // görünürdü — sayfa yüzeyini (surface/foreground) elle gösteriyoruz.
-    //
-    // Faz 13: autodocs ("docs") modunda `minHeight: 100vh` UYGULANMAZ — her
-    // gömülü story kendi kanvasında bu sarmalayıcıyı render ettiği için
-    // Playground dahil her demo bloğu bir tam ekran yüksekliğinde şişiyordu.
-    // Story modunda (tek story izole) tam yükseklik hâlâ isteniyor.
+    // Story ve gömülü docs örnekleri aynı tema ve font kaynağını kullanır.
     (Story, context) => {
       const isDocs = context.viewMode === "docs";
       return (
         <div
           style={{
+            fontFamily: "var(--mari-font-sans)",
             background: "var(--mari-color-surface)",
             color: "var(--mari-color-foreground)",
             minHeight: isDocs ? "auto" : "100vh",

@@ -19,10 +19,10 @@ describe("inputRecipe", () => {
     expect(container.borderRadius).toBe(0);
   });
 
-  it("soft: arka plan dolu, kenarlık yok", () => {
+  it("soft: nötr arka plan ve görünür kontrol sınırı", () => {
     const { container } = inputRecipe(lightTheme, { ...base, variant: "soft" });
-    expect(container.backgroundColor).toBe(lightTheme.color.primary.subtle);
-    expect(container.borderWidth).toBe(0);
+    expect(container.backgroundColor).toBe(lightTheme.color.canvas.surfaceAlt);
+    expect(container.borderWidth).toBe(1);
   });
 
   it("shape=pill: radius 9999 (underlined hariç — o her zaman 0)", () => {
@@ -34,4 +34,13 @@ describe("inputRecipe", () => {
     const { container } = inputRecipe(lightTheme, { ...base, disabled: true });
     expect(container.opacity).toBe(0.5);
   });
+});
+
+
+it("renk verilmezse nötr sınır, odakta iris kullanır; CSS font listesi RN'e sızmaz", () => {
+  const normal = inputRecipe(lightTheme, { ...base, color: undefined });
+  const focused = inputRecipe(lightTheme, { ...base, color: undefined, focused: true });
+  expect(normal.container.borderColor).toBe(lightTheme.color.canvas.input);
+  expect(focused.container.borderColor).toBe(lightTheme.color.primary.border);
+  expect(normal.input.fontFamily).toBe("Geist");
 });

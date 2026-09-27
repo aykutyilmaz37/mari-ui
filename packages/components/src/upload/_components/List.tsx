@@ -20,7 +20,7 @@ export function UploadList({ item, handleDelete }: UploadListProps) {
   const isUploading = item.status === "uploading";
 
   return (
-    <li className="group flex flex-col gap-1 rounded px-2 py-1 hover:bg-mari-surface-alt">
+    <li className="group flex flex-col gap-1 rounded-sm px-2 py-1 hover:bg-mari-surface-alt">
       <span className="flex items-center justify-between gap-2 text-sm">
         <span className="flex min-w-0 items-center gap-1.5 text-mari-foreground">
           <PaperclipIcon size={14} className={cn("shrink-0", isUploading ? "text-mari-primary" : "text-mari-muted")} />

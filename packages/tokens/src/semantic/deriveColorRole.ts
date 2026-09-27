@@ -1,5 +1,5 @@
 import type { HexColor } from "../contrast";
-import { AA_TEXT_MIN, contrastRatio, meetsAA } from "../contrast";
+import { meetsAA, pickAccessibleForeground } from "../contrast";
 import { BLACK, WHITE, type ColorRamp } from "../primitives/ramps";
 
 export type ColorShade = keyof ColorRamp;
@@ -8,7 +8,7 @@ export type ThemeMode = "light" | "dark";
 export interface SemanticColorRole {
   /** Sayfa yüzeyi üzerinde metin/ikon rengi — örn. "text-primary". */
   text: HexColor;
-  /** Dolgulu (solid) bileşenlerin arka planı — örn. birincil buton. Temadan bağımsızdır. */
+  /** Dolgulu (solid) bileşenlerin arka planı — örn. birincil buton. Temaya göre değişir. */
   solid: HexColor;
   /** `solid` arka plan üzerinde WCAG AA'yı geçen metin rengi. */
   solidContrast: HexColor;
@@ -23,98 +23,35 @@ export interface SemanticColorRole {
 }
 
 const shadeOrder: ColorShade[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-
-const SOLID_CANDIDATE_SHADES: ColorShade[] = [500, 600, 700, 800, 900];
-
-/**
- * Metin/subtle aday tonları temaya göre TERS yönde aranır: açık temada sayfa
- * yüzeyi açık olduğu için koyu tonlar (600→900), koyu temada sayfa yüzeyi
- * koyu olduğu için açık tonlar (300→50) dener. Bu ayrım yapılmazsa (örn. her
- * iki temada da aynı "600" tonu kullanılırsa) koyu temada metin okunmaz hale
- * gelir — bugünkü `--text-base` / `.dark` tutarsızlığının kök nedeni tam
- * olarak buydu.
- */
-const CANDIDATES: Record<ThemeMode, { textOnSurface: ColorShade[]; subtleBg: ColorShade; subtleText: ColorShade[] }> = {
-  light: {
-    textOnSurface: [600, 700, 800, 900],
-    subtleBg: 50,
-    subtleText: [700, 800, 900, 950],
-  },
-  dark: {
-    textOnSurface: [300, 400, 200, 500],
-    subtleBg: 950,
-    subtleText: [100, 200, 300, 50],
-  },
-};
+const DARK_INK: HexColor = "#201c19";
 
 /**
- * Bir renk rampasından WCAG AA'yı **hesaplayarak** geçen semantic rol türetir.
- *
- * Var olma sebebi: mevcut sistemde "turuncu üzerine beyaz metin iyi görünür
- * mü" gibi kararlar göz kararıyla veriliyordu. Turuncu (accent, #F97316)
- * üzerinde beyaz metnin kontrast oranı ~2.8:1'dir — AA eşiği olan 4.5:1'in
- * çok altında. Bu fonksiyon `solid` tonu için önce beyaz metinle AA'yı
- * dener, geçmiyorsa koyu metin dener; turuncu accent için sonuç: `solid`
- * #F97316 olarak kalır ama `solidContrast` otomatik olarak koyu nötr bir
- * tona döner — kimse elle "beyaz mı siyah mı" diye karar vermez.
+ * Her modda yüzey, dolgu, hover, yumuşak zemin ve kenarlık için ayrı kontrast
+ * kontrolü yapılır. Koyu temada açık dolgu + koyu metin kullanılır.
  */
 export function deriveColorRole(
   ramp: ColorRamp,
   surface: HexColor,
   mode: ThemeMode,
-  preferredSolidShade: ColorShade = 600
+  preferredSolidShade: ColorShade = mode === "light" ? 600 : 300,
+  surfaceAlt: HexColor = surface
 ): SemanticColorRole {
-  const { textOnSurface, subtleBg, subtleText } = CANDIDATES[mode];
+  const solid = ramp[preferredSolidShade];
+  // Beyazın yeterli olduğu dolguda beyazı koru; açık dolguda sıcak mürekkep.
+  const solidContrast = pickAccessibleForeground(solid, [WHITE, DARK_INK, BLACK]);
+  const solidIndex = shadeOrder.indexOf(preferredSolidShade);
+  const hoverShades = solidContrast === WHITE
+    ? shadeOrder.slice(solidIndex + 1)
+    : shadeOrder.slice(0, solidIndex).reverse();
+  const solidHover = hoverShades.map((shade) => ramp[shade]).find((color) => meetsAA(color, solidContrast)) ?? solid;
+  const subtle = ramp[mode === "light" ? 100 : 900];
+  const candidates = (mode === "light" ? [600, 700, 800, 900, 950] : [400, 300, 200, 100, 50]) as ColorShade[];
+  const fallback = mode === "light" ? BLACK : WHITE;
+  const colors = [...candidates.map((shade) => ramp[shade]), fallback];
+  const text = colors.find((color) => [surface, surfaceAlt, subtle].every((bg) => meetsAA(bg, color))) ?? fallback;
+  const subtleContrast = pickAccessibleForeground(subtle, colors);
+  // İşlevsel kenarlık: hem sayfa hem renkli zemin üzerinde en az 3:1.
+  const border = colors.find((color) => [surface, surfaceAlt, subtle].every((bg) => meetsAA(bg, color, 3))) ?? text;
 
-  // --- solid + solidContrast: tema-bağımsız, sadece kendi foreground'una göre ---
-  let solidShade: ColorShade = preferredSolidShade;
-  let solidContrast: HexColor | undefined;
-  const orderedSolidCandidates = [
-    preferredSolidShade,
-    ...SOLID_CANDIDATE_SHADES.filter((s) => s !== preferredSolidShade),
-  ];
-  for (const shade of orderedSolidCandidates) {
-    const bg = ramp[shade];
-    if (meetsAA(bg, WHITE)) {
-      solidShade = shade;
-      solidContrast = WHITE;
-      break;
-    }
-    if (meetsAA(bg, BLACK)) {
-      solidShade = shade;
-      solidContrast = BLACK;
-      break;
-    }
-  }
-  const resolvedSolid = ramp[solidShade];
-  if (!solidContrast) {
-    solidContrast =
-      contrastRatio(resolvedSolid, WHITE) >= contrastRatio(resolvedSolid, BLACK) ? WHITE : BLACK;
-    console.warn(
-      `[@mari-ui/tokens] Hiçbir "solid" aday AA eşiğini (${AA_TEXT_MIN}) geçemedi, en iyi seçenek kullanılıyor.`
-    );
-  }
-
-  const solidIndex = shadeOrder.indexOf(solidShade);
-  const hoverShade: ColorShade =
-    shadeOrder[Math.min(solidIndex + 1, shadeOrder.length - 1)] ?? solidShade;
-
-  // --- subtle + subtleContrast: temaya göre yön değiştirir ---
-  const subtle = ramp[subtleBg];
-  const subtleContrast =
-    subtleText.map((s) => ramp[s]).find((c) => meetsAA(subtle, c)) ?? ramp[mode === "light" ? 900 : 50];
-
-  // --- text: sayfa yüzeyi üzerinde okunabilir renk/ikon tonu ---
-  const text =
-    textOnSurface.map((s) => ramp[s]).find((c) => meetsAA(surface, c)) ?? ramp[mode === "light" ? 900 : 50];
-
-  return {
-    text,
-    solid: resolvedSolid,
-    solidContrast,
-    solidHover: ramp[hoverShade],
-    subtle,
-    subtleContrast,
-    border: ramp[mode === "light" ? 300 : 700],
-  };
+  return { text, solid, solidContrast, solidHover, subtle, subtleContrast, border };
 }

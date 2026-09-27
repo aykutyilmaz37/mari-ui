@@ -59,7 +59,7 @@ function ItemIcon({ item, showMonogram, reserveIconSlot }: Pick<SidebarItemProps
   // İkonu olmayan öğeye uydurma bir ikon koymak yerine rayda baş harfi.
   if (showMonogram) {
     return (
-      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded bg-mari-surface-alt text-[0.6875rem] font-semibold uppercase">
+      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-sm bg-mari-surface-alt text-[0.6875rem] font-semibold uppercase">
         {item.title.charAt(0)}
       </span>
     );

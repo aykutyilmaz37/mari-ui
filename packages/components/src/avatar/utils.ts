@@ -21,7 +21,7 @@ const SIZE_REM: Record<Size, string> = { sm: "1.5rem", md: "2rem", lg: "2.5rem" 
  * için net bir ölçek yok — `md`'nin değerlerine düşülür.
  */
 const INITIAL_FONT_SIZE_CLASS: Record<Size, string> = { sm: "text-sm", md: "text-lg", lg: "text-2xl" };
-const SQUARE_RADIUS_CLASS: Record<Size, string> = { sm: "rounded", md: "rounded-md", lg: "rounded-lg" };
+const SQUARE_RADIUS_CLASS: Record<Size, string> = { sm: "rounded-sm", md: "rounded-md", lg: "rounded-lg" };
 
 export function getSizeStyle(size: AvatarSize): React.CSSProperties {
   const dimension = typeof size === "number" ? size : SIZE_REM[size];

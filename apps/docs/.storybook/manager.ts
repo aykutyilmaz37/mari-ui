@@ -1,15 +1,9 @@
 import { addons } from "@storybook/manager-api";
-import { create } from "@storybook/theming";
+import "@mari-ui/tokens/fonts.css";
+import { createMariTheme } from "./theme";
 
-// Storybook manager (sol panel / kabuk) konfigürasyonu. Kanvas temasından
-// bağımsız — daima açık. Faz 13: marka adı "mari-ui".
+// Kabuk açık iris; kanvas ve doküman teması araç çubuğundan değiştirilebilir.
 addons.setConfig({
-  theme: create({
-    base: "light",
-    brandTitle: "mari-ui",
-    brandUrl: "/",
-  }),
-  sidebar: {
-    showRoots: true,
-  },
+  theme: createMariTheme("light"),
+  sidebar: { showRoots: true },
 });

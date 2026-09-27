@@ -26,7 +26,7 @@ const WEIGHT_CLASS: Record<TextWeight, string> = {
 };
 
 export function getTitleClass(level: TitleLevel, color: ColorRole | undefined, className?: string): string {
-  return cn(TITLE_CLASS[level], color ? textClass[color] : "text-mari-foreground", className);
+  return cn("font-heading", TITLE_CLASS[level], color ? textClass[color] : "text-mari-foreground", className);
 }
 
 /**

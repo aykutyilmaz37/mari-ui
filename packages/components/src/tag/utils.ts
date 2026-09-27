@@ -45,7 +45,7 @@ export function getTagClass(
 ): string {
   const colorClasses = colorVariantToClassName(resolveColorVariant(color, variant));
   return cn(
-    "inline-flex items-center gap-1 rounded px-[0.4375rem] leading-5 text-xs font-medium",
+    "inline-flex items-center gap-1 rounded-sm px-[0.4375rem] leading-5 text-xs font-medium",
     colorClasses,
     bordered && variant !== "outline" && "border",
     className

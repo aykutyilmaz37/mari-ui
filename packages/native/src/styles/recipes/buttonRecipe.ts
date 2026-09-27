@@ -1,3 +1,4 @@
+import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
 import { componentSize, resolveColorVariant, type ColorRole, type ExtendedSize, type Variant } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
@@ -65,6 +66,7 @@ export function buttonRecipe(theme: Theme, options: ButtonRecipeOptions): Button
   };
 
   const label: TextStyle = {
+    fontFamily: nativeFontFamily(theme.fontFamily.sans),
     fontSize: sizeStyle.label.fontSize,
     fontWeight: "500",
     // Web'de `variant="link"` bir `<a>` gibi altı çizili görünür; native'de

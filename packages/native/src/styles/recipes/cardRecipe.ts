@@ -1,3 +1,4 @@
+import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
 import type { Size } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
@@ -67,6 +68,7 @@ export function cardRecipe(theme: Theme, options: CardRecipeOptions): CardRecipe
   };
 
   const titleText: TextStyle = {
+    fontFamily: nativeFontFamily(theme.fontFamily.heading ?? theme.fontFamily.sans),
     fontWeight: "600",
     fontSize: toPx(theme.fontSize[CARD_FONT_SIZE[size]]),
     color: theme.color.canvas.foreground,
@@ -80,6 +82,7 @@ export function cardRecipe(theme: Theme, options: CardRecipeOptions): CardRecipe
   const body: ViewStyle = { padding };
 
   const bodyText: TextStyle = {
+    fontFamily: nativeFontFamily(theme.fontFamily.sans),
     fontSize: toPx(theme.fontSize[CARD_FONT_SIZE[size]]),
     color: theme.color.canvas.foreground,
   };

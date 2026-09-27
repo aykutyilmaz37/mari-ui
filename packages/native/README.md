@@ -78,3 +78,21 @@ Bu paketin CI'ı **vitest** kullanıyor (monorepo'nun geri kalanıyla tutarlı o
 
 - **Test edilenler**: `react-native`'i sadece TİP olarak (`import type`) kullanan saf mantık dosyaları — `toPx`, `resolveColorToken`, `resolveColorVariantStyle`, ve üç recipe (`buttonRecipe`/`inputRecipe`/`cardRecipe`). Bunlar zaten stillerin doğruluğunu belirleyen asıl mantık.
 - **Test edilMEyenler**: `react-native`'i ÇALIŞMA ZAMANINDA import eden dosyalar — `useTheme.ts` (`useColorScheme`), `useStyles.ts` (`StyleSheet.create`), ve üç component'in kendisi (`Button`/`Input`/`Card`, `View`/`Pressable`/`TextInput` importları). Bunlar `tsc`/`eslint` ile ve gerçek bir RN ortamında (yukarıdaki doğrulanmamış madde) doğrulanıyor. Gerçek bir component-render testi isteniyorsa `jest` + `jest-expo`/`@testing-library/react-native` gerekir — bu, vitest'in yerini almayan, monorepo'ya YENİ bir test koşucusu eklemek anlamına gelir; bu fazın kapsamı dışında bırakıldı, ileride gerçek bir Expo doğrulamasıyla birlikte ele alınabilir.
+
+## İris teması ve tipografi
+
+Renkler web ile aynı `lightTheme` / `darkTheme` kaynağından gelir. Input,
+renk verilmediğinde nötr ve en az 3:1 kontrastlı `canvas.input` sınırını,
+odakta iris rengini kullanır. `color="error"` gibi açık seçimler korunur.
+
+Button/Input gövdesi **Geist**, Card başlığı **Manrope** ailesini kullanır.
+Uygulamada bu fontları aynı aile adlarıyla kaydedin. Dosyalar
+`@mari-ui/tokens/fonts/Geist.ttf` ve `@mari-ui/tokens/fonts/Manrope.ttf`
+export'larında bulunur. Font yüklemesi kütüphanenin yan etkisi değildir;
+Expo veya native projenizin font yükleme/kayıt yöntemini kullanın ve
+kayıt tamamlanınca arayüzü gösterin. Ağırlık eşlemelerini cihazda doğrulayın.
+
+Sistem fontu için ThemeProvider'a verilen temanın `fontFamily.sans` ve
+`fontFamily.heading` alanlarını `"system-ui"` yapın. Native resolver bu değerde
+`fontFamily` özelliğini boş bırakarak işletim sisteminin fontunu kullanır.
+Özel kayıtlı font isimleri de desteklenir; CSS fallback listeleri RN'e taşınmaz.

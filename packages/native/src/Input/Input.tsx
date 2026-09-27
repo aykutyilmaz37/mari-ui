@@ -22,7 +22,7 @@ export function Input({
   size = "md",
   shape = "default",
   variant = "outline",
-  color = "primary",
+  color,
   icon,
   iconPosition = "start",
   allowClear = false,

@@ -60,7 +60,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     }, [indeterminate]);
 
     const baseClasses = cn(
-      "appearance-none border outline-none focus:outline-none",
+      "appearance-none border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
       getSizeClasses(size),
       getShapeClasses(shape),
       getVariantClasses(variant, resolvedColor),

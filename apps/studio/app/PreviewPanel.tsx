@@ -21,12 +21,7 @@ const PREVIEW_COLORS: ColorRole[] = ["primary", "accent"];
  * `style` prop'u, bu yüzden `"use client"` gerekmiyor (yalnızca `StudioApp`
  * bu değerleri STATE'ten üretiyor, kendisi client).
  *
- * `fontFamilySans` bir CSS DEĞİŞKENİ olarak değil, doğrudan `style.
- * fontFamily` ile uygulanıyor: bugün hiçbir component `--mari-font-sans`ı
- * OKUMUYOR (bkz. plan notu — Tailwind `@theme inline` katmanı font ailesini
- * eşlemiyor), bu yüzden CSS değişkeni geçmek görünürde hiçbir şey
- * değiştirmezdi. Düz `font-family` mirasıyla (CSS inheritance) tüm alt
- * component'lerin metni GERÇEKTEN bu fontu kullanır — dürüst bir önizleme.
+ * Font token'ları CSS değişkenlerinden, gövde ailesi miras yoluyla uygulanır.
  */
 export function PreviewPanel({ mode, cssVars, fontFamilySans }: PreviewPanelProps) {
   const style: CSSProperties = { ...(cssVars as CSSProperties), fontFamily: fontFamilySans };

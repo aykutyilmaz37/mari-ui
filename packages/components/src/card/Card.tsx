@@ -32,6 +32,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       bordered = true,
       hoverable,
       loading = false,
+      skeleton = loading,
       size = "md",
       inset,
       href,
@@ -76,13 +77,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
         {(title || extra) && (
           <div className={cn("flex items-center gap-3 border-b border-mari-border", cardPadding.header(size), classNames?.header)}>
-            {title && <div className="min-w-0 flex-1 truncate font-semibold">{title}</div>}
+            {title && <div className="min-w-0 flex-1 truncate font-heading font-semibold">{title}</div>}
             {extra && <div className="ml-auto flex shrink-0 items-center text-sm">{extra}</div>}
           </div>
         )}
 
         <div className={cn("flex-1", cardPadding.body(size), classNames?.body)}>
-          {loading ? <Skeleton active title={false} paragraph={{ rows: 3 }} /> : children}
+          {skeleton ? <Skeleton active title={false} paragraph={{ rows: 3 }} /> : children}
         </div>
 
         {footer && <div className={cn("border-t border-mari-border", cardPadding.footer(size), classNames?.footer)}>{footer}</div>}

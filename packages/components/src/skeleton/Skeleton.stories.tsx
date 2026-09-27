@@ -196,7 +196,7 @@ export const FormSkeleton: Story = {
     return (
       <div className="max-w-sm">
         <LoadedToggle loaded={loaded} onChange={setLoaded} />
-        <div aria-busy={!loaded} className="space-y-4 rounded-2xl border border-mari-border bg-mari-surface p-5">
+        <div aria-busy={!loaded} className="space-y-4 rounded-xl border border-mari-border bg-mari-surface p-5">
           {["Ad soyad", "E-posta"].map((label) => (
             <div key={label} className="flex flex-col gap-1.5">
               {loaded ? (

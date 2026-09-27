@@ -156,7 +156,7 @@ export const DeleteConfirm: Story = {
             label="Onaylamak için proje adını yazın"
             hint={
               <>
-                Yazmanız gereken: <code className="rounded bg-mari-surface-alt px-1 py-0.5 font-mono text-mari-foreground">{name}</code>
+                Yazmanız gereken: <code className="rounded-sm bg-mari-surface-alt px-1 py-0.5 font-mono text-mari-foreground">{name}</code>
               </>
             }
           >

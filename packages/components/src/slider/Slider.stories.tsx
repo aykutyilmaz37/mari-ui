@@ -96,7 +96,7 @@ const [price, setPrice] = useState<[number, number]>([1000, 6000]);
     const [changes, setChanges] = useState(0);
     const [queries, setQueries] = useState(0);
     return (
-      <div className="max-w-xl rounded-2xl border border-mari-border bg-mari-surface p-6">
+      <div className="max-w-xl rounded-xl border border-mari-border bg-mari-surface p-6">
         <div className="mb-6 flex items-baseline justify-between gap-3">
           <p className="text-sm font-semibold text-mari-foreground">Fiyat</p>
           <p className="text-sm tabular-nums text-mari-muted">
@@ -146,7 +146,7 @@ export const Volume: Story = {
     const [volume, setVolume] = useState(60);
     const Icon = volumeIcon(volume);
     return (
-      <div className="flex max-w-sm items-center gap-3 rounded-2xl border border-mari-border bg-mari-surface px-4 py-3">
+      <div className="flex max-w-sm items-center gap-3 rounded-xl border border-mari-border bg-mari-surface px-4 py-3">
         <Button variant="ghost" color="neutral" size="sm" shape="circle" aria-label="Sesi kapat" icon={<Icon size={18} aria-hidden />} onClick={() => setVolume(0)} />
         <div className="min-w-0 flex-1">
           <Slider aria-label="Ses düzeyi" value={volume} onChange={(v) => setVolume(v as number)} formatValue={(v) => `%${v}`} />
@@ -186,7 +186,7 @@ export const Thermostat: Story = {
     const color = tempColor(temp);
     const clamp = (v: number) => Math.min(30, Math.max(16, v));
     return (
-      <div className="max-w-sm rounded-2xl border border-mari-border bg-mari-surface p-6">
+      <div className="max-w-sm rounded-xl border border-mari-border bg-mari-surface p-6">
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-mari-muted">
             <ThermometerIcon size={16} aria-hidden /> Salon
@@ -230,7 +230,7 @@ export const Equalizer: Story = {
     const [gains, setGains] = useState([3, 1, 0, 2, 4]);
     const setGain = (index: number, gain: number) => setGains((g) => g.map((x, j) => (j === index ? gain : x)));
     return (
-      <div className="w-fit rounded-2xl border border-mari-border bg-mari-surface p-6">
+      <div className="w-fit rounded-xl border border-mari-border bg-mari-surface p-6">
         <div className="mb-4 flex items-center justify-between gap-6">
           <p className="text-sm font-semibold text-mari-foreground">Ekolayzır</p>
           <Button size="sm" variant="ghost" color="neutral" onClick={() => setGains(bands.map(() => 0))}>

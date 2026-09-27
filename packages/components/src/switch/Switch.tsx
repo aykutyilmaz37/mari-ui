@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useId, useRef } from "react";
+import React, { useId } from "react";
 import { Loader2Icon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
-import { textClass, textSolidContrastClass } from "../lib/colorClasses";
+import { bgSolidContrastClass, textClass, textSolidContrastClass } from "../lib/colorClasses";
 import type { SwitchProps } from "./types";
 import { getBallClass, getSpinnerSize, getTrackClass } from "./utils";
 
@@ -31,7 +31,6 @@ export function Switch({
   loading,
   className,
 }: SwitchProps) {
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked, onChange });
   // `label` eskiden salt dekoratif bir <span>'di — ne ekran okuyucuya
   // duyurulan bir isim ne de tıklanabilir bir etiket olarak switch'e
@@ -39,10 +38,6 @@ export function Switch({
   // `aria-labelledby` gerektirmeden erişilebilir adı sağlar hem de metne
   // tıklamayı switch'i değiştirir.
   const switchId = useId();
-
-  useEffect(() => {
-    buttonRef.current?.blur();
-  }, [isChecked]);
 
   const hasLabel = Boolean(switchTrueLabel || switchFalseLabel);
 
@@ -56,18 +51,16 @@ export function Switch({
       <button
         type="button"
         id={switchId}
-        ref={buttonRef}
         onClick={() => !disabled && !loading && setIsChecked(!isChecked)}
         disabled={disabled || loading}
         aria-checked={isChecked}
         role="switch"
         className={cn(
-          "relative inline-flex items-center justify-start rounded-full focus:ring-0 duration-300 overflow-hidden transition-opacity hover:opacity-80 group",
+          "relative inline-flex items-center justify-start rounded-full focus:ring-0 duration-300 overflow-hidden transition-colors group",
           // Buton'daki (Faz 13.1) aynı odak halkası deseni — eskiden `focus:ring-0`
           // ile TAMAMEN kapatılmıştı, klavye kullanıcısı odağın nerede olduğunu göremiyordu.
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
           (disabled || loading) && "opacity-50 cursor-not-allowed",
-          !isChecked && !disabled && "opacity-70",
           getTrackClass(size, color, isChecked, hasLabel),
           className
         )}
@@ -77,8 +70,9 @@ export function Switch({
             // `shadow` — ant.design'ın topu da düz bir daire değil, hafif bir
             // gölgeyle (0 2px 4px) track'ten AYRIŞIR; eskiden gölgesiz düz
             // bir beyaz daireydi, track'e "yapışık" görünüyordu.
-            "inline-block rounded-full absolute bg-white shadow transform transition-all duration-300 flex items-center justify-center",
+            "inline-block rounded-full absolute shadow transform transition-all duration-300 flex items-center justify-center",
             isChecked ? "group-focus:scale-x-[1.166] group-focus:origin-right" : "group-focus:scale-x-[1.166] group-focus:origin-left",
+            isChecked ? bgSolidContrastClass[color] : "bg-mari-foreground",
             getBallClass(size, isChecked)
           )}
         >
@@ -88,7 +82,7 @@ export function Switch({
               // Spinner rengi track'in rengini yansıtır (ant.design'ın deseni) —
               // eskiden sabit `text-black`ti, hangi renk/durumda olursa olsun
               // aynı görünüyordu.
-              className={cn("animate-spin", isChecked ? textClass[color] : "text-mari-muted")}
+              className={cn("animate-spin", isChecked ? textClass[color] : "text-mari-surface")}
             />
           )}
         </span>

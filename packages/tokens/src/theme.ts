@@ -8,6 +8,8 @@ import type { ThemeMode } from "./semantic/deriveColorRole";
 export interface ThemeFontFamily {
   sans: string;
   mono: string;
+  /** Başlık / marka ailesi; eski özel temalar için opsiyonel. */
+  heading?: string;
 }
 
 export interface Theme {
@@ -31,7 +33,7 @@ export interface Theme {
   name: string;
   color: SemanticColorTokens;
   spacing: typeof primitives.spacing;
-  radius: typeof primitives.radius;
+  radius: primitives.RadiusTokens;
   fontFamily: ThemeFontFamily;
   fontSize: typeof primitives.fontSize;
   fontWeight: typeof primitives.fontWeight;
@@ -47,6 +49,7 @@ interface BuildThemeOptions {
   name?: string;
   rampOverrides?: Partial<Record<ColorRole, ColorRamp>>;
   fontFamily?: Partial<ThemeFontFamily>;
+  radiusDensity?: primitives.RadiusDensity;
 }
 
 function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
@@ -55,7 +58,7 @@ function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
     name: options.name ?? mode,
     color: buildSemanticColors(mode, options.rampOverrides),
     spacing: primitives.spacing,
-    radius: primitives.radius,
+    radius: primitives.scaleRadius(options.radiusDensity),
     fontFamily: { ...primitives.fontFamily, ...options.fontFamily },
     fontSize: primitives.fontSize,
     fontWeight: primitives.fontWeight,
@@ -77,12 +80,11 @@ export const themes = { light: lightTheme, dark: darkTheme } as const;
 /**
  * Faz 6 — tema stüdyosu (`apps/studio`) çıktısı `mari-ui.config.json`,
  * `dist/schema.json`'daki `editable` sözleşmesinin BİREBİR TypeScript
- * karşılığı. `density.radius` burada YOK — o `Theme.radius`'u (sabit ölçek)
- * değil, `@mari-ui/core`'un `componentSize` tablosunu (bir component
- * BOYUTUNUN hangi radius seviyesini kullandığını) etkiler; bu yüzden
- * çözümlemesi `@mari-ui/core/buildComponentSize`'ın işi, `resolveThemeConfig`
- * sadece `radiusDensity`'yi olduğu gibi geri döndürür ki çağıran (stüdyo)
- * bunu `core`'a iletebilsin.
+ * karşılığı. `density.radius` (Faz 15) `Theme.radius` skalasını orantılı
+ * ölçekler (`scaleRadius`) → web'de `--mari-radius-*` değişkenleri, dolayısıyla
+ * `rounded-sm/md/lg/xl` utility'leri değişir. `radiusDensity` ayrıca olduğu
+ * gibi geri döndürülür ki `@mari-ui/core/buildComponentSize` (native) da
+ * aynı seçimi kullanabilsin.
  *
  * `themes` (Faz 10 — backlog madde 10): light/dark'IN ÖTESİNDE, tüketicinin
  * kendi projesine ekleyebileceği KEYFİ sayıda ek isimli tema. Her girdi
@@ -100,14 +102,22 @@ export interface MariUiThemeConfig {
   typography?: {
     fontFamilySans?: string;
     fontFamilyMono?: string;
+    fontFamilyHeading?: string;
   };
   density?: {
-    radius?: keyof typeof primitives.radius;
+    /** Faz 15 — tüm `--mari-radius-*` skalasını orantılı ölçekler (`none` = keskin). */
+    radius?: primitives.RadiusDensity;
   };
   themes?: Record<string, NamedThemeInput>;
 }
 
-/** `MariUiThemeConfig`in `color`/`typography` alanlarıyla AYNI şekil — sadece bir `base` (kontrast yönü) eklenmiş hali. */
+/** CLI, stüdyo ve şema için tek varsayılan config kaynağı. */
+export const defaultThemeConfig = {
+  color: { primary: primitives.primaryRamp[600], accent: primitives.accentRamp[600] },
+  typography: { fontFamilySans: primitives.fontFamily.sans, fontFamilyMono: primitives.fontFamily.mono, fontFamilyHeading: primitives.fontFamily.heading },
+  density: { radius: "md" },
+} satisfies Required<Omit<MariUiThemeConfig, "themes">>;
+
 export interface NamedThemeInput {
   base: ThemeMode;
   color?: MariUiThemeConfig["color"];
@@ -117,20 +127,21 @@ export interface NamedThemeInput {
 export interface ResolvedMariUiTheme {
   light: Theme;
   dark: Theme;
-  radiusDensity: keyof typeof primitives.radius;
+  radiusDensity: primitives.RadiusDensity;
   /** `config.themes`teki her girdinin ADI → çözümlenmiş `Theme`si. Girdi yoksa boş obje. */
   themes: Record<string, Theme>;
 }
 
 function resolveBuildThemeOptions(config: { color?: MariUiThemeConfig["color"]; typography?: MariUiThemeConfig["typography"] } = {}, name?: string): BuildThemeOptions {
   const rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {};
-  if (config.color?.primary) rampOverrides.primary = primitives.generateRamp(config.color.primary);
-  if (config.color?.accent) rampOverrides.accent = primitives.generateRamp(config.color.accent);
+  if (config.color?.primary && config.color.primary.toLowerCase() !== defaultThemeConfig.color.primary) rampOverrides.primary = primitives.generateRamp(config.color.primary);
+  if (config.color?.accent && config.color.accent.toLowerCase() !== defaultThemeConfig.color.accent) rampOverrides.accent = primitives.generateRamp(config.color.accent);
 
-  const fontFamilyOverride: { sans?: string; mono?: string } = {};
+  const fontFamilyOverride: Partial<ThemeFontFamily> = {};
   if (config.typography?.fontFamilySans) fontFamilyOverride.sans = config.typography.fontFamilySans;
   if (config.typography?.fontFamilyMono) fontFamilyOverride.mono = config.typography.fontFamilyMono;
 
+  if (config.typography?.fontFamilyHeading) fontFamilyOverride.heading = config.typography.fontFamilyHeading;
   return { name, rampOverrides, fontFamily: fontFamilyOverride };
 }
 
@@ -140,8 +151,8 @@ function resolveBuildThemeOptions(config: { color?: MariUiThemeConfig["color"]; 
  * çağırmak isteyen bir tüketici (örn. `@mari-ui/native`de programatik bir
  * 3. tema kurmak isteyen biri) için de dışa açık.
  */
-export function createNamedTheme(name: string, base: ThemeMode, config: Omit<NamedThemeInput, "base"> = {}): Theme {
-  return buildTheme(base, resolveBuildThemeOptions(config, name));
+export function createNamedTheme(name: string, base: ThemeMode, config: Omit<NamedThemeInput, "base"> = {}, radiusDensity?: primitives.RadiusDensity): Theme {
+  return buildTheme(base, { ...resolveBuildThemeOptions(config, name), radiusDensity });
 }
 
 /**
@@ -152,17 +163,18 @@ export function createNamedTheme(name: string, base: ThemeMode, config: Omit<Nam
  * ikinci kez yazmasın.
  */
 export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMariUiTheme {
-  const baseOptions = resolveBuildThemeOptions(config);
+  const radiusDensity = config.density?.radius ?? "md";
+  const baseOptions = { ...resolveBuildThemeOptions(config), radiusDensity };
 
   const namedThemes: Record<string, Theme> = {};
   for (const [name, themeInput] of Object.entries(config.themes ?? {})) {
-    namedThemes[name] = createNamedTheme(name, themeInput.base, themeInput);
+    namedThemes[name] = createNamedTheme(name, themeInput.base, themeInput, radiusDensity);
   }
 
   return {
     light: buildTheme("light", { ...baseOptions, name: "light" }),
     dark: buildTheme("dark", { ...baseOptions, name: "dark" }),
-    radiusDensity: config.density?.radius ?? "md",
+    radiusDensity,
     themes: namedThemes,
   };
 }

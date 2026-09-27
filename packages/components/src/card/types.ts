@@ -1,10 +1,11 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { SlotClassNames, Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type CardSlot = "header" | "body" | "footer" | "cover" | "actions";
 export type CardClassNames = SlotClassNames<CardSlot>;
 
-export interface CardProps {
+export interface CardProps extends SkeletonableProps {
   children?: ReactNode;
   title?: ReactNode;
   /** Başlığın sağında (ör. bir link, menü düğmesi, Switch). */
@@ -21,7 +22,7 @@ export interface CardProps {
   bordered?: boolean;
   /** Üzerine gelince gölge + hafif yükselme. `href` verildiğinde varsayılan olarak açık. */
   hoverable?: boolean;
-  /** İçerik yerine iskelet gösterir (kapak ve başlık korunur). */
+  /** @deprecated Faz 15 — `skeleton` kullanın; bir sonraki major'da kaldırılacak. */
   loading?: boolean;
   /** `sm`: kompakt (12px), `md`: 24px, `lg`: 32px dolgu. Varsayılan: `md`. */
   size?: Size;

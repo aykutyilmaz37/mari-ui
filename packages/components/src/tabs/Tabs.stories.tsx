@@ -151,7 +151,7 @@ export const AccountSettings: Story = {
     const toggle = (key: keyof typeof prefs) => (value: boolean) => setPrefs((p) => ({ ...p, [key]: value }));
 
     return (
-      <div className="mx-auto max-w-3xl rounded-2xl border border-mari-border bg-mari-surface p-5 sm:p-8">
+      <div className="mx-auto max-w-3xl rounded-xl border border-mari-border bg-mari-surface p-5 sm:p-8">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-mari-foreground">Hesap ayarları</h3>
           <p className="text-sm text-mari-muted">Profilinizi, bildirimlerinizi ve güvenlik tercihlerinizi yönetin.</p>
@@ -421,7 +421,7 @@ const [filter, setFilter] = useState("all");
     const visible = filter === "all" ? issues : issues.filter((i) => i.status === filter);
 
     return (
-      <div className="mx-auto max-w-3xl rounded-2xl border border-mari-border bg-mari-surface p-5 sm:p-6">
+      <div className="mx-auto max-w-3xl rounded-xl border border-mari-border bg-mari-surface p-5 sm:p-6">
         <Tabs variant="pills" activeTab={filter} onChange={setFilter}>
           <TabsList
             aria-label="Durum filtresi"
@@ -539,7 +539,7 @@ export const VerticalSettings: Story = {
       { initials: "EC", name: "Elif Can", email: "elif@kuzey.com.tr", role: "Tasarımcı" },
     ];
     return (
-      <div className="mx-auto max-w-3xl rounded-2xl border border-mari-border bg-mari-surface p-5 sm:p-6">
+      <div className="mx-auto max-w-3xl rounded-xl border border-mari-border bg-mari-surface p-5 sm:p-6">
         <Tabs orientation="vertical" defaultActiveTab="members">
           <TabsList aria-label="Ekip ayarları">
             <TabsTrigger value="general" icon={<CodeIcon />}>

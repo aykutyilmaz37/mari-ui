@@ -4,13 +4,25 @@ import { Meta } from "@storybook/blocks";
 
 # Tipografi
 
+**Geist** arayüz ve gövde, **Manrope** başlıklar, **Geist Mono** kod için kullanılır.
+Fontlar Türkçe karakterleri içerir; Storybook ve stüdyo yerel font dosyalarını yükler.
+
+```tsx
+import "@mari-ui/tokens/fonts.css"; // isteğe bağlı yerel fontlar
+import "@mari-ui/components/styles.css";
+```
+
+`--mari-font-sans`, `--mari-font-heading` ve `--mari-font-mono` değiştirilebilir.
+Font yüklenmezse sistem ailesine düşülür. React Native için fontları uygulamada
+kaydedin; paket CSS fallback listesinden ilk aile adını kullanır.
+
+
 Font ölçeği 1.125 (major second) oranıyla, `0.875rem` (14px @ 16px kök) gövde
 metni tabanı üzerine kuruludur. Kaynak: `@mari-ui/tokens` `fontSize` /
 `fontWeight` / `lineHeight`.
 
-> **Birim kuralı:** tüm boyutlar `rem` — asla `px`. `px` 4K/yüksek-DPI
-> ekranlarda kullanıcının kök font ayarıyla ölçeklenmez. Aşağıdaki px
-> karşılıkları sadece 16px kök font varsayımıyla referanstır.
+> **Birim kuralı:** web boyutları `rem` ile kullanıcının kök font ayarını izler.
+> Aşağıdaki px karşılıkları 16px kök font varsayımıyla referanstır.
 
 ## Ölçek
 

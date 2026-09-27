@@ -52,7 +52,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     };
 
     const baseClasses = cn(
-      "relative appearance-none border outline-none rounded-full",
+      "relative appearance-none border rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
       getSizeClasses(size),
       getVariantClasses(variant, resolvedColor),
       disabled && "opacity-50",

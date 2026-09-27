@@ -5,65 +5,49 @@ export type ColorRamp = Record<
   HexColor
 >;
 
-/**
- * Ham renk rampaları. Her rampa 50 (en açık) → 950 (en koyu) arası 11 tondan
- * oluşur. Semantic katman (`semantic/colors.ts`) bunları rol'e (primary,
- * success, ...) bağlar; component'ler asla bu dosyayı doğrudan import etmez.
- *
- * Faz 13 (madde 18 — tasarım geçişi): palet Tailwind blue/slate/orange'dan
- * kullanıcının blue-grey paletine geçti. Turuncu accent TAMAMEN kaldırıldı.
- * Anchor swatch'lar: primary #88BDF2 (300/400), accent #6A89A7 (500),
- * neutral #384959 (700). Rampalar elle yazıldı — her biri `deriveColorRole`
- * aramasının WCAG AA geçen bir `solid` ton bulabilmesi için yeterince derin
- * uçlara sahip (doğrulama: contrast.test.ts).
- */
+/** Soft Iris: marka rampaları; semantik roller kontrast kontrolüyle türetilir. */
 export const primaryRamp: ColorRamp = {
-  50: "#eef6fe",
-  100: "#d9ebfd",
-  200: "#bdddfc", // kullanıcı swatch
-  300: "#93c6f6",
-  400: "#88bdf2", // kullanıcı swatch — "seçtiğim rengi görüyorum"
-  500: "#5b9fe0",
-  600: "#3f82c8",
-  700: "#2f66a3", // solid hedef (beyaz metin ~5.9:1)
-  800: "#274f7d",
-  900: "#213f61",
-  950: "#16273f",
+  50: "#f4f1ff",
+  100: "#ebe6ff",
+  200: "#d5caff",
+  300: "#c6b8ff",
+  400: "#b7a5ff",
+  500: "#8972e4",
+  600: "#6951ce",
+  700: "#5842b3",
+  800: "#493594",
+  900: "#382c59",
+  950: "#251c3b",
 };
 
-/** İkincil vurgu — muted steel-blue (#6A89A7 ailesi). Neutral'dan doygunlukla ayrışır. */
+/** İkincil vurgu: iris ile uyumlu, düşük doygunluklu mor. */
 export const accentRamp: ColorRamp = {
-  50: "#f1f4f7",
-  100: "#e2e8ee",
-  200: "#c9d5df",
-  300: "#a8bccd",
-  400: "#88a1b8",
-  500: "#6a89a7", // kullanıcı swatch
-  600: "#557293", // solid hedef (beyaz metin ~5.0:1)
-  700: "#455d79",
-  800: "#3a4d63",
-  900: "#334153",
-  950: "#1f2a37",
+  50: "#f4f1f8",
+  100: "#eae3f2",
+  200: "#d5c7e4",
+  300: "#c4b2d9",
+  400: "#b19cca",
+  500: "#8f76ac",
+  600: "#765991",
+  700: "#634879",
+  800: "#503b63",
+  900: "#392a48",
+  950: "#261d30",
 };
 
-/**
- * Nötr rampa — surface/border/foreground/muted/input token'ları burada türer.
- * Düşük doygunluklu blue-grey: metin/kenarlık "gri" okunur ama palete uygun
- * hafif mavi tint taşır. `950` (#141d26) koyu tema yüzeyidir — bilinçli olarak
- * saf siyah DEĞİL, palete özgü görünür bir koyu blue-grey.
- */
+/** Mor alt tonlu nötrler. Dekoratif border ve işlevsel input ayrı seçilir. */
 export const neutralRamp: ColorRamp = {
-  50: "#f4f6f8",
-  100: "#e7ebef",
-  200: "#d0d8df",
-  300: "#b0bdc8",
-  400: "#8395a5",
-  500: "#5f7183",
-  600: "#4a5a6b",
-  700: "#384959", // kullanıcı swatch
-  800: "#2a3946",
-  900: "#1e2a35",
-  950: "#141d26", // koyu tema yüzeyi
+  50: "#f8f8fc",
+  100: "#f1effa",
+  200: "#e2dfef",
+  300: "#bcb5cf",
+  400: "#898398",
+  500: "#79718e",
+  600: "#696579",
+  700: "#403b54",
+  800: "#2c2938",
+  900: "#242331",
+  950: "#191822",
 };
 
 export const successRamp: ColorRamp = {
