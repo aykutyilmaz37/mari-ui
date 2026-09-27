@@ -26,6 +26,19 @@
   }
 }
 
+/*
+ * Gecikmeli görünme (Button `loading.delay`): öğe görünmez başlar, verilen
+ * `animation-delay` sonunda belirir. Kısa süren işlemlerde spinner titremesin.
+ */
+@keyframes mari-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
 @layer base {
   body { font-family: var(--mari-font-sans); }

@@ -2,6 +2,7 @@ import React, { forwardRef } from "react";
 import { Loader2Icon } from "lucide-react";
 import { cn, resolveColorVariant } from "@mari-ui/core";
 import { bgSubtleHoverClass, colorVariantToClassName } from "../lib/colorClasses";
+import { skeletonBoxProps } from "../lib/skeleton";
 import { sizeClass } from "../lib/sizeClasses";
 import type { ButtonProps } from "./types";
 import { getShapeClasses, resolveLegacyButtonProps, resolveLoading } from "./utils";
@@ -31,6 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     icon,
     iconPosition = "start",
     loading = false,
+    skeleton = false,
     target,
     onClick,
     onMouseEnter,
@@ -48,7 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     color,
     variant,
   });
-  const { isLoading, loadingIcon, loadingIconPosition } = resolveLoading(loading);
+  const { isLoading, loadingIcon, loadingIconPosition, loadingDelay } = resolveLoading(loading);
 
   // Yükleniyor durumunda buton HER ZAMAN devre dışıdır — çift gönderim /
   // yarım işlem sırasında ikinci tıklama engellenir.
@@ -58,6 +60,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   // dönen göstergeyi kullan — "yükleniyor" durumunun HER ZAMAN görünür bir
   // ikonu olur.
   const resolvedLoadingIcon = loadingIcon ?? <Loader2Icon className="w-4 h-4 animate-spin" aria-hidden />;
+  // `loading.delay`: buton hemen devre dışı olur (çift gönderim yok), ama
+  // gösterge ancak gecikme dolunca belirir — saf CSS, hook gerekmez.
+  const loadingIconClass = cn(classNames.icon, loadingDelay > 0 && "opacity-0 animate-[mari-fade-in_150ms_ease-out_forwards]");
+  const loadingIconStyle = loadingDelay > 0 ? { animationDelay: `${loadingDelay}ms` } : undefined;
+
+  if (process.env.NODE_ENV !== "production" && !children && !rest["aria-label"] && !rest["aria-labelledby"]) {
+    console.warn("[@mari-ui/components] Button: metinsiz (ikon-only) butona `aria-label` verin — ekran okuyucu aksi halde adsız bir buton okur.");
+  }
 
   const colorClasses = colorVariantToClassName(resolveColorVariant(resolvedColor, resolvedVariant));
   // `solid` hover'ını `resolveColorVariant` zaten veriyor; `outline`/`ghost`in
@@ -67,14 +77,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   // dolgusu vermek yanlış olurdu.
   const interactiveHoverClass = resolvedVariant === "outline" || resolvedVariant === "ghost" ? bgSubtleHoverClass[resolvedColor] : undefined;
 
-  const rootClasses = cn(
-    "inline-flex items-center justify-center font-medium transition-colors duration-150 select-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+  // Geometri (boyut + şekil + genişlik) iskeletle ORTAK — yüklenince kutu zıplamaz.
+  const geometryClasses = cn(
+    "inline-flex max-w-full items-center justify-center whitespace-nowrap font-medium select-none",
     sizeClass[size],
     getShapeClasses(shape),
+    block && "w-full"
+  );
+
+  const rootClasses = cn(
+    geometryClasses,
+    // Basılma geri bildirimi: hafif küçülme (Tailwind v4'te `scale` ayrı bir
+    // özellik — `transform` değil, geçiş listesine açıkça yazılır).
+    "cursor-pointer transition-[color,background-color,border-color,box-shadow,scale] duration-150 active:scale-[0.98] motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
     colorClasses,
     interactiveHoverClass,
-    isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
-    block && "w-full",
+    // `pointer-events-none` KULLANILMAZ — imleci de kapatıp `cursor-not-allowed`'ı
+    // hiç göstermiyordu. Tıklamayı native `disabled` zaten engeller.
+    isDisabled && "opacity-50 cursor-not-allowed active:scale-100",
     className,
     classNames.wrapper
   );
@@ -85,13 +105,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   // çıkarmaya gerek kalmaz.
   const children_ = (
     <>
-      {isLoading && loadingIconPosition === "start" && <span className={classNames.icon}>{resolvedLoadingIcon}</span>}
+      {isLoading && loadingIconPosition === "start" && <span className={loadingIconClass} style={loadingIconStyle}>{resolvedLoadingIcon}</span>}
       {icon && !isLoading && iconPosition === "start" && <span className={classNames.icon}>{icon}</span>}
-      {children && <span className={classNames.label}>{children}</span>}
+      {children && <span className={cn("min-w-0 truncate", classNames.label)}>{children}</span>}
       {icon && !isLoading && iconPosition === "end" && <span className={classNames.icon}>{icon}</span>}
-      {isLoading && loadingIconPosition === "end" && <span className={classNames.icon}>{resolvedLoadingIcon}</span>}
+      {isLoading && loadingIconPosition === "end" && <span className={loadingIconClass} style={loadingIconStyle}>{resolvedLoadingIcon}</span>}
     </>
   );
+
+  if (skeleton) {
+    // Etiket ve ikon şeffaf olarak YERİNDE kalır → iskelet gerçek butonla aynı genişlikte.
+    return (
+      // `outline`'ın 1px kenarlığı kutuyu 2px genişletir — iskelet de aynı (şeffaf) kenarlığı taşır.
+      <span {...skeletonBoxProps(cn(geometryClasses, resolvedVariant === "outline" && "border border-transparent", className, classNames.wrapper))}>
+        {icon && <span className={classNames.icon}>{icon}</span>}
+        {children && <span className="min-w-0 truncate">{children}</span>}
+      </span>
+    );
+  }
 
   const commonProps = {
     ...rest,

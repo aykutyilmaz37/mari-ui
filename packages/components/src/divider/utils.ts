@@ -28,8 +28,10 @@ export function getLineClass(lineStyle: DividerLineStyle | undefined): string {
 
 export function getLabelClass(plain: boolean | undefined, isHorizontal: boolean): string {
   return cn(
-    isHorizontal ? "px-3" : "py-2",
-    "whitespace-nowrap",
+    // Faz 15: `whitespace-nowrap` kaldırıldı — 375px'te uzun bir etiket
+    // kapsayıcıdan taşıp yatay kaydırma üretiyordu. Artık etiket kırılır ve
+    // ortalanır; çizgi parçaları `min-w-6` ile görünür kalır.
+    isHorizontal ? "min-w-0 px-3 text-center text-balance" : "py-2 whitespace-nowrap",
     // "text-muted-500" -> gerçek bir token değildi (tema'da hiç yoktu, sessizce
     // no-op'tu). Nötr rolün `text` slotu bunun yerine geçiyor.
     plain ? "text-mari-neutral" : "text-mari-foreground font-medium"

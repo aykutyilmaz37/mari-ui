@@ -116,4 +116,44 @@ describe("Button", () => {
     const { container } = render(<Button disabled>Devre dışı</Button>);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("disabled iken pointer-events kapatılmaz — cursor-not-allowed gerçekten görünür", () => {
+    render(<Button disabled>Kaydet</Button>);
+    const btn = screen.getByRole("button", { name: "Kaydet" });
+    expect(btn).toHaveClass("cursor-not-allowed");
+    expect(btn).not.toHaveClass("pointer-events-none");
+  });
+
+  it("uzun etiket tek satırda kalır ve kısaltılır (sabit yükseklikten taşmaz)", () => {
+    render(<Button>Çok uzun bir buton etiketi</Button>);
+    expect(screen.getByRole("button")).toHaveClass("whitespace-nowrap", "max-w-full");
+    expect(screen.getByText("Çok uzun bir buton etiketi")).toHaveClass("truncate");
+  });
+
+  it("loading.delay: buton hemen devre dışı, gösterge gecikmeli belirir", () => {
+    render(<Button loading={{ delay: 300 }}>Kaydet</Button>);
+    const btn = screen.getByRole("button", { name: "Kaydet" });
+    expect(btn).toBeDisabled();
+    const spinnerWrap = btn.querySelector("svg")!.parentElement!;
+    expect(spinnerWrap).toHaveClass("opacity-0");
+    expect(spinnerWrap.style.animationDelay).toBe("300ms");
+  });
+
+  it("skeleton: buton değil, aynı boyutta gizli yer tutucu; etiket şeffaf yerinde", () => {
+    const { container } = render(<Button size="lg" skeleton>Satın al</Button>);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute("aria-hidden", "true");
+    expect(root).toHaveClass("h-10", "text-transparent");
+  });
+
+  it("metinsiz butonda aria-label yoksa geliştirme uyarısı verir", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(<Button icon={<svg />} />);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("aria-label"));
+    warn.mockClear();
+    render(<Button icon={<svg />} aria-label="Ara" />);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
 });

@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, ExtendedSize, SlotClassNames, Variant } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type ButtonIconPosition = "start" | "end";
 
@@ -12,6 +13,7 @@ export type ButtonClassNames = SlotClassNames<ButtonSlot>;
 export type ButtonLoading =
   | boolean
   | {
+      /** ms — gösterge ancak bu süre dolunca belirir (kısa işlemlerde titreme olmasın). Buton yine HEMEN devre dışı olur. */
       delay?: number;
       icon?: React.ReactNode;
       iconPosition?: ButtonIconPosition;
@@ -45,7 +47,7 @@ type NativeCommonAttributes = React.AriaAttributes & {
   [dataAttribute: `data-${string}`]: unknown;
 };
 
-export interface ButtonProps extends LegacyButtonProps, NativeCommonAttributes {
+export interface ButtonProps extends LegacyButtonProps, NativeCommonAttributes, SkeletonableProps {
   /** Semantik renk. Varsayılan: `primary`. */
   color?: ColorRole;
   /**

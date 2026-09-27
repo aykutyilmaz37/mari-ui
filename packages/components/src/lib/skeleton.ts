@@ -35,6 +35,8 @@ export function skeletonBoxProps(className?: string) {
   return {
     "aria-hidden": true as const,
     "data-skeleton": "",
-    className: cn("pointer-events-none select-none text-transparent", skeletonFill(true), className),
+    // Dolgu ve şeffaf metin SONDA: `className` bir metin rengi (ör. Typography'nin
+    // `text-mari-foreground`'u) taşısa bile twMerge onları ezmesin.
+    className: cn("pointer-events-none select-none", className, skeletonFill(true), "text-transparent"),
   };
 }

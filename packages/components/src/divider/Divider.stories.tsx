@@ -50,16 +50,18 @@ export default meta;
 
 export const Playground: StoryObj<DividerProps> = {
   ...storyDoc("Tüm props'ları canlı deneyin — tam genişlikte bir bölüm ayracı."),
-  render: (args) => (
-    <div className="w-full max-w-2xl">
-      <p className="text-mari-foreground">
-        Hesap bilgileriniz aşağıda görüntüleniyor. Değişiklikleri kaydetmeden sayfadan ayrılırsanız düzenlemeleriniz
-        kaybolur.
-      </p>
-      <Divider {...args} />
-      <p className="text-mari-neutral">Son güncelleme: 3 gün önce · Oturum: Chrome · İstanbul</p>
-    </div>
-  ),
+  decorators: [
+    (Story) => (
+      <div className="w-full max-w-2xl">
+        <p className="text-mari-foreground">
+          Hesap bilgileriniz aşağıda görüntüleniyor. Değişiklikleri kaydetmeden sayfadan ayrılırsanız düzenlemeleriniz
+          kaybolur.
+        </p>
+        <Story />
+        <p className="text-mari-neutral">Son güncelleme: 3 gün önce · Oturum: Chrome · İstanbul</p>
+      </div>
+    ),
+  ],
   args: {
     children: "Tercihler",
     lineStyle: "solid",
@@ -71,7 +73,14 @@ export const Playground: StoryObj<DividerProps> = {
 
 export const SectionSeparator: StoryObj = {
   name: "Bölüm Ayracı (etiketsiz)",
-  ...storyDoc("En yaygın kullanım: iki paragraf/blok arasına tam genişlikte sade bir çizgi. Etiket yok."),
+  ...storyDoc(
+    "En yaygın kullanım: iki paragraf/blok arasına tam genişlikte sade bir çizgi. Etiket yok.",
+    `<h3>Teslimat</h3>
+<p>Siparişiniz 2–4 iş günü içinde kargoya verilir.</p>
+<Divider />
+<h3>İade</h3>
+<p>Ürünü teslim aldıktan sonra 14 gün içinde koşulsuz iade edebilirsiniz.</p>`
+  ),
   render: () => (
     <article className="w-full max-w-2xl text-mari-foreground">
       <h3 className="text-lg font-semibold">Teslimat</h3>
@@ -87,7 +96,10 @@ export const LabeledSections: StoryObj = {
   name: "Başlıklı Bölümler (hizalama)",
   ...storyDoc(
     "Bir formu/listeyi bölümlere ayırmak için başlıklı divider. `labelAlign` etiketi ortaya (varsayılan), başa veya sona " +
-      "yaslar — yaslanan kenardaki çizgi parçası kısalır."
+      "yaslar — yaslanan kenardaki çizgi parçası kısalır.",
+    `<Divider labelAlign="start">Profil</Divider>
+<Divider>Bildirimler</Divider>
+<Divider labelAlign="end" plain={false}>Tehlikeli Bölge</Divider>`
   ),
   render: () => (
     <div className="w-full max-w-2xl flex flex-col gap-8">
@@ -113,7 +125,10 @@ export const LineStyles: StoryObj = {
   name: "Çizgi Stilleri",
   ...storyDoc(
     "`solid` kalıcı/net ayrımlar için (varsayılan); `dashed` geçici veya taslak bir sınır için; `dotted` en hafif, " +
-      "yalnızca hafif bir ipucu gereken yerde."
+      "yalnızca hafif bir ipucu gereken yerde.",
+    `<Divider lineStyle="solid" />
+<Divider lineStyle="dashed" />
+<Divider lineStyle="dotted" />`
   ),
   render: () => (
     <div className="w-full max-w-2xl flex flex-col gap-8 text-mari-foreground">
@@ -138,10 +153,19 @@ export const LineStyles: StoryObj = {
 
 export const VerticalInline: StoryObj = {
   name: "Dikey (satır içi)",
-  ...storyDoc("Satır içi meta bilgi ve araç çubuğu eylemlerini bölmek için. Yükseklik içeriğe göre ayarlanır (`height`)."),
+  ...storyDoc(
+    "Satır içi meta bilgi ve araç çubuğu eylemlerini bölmek için. Yükseklik içeriğe göre ayarlanır (`height`). Dar ekranda satır kaydırmak için kapsayıcıya `flex-wrap` verin.",
+    `<div className="flex flex-wrap items-center text-sm">
+  <span>Ayşe Yılmaz</span>
+  <Divider orientation="vertical" height="1rem" />
+  <span>10 Eylül 2026</span>
+  <Divider orientation="vertical" height="1rem" />
+  <span>5 dk okuma</span>
+</div>`
+  ),
   render: () => (
     <div className="w-full max-w-2xl flex flex-col gap-6 text-mari-foreground">
-      <div className="flex items-center text-sm text-mari-neutral">
+      <div className="flex flex-wrap items-center gap-y-1 text-sm text-mari-neutral">
         <span>Ayşe Yılmaz</span>
         <Divider orientation="vertical" height="1rem" />
         <span>10 Eylül 2026</span>
@@ -166,3 +190,17 @@ export const VerticalInline: StoryObj = {
     </div>
   ),
 };
+
+export const LongLabel: StoryObj = {
+  name: "Uzun Etiket (mobil)",
+  ...storyDoc(
+    "Etiket kapsayıcıdan uzunsa kırılır ve ortalanır; iki yandaki çizgiler en az 1.5rem görünür kalır — 375px'te yatay kaydırma oluşmaz.",
+    `<Divider>Siparişinizle birlikte sıkça satın alınan diğer ürünler</Divider>`
+  ),
+  render: () => (
+    <div className="w-full max-w-xs rounded-lg border border-dashed border-mari-border px-3">
+      <Divider>Siparişinizle birlikte sıkça satın alınan diğer ürünler</Divider>
+    </div>
+  ),
+};
+

@@ -1,8 +1,9 @@
 import type React from "react";
 import type { ColorRole, Variant } from "@mari-ui/core";
 import type { LegacyTagStatu } from "./utils";
+import type { SkeletonableProps } from "../lib/skeleton";
 
-export interface TagProps {
+export interface TagProps extends SkeletonableProps {
   children: React.ReactNode;
   /** @deprecated `color` kullanın. "processing" -> `info`, "default" -> `neutral`. */
   statu?: LegacyTagStatu;
@@ -14,5 +15,7 @@ export interface TagProps {
   closeIcon?: React.ReactNode | boolean;
   bordered?: boolean;
   onClose?: () => void;
+  /** Kapatma butonunun erişilebilir adı. Varsayılan: metin etiketse `"<metin> etiketini kaldır"`, değilse `"Kaldır"`. */
+  closeLabel?: string;
   className?: string;
 }

@@ -53,8 +53,8 @@ export function Divider({
   // Etiketli yatay divider: etiketin iki yanındaki çizgi parçaları.
   // `labelAlign` etiketi bir kenara yaslamak için o kenardaki parçayı
   // kısaltır (`w-6` = 1.5rem), diğerini `flex-1` ile uzatır.
-  const startLineClass = cn("border-t", lineClass, labelAlign === "start" ? "w-6 flex-none" : "flex-1");
-  const endLineClass = cn("border-t", lineClass, labelAlign === "end" ? "w-6 flex-none" : "flex-1");
+  const startLineClass = cn("border-t", lineClass, labelAlign === "start" ? "w-6 flex-none" : "min-w-6 flex-1");
+  const endLineClass = cn("border-t", lineClass, labelAlign === "end" ? "w-6 flex-none" : "min-w-6 flex-1");
 
   return (
     <div className={baseClass} style={style} role="separator">

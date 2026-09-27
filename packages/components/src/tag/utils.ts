@@ -37,6 +37,9 @@ export function resolveLegacyTagColor(statu: LegacyTagStatu | undefined, color: 
  * yakın tamamen farklı bir şekildi. `px` yasak kuralı (Faz 13.0c) gereği 7px
  * hardcoded değil `rem` karşılığıyla yazılır.
  */
+/** Geometri — iskeletle ortak (yüklenince kutu zıplamasın). Uzun metin tek satırda kalır, sığmazsa kısalır. */
+export const TAG_GEOMETRY_CLASS = "inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-sm px-[0.4375rem] leading-5 text-xs font-medium";
+
 export function getTagClass(
   color: ColorRole,
   variant: Extract<Variant, "solid" | "soft" | "outline">,
@@ -45,7 +48,7 @@ export function getTagClass(
 ): string {
   const colorClasses = colorVariantToClassName(resolveColorVariant(color, variant));
   return cn(
-    "inline-flex items-center gap-1 rounded-sm px-[0.4375rem] leading-5 text-xs font-medium",
+    TAG_GEOMETRY_CLASS,
     colorClasses,
     bordered && variant !== "outline" && "border",
     className

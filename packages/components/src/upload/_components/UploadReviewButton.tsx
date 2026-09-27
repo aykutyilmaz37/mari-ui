@@ -20,12 +20,12 @@ export function UploadReviewButton({ handleClick, reviewType }: UploadReviewButt
       onClick={handleClick}
       variant="ghost"
       color="neutral"
+      icon={<PlusIcon size={18} />}
       className={cn(
         "h-28 w-28 shrink-0 flex-col gap-1 border border-dashed border-mari-border bg-mari-surface-alt hover:border-mari-primary-border hover:text-mari-primary",
         reviewType === "circle" ? "rounded-full" : "rounded-lg"
       )}
     >
-      <PlusIcon size={18} />
       <span className="text-xs">Yükle</span>
     </Button>
   );

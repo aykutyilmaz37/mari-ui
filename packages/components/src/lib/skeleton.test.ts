@@ -19,4 +19,10 @@ describe("skeletonBoxProps", () => {
   it("skeletonFill active=false düz dolgu verir", () => {
     expect(skeletonFill(false)).toBe("bg-mari-border/70");
   });
+
+  it("className'deki metin rengi şeffaflığı ezmez", () => {
+    const { className } = skeletonBoxProps("text-mari-foreground");
+    expect(className).toContain("text-transparent");
+    expect(className).not.toContain("text-mari-foreground");
+  });
 });
