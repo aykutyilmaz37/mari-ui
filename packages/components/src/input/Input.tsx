@@ -96,7 +96,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       className
     );
 
-    const inputClass = cn("flex-grow bg-transparent focus:outline-none", classNames.input);
+    // `w-full min-w-0`: native <input>'un tarayıcı varsayılanı ~20 karakterlik
+    // bir içsel genişliktir (≈250px) ve bu, kapsayıcının min-content boyutuna
+    // katkı olarak sızıp dar grid kolonlarını (mobil form) taşırıyordu —
+    // `min-w-0` tek başına yetmez, yüzdelik genişlik bu katkıyı sıfırlar
+    // (Faz 13.6 Steps mobil incelemesinde bulundu).
+    const inputClass = cn("w-full min-w-0 flex-grow bg-transparent focus:outline-none", classNames.input);
 
     return (
       <div className={wrapperClass}>
