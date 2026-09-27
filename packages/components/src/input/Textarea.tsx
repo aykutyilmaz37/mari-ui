@@ -1,13 +1,24 @@
 "use client";
 
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
-import { XIcon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
+import { ClearButton, clearIconOf } from "./_components/FieldAdornments";
 import type { InputClassNames, InputShape, InputVariant, InputCountConfig, TextareaAutoSize } from "./types";
-import { getShapeClasses, getTextareaSizeClasses, getVariantClasses, isClearable, resolveInputColor, resolveLegacyInputVariant } from "./utils";
 import type { ColorRole, Size } from "@mari-ui/core";
+import { skeletonBoxProps, type SkeletonableProps } from "../lib/skeleton";
+import {
+  FIELD_BASE_CLASS,
+  FIELD_DISABLED_CLASS,
+  FIELD_MOBILE_TEXT_CLASS,
+  getShapeClasses,
+  getTextareaSizeClasses,
+  getVariantClasses,
+  isClearable,
+  resolveInputColor,
+  resolveLegacyInputVariant,
+} from "./utils";
 
-export interface TextareaProps {
+export interface TextareaProps extends SkeletonableProps {
   placeholder?: string;
   value?: string;
   defaultValue?: string;
@@ -15,7 +26,11 @@ export interface TextareaProps {
   onClear?: () => void;
   onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   allowClear?: boolean | { clearIcon?: React.ReactNode };
+  /** Temizle butonunun erişilebilir adı. Varsayılan: `"Temizle"`. */
+  clearLabel?: string;
+  readOnly?: boolean;
   disabled?: boolean;
   name?: string;
   required?: boolean;
@@ -34,7 +49,32 @@ export interface TextareaProps {
   id?: string;
   classNames?: InputClassNames;
   className?: string;
+  /**
+   * `true`: içerik kadar uzar. `{ minRows, maxRows }`: en az/en çok bu kadar
+   * satır; `maxRows` aşılınca kaydırma çubuğu çıkar. `autoSize` verilince
+   * elle yeniden boyutlandırma kapalıdır.
+   */
   autoSize?: TextareaAutoSize;
+  /** Başlangıç yüksekliği (satır). `autoSize` yoksa elle dikey büyütülebilir. Varsayılan: 3. */
+  rows?: number;
+}
+
+/**
+ * `autoSize` yüksekliği: içerik yüksekliğini satır yüksekliği × min/max'a
+ * kıstırır. Eskiden `{ minRows, maxRows }` tipte vardı ama HİÇ uygulanmıyordu —
+ * alan sınırsız uzuyordu.
+ */
+function fitHeight(el: HTMLTextAreaElement, autoSize: TextareaAutoSize) {
+  const style = window.getComputedStyle(el);
+  const lineHeight = Number.parseFloat(style.lineHeight) || 20;
+  const padding = Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
+  const { minRows, maxRows } = typeof autoSize === "object" ? autoSize : {};
+  el.style.height = "auto";
+  let height = el.scrollHeight;
+  if (minRows) height = Math.max(height, minRows * lineHeight + padding);
+  if (maxRows) height = Math.min(height, maxRows * lineHeight + padding);
+  el.style.height = `${height}px`;
+  el.style.overflowY = maxRows && el.scrollHeight > height ? "auto" : "hidden";
 }
 
 /**
@@ -50,6 +90,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     {
       placeholder,
       allowClear = false,
+      clearLabel = "Temizle",
+      skeleton = false,
+      rows = 3,
+      readOnly,
+      onKeyDown,
       classNames = {},
       className = "",
       count,
@@ -97,22 +142,39 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const handleClear = () => {
       setCurrentValue("");
       onClear?.();
+      innerRef.current?.focus();
     };
 
+    const initialRows = typeof autoSize === "object" && autoSize.minRows ? autoSize.minRows : rows;
+    const autoSizeKey = typeof autoSize === "object" ? `${autoSize.minRows}-${autoSize.maxRows}` : String(autoSize);
     useEffect(() => {
-      if (autoSize && innerRef.current) {
-        const el = innerRef.current;
-        el.style.height = "auto";
-        el.style.height = `${el.scrollHeight}px`;
-      }
-    }, [currentValue, autoSize]);
+      if (autoSize && innerRef.current) fitHeight(innerRef.current, autoSize);
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- autoSizeKey, obje kimliği yerine değerleri izler
+    }, [currentValue, autoSizeKey]);
+
+    const geometryClass = cn("flex w-full items-start gap-2", getTextareaSizeClasses(size), getShapeClasses(shape, resolvedVariant));
+    const textareaClass = cn(
+      "w-full bg-transparent placeholder:text-mari-muted focus:outline-none disabled:cursor-not-allowed",
+      autoSize ? "resize-none" : "resize-y",
+      FIELD_MOBILE_TEXT_CLASS,
+      classNames.input
+    );
+
+    if (skeleton) {
+      // Şeffaf, erişilemez bir <textarea> kutuya GERÇEK yüksekliğini verir
+      // (satır sayısı × satır yüksekliği + dolgu) — tahmin yok, zıplama yok.
+      return (
+        <div {...skeletonBoxProps(cn(geometryClass, classNames.wrapper, className))}>
+          <textarea tabIndex={-1} rows={initialRows} className={cn(textareaClass, "invisible resize-none")} />
+        </div>
+      );
+    }
 
     const wrapperClass = cn(
-      "flex gap-2 items-start rounded-md transition-colors duration-300 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-mari-ring",
-      getTextareaSizeClasses(size),
+      geometryClass,
+      FIELD_BASE_CLASS,
       getVariantClasses(resolvedVariant, resolvedColor),
-      getShapeClasses(shape),
-      disabled && "opacity-50 pointer-events-none",
+      disabled && FIELD_DISABLED_CLASS,
       classNames.wrapper,
       className
     );
@@ -127,6 +189,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             onChange={handleChange}
             onFocus={onFocus}
             onBlur={onBlur}
+            onKeyDown={onKeyDown}
+            readOnly={readOnly}
+            rows={initialRows}
             placeholder={placeholder}
             maxLength={maxLength}
             disabled={disabled}
@@ -135,20 +200,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             aria-label={ariaLabel}
             aria-labelledby={ariaLabelledBy}
             aria-invalid={ariaInvalid}
-            className={cn("w-full resize-none bg-transparent focus:outline-none", classNames.input)}
+            className={textareaClass}
           />
-          {allowClear && (
-            <button
-              type="button"
-              onClick={handleClear}
-              className={cn("shrink-0 invisible cursor-pointer", showClear && "visible", classNames.clear)}
-            >
-              {typeof allowClear === "object" && allowClear.clearIcon ? allowClear.clearIcon : <XIcon size={16} />}
-            </button>
-          )}
+          {allowClear && <ClearButton visible={showClear} label={clearLabel} icon={clearIconOf(allowClear)} onClear={handleClear} className={classNames.clear} />}
         </div>
         {(showCount || count?.formatter) && (
-          <span className={cn("text-mari-muted text-xs flex flex-none items-center justify-end", classNames.count)}>
+          <span className={cn("flex flex-none items-center justify-end text-xs tabular-nums", maxLength && charCount >= maxLength ? "text-mari-error" : "text-mari-muted", classNames.count)}>
             {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : countLabel}
           </span>
         )}

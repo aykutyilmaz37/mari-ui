@@ -1,6 +1,6 @@
 import type React from "react";
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
-import { borderColorClass } from "../lib/colorClasses";
+import { borderStrongColorClass } from "../lib/colorClasses";
 import { sizeClass } from "../lib/sizeClasses";
 import type { InputShape, InputVariant } from "./types";
 
@@ -27,19 +27,38 @@ export function resolveLegacyInputVariant(variant: InputVariant | "outlined" | "
 }
 
 /**
- * Focus halkası rengi `color`'a bağlı — literal `focus-within:border-mari-*`
- * tablosu (bkz. checkbox/utils.ts'teki not: pseudo-class önekleri asla
- * runtime string birleştirmesiyle kurulmaz).
+ * Odakta kenarlık ROL RENGİNE döner (Faz 15): eskiden açık `-border` tonuydu
+ * (#93c6f6 ≈ 1.8:1 beyazda — WCAG 1.4.11'in 3:1'ini geçmiyordu; outline
+ * Button'da bulunan sorunun aynısı). Ayrıca ofsetli outline yerine kenarlığa
+ * yapışık yumuşak bir hale (`ring`) — modern form alanı görünümü, iki ayrı
+ * çerçeve üst üste binmiyor. Literal tablo: pseudo-class önekleri runtime'da
+ * string birleştirmesiyle kurulmaz (Tailwind taraması).
  */
 const FOCUS_BORDER_CLASS: Record<ColorRole, string> = {
-  primary: "focus-within:border-mari-primary-border",
-  accent: "focus-within:border-mari-accent-border",
-  success: "focus-within:border-mari-success-border",
-  error: "focus-within:border-mari-error-border",
-  warning: "focus-within:border-mari-warning-border",
-  info: "focus-within:border-mari-info-border",
-  neutral: "focus-within:border-mari-neutral-border",
+  primary: "focus-within:border-mari-primary focus-within:ring-mari-primary/20",
+  accent: "focus-within:border-mari-accent focus-within:ring-mari-accent/20",
+  success: "focus-within:border-mari-success focus-within:ring-mari-success/20",
+  error: "focus-within:border-mari-error focus-within:ring-mari-error/20",
+  warning: "focus-within:border-mari-warning focus-within:ring-mari-warning/20",
+  info: "focus-within:border-mari-info focus-within:ring-mari-info/20",
+  neutral: "focus-within:border-mari-neutral focus-within:ring-mari-neutral/20",
 };
+
+/** Kutu (wrapper) ortak sınıfları — Input ve Textarea. */
+export const FIELD_BASE_CLASS = "transition-[color,background-color,border-color,box-shadow] duration-150 focus-within:ring-3";
+
+/**
+ * Devre dışı: `pointer-events-none` KULLANILMAZ — imleci de kapatıp
+ * `cursor-not-allowed`'ı hiç göstermiyordu. Yazmayı native `disabled` engeller.
+ */
+export const FIELD_DISABLED_CLASS = "opacity-50 cursor-not-allowed [&_*]:cursor-not-allowed";
+
+/**
+ * iOS Safari 16px'ten küçük yazılı bir alana odaklanınca sayfayı yakınlaştırır
+ * (ve geri uzaklaştırmaz). Dar ekranda alanın METNİ en az 16px olur; `sm` (640px)
+ * ve üstünde boyut ölçeğinin kendi fontu geçerli.
+ */
+export const FIELD_MOBILE_TEXT_CLASS = "max-sm:text-base";
 
 /**
  * Kullanıcı geri bildirimi (Faz 13): `color` verilmediyse (yani gerçek bir
@@ -51,7 +70,9 @@ const FOCUS_BORDER_CLASS: Record<ColorRole, string> = {
  * dinlenme halinde de kalıcıdır — odak beklemeden görünür olmalı.
  */
 export function getVariantClasses(variant: InputVariant, color: ColorRole | undefined): string {
-  const restBorderClass = color ? borderColorClass[color] : "border-mari-input";
+  // Açık renk (doğrulama durumu) → rol rengi; açık `-border` tonu beyazda
+  // ~1.8:1 ile WCAG 1.4.11'in 3:1'ini geçmiyordu (Faz 15).
+  const restBorderClass = color ? borderStrongColorClass[color] : "border-mari-input";
   const focusBorderClass = FOCUS_BORDER_CLASS[color ?? "primary"];
 
   switch (variant) {
@@ -60,13 +81,20 @@ export function getVariantClasses(variant: InputVariant, color: ColorRole | unde
     case "soft":
       return cn("border bg-mari-surface-alt text-mari-foreground", restBorderClass, focusBorderClass);
     case "ghost":
-      return "border-none bg-transparent";
+      // Kenarlık yok → odak göstergesi tek başına halka.
+      return "border-none bg-transparent focus-within:ring-mari-ring/40";
     case "underlined":
-      return cn("border-b bg-transparent rounded-none", restBorderClass, focusBorderClass);
+      // Halkasız: alt çizgili alanın odağı çizginin kendisidir.
+      return cn("border-b bg-transparent rounded-none focus-within:ring-0", restBorderClass, focusBorderClass);
   }
 }
 
-export function getShapeClasses(shape: InputShape): string {
+/**
+ * `underlined` her zaman köşesiz — eskiden `shape` sınıfı varyanttan SONRA
+ * geldiği için `rounded-md` kazanıyor ve alt çizginin uçları bükülüyordu.
+ */
+export function getShapeClasses(shape: InputShape, variant?: InputVariant): string {
+  if (variant === "underlined") return "rounded-none";
   return { square: "rounded-none", pill: "rounded-full px-4", default: "rounded-md" }[shape];
 }
 

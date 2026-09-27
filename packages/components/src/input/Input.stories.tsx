@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { EyeIcon, EyeOffIcon, PhoneIcon, Search, XIcon } from "lucide-react";
+import { AtSign, Lock, PhoneIcon, Search } from "lucide-react";
 import { useState } from "react";
 import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
@@ -28,8 +28,10 @@ const meta: Meta<typeof Input> = {
             "Bir listeden filtreli seçim için — `AutoComplete`.",
           ],
           a11y:
-            "`aria-label`/`aria-labelledby`/`name`/`required` dahil native attribute'ları geçirir. `color=\"error\"` " +
-            "iken (`aria-invalid` verilmediyse) otomatik `aria-invalid=\"true\"` eklenir.",
+            "Her alanın görünür bir etiketi olmalı (`<label htmlFor>` + `id`, ya da `aria-label`) — placeholder etiket sayılmaz. " +
+            "`color=\"error\"` iken otomatik `aria-invalid=\"true\"`; hata metnini `aria-describedby` ile bağlayın. Temizle ve şifre " +
+            "butonları adlandırılmıştır (`clearLabel`). Odakta kenarlık rol rengine döner (≥3:1) ve yumuşak bir hale çıkar. " +
+            "Mobilde metin 16px'tir (iOS odakta sayfayı yakınlaştırmasın); dokunmatikte tıklama alanı görünmez biçimde 44px'e genişler.",
         }),
       },
     },
@@ -41,64 +43,147 @@ const meta: Meta<typeof Input> = {
     color: { control: "select", options: ["primary", "accent", "success", "error", "warning", "info", "neutral"], description: "Odak/kenarlık rengi. `error`/`warning` doğrulama durumu olarak da işlev görür." },
     shape: { control: "select", options: ["default", "pill", "square"], description: "Köşe geometrisi." },
     mask: { control: "text", description: "Girişi belirli bir formata zorlar (örn. telefon numarası)." },
-    replacement: { control: "object", description: "Maskedeki yer tutucu karakterlerin karşılık geldiği regex'ler." },
     disabled: disabledArgType,
     allowClear: { control: "boolean", description: "Doluyken bir temizleme (X) butonu gösterir." },
+    type: { control: "select", options: ["text", "email", "password", "tel", "number"], description: "Native input tipi. `password` göster/gizle butonu ekler." },
+    skeleton: { control: "boolean", description: "Veri yokken aynı boyutta iskelet.", table: { defaultValue: { summary: "false" } } },
+    icon: { control: "select", options: ["yok", "Search", "AtSign"], mapping: { yok: undefined, Search: <Search size={16} />, AtSign: <AtSign size={16} /> }, description: "Alanın başında/sonunda ikon." },
     maxLength: { control: "number" },
     onChange: { action: "onChange" },
     onPressEnter: { action: "onPressEnter" },
     onClear: { action: "onClear" },
     visibilityToggle: { control: "boolean", description: "`type=\"password\"` iken bir göster/gizle butonu ekler." },
     visibilityIconRender: { control: false },
+    replacement: { control: false },
   },
 };
 export default meta;
 
-export const Playground: StoryObj<InputProps & { enableMask: boolean }> = {
-  ...storyDoc("Tüm props'ları canlı deneyin — maske, şifre toggle'ı ve sayaç bir arada."),
-  render: (args) => {
-    const { enableMask, mask, replacement, visibilityToggle, type, ...rest } = args as InputProps & { enableMask?: boolean };
-    // İç içe ternary yerine ayrık if (Faz 8, SonarJS `no-nested-conditional`).
-    let resolvedType = type;
-    if (visibilityToggle === true) resolvedType = "password";
-    else if (type === "password") resolvedType = "text";
+const Field = ({ id, label, hint, error, children }: { id: string; label: string; hint?: string; error?: string; children: React.ReactNode }) => (
+  <div className="flex flex-col gap-1.5">
+    <label htmlFor={id} className="text-sm font-medium text-mari-foreground">
+      {label}
+    </label>
+    {children}
+    {error ? (
+      <p id={`${id}-error`} className="text-xs text-mari-error">
+        {error}
+      </p>
+    ) : (
+      hint && (
+        <p id={`${id}-hint`} className="text-xs text-mari-muted">
+          {hint}
+        </p>
+      )
+    )}
+  </div>
+);
 
-    return <Input {...rest} type={resolvedType} {...(enableMask ? { mask, replacement } : {})} visibilityToggle={visibilityToggle} />;
-  },
-  argTypes: {
-    enableMask: { control: "boolean", description: "(Sadece bu story'de) maskeyi açar/kapatır." },
-  },
+export const Playground: StoryObj<InputProps> = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
+    "aria-label": "Örnek alan",
     placeholder: "Bir şeyler yazın...",
-    allowClear: false,
+    type: "text",
+    allowClear: true,
     showCount: false,
     size: "md",
     variant: "outline",
     maxLength: 100,
-    enableMask: false,
-    mask: "0(5__) ___ __ __",
-    replacement: { _: /\d/ },
-    type: "text",
-    visibilityToggle: false,
-    visibilityIconRender: (visible: boolean) => (visible ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />),
+    disabled: false,
+    skeleton: false,
   },
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
+};
+
+function SignUpFormDemo() {
+  const [email, setEmail] = useState("aykut@ornek");
+  // Basit kontrol (story için): bir "@" ve ardından noktalı bir alan adı.
+  const [local = "", domain = ""] = email.split("@");
+  const looksValid = local !== "" && domain.includes(".") && !domain.endsWith(".");
+  const emailError = email && !looksValid ? "Geçerli bir e-posta adresi girin (ör. ad@alan.com)." : undefined;
+  return (
+    <form className="grid max-w-md grid-cols-1 gap-4 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
+      <Field id="signup-name" label="Ad">
+        <Input id="signup-name" name="givenName" autoComplete="given-name" placeholder="Aykut" />
+      </Field>
+      <Field id="signup-surname" label="Soyad">
+        <Input id="signup-surname" name="familyName" autoComplete="family-name" placeholder="Yılmaz" />
+      </Field>
+      <div className="sm:col-span-2">
+        <Field id="signup-email" label="E-posta" error={emailError}>
+          <Input
+            id="signup-email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            icon={<AtSign size={16} />}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onClear={() => setEmail("")}
+            allowClear
+            color={emailError ? "error" : undefined}
+            aria-describedby={emailError ? "signup-email-error" : undefined}
+          />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field id="signup-password" label="Şifre" hint="En az 8 karakter, bir rakam içermeli.">
+          <Input id="signup-password" type="password" autoComplete="new-password" icon={<Lock size={16} />} aria-describedby="signup-password-hint" />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field id="signup-phone" label="Cep telefonu">
+          <Input id="signup-phone" type="tel" inputMode="tel" autoComplete="tel" mask="0(5__) ___ __ __" placeholder="0(5__) ___ __ __" icon={<PhoneIcon size={16} />} />
+        </Field>
+      </div>
+    </form>
+  );
+}
+
+export const SignUpForm: StoryObj = {
+  name: "Kayıt Formu (etiketli, doğrulamalı)",
+  ...storyDoc(
+    "Gerçek bir form: her alanın görünür etiketi, yardımcı metni ve alanın hemen altında hata mesajı (`aria-describedby` ile bağlı). " +
+      "Mobil klavye ve otomatik doldurma için `type`/`inputMode`/`autoComplete`. 640px altında tek sütun. E-postayı düzeltin — hata kalkar.",
+    `<label htmlFor="email">E-posta</label>
+<Input
+  id="email"
+  type="email"
+  inputMode="email"
+  autoComplete="email"
+  icon={<AtSign size={16} />}
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  color={error ? "error" : undefined}
+  aria-describedby={error ? "email-error" : undefined}
+/>
+{error && <p id="email-error" className="text-xs text-mari-error">{error}</p>}`
+  ),
+  render: () => <SignUpFormDemo />,
 };
 
 export const AllVariants: StoryObj = {
   name: "Tüm Varyant × Boyut",
-  ...storyDoc("4 kenarlık/arka plan stili (`outline`/`soft`/`ghost`/`underlined`) × 3 boyut."),
+  ...storyDoc(
+    "4 kenarlık/arka plan stili (`outline`/`soft`/`ghost`/`underlined`) × 3 boyut. `underlined` her zaman köşesizdir.",
+    `<Input variant="outline" size="md" aria-label="Ara" icon={<Search size={16} />} allowClear />
+<Input variant="soft" size="md" aria-label="Ara" />
+<Input variant="ghost" size="md" aria-label="Ara" />
+<Input variant="underlined" size="md" aria-label="Ara" />`
+  ),
   render: () => {
     const variants = ["outline", "soft", "ghost", "underlined"] as const;
     const sizes = ["lg", "md", "sm"] as const;
 
     return (
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-6">
         {variants.map((variant) => (
           <div key={variant} className="space-y-2">
-            <h3 className="font-semibold capitalize">{variant}</h3>
-            <div className="flex gap-4 flex-wrap">
+            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {sizes.map((size) => (
-                <Input key={`${variant}-${size}`} size={size} variant={variant} placeholder={`${variant} - ${size}`} icon={<Search size={16} />} allowClear={{ clearIcon: <XIcon size={16} /> }} showCount maxLength={30} />
+                <Input key={`${variant}-${size}`} aria-label={`${variant} ${size}`} size={size} variant={variant} placeholder={`Ürün ara (${size})`} icon={<Search size={16} />} allowClear />
               ))}
             </div>
           </div>
@@ -108,79 +193,124 @@ export const AllVariants: StoryObj = {
   },
 };
 
-export const ErrorStatus: StoryObj<InputProps> = {
-  name: "Hata Durumu",
-  ...storyDoc("`color=\"error\"` — kenarlık kırmızıya döner ve alana otomatik `aria-invalid=\"true\"` eklenir."),
-  args: {
-    placeholder: "Hata durumu...",
-    color: "error",
-    icon: <Search size={16} />,
-    allowClear: true,
-  },
+export const ValidationStates: StoryObj = {
+  name: "Doğrulama Durumları",
+  ...storyDoc(
+    "`color=\"error\"` engelleyici hata (otomatik `aria-invalid`), `color=\"warning\"` engelleyici olmayan uyarı. Renge ek olarak metin de anlamı taşır.",
+    `<Input id="iban" color="error" aria-describedby="iban-error" defaultValue="TR12 3456" />
+<p id="iban-error">IBAN 26 karakter olmalı.</p>`
+  ),
+  render: () => (
+    <div className="flex max-w-sm flex-col gap-4">
+      <Field id="val-iban" label="IBAN" error="IBAN 26 karakter olmalı.">
+        <Input id="val-iban" color="error" defaultValue="TR12 3456" aria-describedby="val-iban-error" allowClear />
+      </Field>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="val-username" className="text-sm font-medium text-mari-foreground">
+          Kullanıcı adı
+        </label>
+        <Input id="val-username" color="warning" defaultValue="aykut" aria-describedby="val-username-warn" />
+        <p id="val-username-warn" className="text-xs text-mari-warning">
+          Bu ad alınmış olabilir — kaydederken kontrol edeceğiz.
+        </p>
+      </div>
+    </div>
+  ),
 };
 
-export const WarningStatus: StoryObj<InputProps> = {
-  name: "Uyarı Durumu",
-  ...storyDoc("`color=\"warning\"` — engelleyici olmayan, dikkat çeken bir doğrulama uyarısı için."),
-  args: {
-    placeholder: "Uyarı durumu...",
-    color: "warning",
-    icon: <Search className="w-4 h-4 text-mari-muted" />,
-    allowClear: true,
-  },
-};
+function PressEnterDemo() {
+  const [items, setItems] = useState<string[]>(["Süt", "Ekmek"]);
+  const [draft, setDraft] = useState("");
+  return (
+    <div className="flex max-w-sm flex-col gap-3">
+      <Input
+        aria-label="Listeye ekle"
+        placeholder="Ürün yazıp Enter'a basın"
+        enterKeyHint="done"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onPressEnter={() => {
+          if (draft.trim()) setItems((prev) => [...prev, draft.trim()]);
+          setDraft("");
+        }}
+      />
+      <ul className="list-inside list-disc text-sm text-mari-foreground">
+        {items.map((item, i) => (
+          <li key={`${item}-${i}`}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
-export const PressEnterAction: StoryObj<InputProps> = {
+export const PressEnterAction: StoryObj = {
   name: "Enter ile Tetikleme",
-  ...storyDoc("`onPressEnter` — arama/gönderme gibi Enter'a bağlı eylemler için."),
-  args: {
-    placeholder: "Tetiklemek için Enter'a basın",
-    onPressEnter: () => alert("Enter'a basıldı!"),
-  },
+  ...storyDoc(
+    "`onPressEnter` — Enter'a bağlı eylemler (listeye ekleme, gönderme). Mobil klavyede tuş etiketi için `enterKeyHint`.",
+    `<Input
+  aria-label="Listeye ekle"
+  enterKeyHint="done"
+  value={draft}
+  onChange={(e) => setDraft(e.target.value)}
+  onPressEnter={() => { addItem(draft); setDraft(""); }}
+/>`
+  ),
+  render: () => <PressEnterDemo />,
 };
 
 export const CustomCountFormatter: StoryObj<InputProps> = {
   name: "Özel Karakter Sayacı",
   ...storyDoc("`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir."),
   args: {
-    placeholder: "Özel sayaç formatı",
+    "aria-label": "Ürün başlığı",
+    placeholder: "Ürün başlığı",
     maxLength: 50,
     showCount: true,
     count: {
       formatter: ({ count, maxLength }) => `${maxLength! - count} karakter kaldı`,
     },
   },
-};
-
-const ControlledInputExample = () => {
-  const [value, setValue] = useState("Başlangıç değeri");
-
-  return (
-    <div className="flex flex-col gap-2 p-4">
-      <Input value={value} onChange={(e) => setValue(e.target.value)} onClear={() => setValue("")} allowClear={{ clearIcon: <XIcon size={16} /> }} placeholder="Controlled + Varsayılan" />
-      <span className="text-sm text-mari-muted">Güncel değer: {value}</span>
-    </div>
-  );
-};
-
-export const ControlledAndDefault: StoryObj = {
-  name: "Controlled Örneği",
-  ...storyDoc("`value`+`onChange` ile tamamen dışarıdan yönetilir; güncel değer ayrıca ekranda gösterilir."),
-  render: () => <ControlledInputExample />,
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
 };
 
 export const MaskedInput: StoryObj<InputProps> = {
   name: "Maskeli",
-  ...storyDoc("`mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası)."),
+  ...storyDoc("`mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası). Mobilde sayısal klavye için `inputMode=\"tel\"`."),
   args: {
+    "aria-label": "Cep telefonu",
     placeholder: "0(5__) ___ __ __",
     mask: "0(5__) ___ __ __",
-    replacement: { _: /\d/ },
+    inputMode: "tel",
     icon: <PhoneIcon size={16} />,
-    allowClear: { clearIcon: <XIcon size={16} /> },
-    showCount: true,
-    size: "md",
-    variant: "outline",
-    maxLength: 16,
+    allowClear: true,
   },
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
+};
+
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="flex max-w-sm flex-col gap-4">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Veri yüklendi
+      </label>
+      <Field id="sk-name" label="Firma adı">
+        <Input id="sk-name" skeleton={!loaded} defaultValue="Mari Yazılım A.Ş." />
+      </Field>
+      <Field id="sk-tax" label="Vergi no">
+        <Input id="sk-tax" skeleton={!loaded} size="lg" defaultValue="1234567890" />
+      </Field>
+    </div>
+  );
+}
+
+export const Skeleton: StoryObj = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` — düzenleme formu verisi gelene kadar alanın kendi boyutunda yer tutucu. Etiketler gerçek kalır; yalnızca değer beklenir.",
+    `<label htmlFor="company">Firma adı</label>
+<Input id="company" skeleton={isLoading} defaultValue={company.name} />`
+  ),
+  render: () => <SkeletonDemo />,
 };

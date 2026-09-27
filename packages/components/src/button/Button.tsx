@@ -3,7 +3,7 @@ import { Loader2Icon } from "lucide-react";
 import { cn, resolveColorVariant } from "@mari-ui/core";
 import { bgSubtleHoverClass, colorVariantToClassName } from "../lib/colorClasses";
 import { skeletonBoxProps } from "../lib/skeleton";
-import { sizeClass } from "../lib/sizeClasses";
+import { sizeClass, touchTargetClass, touchTargetSquareClass } from "../lib/sizeClasses";
 import type { ButtonProps } from "./types";
 import { getShapeClasses, resolveLegacyButtonProps, resolveLoading } from "./utils";
 
@@ -85,8 +85,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     block && "w-full"
   );
 
+  // Dokunmatikte görünmez 44px tıklama alanı (bkz. lib/sizeClasses). Kare/daire
+  // ya da metinsiz butonlar her yönde, diğerleri yalnızca dikeyde genişler.
+  const isIconOnly = shape === "circle" || (!children && Boolean(icon));
+  const touchTarget = isIconOnly ? touchTargetSquareClass[size] : touchTargetClass[size];
+
   const rootClasses = cn(
     geometryClasses,
+    "relative",
+    touchTarget,
     // Basılma geri bildirimi: hafif küçülme (Tailwind v4'te `scale` ayrı bir
     // özellik — `transform` değil, geçiş listesine açıkça yazılır).
     "cursor-pointer transition-[color,background-color,border-color,box-shadow,scale] duration-150 active:scale-[0.98] motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",

@@ -156,4 +156,16 @@ describe("Button", () => {
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
+
+  it("dokunmatikte görünmez 44px hedef: metinli yalnızca dikey, ikon-only her yönde", () => {
+    render(
+      <>
+        <Button size="sm">Kaydet</Button>
+        <Button size="sm" shape="circle" icon={<svg />} aria-label="Ara" />
+      </>
+    );
+    const text = screen.getByRole("button", { name: "Kaydet" });
+    expect(text).toHaveClass("relative", "pointer-coarse:before:-inset-y-2.5");
+    expect(screen.getByRole("button", { name: "Ara" })).toHaveClass("pointer-coarse:before:-inset-2.5");
+  });
 });

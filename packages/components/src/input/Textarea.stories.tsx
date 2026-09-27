@@ -30,7 +30,9 @@ const meta: Meta<typeof Textarea> = {
     shape: { control: "select", options: ["default", "pill", "square"], description: "Köşe geometrisi." },
     disabled: disabledArgType,
     allowClear: { control: "boolean" },
-    autoSize: { control: "boolean", description: "İçeriğe göre otomatik yükseklik — `{ minRows, maxRows }` ile sınırlandırılabilir." },
+    autoSize: { control: "boolean", description: "İçeriğe göre otomatik yükseklik — `{ minRows, maxRows }` ile sınırlandırılabilir (sınır aşılınca kayar)." },
+    rows: { control: "number", description: "Başlangıç yüksekliği (satır). `autoSize` yoksa elle dikey büyütülebilir.", table: { defaultValue: { summary: "3" } } },
+    skeleton: { control: "boolean", description: "Veri yokken aynı yükseklikte iskelet.", table: { defaultValue: { summary: "false" } } },
     maxLength: { control: "number" },
     onChange: { action: "onChange" },
     onClear: { action: "onClear" },
@@ -41,6 +43,7 @@ export default meta;
 export const Playground: StoryObj<TextareaProps> = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
+    "aria-label": "Mesaj",
     placeholder: "Mesajınızı yazın...",
     allowClear: true,
     showCount: true,
@@ -48,25 +51,33 @@ export const Playground: StoryObj<TextareaProps> = {
     variant: "outline",
     disabled: false,
     maxLength: 200,
-    autoSize: true,
+    rows: 3,
+    skeleton: false,
   },
+  decorators: [(Story) => <div className="max-w-md">{Story()}</div>],
 };
 
 export const AllVariants: StoryObj = {
   name: "Tüm Varyant × Boyut",
-  ...storyDoc("4 kenarlık/arka plan stili × 3 boyut. Yükseklik `autoSize` ile içeriğe göre büyür, sabit değil."),
+  ...storyDoc(
+    "4 kenarlık/arka plan stili × 3 boyut.",
+    `<Textarea variant="outline" aria-label="Not" rows={3} />
+<Textarea variant="soft" aria-label="Not" rows={3} />
+<Textarea variant="ghost" aria-label="Not" rows={3} />
+<Textarea variant="underlined" aria-label="Not" rows={3} />`
+  ),
   render: () => {
     const variants = ["outline", "soft", "ghost", "underlined"] as const;
     const sizes = ["lg", "md", "sm"] as const;
 
     return (
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-6">
         {variants.map((variant) => (
           <div key={variant} className="space-y-2">
-            <h3 className="font-semibold capitalize">{variant}</h3>
-            <div className="flex gap-4 flex-wrap">
+            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {sizes.map((size) => (
-                <Textarea key={`${variant}-${size}`} variant={variant} size={size} placeholder={`${variant} - ${size}`} allowClear showCount maxLength={100} autoSize />
+                <Textarea key={`${variant}-${size}`} aria-label={`${variant} ${size}`} variant={variant} size={size} placeholder={`Sipariş notu (${size})`} rows={2} />
               ))}
             </div>
           </div>
@@ -77,29 +88,56 @@ export const AllVariants: StoryObj = {
 };
 
 export const AutoSizeObject: StoryObj<TextareaProps> = {
-  name: "Min/Max Satır Sınırlı",
-  ...storyDoc("`autoSize={{ minRows, maxRows }}` — belirli bir aralıkta büyür, sonra kayar."),
+  name: "Mesaj Kutusu (min/max satır)",
+  ...storyDoc(
+    "Sohbet kutusu gibi: 1 satırdan başlar, yazdıkça 5 satıra kadar büyür, sonra kendi içinde kayar — sayfayı itmez. Birkaç satır yazıp deneyin.",
+    `<Textarea aria-label="Mesaj" autoSize={{ minRows: 1, maxRows: 5 }} />`
+  ),
   args: {
-    placeholder: "minRows ve maxRows'lu textarea",
-    autoSize: { minRows: 2, maxRows: 6 },
-    allowClear: true,
-    showCount: true,
+    "aria-label": "Mesaj",
+    placeholder: "Bir mesaj yazın…",
+    autoSize: { minRows: 1, maxRows: 5 },
   },
+  decorators: [(Story) => <div className="max-w-md">{Story()}</div>],
 };
 
-const ControlledTextareaExample = () => {
-  const [value, setValue] = useState("Başlangıç içeriği...");
-
+function ReviewDemo() {
+  const [value, setValue] = useState("Kargo hızlıydı, ürün açıklamadaki gibi. Kutusu biraz ezik geldi ama ürüne zarar yoktu.");
   return (
-    <div className="flex flex-col gap-2 p-4">
-      <Textarea value={value} onChange={(e) => setValue(e.target.value)} onClear={() => setValue("")} placeholder="Controlled Textarea" allowClear showCount maxLength={150} autoSize />
-      <span className="text-sm text-mari-muted">Güncel değer: {value}</span>
+    <div className="flex max-w-md flex-col gap-1.5">
+      <label htmlFor="review" className="text-sm font-medium text-mari-foreground">
+        Değerlendirmeniz
+      </label>
+      <Textarea id="review" value={value} onChange={(e) => setValue(e.target.value)} onClear={() => setValue("")} allowClear showCount maxLength={150} rows={4} />
     </div>
   );
-};
+}
 
 export const ControlledAndDefault: StoryObj = {
-  name: "Controlled Örneği",
-  ...storyDoc("`value`+`onChange` ile tamamen dışarıdan yönetilir."),
-  render: () => <ControlledTextareaExample />,
+  name: "Ürün Değerlendirmesi (sayaçlı)",
+  ...storyDoc(
+    "`value`+`onChange` ile dışarıdan yönetilir. Sayaç `maxLength`'e ulaşınca hata rengine döner. `autoSize` olmadığı için sağ alt köşeden dikey büyütülebilir.",
+    `<label htmlFor="review">Değerlendirmeniz</label>
+<Textarea id="review" value={value} onChange={(e) => setValue(e.target.value)} showCount maxLength={150} rows={4} />`
+  ),
+  render: () => <ReviewDemo />,
+};
+
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="flex max-w-md flex-col gap-4">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Veri yüklendi
+      </label>
+      <Textarea aria-label="Ürün açıklaması" skeleton={!loaded} rows={4} defaultValue="Kablosuz, gürültü önleyici kulak üstü kulaklık. 30 saat pil ömrü." />
+    </div>
+  );
+}
+
+export const Skeleton: StoryObj = {
+  name: "İskelet",
+  ...storyDoc("`skeleton` — `rows` kadar gerçek yükseklikte yer tutucu; yüklenince blok zıplamaz.", `<Textarea skeleton={isLoading} rows={4} defaultValue={product.description} />`),
+  render: () => <SkeletonDemo />,
 };

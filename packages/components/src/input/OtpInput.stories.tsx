@@ -35,33 +35,87 @@ const meta: Meta<typeof OtpInput> = {
     separator: { control: "text", description: "Kutucuklar arası ayırıcı (örn. \"-\")." },
     onChange: { action: "onChange", description: "Tüm kutucuklar dolduğunda, birleşik değerle çağrılır." },
     onInput: { action: "onInput" },
+    inputMode: { control: "select", options: ["numeric", "text"], description: "Mobil klavye — rakam kodları için `numeric` (varsayılan).", table: { defaultValue: { summary: "numeric" } } },
+    skeleton: { control: "boolean", description: "Veri yokken aynı boyutta iskelet.", table: { defaultValue: { summary: "false" } } },
   },
 };
 export default meta;
 
 export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
+  ...storyDoc("Tüm props'ları canlı deneyin. Bir kodu kopyalayıp ilk kutucuğa yapıştırmayı deneyin — hanelere dağılır."),
   args: {
     length: 6,
     mask: false,
     disabled: false,
     size: "md",
     variant: "outline",
+    skeleton: false,
   },
+};
+
+function VerificationDemo() {
+  const [status, setStatus] = useState<"idle" | "checking" | "ok" | "error">("idle");
+  const colorByStatus = { idle: undefined, checking: undefined, ok: "success", error: "error" } as const;
+  const verify = (code: string) => {
+    setStatus("checking");
+    setTimeout(() => setStatus(code === "482913" ? "ok" : "error"), 600);
+  };
+  return (
+    <div className="flex max-w-sm flex-col gap-3">
+      <div>
+        <p className="font-medium text-mari-foreground">Telefonunuzu doğrulayın</p>
+        <p className="text-sm text-mari-muted">0(532) *** ** 47 numarasına gönderilen 6 haneli kodu girin. (Doğru kod: 482913)</p>
+      </div>
+      <OtpInput
+        length={6}
+        size="lg"
+        aria-label="SMS doğrulama kodu"
+        color={colorByStatus[status]}
+        onChange={verify}
+        onInput={() => status !== "idle" && status !== "checking" && setStatus("idle")}
+      />
+      <p className="min-h-5 text-sm" aria-live="polite">
+        {status === "checking" && <span className="text-mari-muted">Kontrol ediliyor…</span>}
+        {status === "ok" && <span className="text-mari-success">Numaranız doğrulandı.</span>}
+        {status === "error" && <span className="text-mari-error">Kod hatalı. Tekrar deneyin.</span>}
+      </p>
+    </div>
+  );
+}
+
+export const Verification: Story = {
+  name: "SMS Doğrulama",
+  ...storyDoc(
+    "Gerçek akış: kod tamamlanınca `onChange` doğrulamayı başlatır, sonuç renk + metinle bildirilir (`aria-live`). Mobilde sayısal klavye açılır " +
+      "ve telefon gelen SMS kodunu klavye üstünde önerir (`autocomplete=\"one-time-code\"`, ilk hücrede) — seçilince kod hanelere dağılır.",
+    `<OtpInput
+  length={6}
+  size="lg"
+  aria-label="SMS doğrulama kodu"
+  color={error ? "error" : undefined}
+  onChange={(code) => verify(code)}
+/>`
+  ),
+  render: () => <VerificationDemo />,
 };
 
 export const AllVariants: Story = {
   name: "Tüm Varyant",
-  ...storyDoc("4 kenarlık/arka plan stili (`outline`/`soft`/`ghost`/`underlined`)."),
+  ...storyDoc(
+    "4 kenarlık/arka plan stili. OTP'de `ghost` kutucuklar görünmez olacağı için `underlined`'a düşer.",
+    `<OtpInput length={4} variant="outline" />
+<OtpInput length={4} variant="soft" />
+<OtpInput length={4} variant="underlined" />`
+  ),
   render: () => {
     const variants = ["outline", "soft", "ghost", "underlined"] as const;
 
     return (
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-6">
         {variants.map((variant) => (
           <div key={variant} className="space-y-2">
-            <h3 className="font-semibold capitalize">{variant}</h3>
-            <OtpInput length={4} variant={variant} />
+            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
+            <OtpInput length={4} variant={variant} aria-label={`${variant} kod`} />
           </div>
         ))}
       </div>
@@ -70,40 +124,44 @@ export const AllVariants: Story = {
 };
 
 export const Masked: Story = {
-  name: "Gizli (Maskeli)",
-  ...storyDoc("`mask` — girilen karakterleri `•` ile gizler (şifre benzeri gizli kodlar için)."),
+  name: "Gizli (PIN)",
+  ...storyDoc("`mask` — girilen karakterleri `•` ile gizler (kart PIN'i gibi gizli kodlar)."),
   args: {
     length: 4,
     mask: true,
-    size: "md",
+    size: "lg",
     variant: "soft",
+    "aria-label": "Kart PIN'i",
   },
 };
 
 export const WithSeparators: Story = {
   name: "Ayırıcılı",
-  ...storyDoc("`separator` — kutucuklar arasına sabit bir ayırıcı (örn. \"-\") koyar."),
+  ...storyDoc("`separator` — kutucuklar arasına sabit bir ayırıcı koyar (ekran okuyucudan gizli). Harf içeren kodlar için `inputMode=\"text\"`."),
   args: {
     length: 6,
-    mask: false,
     separator: "-",
-    size: "lg",
+    size: "md",
+    inputMode: "text",
+    "aria-label": "Hediye kartı kodu",
   },
 };
 
-const ControlledExample = () => {
-  const [value, setValue] = useState("123");
-
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
   return (
     <div className="flex flex-col gap-4">
-      <OtpInput value={value} onChange={(v) => setValue(v)} length={6} />
-      <p className="text-sm text-mari-muted">Güncel: {value || "boş"}</p>
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Hazır
+      </label>
+      <OtpInput length={6} size="lg" skeleton={!loaded} />
     </div>
   );
-};
+}
 
-export const Controlled: Story = {
-  name: "Controlled Örneği",
-  ...storyDoc("`value`+`onChange` ile tamamen dışarıdan yönetilir."),
-  render: () => <ControlledExample />,
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc("`skeleton` — kutucuklarla aynı boyutta yer tutucular.", `<OtpInput length={6} size="lg" skeleton={isLoading} />`),
+  render: () => <SkeletonDemo />,
 };

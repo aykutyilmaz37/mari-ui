@@ -2,10 +2,22 @@
 
 import React, { forwardRef, useState } from "react";
 import { InputMask } from "@react-input/mask";
-import { EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
+import { skeletonBoxProps } from "../lib/skeleton";
+import { touchTargetClass } from "../lib/sizeClasses";
 import { cn, useControllableState } from "@mari-ui/core";
 import type { InputProps } from "./types";
-import { getShapeClasses, getSizeClasses, getVariantClasses, isClearable, resolveInputColor, resolveLegacyInputVariant } from "./utils";
+import { ClearButton, clearIconOf, PasswordToggle } from "./_components/FieldAdornments";
+import {
+  FIELD_BASE_CLASS,
+  FIELD_DISABLED_CLASS,
+  FIELD_MOBILE_TEXT_CLASS,
+  getShapeClasses,
+  getSizeClasses,
+  getVariantClasses,
+  isClearable,
+  resolveInputColor,
+  resolveLegacyInputVariant,
+} from "./utils";
 
 export type { InputProps };
 
@@ -14,6 +26,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     {
       placeholder,
       allowClear = false,
+      clearLabel = "Temizle",
+      skeleton = false,
       classNames = {},
       className = "",
       count,
@@ -38,6 +52,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onBlur,
       onKeyDown,
       onInput,
+      onPaste,
       mask,
       replacement = { _: /\d/ },
       visibilityToggle,
@@ -48,6 +63,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const innerRef = React.useRef<HTMLInputElement | null>(null);
+    const setRefs = (el: HTMLInputElement | null) => {
+      innerRef.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) ref.current = el;
+    };
     const resolvedVariant = resolveLegacyInputVariant(variant);
     const resolvedColor = resolveInputColor(color, status);
     // `error` rengi aynı zamanda gerçek bir doğrulama durumudur — ekran
@@ -59,7 +80,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const [currentValue, setCurrentValue] = useControllableState<string>({ value, defaultValue });
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const defaultIconRender = (visible: boolean) => (visible ? <EyeIcon size={16} /> : <EyeOffIcon size={16} />);
     const showPasswordToggle = type === "password" && visibilityToggle !== false;
 
     // İç içe ternary yerine ayrık if — SonarJS'in `no-nested-conditional`
@@ -81,35 +101,60 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       onKeyDown?.(e);
     };
 
+    // Temizledikten sonra odak alana döner — kullanıcı hemen yeniden yazabilsin
+    // (buton kaybolduğu için odak aksi halde <body>'ye düşüyordu).
     const handleClear = () => {
       setCurrentValue("");
       onClear?.();
+      innerRef.current?.focus();
     };
 
+    // Geometri iskeletle ORTAK (boyut + şekil) — yüklenince kutu zıplamaz.
+    const geometryClass = cn("flex w-full items-center gap-2", getSizeClasses(size), getShapeClasses(shape, resolvedVariant));
+
+    if (skeleton) {
+      return <div {...skeletonBoxProps(cn(geometryClass, classNames.wrapper, className))} />;
+    }
+
     const wrapperClass = cn(
-      "flex items-center gap-2 rounded-md group transition-colors duration-300 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-mari-ring",
-      getSizeClasses(size),
+      geometryClass,
+      "group relative cursor-text",
+      touchTargetClass[size],
+      FIELD_BASE_CLASS,
       getVariantClasses(resolvedVariant, resolvedColor),
-      getShapeClasses(shape),
-      disabled && "opacity-50 pointer-events-none",
+      disabled && FIELD_DISABLED_CLASS,
       classNames.wrapper,
       className
     );
+    const adornmentClass = "flex shrink-0 items-center text-mari-muted";
+
+    // Kutunun input DIŞINDAKİ alanına (dolgu, ikon, dokunmatikte genişletilmiş
+    // alan) tıklamak da alanı odaklar — eskiden sadece metin satırının kendisi
+    // tıklanabilirdi. İç butonlar (temizle, şifre) kendi işini yapar.
+    const handleWrapperMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+      const target = e.target as HTMLElement;
+      if (disabled || target === innerRef.current || target.closest("button")) return;
+      e.preventDefault();
+      innerRef.current?.focus();
+    };
 
     // `w-full min-w-0`: native <input>'un tarayıcı varsayılanı ~20 karakterlik
     // bir içsel genişliktir (≈250px) ve bu, kapsayıcının min-content boyutuna
     // katkı olarak sızıp dar grid kolonlarını (mobil form) taşırıyordu —
     // `min-w-0` tek başına yetmez, yüzdelik genişlik bu katkıyı sıfırlar
     // (Faz 13.6 Steps mobil incelemesinde bulundu).
-    const inputClass = cn("w-full min-w-0 flex-grow bg-transparent focus:outline-none", classNames.input);
+    const inputClass = cn("w-full min-w-0 flex-grow bg-transparent placeholder:text-mari-muted focus:outline-none disabled:cursor-not-allowed", FIELD_MOBILE_TEXT_CLASS, classNames.input);
 
     return (
-      <div className={wrapperClass}>
-        {icon && iconPosition === "start" && <span className="mr-2">{icon}</span>}
+      // Fare kısayolu; klavye kullanıcısı zaten doğrudan <input>'a sekmeyle gelir.
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+      <div className={wrapperClass} onMouseDown={handleWrapperMouseDown}>
+        {/* Boşluk wrapper'ın `gap-*`'ından gelir — eskiden ayrıca `mr-2` vardı, ikon ile metin arası 2 katıydı. */}
+        {icon && iconPosition === "start" && <span className={cn(adornmentClass, classNames.icon)}>{icon}</span>}
 
         {mask ? (
           <InputMask
-            ref={ref}
+            ref={setRefs}
             id={id}
             mask={mask}
             replacement={replacement}
@@ -123,13 +168,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onFocus={onFocus}
             onBlur={onBlur}
             onInput={onInput}
+            onPaste={onPaste}
             className={inputClass}
             {...nativeProps}
             aria-invalid={ariaInvalid}
           />
         ) : (
           <input
-            ref={ref}
+            ref={setRefs}
             id={id}
             disabled={disabled}
             type={inputType}
@@ -141,6 +187,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onFocus={onFocus}
             onBlur={onBlur}
             onInput={onInput}
+            onPaste={onPaste}
             className={inputClass}
             max={max}
             min={min}
@@ -149,28 +196,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           />
         )}
 
-        {allowClear && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className={cn("shrink-0 invisible cursor-pointer", showClear && "visible", classNames.clear)}
-          >
-            {typeof allowClear === "object" && allowClear.clearIcon ? allowClear.clearIcon : <XIcon size={16} />}
-          </button>
-        )}
+        {allowClear && <ClearButton visible={showClear} label={clearLabel} icon={clearIconOf(allowClear)} onClear={handleClear} className={classNames.clear} />}
 
         {(showCount || count?.formatter) && (
-          <span className={cn("ml-2 text-mari-muted text-xs flex flex-none items-center", classNames.count)}>
+          <span className={cn("flex flex-none items-center text-xs tabular-nums text-mari-muted", classNames.count)}>
             {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : countLabel}
           </span>
         )}
 
-        {icon && iconPosition === "end" && <span className="ml-2">{icon}</span>}
+        {icon && iconPosition === "end" && <span className={cn(adornmentClass, classNames.icon)}>{icon}</span>}
 
         {showPasswordToggle && (
-          <button type="button" onClick={() => setPasswordVisible((prev) => !prev)} className="ml-2 cursor-pointer text-mari-muted">
-            {visibilityIconRender ? visibilityIconRender(passwordVisible) : defaultIconRender(passwordVisible)}
-          </button>
+          <PasswordToggle visible={passwordVisible} disabled={disabled} onToggle={() => setPasswordVisible((prev) => !prev)} iconRender={visibilityIconRender} />
         )}
       </div>
     );

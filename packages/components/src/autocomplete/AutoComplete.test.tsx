@@ -55,4 +55,44 @@ describe("AutoComplete", () => {
     const { container } = render(<AutoComplete options={options} />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("Türkçe ve aksansız arar: 'istanbul' → İstanbul, 'sisli' → Şişli", async () => {
+    const user = userEvent.setup();
+    render(<AutoComplete options={[{ id: 1, value: "İstanbul" }, { id: 2, value: "Şişli" }, { id: 3, value: "Ankara" }]} />);
+    const box = screen.getByRole("combobox");
+    await user.type(box, "istanbul");
+    expect(screen.getByRole("option", { name: "İstanbul" })).toBeInTheDocument();
+    await user.clear(box);
+    await user.type(box, "sisli");
+    expect(screen.getByRole("option", { name: "Şişli" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Ankara" })).not.toBeInTheDocument();
+  });
+
+  it("eşleşen kısım vurgulanır", async () => {
+    const user = userEvent.setup();
+    render(<AutoComplete options={[{ id: 1, value: "Kadıköy" }]} />);
+    await user.type(screen.getByRole("combobox"), "köy");
+    expect(screen.getByRole("option").querySelector("mark")).toHaveTextContent("köy");
+  });
+
+  it("temizle gerçek, adlandırılmış bir buton; alan boşken görünmez", async () => {
+    const user = userEvent.setup();
+    render(<AutoComplete options={[]} defaultValue="Ada" />);
+    await user.click(screen.getByRole("button", { name: "Temizle" }));
+    expect(screen.getByRole("combobox")).toHaveValue("");
+    expect(screen.getByRole("button", { hidden: true, name: "Temizle" })).not.toHaveClass("visible");
+  });
+
+  it("notFoundContent eşleşme yokken gösterilir", async () => {
+    const user = userEvent.setup();
+    render(<AutoComplete options={[{ id: 1, value: "Ankara" }]} notFoundContent="Sonuç bulunamadı" />);
+    await user.type(screen.getByRole("combobox"), "zzz");
+    expect(screen.getByText("Sonuç bulunamadı")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("liste yüksekliği sınırlı ve kaydırılabilir", () => {
+    render(<AutoComplete options={[{ id: 1, value: "Ankara" }]} />);
+    expect(screen.getByRole("listbox", { hidden: true })).toHaveClass("max-h-64", "overflow-y-auto");
+  });
 });

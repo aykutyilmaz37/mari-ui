@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, SlotClassNames, Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 /**
  * Eskiden `variant` (outlined|borderless|filled|underlined) Button'ın
@@ -30,10 +31,17 @@ export type InputNativeAttributes = React.AriaAttributes & {
   required?: boolean;
   autoFocus?: boolean;
   role?: string;
+  readOnly?: boolean;
+  /** Mobil klavye türü (`numeric`, `email`, `tel`, `search`…). */
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  /** Mobil klavyedeki Enter tuşunun etiketi (`search`, `send`, `next`…). */
+  enterKeyHint?: React.InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
+  autoComplete?: string;
+  pattern?: string;
   [dataAttribute: `data-${string}`]: unknown;
 };
 
-export interface InputProps extends InputNativeAttributes {
+export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   placeholder?: string;
   value?: string;
   defaultValue?: string;
@@ -44,7 +52,10 @@ export interface InputProps extends InputNativeAttributes {
   onFocus?: (e: React.FormEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FormEvent<HTMLInputElement>) => void;
   onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
   allowClear?: boolean | { clearIcon?: React.ReactNode };
+  /** Temizle butonunun erişilebilir adı. Varsayılan: `"Temizle"`. */
+  clearLabel?: string;
   icon?: React.ReactNode;
   iconPosition?: "start" | "end";
   disabled?: boolean;

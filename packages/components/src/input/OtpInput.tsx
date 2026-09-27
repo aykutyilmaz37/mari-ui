@@ -2,10 +2,11 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 import { Input } from "./Input";
 import type { InputShape, InputVariant } from "./types";
 
-export interface OtpInputProps {
+export interface OtpInputProps extends SkeletonableProps {
   length?: number;
   value?: string;
   defaultValue?: string;
@@ -22,6 +23,13 @@ export interface OtpInputProps {
   formatter?: (val: string) => string;
   separator?: React.ReactNode | ((i: number) => React.ReactNode);
   className?: string;
+  /** Grubun erişilebilir adı. Varsayılan: `"Doğrulama kodu"`. */
+  "aria-label"?: string;
+  /**
+   * Mobil klavye. Varsayılan `"numeric"` (SMS/e-posta kodları rakamdır);
+   * harf içeren kodlar için `"text"`.
+   */
+  inputMode?: "numeric" | "text";
 }
 
 const WIDTH_CLASS: Record<Size, string> = { sm: "w-6 p-0", md: "w-8 p-0", lg: "w-10 p-0" };
@@ -49,6 +57,9 @@ export function OtpInput({
   formatter,
   separator,
   className,
+  "aria-label": ariaLabel = "Doğrulama kodu",
+  inputMode = "numeric",
+  skeleton = false,
 }: OtpInputProps) {
   const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -61,8 +72,18 @@ export function OtpInput({
     }
   };
 
+  /**
+   * Faz 15: hücrelerde artık `maxLength=1` YOK — o, 6 haneli bir kodun
+   * yapıştırılmasını VE iOS/Android'in SMS kodunu otomatik doldurmasını
+   * (`autocomplete="one-time-code"`, kodun tamamını ilk hücreye yazar) tek
+   * haneye kırpıyordu. Uzun giriş buradan hücrelere dağıtılır; dolu bir
+   * hücrede imleç sondayken yazılan tek karakter ise eskisinin YERİNE geçer.
+   */
   const handleInput = (i: number, rawValue: string) => {
-    const chars = rawValue.replace(/\s/g, "").split("");
+    const shown = resolveDisplayValue(otpValues[i] ?? "", formatter, mask);
+    let text = rawValue.replace(/\s/g, "");
+    if (shown && text.length === shown.length + 1) text = text.startsWith(shown) ? text.slice(shown.length) : text.slice(0, 1);
+    const chars = text.split("");
     const updated = [...otpValues];
     for (let j = 0; j < chars.length; j++) {
       if (i + j < length) updated[i + j] = chars[j] ?? "";
@@ -118,8 +139,23 @@ export function OtpInput({
   // (en azından bir alt çizgi kalır) düşürülür.
   const resolvedVariant = variant === "ghost" ? "underlined" : variant;
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, i: number) => {
+    e.preventDefault();
+    handleInput(i, e.clipboardData.getData("text"));
+  };
+
+  if (skeleton) {
+    return (
+      <div aria-hidden className="flex items-center gap-2">
+        {Array.from({ length }, (_, i) => (
+          <Input key={i} skeleton size={size} shape={shape} className={cn(WIDTH_CLASS[size], className)} />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-2">
+    <div role="group" aria-label={ariaLabel} className="flex items-center gap-2">
       {Array.from({ length }).map((_, i) => {
         const rawValue = otpValues[i] ?? "";
         const displayValue = resolveDisplayValue(rawValue, formatter, mask);
@@ -133,8 +169,12 @@ export function OtpInput({
               value={displayValue}
               onInput={(e) => handleInput(i, (e.target as HTMLInputElement).value)}
               onKeyDown={(e) => handleKeyDown(e, i)}
+              onPaste={(e) => handlePaste(e, i)}
               onFocus={(e) => e.currentTarget.select()}
-              maxLength={1}
+              aria-label={`Hane ${i + 1} / ${length}`}
+              inputMode={inputMode}
+              // SMS kodunu klavye önerisi olarak sunar — sadece ilk hücrede.
+              autoComplete={i === 0 ? "one-time-code" : "off"}
               disabled={disabled}
               size={size}
               shape={shape}
@@ -142,9 +182,13 @@ export function OtpInput({
               color={color}
               status={status}
               className={cn(WIDTH_CLASS[size], className)}
-              classNames={{ input: "w-full text-center" }}
+              classNames={{ input: "w-full text-center font-medium" }}
             />
-            {separator && i < length - 1 && <span>{typeof separator === "function" ? separator(i) : separator}</span>}
+            {separator && i < length - 1 && (
+              <span aria-hidden className="text-mari-muted">
+                {typeof separator === "function" ? separator(i) : separator}
+              </span>
+            )}
           </React.Fragment>
         );
       })}

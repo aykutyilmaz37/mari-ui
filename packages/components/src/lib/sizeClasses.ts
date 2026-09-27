@@ -32,3 +32,31 @@ export const fontSizeClass: Record<ExtendedSize, string> = {
   lg: "text-base",
   xl: "text-lg",
 };
+
+/**
+ * Faz 15 — dokunmatik hedef. Varsayılan kontroller masaüstü yoğunluğunda
+ * (md = 32px); parmakla kullanımda önerilen en az 44px. GÖRÜNÜMÜ DEĞİŞTİRMEDEN
+ * yalnızca kaba işaretçili (dokunmatik) cihazlarda görünmez bir `::before`
+ * katmanı tıklama alanını 44px'e tamamlar. Öğe `relative` olmalı.
+ *
+ * Dikey: (44 − yükseklik) / 2 → xs 20→12px, sm 24→10px, md 32→6px, lg 40→2px,
+ * xl 48 zaten yeterli. Yatay genişletme YOK: yan yana butonlar arasında
+ * (gap-2) hedefler çakışırdı; ikon-only (kare) kontroller için
+ * `touchTargetSquareClass` kullanın.
+ */
+export const touchTargetClass: Record<ExtendedSize, string> = {
+  xs: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-3",
+  sm: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-2.5",
+  md: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-1.5",
+  lg: "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-0.5",
+  xl: "",
+};
+
+/** Kare/daire ikon-only kontroller: her yönde 44px'e tamamlar. */
+export const touchTargetSquareClass: Record<ExtendedSize, string> = {
+  xs: "pointer-coarse:before:absolute pointer-coarse:before:-inset-3",
+  sm: "pointer-coarse:before:absolute pointer-coarse:before:-inset-2.5",
+  md: "pointer-coarse:before:absolute pointer-coarse:before:-inset-1.5",
+  lg: "pointer-coarse:before:absolute pointer-coarse:before:-inset-0.5",
+  xl: "",
+};
