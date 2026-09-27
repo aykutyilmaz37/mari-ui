@@ -113,8 +113,8 @@ export function OtpSingleField({
               className={cn(
                 "relative flex h-full items-center justify-center font-medium tabular-nums text-mari-foreground",
                 SLOT_CLASS[size],
-                // Boş yuva: ince bir alt çizgi — kaç hane kaldığı görünür.
-                !char && "after:absolute after:inset-x-0.5 after:bottom-[28%] after:h-px after:bg-mari-input",
+                // Boş yuva: dikeyde ortalı ince bir çizgi — kaç hane kaldığı görünür.
+                !char && "after:absolute after:inset-x-0.5 after:top-1/2 after:h-px after:-translate-y-1/2 after:bg-mari-input",
                 isActive && !char && "after:bg-mari-primary"
               )}
             >
