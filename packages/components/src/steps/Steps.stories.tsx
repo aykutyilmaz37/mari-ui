@@ -787,6 +787,30 @@ export const Colors: Story = {
   ),
 };
 
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` — adımlar sunucudan gelirken: göstergeler aynı dairelerde, başlık ve açıklamalar kendi metin " +
+      "kutularında (satır kırılmaları korunur) yer tutucu; çizgiler nötr, eylem düğmeleri iskelet, adımlar tıklanamaz. " +
+      "Yüklenince hiçbir şey kaymaz.",
+    `<Steps data={steps} currentStep={2} onChange={setStep} skeleton={!order} />`
+  ),
+  render: () => {
+    const [loading, setLoading] = useState(true);
+    const [step, setStep] = useState(2);
+    return (
+      <div className="flex flex-col gap-6">
+        <label className="flex items-center gap-2 text-sm text-mari-foreground">
+          <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
+          Yükleniyor
+        </label>
+        <Steps data={basicSteps} currentStep={step} onChange={setStep} skeleton={loading} />
+        <Steps data={trackingSteps} currentStep={3} vertical skeleton={loading} />
+      </div>
+    );
+  },
+};
+
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {
