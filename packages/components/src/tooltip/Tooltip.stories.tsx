@@ -188,7 +188,8 @@ function UserPreview() {
         content={
           <span className="flex flex-col">
             <span className="font-medium">Aykut Yılmaz</span>
-            <span className="text-xs opacity-80">Ürün tasarımcısı · İstanbul</span>
+            {/* Soluklaştırma yok: koyu balonda opacity-80 kontrastı 4.27:1'e düşürüyordu (axe). Hiyerarşi text-xs'ten. */}
+            <span className="text-xs">Ürün tasarımcısı · İstanbul</span>
           </span>
         }
         trigger={

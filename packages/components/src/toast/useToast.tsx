@@ -18,6 +18,12 @@ interface ToastContextType {
   showToast: (t: ToastOptions) => string;
   /** Belirli bir toast'u kapatır; `id` verilmezse hepsini. */
   dismiss: (id?: string) => void;
+  /**
+   * Açık bir toast'u günceller — ör. iskeletten içeriğe:
+   * `update(id, { skeleton: false, title: "Rapor hazır", type: "success" })`.
+   * İskeletten çıkınca ekran okuyucuya duyurulur ve kapanma sayacı başlar.
+   */
+  update: (id: string, changes: Partial<Omit<ToastOptions, "position">>) => void;
 }
 
 interface ToastEntry extends ToastData {
@@ -32,6 +38,10 @@ const markExiting = (id: string) => (prev: ToastEntry[]) => {
   if (!prev.some((t) => t.id === id && !t.exiting)) return prev;
   return prev.map((t) => (t.id === id ? { ...t, exiting: true } : t));
 };
+
+/** Canlı bölgeye okunacak metin: başlık + (düz metinse) açıklama. */
+const announcementText = (t: Pick<ToastOptions, "title" | "description">) =>
+  [t.title, typeof t.description === "string" ? t.description : ""].filter(Boolean).join(". ");
 
 function ToastGroup({ position, toasts, onClose }: { position: ToastPosition; toasts: ToastEntry[]; onClose: (id: string) => void }) {
   if (toasts.length === 0) return null;
@@ -52,6 +62,7 @@ function ToastGroup({ position, toasts, onClose }: { position: ToastPosition; to
           action={t.action}
           duration={t.duration}
           exiting={t.exiting}
+          skeleton={t.skeleton}
           onClose={() => onClose(t.id)}
         />
       ))}
@@ -71,6 +82,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const closers = useRef(new Map<string, (() => void) | undefined>());
   const toastsRef = useRef(toasts);
   toastsRef.current = toasts;
+
+  const announceToast = useCallback((t: ToastOptions) => {
+    const text = announcementText(t);
+    setAnnounce((a) => (t.type === "error" ? { ...a, assertive: text } : { ...a, polite: text }));
+  }, []);
 
   const remove = useCallback((id: string) => {
     if (!closers.current.has(id)) return; // zaten kapanıyor
@@ -93,10 +109,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       const overflow = same.slice(0, Math.max(0, same.length - MAX_PER_POSITION)).map((t) => t.id);
       return next.filter((t) => !overflow.includes(t.id));
     });
-    const text = [options.title, typeof options.description === "string" ? options.description : ""].filter(Boolean).join(". ");
-    setAnnounce((a) => (options.type === "error" ? { ...a, assertive: text } : { ...a, polite: text }));
+    // İskeletteki içerik yer tutucu — duyurulmaz; veri gelince `update` duyurur.
+    if (!options.skeleton) announceToast(options);
     return id;
-  }, []);
+  }, [announceToast]);
+
+  const update = useCallback((id: string, changes: Partial<Omit<ToastOptions, "position">>) => {
+    const current = toastsRef.current.find((t) => t.id === id);
+    if (!current || current.exiting) return;
+    const next = { ...current, ...changes };
+    if (changes.onClose !== undefined) closers.current.set(id, changes.onClose);
+    setToasts((prev) => prev.map((t) => (t.id === id ? { ...t, ...changes } : t)));
+    const contentChanged = current.skeleton || changes.title !== undefined || changes.description !== undefined;
+    if (!next.skeleton && contentChanged) announceToast(next);
+  }, [announceToast]);
 
   const dismiss = useCallback(
     (id?: string) => {
@@ -106,7 +132,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     [remove]
   );
 
-  const contextValue = useMemo(() => ({ showToast, dismiss }), [showToast, dismiss]);
+  const contextValue = useMemo(() => ({ showToast, dismiss, update }), [showToast, dismiss, update]);
 
   return (
     <ToastContext.Provider value={contextValue}>

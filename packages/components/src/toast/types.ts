@@ -32,6 +32,13 @@ export interface ToastOptions {
   action?: ToastAction;
   /** Toast kapandığında (otomatik ya da kullanıcı). */
   onClose?: () => void;
+  /**
+   * Veri gelene kadar ikon, başlık, açıklama ve aksiyon içeriğin kendi
+   * şeklinde iskelet; Kapat çalışır. İskeletteyken otomatik kapanma sayacı
+   * işlemez ve ekran okuyucuya duyurulmaz — `update(id, { skeleton: false, … })`
+   * ile veri geldiğinde duyurulur ve sayaç başlar.
+   */
+  skeleton?: boolean;
 }
 
 export interface ToastData extends ToastOptions {

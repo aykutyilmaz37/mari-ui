@@ -81,7 +81,9 @@ function measure(root: HTMLElement): Block[] {
       return;
     }
     const rect = el.getBoundingClientRect();
-    push(rect.left, rect.top, rect.width, rect.height, style.borderRadius || "0.375rem");
+    // Kendi radius'u olmayan öğe (ikon SVG'si, düz img) keskin kare değil, metin çubukları gibi hafif yuvarlak.
+    const radius = style.borderRadius && style.borderRadius !== "0px" ? style.borderRadius : "0.25rem";
+    push(rect.left, rect.top, rect.width, rect.height, radius);
   };
 
   walk(root);

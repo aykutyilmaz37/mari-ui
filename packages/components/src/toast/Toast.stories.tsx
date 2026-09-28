@@ -32,8 +32,9 @@ const meta: Meta<typeof Toast> = {
         component: componentDoc({
           summary:
             "Akışı durdurmadan kısa bir geri bildirim. Uygulamayı bir kez `<ToastProvider>` ile sarın, her yerden " +
-            "`const { showToast, dismiss } = useToast()` ile gösterin. `showToast` bir `id` döndürür. Seçenekler: " +
-            "`type`, `description`, `action` (ör. \"Geri al\"), `duration` (`0` = kalıcı), `position`, `onClose`. " +
+            "`const { showToast, dismiss, update } = useToast()` ile gösterin. `showToast` bir `id` döndürür; " +
+            "`update(id, …)` açık toast'u değiştirir. Seçenekler: `type`, `description`, `action` (ör. \"Geri al\"), " +
+            "`duration` (`0` = kalıcı), `position`, `onClose`, `skeleton`. " +
             "Konum başına en fazla 4 toast; mobilde kenardan kenara.",
           whenToUse: [
             "Bir işlemin sonucu: kaydedildi, gönderildi, silindi (\"Geri al\" ile).",
@@ -156,6 +157,48 @@ export const Positions: Story = {
   },
 };
 
+/* ─────────────────────────── İskelet → içerik ─────────────────────────── */
+
+export const SkeletonUpdate: Story = {
+  name: "Hazırlanıyor → Hazır (skeleton + update)",
+  ...storyDoc(
+    "Sonucu henüz belli olmayan bir arka plan işi: toast `skeleton` ile açılır (içeriğin kendi şeklinde iskelet, " +
+      "Kapat çalışır, sayaç işlemez, ekran okuyucuya duyurulmaz), iş bitince `update(id, { skeleton: false, … })` " +
+      "ile gerçek içeriğe döner — o anda duyurulur ve kapanma sayacı başlar. Aksiyonu (İndir) baştan verin: " +
+      "iskelette tıklanamaz ama yerini tutar, yüklenince toast zıplamaz.",
+    `
+const { showToast, update } = useToast();
+const id = showToast({
+  skeleton: true,
+  type: "info",
+  title: "Dışa aktarma hazır",
+  description: "rapor-eylul.csv · —",
+  action: { label: "İndir", onClick: download },
+});
+const file = await exportReport();
+update(id, { skeleton: false, description: \`\${file.name} · \${file.size}\` });`
+  ),
+  render: () => {
+    const { showToast, update } = useToast();
+    return (
+      <Button
+        onClick={() => {
+          const id = showToast({
+            skeleton: true,
+            type: "info",
+            title: "Dışa aktarma hazır",
+            description: "rapor-eylul.csv · —",
+            action: { label: "İndir", onClick: () => {} },
+          });
+          setTimeout(() => update(id, { skeleton: false, description: "rapor-eylul.csv · 1,2 MB" }), 1500);
+        }}
+      >
+        Raporu dışa aktar
+      </Button>
+    );
+  },
+};
+
 /* ─────────────────────────── Statik kart ─────────────────────────── */
 
 export const Types: Story = {
@@ -168,6 +211,7 @@ export const Types: Story = {
       <Toast type="warning" title="Bağlantı koptu" description="Değişiklikleriniz çevrimiçi olunca eşitlenecek." />
       <Toast type="error" title="Ödeme reddedildi" description="Başka bir kart deneyin." />
       <Toast title="3 dosya çöp kutusuna taşındı" action={{ label: "Geri al", onClick: () => {} }} />
+      <Toast skeleton type="info" title="Dışa aktarma hazır" description="rapor-eylul.csv · 1,2 MB" action={{ label: "İndir", onClick: () => {} }} />
     </div>
   ),
 };
