@@ -115,6 +115,10 @@
       "types": "./dist/autocomplete.d.ts",
       "import": "./dist/autocomplete.js"
     },
+    "./alert": {
+      "types": "./dist/alert.d.ts",
+      "import": "./dist/alert.js"
+    },
     "./badge": {
       "types": "./dist/badge.d.ts",
       "import": "./dist/badge.js"
