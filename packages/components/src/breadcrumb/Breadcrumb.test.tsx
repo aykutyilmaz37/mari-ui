@@ -56,4 +56,84 @@ describe("Breadcrumb", () => {
     );
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("maxItems aşılınca ortadaki öğeler \"…\" düğmesine katlanır, basınca hepsi açılır", async () => {
+    const user = userEvent.setup();
+    render(
+      <Breadcrumb
+        maxItems={3}
+        items={[
+          { title: "A", href: "/a" },
+          { title: "B", href: "/b" },
+          { title: "C", href: "/c" },
+          { title: "D", href: "/d" },
+          { title: "E" },
+        ]}
+      />
+    );
+    expect(screen.queryByRole("link", { name: "B" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "C" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "A" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "D" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "2 gizli yolu göster" }));
+    expect(screen.getByRole("link", { name: "B" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "C" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /gizli yolu/ })).not.toBeInTheDocument();
+  });
+
+  it("menu verilen öğe açılır menü tetikleyicisidir; kardeş sayfalar gerçek link olarak listelenir", async () => {
+    const user = userEvent.setup();
+    render(
+      <Breadcrumb
+        items={[
+          { title: "Elektronik", href: "/elektronik" },
+          { title: "Bilgisayar", menu: { items: [{ title: "Telefon", href: "/telefon" }, { title: "TV", href: "/tv" }] } },
+          { title: "Laptop" },
+        ]}
+      />
+    );
+    const trigger = screen.getByRole("button", { name: "Bilgisayar" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "Telefon" })).toHaveAttribute("href", "/telefon");
+    await user.keyboard("{Escape}");
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("itemRender'a o öğeye kadar biriken path'ler verilir", () => {
+    const seen: string[][] = [];
+    render(
+      <Breadcrumb
+        items={[
+          { title: "A", path: "a" },
+          { title: "B", path: "b" },
+          { title: "C", path: "c" },
+        ]}
+        itemRender={(route, _p, _r, paths) => {
+          seen.push(paths);
+          return <span>{route.title}</span>;
+        }}
+      />
+    );
+    expect(seen).toEqual([["a"], ["a", "b"], ["a", "b", "c"]]);
+  });
+
+  it("skeleton: öğeler aria-hidden ve etkileşimsiz, gerçek içerik görünmez olarak yerinde kalır", async () => {
+    const { container } = render(
+      <Breadcrumb
+        skeleton
+        items={[
+          { title: "Ana Sayfa", href: "/" },
+          { title: "Ürün" },
+        ]}
+      />
+    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    const slots = container.querySelectorAll("li > [aria-hidden].grid");
+    expect(slots).toHaveLength(2);
+    expect(container.querySelector("a")?.parentElement).toHaveClass("invisible");
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
 });

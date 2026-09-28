@@ -55,7 +55,9 @@ export interface DropdownItemProps {
   /** Yıkıcı işlem (Sil, Çıkış…): kırmızı metin, hover'da dolu kırmızı zemin. */
   danger?: boolean;
   disabled?: boolean;
+  /** Verilirse öğe gerçek bir `<a>` olarak render edilir (orta tık, yeni sekme, adres önizlemesi). */
+  href?: string;
   /** Öğeye tıklanınca çağrılır; ardından dropdown kapanır. */
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   className?: string;
 }
