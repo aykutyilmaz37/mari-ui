@@ -147,6 +147,10 @@
       "types": "./dist/progress.d.ts",
       "import": "./dist/progress.js"
     },
+    "./statistic": {
+      "types": "./dist/statistic.d.ts",
+      "import": "./dist/statistic.js"
+    },
     "./select": {
       "types": "./dist/select.d.ts",
       "import": "./dist/select.js"
