@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, MoreHorizontalIcon } from "lucide-react";
 import { cn, useControllableState, type ColorRole, type Size } from "@mari-ui/core";
 import {
@@ -11,8 +11,49 @@ import {
   textSolidContrastClass,
   textSubtleContrastClass,
 } from "../lib/colorClasses";
+import { touchTargetClass } from "../lib/sizeClasses";
+import { skeletonFill } from "../lib/skeleton";
+import { SkeletonSlot } from "../lib/SkeletonSlot";
 import type { PaginationAlign, PaginationProps, PaginationVariant } from "./types";
-import { clampPage, getItemRange, getJumpSize, getPageAfterSizeChange, getPageItems, getTotalPages, resolvePageClickTarget } from "./utils";
+import { clampPage, fitSiblingCount, getItemRange, getJumpSize, getPageAfterSizeChange, getPageItems, getTotalPages, resolvePageClickTarget } from "./utils";
+
+/**
+ * Kapsayıcı genişliğini izleyip sığan komşu sayısını seçer (`-1` → `simple`).
+ * Slot genişliği gerçek DOM'dan ölçülür (iki/üç basamaklı sayılar kareyi
+ * genişletir) ve saklanır — `simple`e geçildiğinde de yeniden hesap yapılabilsin.
+ * `ResizeObserver` yoksa (SSR, jsdom) istenen `siblingCount` aynen kullanılır.
+ */
+function useFittedSiblings(rootRef: React.RefObject<HTMLDivElement | null>, navRef: React.RefObject<HTMLElement | null>, totalPages: number, siblingCount: number, size: Size): number {
+  const [fitted, setFitted] = useState(siblingCount);
+  const slotRef = useRef<{ width: number; gap: number } | null>(null);
+
+  useEffect(() => {
+    // Boyut değişince eski ölçü geçersiz.
+    slotRef.current = null;
+    setFitted(siblingCount);
+  }, [siblingCount, size]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof ResizeObserver === "undefined") return;
+    const measure = () => {
+      const list = navRef.current?.querySelector("ul");
+      if (list && list.children.length > 0) {
+        const gap = Number.parseFloat(getComputedStyle(list).columnGap) || 0;
+        slotRef.current = { width: (list.scrollWidth + gap) / list.children.length - gap, gap };
+      }
+      const slot = slotRef.current;
+      if (!slot) return;
+      setFitted(fitSiblingCount(root.clientWidth, slot.width, slot.gap, totalPages, siblingCount));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, [rootRef, navRef, totalPages, siblingCount, size]);
+
+  return fitted;
+}
 
 export type { PaginationProps };
 
@@ -64,8 +105,19 @@ function activeClasses(color: ColorRole, variant: PaginationVariant): string {
 }
 
 const itemBaseClass =
-  "inline-flex shrink-0 items-center justify-center border tabular-nums select-none " +
+  "relative inline-flex shrink-0 items-center justify-center border tabular-nums select-none " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring";
+/**
+ * Dokunmatikte yalnızca DİKEY genişleme: öğeler arası 8px boşluk yatayda
+ * 44px'e tamamlamaya yetmiyor, kare genişleme komşunun alanına binerdi.
+ */
+const itemTouchClass: Record<Size, string> = {
+  sm: touchTargetClass.sm,
+  md: touchTargetClass.md,
+  lg: touchTargetClass.lg,
+};
+/** İskelette düğme: kendi kare kutusunda dolgu, içerik görünmez, etkileşimsiz. */
+const skeletonItemClass = cn("pointer-events-none border-transparent text-transparent [&_svg]:invisible", skeletonFill(true));
 const idleItemClass = "border-transparent text-mari-foreground hover:bg-mari-neutral-subtle cursor-pointer";
 // Sadece ok/"…" düğmelerinde hover geçişi. Sayfa numaralarında BİLİNÇLİ
 // OLARAK geçiş yok: aktif vurgu bir slottan diğerine geçerken 150ms'lik
@@ -115,14 +167,23 @@ export function Pagination({
   align = "between",
   className,
   "aria-label": ariaLabel = "Sayfalama",
+  skeleton = false,
 }: PaginationProps) {
   const [rawPage, setRawPage] = useControllableState<number>({ value: currentPage, defaultValue: defaultPage });
   const [pageSize, setPageSize] = useControllableState<number>({ value: pageSizeProp, defaultValue: defaultPageSize });
 
   const totalPages = getTotalPages(totalItems, pageSize);
   const page = clampPage(rawPage, totalPages);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  // Dar kapsayıcıda komşu sayısı azalır; 0 komşu bile sığmazsa `simple` görünüme geçilir.
+  const fitted = useFittedSiblings(rootRef, navRef, totalPages, siblingCount, size);
+  const siblings = Math.max(0, fitted);
+  const compact = simple || fitted < 0;
 
   const goTo = (target: number, nextPageSize = pageSize) => {
+    // İskelette toplam henüz gerçek değil — hiçbir yol (programatik tıklama dahil) sayfa değiştirmez.
+    if (skeleton) return;
     const next = clampPage(target, getTotalPages(totalItems, nextPageSize));
     if (next === page && nextPageSize === pageSize) return;
     setRawPage(next);
@@ -161,6 +222,10 @@ export function Pagination({
   const isLast = page >= totalPages;
   const sizeChangerVisible = showSizeChanger ?? onPageSizeChange !== undefined;
   const icon = iconSize[size];
+  // İskelette düğmeler yerinde kalır (aynı kare kutu) ama dolgu olur, Tab sırasından çıkar.
+  const itemClass = (stateClass: string) => cn(itemBaseClass, itemSizeClass[size], itemTouchClass[size], skeleton ? skeletonItemClass : stateClass);
+  const skeletonTab = skeleton ? -1 : undefined;
+  const barPlaceholder = <span className={cn("block size-full min-h-[1lh] rounded-md", skeletonFill(true))} />;
 
   const navButton = (direction: "prev" | "next") => {
     const isEdge = direction === "prev" ? isFirst : isLast;
@@ -168,7 +233,8 @@ export function Pagination({
     return (
       <button
         type="button"
-        className={cn(itemBaseClass, hoverTransitionClass, itemSizeClass[size], idleItemClass, disabledItemClass)}
+        tabIndex={skeletonTab}
+        className={itemClass(cn(hoverTransitionClass, idleItemClass, disabledItemClass))}
         aria-label={direction === "prev" ? "Önceki sayfa" : "Sonraki sayfa"}
         aria-disabled={isEdge || disabled || undefined}
         onClick={() => {
@@ -182,19 +248,24 @@ export function Pagination({
 
   const totalNode =
     showTotal === false ? null : (
-      <p className={cn("text-mari-muted tabular-nums", textSizeClass[size])}>
-        {typeof showTotal === "function" ? showTotal(totalItems, range) : `${range[0]}-${range[1]} / ${totalItems} kayıt`}
-      </p>
+      // Slot da metnin yazı boyutunu taşır: yer tutucunun `1lh`'si o satır yüksekliğine eşit olsun (yoksa 2px kayar).
+      <SkeletonSlot on={skeleton} placeholder={barPlaceholder} className={textSizeClass[size]}>
+        <p className={cn("text-mari-muted tabular-nums", textSizeClass[size])}>
+          {typeof showTotal === "function" ? showTotal(totalItems, range) : `${range[0]}-${range[1]} / ${totalItems} kayıt`}
+        </p>
+      </SkeletonSlot>
     );
 
-  const pager = simple ? (
-    <nav aria-label={ariaLabel} className={cn("flex items-center", gapClass[size])}>
+  const pager = compact ? (
+    <nav ref={navRef} aria-label={ariaLabel} aria-hidden={skeleton || undefined} className={cn("flex items-center", gapClass[size])}>
       {navButton("prev")}
-      <SimplePageInput page={page} totalPages={totalPages} size={size} disabled={disabled} onCommit={goTo} />
+      <SkeletonSlot on={skeleton} placeholder={barPlaceholder}>
+        <SimplePageInput page={page} totalPages={totalPages} size={size} disabled={disabled} onCommit={goTo} />
+      </SkeletonSlot>
       {navButton("next")}
     </nav>
   ) : (
-    <nav aria-label={ariaLabel}>
+    <nav ref={navRef} aria-label={ariaLabel} aria-hidden={skeleton || undefined}>
       <ul className={cn("flex items-center", gapClass[size])}>
         <li>{navButton("prev")}</li>
         {/*
@@ -205,19 +276,20 @@ export function Pagination({
           getiriyordu — numaralar kayıyor, vurgu sönüp yeniden yanıyordu
           (Faz 13.6 kullanıcı bulgusu: "next/prev'de kayıyor gibi").
         */}
-        {getPageItems(totalPages, page, siblingCount).map((item, slot) => {
+        {getPageItems(totalPages, page, siblings).map((item, slot) => {
           if (typeof item === "object") {
-            const jump = getJumpSize(siblingCount);
+            const jump = getJumpSize(siblings);
             const JumpIcon = item.direction === "left" ? ChevronsLeftIcon : ChevronsRightIcon;
             return (
               <li key={slot}>
                 <button
                   type="button"
-                  className={cn(itemBaseClass, hoverTransitionClass, itemSizeClass[size], idleItemClass, "group text-mari-muted hover:text-mari-primary focus-visible:text-mari-primary")}
+                  tabIndex={skeletonTab}
+                  className={itemClass(cn(hoverTransitionClass, idleItemClass, "group text-mari-muted hover:text-mari-primary focus-visible:text-mari-primary"))}
                   aria-label={item.direction === "left" ? `${jump} sayfa geri` : `${jump} sayfa ileri`}
                   title={item.direction === "left" ? `Önceki ${jump} sayfa` : `Sonraki ${jump} sayfa`}
                   aria-disabled={disabled || undefined}
-                  onClick={() => !disabled && goTo(resolvePageClickTarget(item, page, totalPages, siblingCount))}
+                  onClick={() => !disabled && goTo(resolvePageClickTarget(item, page, totalPages, siblings))}
                 >
                   <MoreHorizontalIcon size={icon} aria-hidden className="group-hover:hidden group-focus-visible:hidden" />
                   <JumpIcon size={icon} aria-hidden className="hidden group-hover:block group-focus-visible:block" />
@@ -231,7 +303,8 @@ export function Pagination({
             <li key={slot}>
               <button
                 type="button"
-                className={cn(itemBaseClass, itemSizeClass[size], isActive ? cn("font-semibold cursor-default", activeClasses(color, variant)) : idleItemClass)}
+                tabIndex={skeletonTab}
+                className={itemClass(isActive ? cn("font-semibold cursor-default", activeClasses(color, variant)) : idleItemClass)}
                 aria-label={`${item}. sayfa`}
                 aria-current={isActive ? "page" : undefined}
                 aria-disabled={disabled || undefined}
@@ -251,14 +324,22 @@ export function Pagination({
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-2", align !== "between" && alignClass[align])}>
       {pager}
       {!simple && sizeChangerVisible && (
-        <SizeChanger value={pageSize} options={pageSizeOptions} size={size} disabled={disabled} onChange={handlePageSizeChange} />
+        <SkeletonSlot on={skeleton} placeholder={barPlaceholder}>
+          <SizeChanger value={pageSize} options={pageSizeOptions} size={size} disabled={disabled} onChange={handlePageSizeChange} />
+        </SkeletonSlot>
       )}
-      {!simple && showQuickJumper && <QuickJumper totalPages={totalPages} size={size} disabled={disabled} onCommit={goTo} />}
+      {!simple && showQuickJumper && (
+        <SkeletonSlot on={skeleton} placeholder={barPlaceholder}>
+          <QuickJumper totalPages={totalPages} size={size} disabled={disabled} onCommit={goTo} />
+        </SkeletonSlot>
+      )}
     </div>
   );
 
   return (
     <div
+      ref={rootRef}
+      aria-busy={skeleton || undefined}
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-2",
         alignClass[align],

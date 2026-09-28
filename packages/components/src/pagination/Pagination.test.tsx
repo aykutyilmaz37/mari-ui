@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Pagination } from "./Pagination";
-import { getPageAfterSizeChange, getPageItems } from "./utils";
+import { fitSiblingCount, getPageAfterSizeChange, getPageItems } from "./utils";
 import { getA11yViolations } from "../testUtils/a11y";
 
 const E = (direction: "left" | "right") => ({ type: "ellipsis", direction });
@@ -27,6 +27,21 @@ describe("getPageItems", () => {
   it("sayfa boyutu değişince ilk görünen kayıt görünür kalır", () => {
     expect(getPageAfterSizeChange(3, 10, 20, 95)).toBe(2); // 21. kayıt → 20/sayfa'da 2. sayfa
     expect(getPageAfterSizeChange(10, 10, 100, 95)).toBe(1);
+  });
+});
+
+describe("fitSiblingCount (Faz 15.5 — dar ekranda taşma)", () => {
+  // md: 32px kare, 8px boşluk. 1 komşu = 7 sayfa slotu + 2 ok = 9 slot = 9*32 + 8*8 = 352px.
+  it("sığarsa istenen komşu sayısını korur", () => {
+    expect(fitSiblingCount(360, 32, 8, 20, 1)).toBe(1);
+  });
+  it("sığmazsa komşuları azaltır; hiç sığmazsa -1 (simple)", () => {
+    expect(fitSiblingCount(343, 32, 8, 20, 2)).toBe(0); // 0 komşu: 7 slot = 272px
+    expect(fitSiblingCount(200, 32, 8, 20, 1)).toBe(-1);
+  });
+  it("az sayfada slot sayısı toplam sayfayla sınırlı", () => {
+    // 3 sayfa + 2 ok = 5 slot = 192px — 2 komşu istense de sığar.
+    expect(fitSiblingCount(200, 32, 8, 3, 2)).toBe(2);
   });
 });
 
@@ -155,6 +170,29 @@ describe("Pagination", () => {
     const { container } = render(
       <Pagination currentPage={6} pageSize={10} totalItems={195} onPageChange={() => {}} showTotal onPageSizeChange={() => {}} showQuickJumper />
     );
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
+
+  it("skeleton: düğmeler aynı kare kutularda yer tutucu, odaklanılamaz; alanlar yer tutucu; aria-busy", async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    const { container } = render(
+      <Pagination skeleton currentPage={6} pageSize={10} totalItems={195} onPageChange={onPageChange} showTotal onPageSizeChange={() => {}} showQuickJumper />
+    );
+    expect(container.firstElementChild).toHaveAttribute("aria-busy", "true");
+    expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
+    const buttons = container.querySelectorAll("nav button");
+    expect(buttons.length).toBeGreaterThan(0);
+    for (const button of buttons) {
+      expect(button).toHaveAttribute("tabindex", "-1");
+      expect(button.className).toContain("h-8");
+      expect(button.className).toContain("text-transparent");
+    }
+    // Seçici ve atlama alanı görünmez (visibility:hidden) kopyada — tarayıcıda Tab sırasına girmez (jsdom CSS uygulamaz).
+    expect(container.querySelector("select")?.closest(".invisible")).not.toBeNull();
+    expect(container.querySelector("input")?.closest(".invisible")).not.toBeNull();
+    await user.click(buttons[2] as HTMLElement);
+    expect(onPageChange).not.toHaveBeenCalled();
     expect(await getA11yViolations(container)).toEqual([]);
   });
 });

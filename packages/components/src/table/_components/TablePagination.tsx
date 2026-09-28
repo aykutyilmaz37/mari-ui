@@ -2,8 +2,6 @@ import React from "react";
 import { cn } from "@mari-ui/core";
 import { Pagination } from "../../pagination";
 import type { TablePaginationConfig } from "../types";
-import { SkeletonSlot } from "../../lib/SkeletonSlot";
-import { SkeletonBlock } from "../../skeleton";
 
 export interface TablePaginationProps {
   pagination: TablePaginationConfig;
@@ -28,27 +26,18 @@ export function TablePagination({ pagination, className, skeleton = false }: Tab
 
   return (
     <div className={cn("border-t border-mari-border px-3 py-2.5", className)}>
-      <SkeletonSlot
-        on={skeleton}
-        className="items-center"
-        placeholder={
-          <div className="flex items-center justify-between gap-4">
-            <SkeletonBlock active width="6rem" height="0.75rem" radius="sm" />
-            <SkeletonBlock active width="10rem" height="1.5rem" radius="md" />
-          </div>
-        }
-      >
-        <Pagination
-          currentPage={page}
-          pageSize={pageSize}
-          totalItems={total}
-          // Table'ın kendi sözleşmesi tek argümanlı — Pagination'ın ek `pageSize`/`page` argümanları sızmasın.
-          onPageChange={(next) => onPageChange(next)}
-          onPageSizeChange={onPageSizeChange && ((next) => onPageSizeChange(next))}
-          pageSizeOptions={pageSizeOptions}
-          showTotal
-        />
-      </SkeletonSlot>
+      {/* Faz 15.5: Pagination'ın kendi iskeleti — her düğme kendi kare kutusunda, yaklaşık bloklar değil. */}
+      <Pagination
+        skeleton={skeleton}
+        currentPage={page}
+        pageSize={pageSize}
+        totalItems={total}
+        // Table'ın kendi sözleşmesi tek argümanlı — Pagination'ın ek `pageSize`/`page` argümanları sızmasın.
+        onPageChange={(next) => onPageChange(next)}
+        onPageSizeChange={onPageSizeChange && ((next) => onPageSizeChange(next))}
+        pageSizeOptions={pageSizeOptions}
+        showTotal
+      />
     </div>
   );
 }

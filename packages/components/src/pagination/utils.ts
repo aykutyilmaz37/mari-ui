@@ -49,6 +49,20 @@ export function getPageItems(totalPages: number, currentPage: number, siblingCou
   return items;
 }
 
+/**
+ * Faz 15.5 — dar kapsayıcıda (375px telefon) sayfa listesi taşıyordu. Verilen
+ * genişliğe sığan en büyük komşu sayısını (`maxSiblings`'ten 0'a) döner;
+ * 0 komşu bile sığmıyorsa `-1` (→ `simple` görünüm). Slot sayısı
+ * `getPageItems` ile aynı: `min(toplam, 2s+5)` + önceki/sonraki okları.
+ */
+export function fitSiblingCount(available: number, slotWidth: number, gap: number, totalPages: number, maxSiblings: number): number {
+  for (let siblings = Math.max(0, Math.trunc(maxSiblings)); siblings >= 0; siblings--) {
+    const slots = Math.min(totalPages, siblings * 2 + 5) + 2;
+    if (slots * slotWidth + (slots - 1) * gap <= available) return siblings;
+  }
+  return -1;
+}
+
 /** "…" düğmesinin kaç sayfa atlayacağı — görünür pencere genişliği kadar (ant.design ile aynı: varsayılan 5). */
 export function getJumpSize(siblingCount = 1): number {
   return Math.max(0, Math.trunc(siblingCount)) * 2 + 3;

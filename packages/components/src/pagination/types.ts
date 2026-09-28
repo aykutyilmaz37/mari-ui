@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type PageItem = number | { type: "ellipsis"; direction: "left" | "right" };
 
@@ -8,7 +9,11 @@ export type PaginationVariant = "outline" | "soft" | "solid";
 
 export type PaginationAlign = "start" | "center" | "end" | "between";
 
-export interface PaginationProps {
+/**
+ * `skeleton`: toplam kayıt henüz bilinmiyorken (ilk yükleme) her düğme kendi
+ * kare kutusunda, metin/seçici alanları kendi genişliğinde yer tutucu olur.
+ */
+export interface PaginationProps extends SkeletonableProps {
   /** Aktif sayfa (1 tabanlı). Verilirse controlled çalışır; verilmezse `defaultPage` ile dahili state tutulur. */
   currentPage?: number;
   /** Uncontrolled modda ilk sayfa. Varsayılan: `1`. */

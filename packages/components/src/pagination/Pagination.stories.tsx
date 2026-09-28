@@ -190,7 +190,9 @@ const [page, setPage] = useState(1);
 export const Simple: Story = {
   name: "Simple",
   ...storyDoc(
-    "`simple` — dar alanlar için `‹ [3] / 10 ›`. Alana sayfa yazıp Enter'a basılabilir.",
+    "`simple` — dar alanlar için `‹ [3] / 10 ›`. Alana sayfa yazıp Enter'a basılabilir. Ayrıca vermeniz gerekmeyebilir: " +
+      "Pagination kendi genişliğini izler, sayfa listesi sığmazsa önce komşu sayısını azaltır, hiç sığmazsa (ör. 320px'te " +
+      "`lg`) kendiliğinden bu görünüme geçer.",
     `
 const [page, setPage] = useState(3);
 
@@ -244,4 +246,37 @@ export const Disabled: Story = {
   name: "Devre Dışı",
   ...storyDoc("`disabled` — tüm kontroller etkileşimsiz.", `<Pagination disabled totalItems={100} showSizeChanger />`),
   render: () => <Pagination disabled defaultPage={3} totalItems={100} showSizeChanger />,
+};
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` — toplam kayıt sayısı henüz gelmemişken: her düğme kendi kare kutusunda, kayıt bilgisi/seçici/atlama alanı " +
+      "kendi genişliğinde yer tutucu. Gerçek kontroller görünmez olarak yerinde kaldığı için yüklenince zıplama olmaz; " +
+      "iskeletteyken hiçbir yol sayfa değiştirmez. `Table`ın `skeleton`'ı da bunu kullanır.",
+    `
+<Pagination
+  skeleton={!data}
+  currentPage={page}
+  pageSize={pageSize}
+  totalItems={data?.total ?? 0}
+  onPageChange={setPage}
+  onPageSizeChange={setPageSize}
+  showTotal
+  showQuickJumper
+/>`
+  ),
+  render: () => {
+    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(6);
+    return (
+      <div className="flex flex-col gap-4">
+        <label className="flex items-center gap-2 text-sm text-mari-foreground">
+          <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
+          Yükleniyor
+        </label>
+        <Pagination skeleton={loading} currentPage={page} pageSize={10} totalItems={195} onPageChange={setPage} onPageSizeChange={() => {}} showTotal showQuickJumper />
+      </div>
+    );
+  },
 };
