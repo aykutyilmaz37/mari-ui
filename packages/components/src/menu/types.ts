@@ -36,7 +36,8 @@ export interface MenuItemType extends LinkBehaviorProps {
 }
 
 /** `MegaPanel`in promosyon ızgarasındaki tek bir kart. */
-export interface MenuPromoTile {
+/** `target`/`reloadDocument` menü öğeleriyle aynı anlamda (bkz. `LinkBehaviorProps`). */
+export interface MenuPromoTile extends LinkBehaviorProps {
   title: string;
   image: string;
   href?: string;

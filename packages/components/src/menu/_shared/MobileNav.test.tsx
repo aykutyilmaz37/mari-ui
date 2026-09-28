@@ -64,7 +64,7 @@ describe("MobileNav", () => {
     await user.click(within(dialog).getByRole("button", { name: "Bilgisayar" }));
 
     expect(within(dialog).getByRole("button", { name: "Elektronik" })).toHaveFocus();
-    expect(within(dialog).getByRole("button", { name: "Monitörler" })).toBeInTheDocument();
+    expect(within(dialog).getByRole("link", { name: "Monitörler" })).toBeInTheDocument();
   });
 
   it("yaprak öğe onNavigate'i çağırır ve çekmeceyi kapatır; odak hamburger'e döner", async () => {

@@ -3,11 +3,12 @@
 import React from "react";
 import { cn } from "@mari-ui/core";
 import type { MenuNavigationProps, MenuPromoTile } from "../../types";
-import { navigateTo } from "../../utils";
+import { MenuLink } from "../MenuLink";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 export interface MegaPanelPromoGridProps extends MenuNavigationProps {
   tiles: MenuPromoTile[];
-  /** Karta tıklanınca `navigateTo`dan ÖNCE çağrılır — host kendi panelini/çekmecesini kapatabilsin diye. */
+  /** Karta tıklanınca (gezinmeden ÖNCE) çağrılır — host kendi panelini/çekmecesini kapatabilsin diye. */
   onTileClick?: (tile: MenuPromoTile) => void;
   /** Varsayılan genişlik (`w-64`) masaüstü paneli için; mobil çekmece tam genişlik ister. */
   className?: string;
@@ -36,21 +37,24 @@ export function MegaPanelPromoGrid({ tiles, onNavigate, onTileClick, className }
   return (
     <div className={cn("grid w-64 shrink-0 grid-cols-2 gap-3 self-start", className)}>
       {tiles.map((tile) => (
-        <button
+        <MenuLink
           key={tile.title}
-          type="button"
-          onClick={() => {
-            onTileClick?.(tile);
-            navigateTo(tile.href, onNavigate);
-          }}
+          route={tile.href}
+          target={tile.target}
+          reloadDocument={tile.reloadDocument}
+          onNavigate={onNavigate}
+          onSelect={() => onTileClick?.(tile)}
           className={cn(
-            "group relative cursor-pointer overflow-hidden rounded-lg border border-mari-border transition-shadow hover:shadow-mari-sm",
+            "group relative block cursor-pointer overflow-hidden rounded-lg border border-mari-border transition-shadow hover:shadow-mari-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
             SPAN_CLASS[tile.span ?? "sm"]
           )}
         >
           <img src={tile.image} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-          <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-2 py-1.5 text-start text-xs font-semibold text-white">{tile.title}</span>
-        </button>
+          <span className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/70 to-transparent px-2 py-1.5 text-start text-xs font-semibold text-white">
+            {tile.title}
+            <NewTabHint target={tile.target} />
+          </span>
+        </MenuLink>
       ))}
     </div>
   );

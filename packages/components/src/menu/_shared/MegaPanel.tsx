@@ -6,6 +6,7 @@ import type { MegaPanelProps } from "./types";
 import { MegaPanelColumn } from "./_components/MegaPanelColumn";
 import { MegaPanelPromoGrid } from "./_components/MegaPanelPromoGrid";
 import { MegaPanelRail } from "./_components/MegaPanelRail";
+import { isMenuItemActive } from "../utils";
 
 export type { MegaPanelProps };
 
@@ -17,18 +18,16 @@ export type { MegaPanelProps };
  * plan: MegaMenu tam genişlikte kendi sarmalayıcısını kullanır, BasicMenu/
  * Sidebar `DropdownContent`in İÇİNDE render eder).
  *
- * Klavye modeli KASITLI olarak roving-focus/ok tuşlu gerçek bir ARIA menü
- * DEĞİL — kod tabanının geri kalanıyla (`Dropdown`, `DropdownSub`) aynı
- * karar: Tab sırası + Enter/Boşluk + Escape (host'un kendi Escape/dışarı-
- * tıklama mantığı üzerinden).
+ * Klavye: Tab sırası + host'un ok tuşu gezinmesi (MegaMenu ve Dropdown
+ * panelleri ↑/↓/Home/End/harf ile gezer — `getRovingTarget`) + Escape.
+ * Ray, kolon ve promosyon öğeleri gerçek linklerdir (`MenuLink`).
  *
- * `currentPath` bilinçli olarak KULLANILMIYOR: ray seçimi sadece hover/focus
- * ile sürülüyor (bkz. plan), route eşleşmesine göre ray'i önceden seçmek bu
- * turun kapsamı dışında — `MenuNavigationProps`ten miras aldığı için
- * tüketici geçebilir, sessizce yok sayılır.
+ * Geçerli sayfa `activeKey` ile gelir (host `currentPath`ten bulur): ray
+ * başlangıçta onu içeren kategoriyi seçer, link vurgulanır.
  */
-export function MegaPanel({ items, color, layout, orientation = "horizontal", onNavigate, onItemClick, className }: MegaPanelProps) {
-  const [selectedKey, setSelectedKey] = useState<string | null>(items[0]?.key ?? null);
+export function MegaPanel({ items, color, layout, orientation = "horizontal", onNavigate, onItemClick, activeKey = null, className }: MegaPanelProps) {
+  // Geçerli sayfa bu paneldeyse ray onu içeren kategoriyle açılır (kullanıcı nerede olduğunu görür).
+  const [selectedKey, setSelectedKey] = useState<string | null>(() => items.find((item) => isMenuItemActive(item, activeKey))?.key ?? items[0]?.key ?? null);
   const selected = items.find((item) => item.key === selectedKey) ?? items[0];
   if (!selected) return null;
 
@@ -45,7 +44,7 @@ export function MegaPanel({ items, color, layout, orientation = "horizontal", on
 
   return (
     <div className={cn("flex gap-6", orientation === "vertical" ? "flex-col" : "flex-row", className)}>
-      <MegaPanelRail items={items} selectedKey={selected.key} onSelect={setSelectedKey} color={color} orientation={orientation} onNavigate={onNavigate} onItemClick={onItemClick} />
+      <MegaPanelRail items={items} selectedKey={selected.key} onSelect={setSelectedKey} color={color} orientation={orientation} onNavigate={onNavigate} onItemClick={onItemClick} activeKey={activeKey} />
 
       {hasContent && (
         <div className={cn("flex min-w-0 flex-1", orientation === "vertical" ? "flex-col gap-4" : "gap-8")}>
@@ -56,11 +55,11 @@ export function MegaPanel({ items, color, layout, orientation = "horizontal", on
             // ikiye bölmeyi engeller). Sabit `grid-cols-N` bunu yapamaz.
             <div className={cn("min-w-0 flex-1", columnsClass)}>
               {visibleColumns.map((group) => (
-                <MegaPanelColumn key={group.key} group={group} color={color} onNavigate={onNavigate} onItemClick={onItemClick} />
+                <MegaPanelColumn key={group.key} group={group} color={color} onNavigate={onNavigate} onItemClick={onItemClick} activeKey={activeKey} />
               ))}
             </div>
           )}
-          {promoTiles && promoTiles.length > 0 && <MegaPanelPromoGrid tiles={promoTiles} onNavigate={onNavigate} className="hidden xl:grid" />}
+          {promoTiles && promoTiles.length > 0 && <MegaPanelPromoGrid tiles={promoTiles} onNavigate={onNavigate} onTileClick={() => onItemClick?.(selected)} className="hidden xl:grid" />}
         </div>
       )}
     </div>

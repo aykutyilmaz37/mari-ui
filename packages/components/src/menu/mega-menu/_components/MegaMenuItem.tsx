@@ -1,62 +1,104 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
-import { getItemClass, navigateTo } from "../../utils";
+import { getItemClass, isMenuItemActive } from "../../utils";
 import type { MenuItemType, MenuNavigationProps } from "../../types";
+import { MenuLink } from "../../_shared/MenuLink";
+import { touchTargetClass } from "../../../lib/sizeClasses";
+import { NewTabHint } from "../../../lib/linkBehavior";
+
+export type MegaToggleSource = "key" | "arrow" | "mouse" | "touch";
 
 export interface MegaMenuItemProps extends MenuNavigationProps {
   item: MenuItemType;
-  className?: string;
-  visible: boolean;
-  /** Bu öğenin alt panelini açar (hover/focus). Bekleyen gecikmeli kapatmayı da iptal eder — bkz. `MegaMenu`. */
-  onOpen: (children: MenuItemType[] | undefined) => void;
-  /** Kapatmayı GECİKMELİ planlar: fare/odak panele geçerken menü kapanmasın. */
-  onClose: () => void;
-  subKey: string | undefined;
+  /** Bu öğenin paneli şu an açık mı. */
+  open: boolean;
+  /** Geçerli sayfanın öğe anahtarı (alt çizgi + `aria-current`). */
+  activeKey: string | null;
+  panelId: string;
+  /** Fare ile üzerine gelince (hover-intent) — paneli açar ya da (çocuksuz öğede) kapatır. */
+  onHover: () => void;
+  /** Fare ayrılınca / odak çıkınca — kapatma GECİKMELİ planlanır. */
+  onLeave: () => void;
+  /**
+   * Tetikleyici etkinleşti. `"key"` (Enter/Boşluk) aç-kapat + odak panele;
+   * `"arrow"` (↓) her zaman açar + odak panele; `"mouse"` açık tutar (hover
+   * zaten açtı — toggle etse menü gözün önünde kapanırdı); `"touch"` aç-kapat.
+   */
+  onToggle: (source: MegaToggleSource) => void;
   color: ColorRole;
+  className?: string;
 }
 
-export function MegaMenuItem({ item, className, onOpen, onClose, visible, subKey, color, onNavigate }: MegaMenuItemProps) {
-  // Eskiden `subKey?.slice(0, 1) === item.key` idi — bu, subKey'in SADECE
-  // İLK KARAKTERİNİ item.key'in TAMAMIYLA karşılaştırıyordu. Anahtarlar tek
-  // karakter olmadıkça bu karşılaştırma neredeyse hiç eşleşmezdi (gerçek
-  // bir mantık hatası). Muhtemel niyet "alt öğe anahtarı üst öğe anahtarıyla
-  // başlıyor mu" idi — `startsWith` ile düzeltildi.
-  const isActive = Boolean(subKey?.startsWith(item.key)) && visible;
+/**
+ * Faz 15.5: çocuklu öğe bir açma düğmesidir (APG "disclosure navigation"):
+ * `aria-expanded` + `aria-controls`, tıklama/Enter/Boşluk/↓ paneli açar ve
+ * klavyeden açıldıysa odağı panelin ilk öğesine taşır. Eskiden panel ODAKLA
+ * açılıyordu (Tab ile gezerken her öğede panel patlıyordu) ve body'nin sonuna
+ * portal edildiği için klavyeyle İÇİNE hiç girilemiyordu. Fare için hover
+ * açma korunur. Çocuksuz öğe gerçek bir link (`MenuLink`).
+ *
+ * Kullanıcı bulgusu (2026-09-22): öğe eskiden `Button variant="ghost"` idi;
+ * hover dolgusu alt göstergeden geniş bir şerit yaratıyordu. BasicMenuItem'ın
+ * aynısı: arka plan yok, yalnızca metin rengi + alt gösterge.
+ */
+export function MegaMenuItem({ item, open, activeKey, panelId, onHover, onLeave, onToggle, color, onNavigate, className }: MegaMenuItemProps) {
+  const hasChildren = !!item.children?.length;
+  const pointerTypeRef = useRef<string>("mouse");
+  // Paneli açık öğe ya da geçerli sayfayı içeren öğe "aktif" görünür.
+  const highlightKey = open || isMenuItemActive(item, activeKey) ? item.key : null;
+  const baseClass = cn(
+    "relative inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+    touchTargetClass.md,
+    item.disabled ? "cursor-not-allowed opacity-50" : cn("cursor-pointer", getItemClass(item, highlightKey, color)),
+    className
+  );
 
-  const handleClick = () => {
-    if (item.disabled) return;
-    navigateTo(item.route, onNavigate);
-  };
-
-  const openSubmenu = () => onOpen(item.children);
-  // Paneli açık olan üst öğe "aktif" gösterilir — gerçek bir route eşleşmesi değil, açık/kapalı durumu.
-  const activeKey = isActive ? item.key : null;
-  const stateClass = item.disabled ? "cursor-not-allowed opacity-50" : cn("cursor-pointer", getItemClass(item, activeKey, color));
-
-  // Kullanıcı bulgusu (2026-09-22): öğe `Button variant="ghost"` idi ve
-  // `ghost`a eklenen hover dolgusu burada tetikleyicinin TAMAMINI kaplayan,
-  // alt göstergeden çok daha geniş bir şerit yaratıyordu. Navbar öğesi bir
-  // "buton" gibi görünmemeli — BasicMenuItem'ın aynısı: düz `<button>`,
-  // arka plan yok, sadece metin rengi + alt gösterge değişiyor.
   return (
-    <div className="flex h-full items-center" onMouseEnter={openSubmenu} onMouseLeave={onClose} onFocus={openSubmenu} onBlur={onClose}>
-      <button
-        type="button"
-        disabled={item.disabled}
-        onClick={handleClick}
-        className={cn(
-          "inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
-          stateClass,
-          className
-        )}
-      >
-        {item.icon}
-        {item.title}
-        {item.children && <ChevronDownIcon aria-hidden="true" size={14} className={cn("opacity-60 transition-transform duration-200", isActive && "rotate-180")} />}
-      </button>
+    <div className="flex h-full items-center" onMouseEnter={item.disabled ? undefined : onHover} onMouseLeave={onLeave}>
+      {hasChildren ? (
+        <button
+          type="button"
+          data-mega-key={item.key}
+          disabled={item.disabled}
+          aria-expanded={open}
+          aria-controls={open ? panelId : undefined}
+          onPointerDown={(event) => {
+            pointerTypeRef.current = event.pointerType;
+          }}
+          onClick={(event) => {
+            // `detail === 0`: tıklamayı klavye (Enter/Boşluk) üretti.
+            if (event.detail === 0) onToggle("key");
+            else onToggle(pointerTypeRef.current === "mouse" ? "mouse" : "touch");
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowDown") return;
+            event.preventDefault();
+            onToggle("arrow");
+          }}
+          className={cn("group", baseClass)}
+        >
+          {item.icon}
+          {item.title}
+          <ChevronDownIcon aria-hidden="true" size={14} className="opacity-60 transition-transform duration-200 group-aria-expanded:rotate-180" />
+        </button>
+      ) : (
+        <MenuLink
+          route={item.route}
+          target={item.target}
+          reloadDocument={item.reloadDocument}
+          onNavigate={onNavigate}
+          disabled={item.disabled}
+          current={item.key === activeKey}
+          className={baseClass}
+        >
+          {item.icon}
+          {item.title}
+          <NewTabHint target={item.target} />
+        </MenuLink>
+      )}
     </div>
   );
 }

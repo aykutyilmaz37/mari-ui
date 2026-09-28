@@ -5,7 +5,8 @@ import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { textClass, textHoverClass } from "../../../lib/colorClasses";
 import type { MenuItemType, MenuNavigationProps } from "../../types";
-import { navigateTo } from "../../utils";
+import { MenuLink } from "../MenuLink";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 /** Bu sayıdan fazla leaf varsa gerisi "Daha Fazla Gör" arkasına saklanır (referanstaki aynı desen). */
 const VISIBLE_LEAF_COUNT = 6;
@@ -15,6 +16,7 @@ export interface MegaPanelColumnProps extends MenuNavigationProps {
   group: MenuItemType;
   color: ColorRole;
   onItemClick?: (item: MenuItemType) => void;
+  activeKey?: string | null;
 }
 
 /**
@@ -24,45 +26,58 @@ export interface MegaPanelColumnProps extends MenuNavigationProps {
  * düz metin bağlantıları: bir mega panelde onlarca öğe var, her birine hover
  * dolgusu vermek görsel gürültü yaratıyor — sadece renk değişiyor.
  */
-export function MegaPanelColumn({ group, color, onNavigate, onItemClick }: MegaPanelColumnProps) {
-  const [expanded, setExpanded] = useState(false);
+export function MegaPanelColumn({ group, color, onNavigate, onItemClick, activeKey = null }: MegaPanelColumnProps) {
   const leaves = group.children ?? [];
+  // Geçerli sayfa "Daha Fazla Gör" arkasında kalıyorsa kolon açık başlar — aktif link gizlenmesin.
+  const [expanded, setExpanded] = useState(() => leaves.slice(VISIBLE_LEAF_COUNT).some((leaf) => leaf.key === activeKey));
   const visibleLeaves = expanded ? leaves : leaves.slice(0, VISIBLE_LEAF_COUNT);
   const hasMore = leaves.length > VISIBLE_LEAF_COUNT;
 
-  const handleClick = (item: MenuItemType) => {
-    onItemClick?.(item);
-    navigateTo(item.route, onNavigate);
-  };
 
   return (
     <div className="mb-6 flex break-inside-avoid flex-col items-start gap-1.5">
       {group.route ? (
-        <button type="button" onClick={() => handleClick(group)} className={cn("group/head flex cursor-pointer items-center gap-1 text-start text-sm font-semibold transition-colors", textClass[color])}>
+        <MenuLink
+          route={group.route}
+          target={group.target}
+          reloadDocument={group.reloadDocument}
+          onNavigate={onNavigate}
+          current={group.key === activeKey}
+          onSelect={() => onItemClick?.(group)}
+          className={cn("group/head flex cursor-pointer items-center gap-1 rounded-sm text-start text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring", textClass[color])}
+        >
           {group.title}
+          <NewTabHint target={group.target} />
           <ChevronRightIcon aria-hidden="true" size={14} className="transition-transform duration-150 group-hover/head:translate-x-0.5" />
-        </button>
+        </MenuLink>
       ) : (
         <div className={cn("text-sm font-semibold", textClass[color])}>{group.title}</div>
       )}
 
       {visibleLeaves.map((leaf) => (
-        <button
+        <MenuLink
           key={leaf.key}
-          type="button"
+          route={leaf.route}
+          target={leaf.target}
+          reloadDocument={leaf.reloadDocument}
+          onNavigate={onNavigate}
           disabled={leaf.disabled}
-          onClick={() => handleClick(leaf)}
+          current={leaf.key === activeKey}
+          onSelect={() => onItemClick?.(leaf)}
           className={cn(
-            "text-start text-sm leading-6 transition-colors duration-150",
-            leaf.disabled ? "cursor-not-allowed text-mari-muted opacity-50" : cn("cursor-pointer text-mari-foreground/75", textHoverClass[color])
+            "inline-flex items-center gap-1 rounded-sm text-start text-sm leading-6 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+            leaf.disabled && "cursor-not-allowed text-mari-muted opacity-50",
+            !leaf.disabled && leaf.key === activeKey && cn("cursor-pointer font-medium", textClass[color]),
+            !leaf.disabled && leaf.key !== activeKey && cn("cursor-pointer text-mari-foreground/75", textHoverClass[color])
           )}
         >
           {leaf.title}
-        </button>
+          <NewTabHint target={leaf.target} />
+        </MenuLink>
       ))}
 
       {hasMore && (
-        <button type="button" onClick={() => setExpanded((prev) => !prev)} className="mt-0.5 flex cursor-pointer items-center gap-1 whitespace-nowrap text-sm font-medium text-mari-foreground underline underline-offset-4 transition-colors hover:text-mari-muted">
+        <button type="button" aria-expanded={expanded} onClick={() => setExpanded((prev) => !prev)} className="mt-0.5 flex cursor-pointer items-center gap-1 whitespace-nowrap text-sm font-medium text-mari-foreground underline underline-offset-4 transition-colors hover:text-mari-muted">
           {expanded ? "Daha Az Göster" : "Daha Fazla Gör"}
           <ChevronDownIcon aria-hidden="true" size={14} className={cn("transition-transform duration-200", expanded && "rotate-180")} />
         </button>

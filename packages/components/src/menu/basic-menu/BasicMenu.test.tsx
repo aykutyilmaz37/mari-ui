@@ -154,7 +154,7 @@ describe("BasicMenu", () => {
       const { container } = render(
         <BasicMenu data={data} logo={<span>Logo</span>} logoHref="/" actions={<button type="button">Giriş</button>} skeleton onNavigate={() => {}} />
       );
-      expect(container.firstElementChild).toHaveAttribute("aria-busy", "true");
+      expect(container.querySelector("[aria-busy]")).toHaveAttribute("aria-busy", "true");
       expect(screen.queryByRole("link")).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Giriş" })).not.toBeInTheDocument();
       expect(await getA11yViolations(container)).toEqual([]);

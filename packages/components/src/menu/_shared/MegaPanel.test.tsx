@@ -30,12 +30,12 @@ describe("MegaPanel", () => {
 
   it('layout="full" iken seçili ray öğesinde promoTiles varsa promosyon render edilir', () => {
     render(<MegaPanel items={richItems} layout="full" color="primary" onNavigate={() => {}} />);
-    expect(screen.getByRole("button", { name: "Monitörler" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Monitörler" })).toBeInTheDocument();
   });
 
   it('layout="compact" iken promoTiles OLSA BİLE promosyon hiç render edilmez', () => {
     render(<MegaPanel items={richItems} layout="compact" color="primary" onNavigate={() => {}} />);
-    expect(screen.queryByRole("button", { name: "Monitörler" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Monitörler" })).not.toBeInTheDocument();
   });
 
   it("seçili ray öğesinin children'ı yoksa kolon alanı hiç render edilmez, sadece ray görünür", () => {
@@ -49,7 +49,7 @@ describe("MegaPanel", () => {
     const onNavigate = vi.fn();
     const leafOnly: MenuItemType[] = [{ key: "campaigns", title: "Kampanyalar", route: "/campaigns" }];
     render(<MegaPanel items={leafOnly} layout="full" color="primary" onNavigate={onNavigate} />);
-    await user.click(screen.getByRole("button", { name: "Kampanyalar" }));
+    await user.click(screen.getByRole("link", { name: "Kampanyalar" }));
     expect(onNavigate).toHaveBeenCalledWith("/campaigns");
   });
 
@@ -73,5 +73,18 @@ describe("MegaPanel", () => {
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {
     const { container } = render(<MegaPanel items={richItems} layout="full" color="primary" onNavigate={() => {}} />);
     expect(await getA11yViolations(container)).toEqual([]);
+  });
+
+  it("aktif sayfa \"Daha Fazla Gör\" arkasındaysa kolon açık başlar", () => {
+    const many: MenuItemType[] = [
+      {
+        key: "rail",
+        title: "Ray",
+        children: [{ key: "col", title: "Kolon", children: Array.from({ length: 9 }, (_, i) => ({ key: `leaf-${i}`, title: `Leaf ${i}`, route: `/leaf/${i}` })) }],
+      },
+    ];
+    render(<MegaPanel items={many} layout="full" color="primary" onNavigate={() => {}} activeKey="leaf-8" />);
+    expect(screen.getByRole("link", { name: "Leaf 8" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Daha Az Göster" })).toHaveAttribute("aria-expanded", "true");
   });
 });

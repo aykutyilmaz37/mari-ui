@@ -14,6 +14,13 @@ export interface MenuLinkProps extends LinkBehaviorProps {
   current?: boolean;
   className?: string;
   children: React.ReactNode;
+  /** Ray satırı gibi hover/odakla seçim yapan öğeler için. */
+  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+  onFocus?: React.FocusEventHandler<HTMLElement>;
+  /** Odak geri döndürme gibi DOM aramaları için (`[data-menu-key]`). */
+  "data-menu-key"?: string;
+  /** Seçili ray öğesi — klavyeyle açılan panelde odak buraya gelir. */
+  "data-selected"?: boolean;
 }
 
 /**
@@ -27,16 +34,17 @@ export interface MenuLinkProps extends LinkBehaviorProps {
  * tıklamalar, `target` (`_self` dışı), `reloadDocument` ve dış adresler
  * (`https:`, `mailto:`…) her zaman tarayıcıya bırakılır.
  */
-export function MenuLink({ route, onNavigate, onSelect, disabled, current, target, reloadDocument, className, children }: MenuLinkProps) {
+export function MenuLink({ route, onNavigate, onSelect, disabled, current, target, reloadDocument, className, children, ...rest }: MenuLinkProps) {
   if (!route || disabled) {
     return (
-      <button type="button" disabled={disabled} onClick={onSelect} className={className}>
+      <button type="button" {...rest} disabled={disabled} onClick={onSelect} className={className}>
         {children}
       </button>
     );
   }
   return (
     <a
+      {...rest}
       href={route}
       {...getLinkAttrs(target)}
       aria-current={current ? "page" : undefined}

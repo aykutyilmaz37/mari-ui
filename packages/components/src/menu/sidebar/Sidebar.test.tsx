@@ -146,8 +146,8 @@ describe("Sidebar", () => {
     const panel = await screen.findByRole("region", { name: "Ürünler" });
     // Kolon başlığı + bağlantılar görünür; rayın "seçili değilse gizli" davranışı yok.
     expect(within(panel).getByText("Katalog")).toBeInTheDocument();
-    expect(within(panel).getByRole("button", { name: "Markalar" })).toBeInTheDocument();
-    expect(within(panel).getByRole("button", { name: "Stok Durumu" })).toBeInTheDocument();
+    expect(within(panel).getByRole("link", { name: "Markalar" })).toBeInTheDocument();
+    expect(within(panel).getByRole("link", { name: "Stok Durumu" })).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("region", { name: "Ürünler" })).not.toBeInTheDocument();
