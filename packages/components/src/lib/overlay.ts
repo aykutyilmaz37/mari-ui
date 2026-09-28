@@ -14,6 +14,23 @@ export const FOCUSABLE_SELECTOR =
   'button:not([disabled]), a[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
+ * Gerçekten odaklanabilen öğeler. `aria-hidden`/`inert` bir atanın içindekiler
+ * elenir: iskelette gerçek içerik `SkeletonSlot` ile görünmez kopya olarak
+ * DOM'da kalır (`visibility: hidden` → `focus()` sessizce başarısız olur);
+ * bunlar sayılırsa odak tuzağının ilk/son öğesi görünmez bir düğme olur ve
+ * Tab takılır.
+ */
+export function getFocusables(root: ParentNode): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (el) => !el.closest('[aria-hidden="true"], [inert]')
+  );
+}
+
+export function firstFocusable(root: ParentNode): HTMLElement | null {
+  return getFocusables(root)[0] ?? null;
+}
+
+/**
  * Açılışta hemen mount; kapanışta `exitMs` (çıkış animasyonu) bitince
  * unmount. `mounted` false iken hiç render etmeyin.
  */
@@ -45,8 +62,8 @@ export interface ModalBehaviorOptions {
 /** `[data-autofocus]` — kendisi odaklanabilir değilse (bileşen data-* iletmiyorsa) içindeki ilk odaklanabilir. */
 export function findAutofocus(root: ParentNode): HTMLElement | null {
   const auto = root.querySelector<HTMLElement>("[data-autofocus]");
-  if (!auto) return null;
-  return auto.matches(FOCUSABLE_SELECTOR) ? auto : auto.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+  if (!auto || auto.closest('[aria-hidden="true"], [inert]')) return null;
+  return auto.matches(FOCUSABLE_SELECTOR) ? auto : firstFocusable(auto);
 }
 
 /**
@@ -86,7 +103,7 @@ export function useModalBehavior(
     if (panel) {
       const target = getInitialFocusRef.current
         ? getInitialFocusRef.current(panel)
-        : (findAutofocus(panel) ?? panel.querySelector<HTMLElement>(FOCUSABLE_SELECTOR));
+        : (findAutofocus(panel) ?? firstFocusable(panel));
       (target ?? panel).focus();
     }
 
@@ -97,7 +114,7 @@ export function useModalBehavior(
         return;
       }
       if (event.key !== "Tab" || !panel) return;
-      const focusables = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+      const focusables = getFocusables(panel);
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
       if (!first || !last) {

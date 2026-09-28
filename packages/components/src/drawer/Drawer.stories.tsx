@@ -83,7 +83,11 @@ const meta: Meta<typeof Drawer> = {
     footer: { control: false, description: "Altta sabit eylem çubuğu." },
     showCloseButton: { control: "boolean" },
     closeButtonPosition: { control: "inline-radio", options: ["left", "right"] },
-    loading: { control: "boolean", description: "Gövde yerine iskelet." },
+    skeleton: {
+      control: "boolean",
+      description: "Veri gelene kadar başlık, açıklama, `extra`, gövde ve alt çubuk iskelete döner; Kapat çalışır.",
+    },
+    loading: { control: false, description: "**Deprecated** — `skeleton` kullanın." },
     mask: { control: "boolean", description: "Arka plan örtüsü. Varsayılan: `true`." },
     maskClosable: { control: "boolean", description: "Örtüye tıklayınca kapansın. Varsayılan: `true`." },
     keyboard: { control: "boolean", description: "Escape kapatsın. Varsayılan: `true`." },
@@ -372,14 +376,15 @@ export const Filters: Story = {
 export const EditRecord: Story = {
   name: "Kayıt Düzenleme",
   ...storyDoc(
-    "Liste satırını sayfadan ayrılmadan düzenleme: `size=\"lg\"`, veri gelene kadar `loading` (iskelet), başlıkta " +
+    "Liste satırını sayfadan ayrılmadan düzenleme: `size=\"lg\"`, veri gelene kadar `skeleton` (başlık, Sil ve alt " +
+      "çubuk dahil her bölge iskelet; Kapat çalışır), başlıkta " +
       "`extra` ile tehlikeli aksiyon, alt çubukta sağa yaslı İptal / Kaydet. İlk alan `data-autofocus` ile odaklanır.",
     `
 <Drawer
   size="lg"
   open={open}
   onClose={close}
-  loading={isLoading}
+  skeleton={isLoading}
   title="Müşteriyi düzenle"
   description="Deniz Kaya · #C-1042"
   extra={<Button variant="ghost" color="error" size="sm">Sil</Button>}
@@ -437,7 +442,7 @@ export const EditRecord: Story = {
           size="lg"
           open={open}
           onClose={() => setOpen(false)}
-          loading={loading}
+          skeleton={loading}
           title="Müşteriyi düzenle"
           description="Deniz Kaya · #C-1042"
           extra={
@@ -682,7 +687,7 @@ export const Playground: Story = {
     description: "Kısa açıklama",
     showCloseButton: true,
     closeButtonPosition: "right",
-    loading: false,
+    skeleton: false,
     mask: true,
     maskClosable: true,
     keyboard: true,

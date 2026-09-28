@@ -104,13 +104,13 @@ describe("Drawer", () => {
       </label>
     );
     const { rerender } = render(
-      <Drawer open onClose={() => {}} title="Düzenle" extra={extra} loading>
+      <Drawer open onClose={() => {}} title="Düzenle" extra={extra} skeleton>
         {body}
       </Drawer>
     );
     expect(screen.getByRole("button", { name: "Kapat" })).toHaveFocus();
     rerender(
-      <Drawer open onClose={() => {}} title="Düzenle" extra={extra} loading={false}>
+      <Drawer open onClose={() => {}} title="Düzenle" extra={extra} skeleton={false}>
         {body}
       </Drawer>
     );
@@ -126,13 +126,52 @@ describe("Drawer", () => {
     expect(screen.getByRole("dialog", { name: "Filtreler" })).toBeInTheDocument();
   });
 
-  it("loading iken gövde yerine iskelet gösterilir", () => {
+  it("loading (eski ad) hâlâ iskelet gösterir", () => {
     render(
       <Drawer open onClose={() => {}} title="Sipariş" loading>
         Gizli içerik
       </Drawer>
     );
     expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+  });
+
+  it("skeleton başlık/extra/alt çubuğu da gizler; dialog adını ve Kapat'ı korur, meşgul bildirir", () => {
+    render(
+      <Drawer open onClose={() => {}} title="Sipariş #42" extra={<button>Sil</button>} footer={<button>Kaydet</button>} skeleton>
+        Gizli içerik
+      </Drawer>
+    );
+    const dialog = screen.getByRole("dialog", { name: "Sipariş #42" });
+    expect(dialog).toHaveAttribute("aria-busy", "true");
+    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+    // Görünmez kopyalar aria-hidden bölgede: erişilebilirlik ağacında yoklar.
+    expect(screen.queryByRole("button", { name: "Sil" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Kaydet" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Kapat" })).toBeInTheDocument();
+  });
+
+  it("iskelette Tab görünmez extra/alt çubuk düğmelerine takılmaz", async () => {
+    const user = userEvent.setup();
+    render(
+      <Drawer open onClose={() => {}} title="Sipariş" extra={<button>Sil</button>} footer={<button>Kaydet</button>} skeleton>
+        İçerik
+      </Drawer>
+    );
+    const close = screen.getByRole("button", { name: "Kapat" });
+    expect(close).toHaveFocus();
+    await user.tab();
+    expect(close).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(close).toHaveFocus();
+  });
+
+  it("iskelette erişilebilirlik ihlali içermez (axe-core)", async () => {
+    render(
+      <Drawer open onClose={() => {}} title="Sepetim" description="2 ürün" extra={<button>Temizle</button>} footer={<button>Ödemeye geç</button>} skeleton>
+        <p>İçerik</p>
+      </Drawer>
+    );
+    expect(await getA11yViolations(document.body)).toEqual([]);
   });
 
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {

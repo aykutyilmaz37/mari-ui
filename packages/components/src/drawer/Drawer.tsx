@@ -4,8 +4,10 @@ import React, { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { XIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
-import { Skeleton } from "../skeleton";
-import { FOCUSABLE_SELECTOR, findAutofocus, useModalBehavior, usePresence } from "../lib/overlay";
+import { Skeleton, SkeletonBlock } from "../skeleton";
+import { SkeletonSlot } from "../lib/SkeletonSlot";
+import { touchTargetSquareClass } from "../lib/sizeClasses";
+import { findAutofocus, firstFocusable, useModalBehavior, usePresence } from "../lib/overlay";
 import type { DrawerProps } from "./types";
 import { getPanelClass, getTranslateClass, isSide } from "./utils";
 
@@ -21,12 +23,16 @@ const EXIT_MS = 300;
  */
 function getDrawerInitialFocus(panel: HTMLElement): HTMLElement | null {
   const body = panel.querySelector<HTMLElement>("[data-drawer-body]");
-  return (
-    findAutofocus(panel) ??
-    body?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR) ??
-    panel.querySelector<HTMLElement>("[data-drawer-close]")
-  );
+  return findAutofocus(panel) ?? (body && firstFocusable(body)) ?? panel.querySelector<HTMLElement>("[data-drawer-close]");
 }
+
+/** Alt çubuğun iskeleti: en yaygın düzen sağa yaslı İptal / Kaydet. */
+const FOOTER_PLACEHOLDER = (
+  <div className="flex h-full items-center justify-end gap-2">
+    <SkeletonBlock active width="4.5rem" height="2rem" />
+    <SkeletonBlock active width="4.5rem" height="2rem" />
+  </div>
+);
 
 /** Özel `width`/`height` — yine de ekranı taşmasın. */
 function getCustomSizeStyle(side: boolean, custom: boolean, width?: number | string, height?: number | string): React.CSSProperties | undefined {
@@ -48,6 +54,13 @@ function getCustomSizeStyle(side: boolean, custom: boolean, width?: number | str
  *   atanın içinde kırpılabiliyordu).
  * - Başlık ortalıydı; yan çekmece mobilde ekranı taşıyordu (`w-96` sabit).
  * - `loading` düz "Yükleniyor..." metniydi.
+ *
+ * Faz 15.6 — `skeleton` (eski `loading` takma adı) artık yalnız gövdeyi değil
+ * başlık/açıklama/extra/alt çubuğu da iskelete çevirir; Kapat düğmesi canlı
+ * kalır. Başlık bölgelerinin gerçek içeriği `SkeletonSlot` ile görünmez
+ * kopya olarak kalır (yükseklik zıplamaz); gövde çekmecenin sabit boyutlu
+ * kaydırma alanı olduğu için yalnız yer tutucu çizer — görünmez bir form
+ * odak/kaydırma karmaşası yaratırdı.
  */
 export function Drawer({
   open,
@@ -65,6 +78,7 @@ export function Drawer({
   showCloseButton = true,
   closeButtonPosition = "right",
   loading = false,
+  skeleton = loading,
   mask = true,
   maskClosable = true,
   keyboard = true,
@@ -78,19 +92,19 @@ export function Drawer({
   const present = usePresence(open, EXIT_MS);
   useModalBehavior(open, panelRef, onClose, { closeOnEscape: keyboard, getInitialFocus: getDrawerInitialFocus });
 
-  // Yükleniyor → içerik geldi: odak hâlâ Kapat'ta/panelde ise forma taşı.
-  const wasLoading = useRef(loading);
+  // İskelet → içerik geldi: odak hâlâ Kapat'ta/panelde ise forma taşı.
+  const wasSkeleton = useRef(skeleton);
   useEffect(() => {
     const panel = panelRef.current;
-    if (open && wasLoading.current && !loading && panel) {
+    if (open && wasSkeleton.current && !skeleton && panel) {
       const active = document.activeElement;
       if (active === panel || (active instanceof HTMLElement && active.hasAttribute("data-drawer-close"))) {
         const body = panel.querySelector<HTMLElement>("[data-drawer-body]");
-        (findAutofocus(panel) ?? body?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR))?.focus();
+        (findAutofocus(panel) ?? (body && firstFocusable(body)))?.focus();
       }
     }
-    wasLoading.current = loading;
-  }, [loading, open]);
+    wasSkeleton.current = skeleton;
+  }, [skeleton, open]);
 
   if (!present || typeof document === "undefined") return null;
 
@@ -106,8 +120,9 @@ export function Drawer({
       aria-label="Kapat"
       data-drawer-close
       className={cn(
-        "inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-mari-muted transition-colors",
+        "relative inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-mari-muted transition-colors",
         "hover:bg-mari-surface-alt hover:text-mari-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+        touchTargetSquareClass.md,
         closeButtonPosition === "left" ? "-ml-1.5" : "-mr-1.5"
       )}
     >
@@ -134,6 +149,7 @@ export function Drawer({
         aria-labelledby={title ? titleId : undefined}
         aria-label={title ? undefined : ariaLabel}
         aria-describedby={description ? descriptionId : undefined}
+        aria-busy={skeleton || undefined}
         tabIndex={-1}
         style={sizeStyle}
         className={cn(getPanelClass(position, size, customSize), getTranslateClass(position, open), className)}
@@ -151,28 +167,42 @@ export function Drawer({
               {header ?? (
                 <>
                   {title && (
-                    <h2 id={titleId} className="truncate text-base font-semibold leading-6 text-mari-foreground">
-                      {title}
-                    </h2>
+                    <SkeletonSlot on={skeleton} className="items-center" placeholder={<SkeletonBlock active width="45%" height="1rem" radius="sm" />}>
+                      <h2 id={titleId} className="truncate text-base font-semibold leading-6 text-mari-foreground">
+                        {title}
+                      </h2>
+                    </SkeletonSlot>
                   )}
                   {description && (
-                    <p id={descriptionId} className="mt-0.5 text-sm text-mari-muted">
-                      {description}
-                    </p>
+                    <SkeletonSlot on={skeleton} className="items-end" placeholder={<SkeletonBlock active width="70%" height="0.75rem" radius="sm" className="mb-1" />}>
+                      <p id={descriptionId} className="mt-0.5 text-sm text-mari-muted">
+                        {description}
+                      </p>
+                    </SkeletonSlot>
                   )}
                 </>
               )}
             </div>
-            {extra && <div className="flex shrink-0 items-center gap-2 self-center">{extra}</div>}
+            {extra && (
+              <SkeletonSlot on={skeleton} flow="flex" className="shrink-0 self-center" placeholder={<SkeletonBlock active width="100%" height="100%" />}>
+                <div className="flex shrink-0 items-center gap-2 self-center">{extra}</div>
+              </SkeletonSlot>
+            )}
             {closeButtonPosition === "right" && closeButton}
           </div>
         )}
 
         <div data-drawer-body className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6", bodyClassName)}>
-          {loading ? <Skeleton active paragraph={{ rows: 6 }} /> : children}
+          {skeleton ? <Skeleton active paragraph={{ rows: 6 }} /> : children}
         </div>
 
-        {footer && <div className="shrink-0 border-t border-mari-border px-4 py-3 sm:px-6">{footer}</div>}
+        {footer && (
+          <div className="shrink-0 border-t border-mari-border px-4 py-3 sm:px-6">
+            <SkeletonSlot on={skeleton} placeholder={FOOTER_PLACEHOLDER}>
+              {footer}
+            </SkeletonSlot>
+          </div>
+        )}
       </div>
     </div>,
     document.body
