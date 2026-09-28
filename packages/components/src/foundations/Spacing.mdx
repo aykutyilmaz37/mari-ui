@@ -1,0 +1,57 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Spacing" />
+
+# Spacing
+
+`0.25rem` (4px @ 16px kök) taban birimi üzerine kurulu tek ölçek. Kaynak:
+`@mari-ui/tokens` `spacing`. Component'lerdeki `w-[32rem]`, `ml-[22px]`,
+`h-[1px]` gibi keyfi kaçış değerleri Faz 3/13'te bu ölçeğe taşındı.
+
+> **Birim kuralı:** genişlik/yükseklik/padding/margin daima `rem` (veya `%` /
+> `fr`), asla `px`. Tek istisna: `1px` hairline kenarlıklar ve DOM'dan ölçülen
+> değerler. Aşağıdaki px karşılıkları 16px kök font varsayımıyla referanstır.
+
+## Ölçek
+
+<div style={{ margin: "16px 0" }}>
+  {[
+    ["0.5", "2px"], ["1", "4px"], ["1.5", "6px"], ["2", "8px"], ["2.5", "10px"],
+    ["3", "12px"], ["4", "16px"], ["5", "20px"], ["6", "24px"], ["8", "32px"],
+    ["10", "40px"], ["12", "48px"], ["16", "64px"], ["20", "80px"], ["24", "96px"], ["32", "128px"],
+  ].map(([k, px]) => (
+    <div key={k} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "3px 0", fontSize: "13px" }}>
+      <code style={{ width: "48px" }}>{k}</code>
+      <code style={{ width: "56px", color: "var(--mari-color-muted)" }}>{px}</code>
+      <div style={{ height: "12px", width: `var(--mari-space-${k.replace(".", "_")})`, background: "var(--mari-color-primary-solid)", borderRadius: "2px" }} />
+    </div>
+  ))}
+</div>
+
+## Radius
+
+| Anahtar | Değer | Kullanım |
+|---|---|---|
+| `none` | 0 | — |
+| `sm` | 4px | Küçük kontroller (xs/sm buton, tag) |
+| `md` | 8px | **Çoğu component'in varsayılanı** |
+| `lg` | 12px | Kart, modal |
+| `xl` | 16px | Büyük yüzeyler |
+| `full` | 9999px | Pill, avatar, switch |
+
+`mari-ui.config.json` `density.radius` ile tüketici tüm ölçeği bir preset olarak
+kaydırabilir.
+
+## Bileşen boyutları
+
+Bir component'in `size` prop'u (`xs`–`xl`) yükseklik + yatay/dikey padding +
+font boyutu + gap + radius'u **tek bir tablodan** (`@mari-ui/core` `componentSize`,
+web tarafında `lib/sizeClasses.ts` `sizeClass`) okur:
+
+| size | height | padding-x | font |
+|---|---|---|---|
+| `xs` | 20px | 8px | xs |
+| `sm` | 24px | 8px | xs |
+| `md` | 32px | 12px | sm |
+| `lg` | 40px | 16px | md |
+| `xl` | 48px | 20px | lg |

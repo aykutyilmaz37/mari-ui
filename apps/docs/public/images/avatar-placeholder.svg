@@ -1,0 +1,5 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yer tutucu kullanıcı avatarı">
+  <rect width="64" height="64" fill="#96BEEA" />
+  <circle cx="32" cy="26" r="12" fill="#4A5A6B" />
+  <path d="M6 60c0-14.359 11.641-26 26-26s26 11.641 26 26" fill="#4A5A6B" />
+</svg>

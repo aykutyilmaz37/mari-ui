@@ -1,0 +1,44 @@
+{
+  "name": "@mari-ui/cli",
+  "version": "0.1.0",
+  "description": "mari-ui'ı bir tüketici projesine kuran ve AI ajan kural dosyalarını (Claude/Codex/Cursor/Gemini/Copilot) senkron tutan CLI.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "mari-ui": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@mari-ui/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@mari-ui/components": "workspace:*",
+    "@mari-ui/eslint-config": "workspace:*",
+    "@mari-ui/tsconfig": "workspace:*",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.7"
+  }
+}

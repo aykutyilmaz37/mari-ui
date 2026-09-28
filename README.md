@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mari-ui
 
-## Getting Started
+<img src="assets/brand/mari-ui-logo.png" alt="mari-ui" width="320" />
 
-First, run the development server:
+Yayınlanabilir bir tasarım sistemi ve component kütüphanesi monorepo'su. Web (React / Next.js, RSC uyumlu) ve React Native'i aynı token ve prop sözleşmesinden besler.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Paket grafiği
+
+```
+apps/
+  docs/        Storybook — tek dokümantasyon yüzeyi
+  studio/      Tema stüdyosu (Next.js) — henüz kurulmadı (Faz 6)
+packages/
+  tokens/      @mari-ui/tokens        platform-agnostic tek kaynak
+  core/        @mari-ui/core          headless logic, tipler, variant tabloları
+  components/  @mari-ui/components    web / RSC uyumlu bileşenler
+  native/      @mari-ui/native        React Native bileşenleri (pilot)
+  cli/         @mari-ui/cli           tema üretimi + AI ajan kuralları
+  tsconfig/    @mari-ui/tsconfig      paylaşılan TypeScript taban config'i
+  eslint-config/                      paylaşılan ESLint taban config'i
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Bağımlılık yönü tek yönlü: `tokens → core → {components, native}`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Geliştirme
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm storybook
+```
 
-## Learn More
+## Durum
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Refactor planı: `mergen-next` → `mari-ui` monorepo dönüşümü sürüyor. İlerleme fazları için proje geçmişindeki commit'lere bakın.

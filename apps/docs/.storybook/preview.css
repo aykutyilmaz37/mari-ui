@@ -1,0 +1,9 @@
+body {
+  background: var(--mari-color-surface);
+  color: var(--mari-color-foreground);
+  font-family: var(--mari-font-sans);
+}
+.sbdocs-wrapper { background: var(--mari-color-surface) !important; }
+.sbdocs-content { color: var(--mari-color-foreground); }
+.sbdocs-content :is(h1, h2, h3, h4) { font-family: var(--mari-font-heading); }
+.sbdocs-content :is(code, pre) { font-family: var(--mari-font-mono); }

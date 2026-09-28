@@ -1,0 +1,65 @@
+/**
+ * @mari-ui/components'in KENDİ derleme zamanı Tailwind girişi. Bu dosya
+ * tüketiciye ship edilmez; `tailwindcss` CLI bunu derleyip `dist/styles.css`
+ * üretir. Tüketici projede Tailwind kurulu olması gerekmez — onlar sadece
+ * derlenmiş `dist/styles.css`'i import eder.
+ *
+ * `@source` burada KASITLI olarak açık yazıldı: `@mari-ui/tokens/
+ * tailwind-theme.css` içindeki `@import "tailwindcss"` node_modules
+ * altında olduğu için Tailwind'in otomatik içerik taraması oradan başlar,
+ * bizim `src/**\/*.tsx` dosyalarımızı bulamaz. `@source` bunu açıkça
+ * düzeltir.
+ */
+@import "@mari-ui/tokens/tailwind-theme.css";
+@source "./**/*.{ts,tsx}";
+
+/*
+ * Skeleton parıltısı (ant.design `active`). Gradyan 4 kat geniş, konumu
+ * sağdan sola kayar. Hareket azaltma tercihinde `motion-reduce:animate-none`.
+ */
+@keyframes mari-skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/*
+ * Gecikmeli görünme (Button `loading.delay`): öğe görünmez başlar, verilen
+ * `animation-delay` sonunda belirir. Kısa süren işlemlerde spinner titremesin.
+ */
+@keyframes mari-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Metin imleci: adımlı aç/kapa (yumuşak solma değil) — gerçek bir imleç gibi.
+ * OtpInput `layout="single"`'daki çizilmiş imleç kullanır.
+ */
+@keyframes mari-caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
+@layer base {
+  body { font-family: var(--mari-font-sans); }
+  h1, h2, h3, h4, h5, h6 { font-family: var(--mari-font-heading); }
+  input::placeholder, textarea::placeholder { color: var(--mari-color-muted); opacity: 1; }
+  code, pre, kbd, samp { font-family: var(--mari-font-mono); }
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+}

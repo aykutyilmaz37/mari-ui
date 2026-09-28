@@ -1,0 +1,40 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Elevation" />
+
+# Elevation
+
+Gölge ölçeği `@mari-ui/tokens` `shadow`'da tanımlı, Tailwind tarafında
+`shadow-mari-*` utility'leriyle kullanılır. Faz 13 öncesi component'ler
+`shadow-lg`, `shadow-2xl` gibi Tailwind built-in'lerini rastgele kullanıyordu
+(koyu temada neredeyse görünmez).
+
+## Ölçek
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "20px", margin: "20px 0" }}>
+  {["sm", "md", "lg", "xl"].map((k) => (
+    <div key={k} style={{ textAlign: "center" }}>
+      <div style={{ height: "72px", background: "var(--mari-color-surface)", border: "1px solid var(--mari-color-border)", borderRadius: "8px", boxShadow: `var(--mari-shadow-${k})` }} />
+      <code style={{ fontSize: "12px" }}>shadow-mari-{k}</code>
+    </div>
+  ))}
+</div>
+
+| Anahtar | Kullanım |
+|---|---|
+| `sm` | Hafif ayrım — hover kart, input focus |
+| `md` | Dropdown, popover, tooltip |
+| `lg` | Drawer, yan panel |
+| `xl` | Modal |
+
+## Koyu tema kuralı
+
+Siyah-alfa gölgeler koyu bir yüzeyde kaybolur. Yükseltilmiş yüzeyler koyu temada
+**gölge + ince `border-mari-border` kenarlık** birlikte kullanır — yükseklik
+hissi kenarlıktan gelir. Bu kombinasyon `lib/` `elevationClass` tablosunda
+(Faz 13 component turlarında devreye girer).
+
+## Z-index katmanları
+
+Tek katman skalası (`--z-mari-*`): `dropdown` (1000) → `sticky` (1100) →
+`drawer` (1200) → `modal` (1300) → `toast` (1400) → `tooltip` (1500).

@@ -1,0 +1,52 @@
+name: CI
+
+# Faz 8 (backlog madde 13+16) öncesinde bu repo'da HİÇ CI yoktu — `pnpm turbo
+# run build lint typecheck test` ve `pnpm audit` sadece elle çalıştırılıyordu.
+# Bu iş akışı olmadan eslint-plugin-sonarjs (kod kalitesi) ve dependency
+# override'ların (güvenlik yaması) gerçek değeri yoktu — birileri unutup elle
+# çalıştırmazsa hiçbir şey onları zorlamıyordu.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-lint-typecheck-test:
+    name: Build, lint, typecheck, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      # LTS'e sabitlendi: bu monorepo'nun geliştirme ortamında Node 25 (LTS
+      # olmayan bir sürüm), tsup'ın dts-build worker'ının varsayılan V8 heap
+      # limitini bu iş yükü için yetersiz bırakıyordu (bkz. packages/
+      # components/tsup.config.ts'teki not, Faz 5). CI'ın bu sürprizi
+      # TEKRARLAMAMASI için bilinen-iyi bir LTS kullanılıyor.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build, lint, typecheck, test (tüm workspace paketleri)
+        run: pnpm turbo run build lint typecheck test
+
+      - name: Bağımlılık güvenlik taraması (kritik/yüksek eşiği)
+        # `image-size` (react-native > metro, transitif, dev-only) için henüz
+        # yayınlanmış bir yama yok — bkz. pnpm-workspace.yaml'daki overrides
+        # notu. Bu yüzden eşik "critical"te tutulyor (bugün itibarıyla 0);
+        # "high"a çekilirse bu bilinen/kabul edilmiş risk CI'ı kırar.
+        run: pnpm audit --audit-level critical
+
+      - name: Bağımlılık güvenlik taraması (tam rapor, bilgilendirme amaçlı)
+        if: always()
+        run: pnpm audit || true
