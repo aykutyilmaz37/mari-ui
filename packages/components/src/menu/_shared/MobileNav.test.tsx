@@ -48,7 +48,7 @@ describe("MobileNav", () => {
 
     await user.click(within(dialog).getByRole("button", { name: "Elektronik" }));
     expect(within(dialog).getByRole("button", { name: "Bilgisayar" })).toBeInTheDocument();
-    expect(within(dialog).queryByRole("button", { name: "Ana Sayfa" })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("link", { name: "Ana Sayfa" })).not.toBeInTheDocument();
     const back = within(dialog).getByRole("button", { name: "Ana Menü" });
     expect(back).toHaveFocus();
 
@@ -71,7 +71,7 @@ describe("MobileNav", () => {
     const { user, onNavigate } = renderNav();
     const toggle = screen.getByRole("button", { name: "Menüyü aç" });
     await user.click(toggle);
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Ana Sayfa" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("link", { name: "Ana Sayfa" }));
 
     expect(onNavigate).toHaveBeenCalledWith("/home");
     expect(toggle).toHaveAttribute("aria-expanded", "false");
@@ -83,7 +83,7 @@ describe("MobileNav", () => {
     await user.click(screen.getByRole("button", { name: "Menüyü aç" }));
     const dialog = screen.getByRole("dialog");
     await user.click(within(dialog).getByRole("button", { name: "Elektronik" }));
-    await user.click(within(dialog).getByRole("button", { name: "Tümünü gör" }));
+    await user.click(within(dialog).getByRole("link", { name: "Tümünü gör" }));
     expect(onNavigate).toHaveBeenCalledWith("/c/elektronik");
   });
 
@@ -113,7 +113,7 @@ describe("MobileNav", () => {
   it("currentPath'e karşılık gelen yaprak aria-current='page' taşır", async () => {
     const { user } = renderNav({ currentPath: "/home" });
     await user.click(screen.getByRole("button", { name: "Menüyü aç" }));
-    expect(within(screen.getByRole("dialog")).getByRole("button", { name: "Ana Sayfa" })).toHaveAttribute("aria-current", "page");
+    expect(within(screen.getByRole("dialog")).getByRole("link", { name: "Ana Sayfa" })).toHaveAttribute("aria-current", "page");
   });
 
   it("açık çekmecede axe ihlali yok", async () => {

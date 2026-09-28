@@ -133,7 +133,11 @@
     },
     "./styles.css": "./dist/styles.css",
     "./manifest.json": "./dist/manifest.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./link": {
+      "types": "./dist/link.d.ts",
+      "import": "./dist/link.js"
+    }
   },
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && pnpm build:css && pnpm build:manifest",

@@ -159,7 +159,7 @@ describe("Sidebar", () => {
     render(<Sidebar data={flat} onNavigate={() => {}} variant="click" mega />);
     screen.getByRole("button", { name: "Siparişler" }).focus();
     await user.keyboard("{Enter}");
-    expect(await screen.findByRole("button", { name: /Tüm Siparişler/ })).toHaveFocus();
+    expect(await screen.findByRole("link", { name: /Tüm Siparişler/ })).toHaveFocus();
   });
 
   it("variant='drawer': kontrollü dialog — header, bölüm başlıkları; Escape onOpenChange(false) çağırır", async () => {

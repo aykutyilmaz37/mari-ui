@@ -6,6 +6,7 @@ import { cn, type ColorRole } from "@mari-ui/core";
 import { bgSubtleClass, textClass } from "../../../lib/colorClasses";
 import type { MenuItemType } from "../../types";
 import { isMenuItemActive } from "../../utils";
+import { MenuLink } from "../MenuLink";
 
 export interface MobileNavLevelProps {
   /** Bu seviyede listelenen öğeler. */
@@ -16,7 +17,9 @@ export interface MobileNavLevelProps {
   color: ColorRole;
   onDrill: (item: MenuItemType) => void;
   onBack: () => void;
+  /** Yaprak / "Tümünü gör" tıklandığında (gezinmeden önce) — host çekmeceyi kapatır. */
   onSelect: (item: MenuItemType) => void;
+  onNavigate?: (route: string) => void;
   backRef: React.Ref<HTMLButtonElement>;
 }
 
@@ -30,7 +33,7 @@ const ROW_CLASS =
  * dokunma dostu satırlar; çocuğu olan satır sağda chevron taşır ve bir seviye
  * içeri girer (accordion değil — derin veride liste boyu patlamasın diye).
  */
-export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack, onSelect, backRef }: MobileNavLevelProps) {
+export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack, onSelect, onNavigate, backRef }: MobileNavLevelProps) {
   const parent = trail[trail.length - 1];
   const backLabel = trail[trail.length - 2]?.title ?? "Ana Menü";
   // Seviyede ikonlu bir kardeş varsa ikonsuz satırlar da aynı yeri ayırır — başlıklar tek hizada dursun.
@@ -52,9 +55,9 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
           <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-2">
             <span className="text-base font-semibold text-mari-foreground">{parent.title}</span>
             {parent.route && (
-              <button type="button" onClick={() => onSelect(parent)} className={cn("shrink-0 cursor-pointer text-sm font-medium hover:underline", textClass[color])}>
+              <MenuLink route={parent.route} onNavigate={onNavigate} onSelect={() => onSelect(parent)} className={cn("shrink-0 cursor-pointer text-sm font-medium hover:underline", textClass[color])}>
                 Tümünü gör
-              </button>
+              </MenuLink>
             )}
           </div>
         </>
@@ -72,35 +75,38 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
           }
           const hasChildren = !!item.children?.length;
           const active = isMenuItemActive(item, activeKey);
-          return (
-            <li key={item.key}>
-              <button
-                type="button"
-                data-menu-key={item.key}
-                disabled={item.disabled}
-                aria-current={active && !hasChildren ? "page" : undefined}
-                onClick={() => (hasChildren ? onDrill(item) : onSelect(item))}
-                className={cn(
-                  ROW_CLASS,
-                  item.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                  active ? cn(textClass[color], bgSubtleClass[color], "font-medium") : cn("text-mari-foreground", !item.disabled && "hover:bg-mari-surface-alt")
-                )}
-              >
-                {item.icon ? (
-                  <span aria-hidden="true" className={cn("flex size-5 shrink-0 items-center justify-center [&_svg]:size-5", !active && "text-mari-muted")}>
-                    {item.icon}
-                  </span>
-                ) : (
-                  reserveIconSlot && <span aria-hidden="true" className="size-5 shrink-0" />
-                )}
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate">{item.title}</span>
-                  {item.description && <span className="line-clamp-1 text-xs text-mari-muted">{item.description}</span>}
-                </span>
-                {hasChildren && <ChevronRightIcon aria-hidden="true" size={18} className="shrink-0 text-mari-muted" />}
-              </button>
-            </li>
+          const rowClass = cn(
+            ROW_CLASS,
+            item.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+            active ? cn(textClass[color], bgSubtleClass[color], "font-medium") : cn("text-mari-foreground", !item.disabled && "hover:bg-mari-surface-alt")
           );
+          const content = (
+            <>
+              {item.icon ? (
+                <span aria-hidden="true" className={cn("flex size-5 shrink-0 items-center justify-center [&_svg]:size-5", !active && "text-mari-muted")}>
+                  {item.icon}
+                </span>
+              ) : (
+                reserveIconSlot && <span aria-hidden="true" className="size-5 shrink-0" />
+              )}
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate">{item.title}</span>
+                {item.description && <span className="line-clamp-1 text-xs text-mari-muted">{item.description}</span>}
+              </span>
+              {hasChildren && <ChevronRightIcon aria-hidden="true" size={18} className="shrink-0 text-mari-muted" />}
+            </>
+          );
+          // Çocuklu satır bir seviye içeri girer (düğme); yaprak gerçek bir link.
+          const row = hasChildren ? (
+            <button type="button" data-menu-key={item.key} disabled={item.disabled} onClick={() => onDrill(item)} className={rowClass}>
+              {content}
+            </button>
+          ) : (
+            <MenuLink route={item.route} onNavigate={onNavigate} onSelect={() => onSelect(item)} disabled={item.disabled} current={active} className={rowClass}>
+              {content}
+            </MenuLink>
+          );
+          return <li key={item.key}>{row}</li>;
         })}
       </ul>
     </div>

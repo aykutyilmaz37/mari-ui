@@ -6,7 +6,9 @@ import { cn, type ColorRole } from "@mari-ui/core";
 import { Dropdown, DropdownContent, DropdownTrigger } from "../../../dropdown";
 import { useDropdown } from "../../../dropdown/useDropdown";
 import type { MenuItemType, MenuNavigationProps } from "../../types";
-import { getItemClass, isMenuItemActive, navigateTo } from "../../utils";
+import { getItemClass, isMenuItemActive } from "../../utils";
+import { touchTargetClass } from "../../../lib/sizeClasses";
+import { MenuLink } from "../../_shared/MenuLink";
 import { BasicMenuItem } from "./BasicMenuItem";
 import { SubMenuRowContent, getSubMenuRowClass } from "./SubMenuRow";
 
@@ -31,22 +33,22 @@ interface RowProps extends MenuNavigationProps {
   onAfterSelect?: () => void;
 }
 
-/** Yaprak satır: tıklanınca gider, aktif öğeyi günceller ve paneli kapatır. */
+/** Yaprak satır: gerçek bir link (`MenuLink`); tıklanınca aktif öğeyi günceller ve paneli kapatır. */
 function LeafRow({ item, activeKey, setActiveKey, color, onNavigate, onAfterSelect }: RowProps) {
   return (
-    <button
-      type="button"
+    <MenuLink
+      route={item.route}
+      onNavigate={onNavigate}
       disabled={item.disabled}
+      current={item.key === activeKey}
       className={getSubMenuRowClass(item)}
-      onClick={() => {
-        if (item.disabled) return;
+      onSelect={() => {
         setActiveKey(item.key);
-        navigateTo(item.route, onNavigate);
         onAfterSelect?.();
       }}
     >
       <SubMenuRowContent item={item} active={isMenuItemActive(item, activeKey)} color={color} />
-    </button>
+    </MenuLink>
   );
 }
 
@@ -151,6 +153,7 @@ export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNaviga
       <DropdownTrigger
         className={cn(
           "group inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
+          touchTargetClass.md,
           getItemClass(item, activeKey, color)
         )}
       >

@@ -6,6 +6,7 @@ import { cn } from "@mari-ui/core";
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from "../dropdown";
 import { skeletonFill } from "../lib/skeleton";
 import { SkeletonSlot } from "../lib/SkeletonSlot";
+import { MariLink } from "../link";
 import type { BreadcrumbItemType, BreadcrumbProps } from "./types";
 import {
   getInteractiveClass,
@@ -82,9 +83,9 @@ export function Breadcrumb({
     }
     if (item.href) {
       return (
-        <a href={item.href} className={getInteractiveClass(isCurrent, item.className)} onClick={item.onClick} aria-current={ariaCurrent}>
+        <MariLink href={item.href} className={getInteractiveClass(isCurrent, item.className)} onClick={item.onClick} aria-current={ariaCurrent}>
           {inner}
-        </a>
+        </MariLink>
       );
     }
     if (item.onClick) {

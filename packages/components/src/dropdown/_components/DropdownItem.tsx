@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@mari-ui/core";
 import type { DropdownItemProps } from "../types";
 import { useDropdown } from "../useDropdown";
+import { MariLink } from "../../link";
 
 /**
  * Yapı ant.design menü öğesinden: 32px yükseklik (5px/12px iç boşluk, 22px
@@ -44,9 +45,9 @@ export function DropdownItem({ children, icon, extra, danger = false, disabled =
   // Devre dışı öğe her durumda `disabled` bir düğmedir: `<a>`nın `disabled` özniteliği yok.
   if (href && !disabled) {
     return (
-      <a href={href} onClick={handleClick} className={classes}>
+      <MariLink href={href} onClick={handleClick} className={classes}>
         {content}
-      </a>
+      </MariLink>
     );
   }
 
