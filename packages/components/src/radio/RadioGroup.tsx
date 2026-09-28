@@ -2,6 +2,7 @@
 
 import React, { useId } from "react";
 import { cn, useControllableState } from "@mari-ui/core";
+import { useFieldGroup } from "../lib/fieldContext";
 import { Radio } from "./Radio";
 import type { RadioGroupProps, RadioOption } from "./types";
 
@@ -22,9 +23,14 @@ export function RadioGroup({
   orientation = "horizontal",
   className,
   skeleton = false,
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledBy,
+  "aria-label": ownAriaLabel,
+  "aria-labelledby": ownAriaLabelledBy,
 }: RadioGroupProps) {
+  // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
+  const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled });
+  const { "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy } = field;
+  const groupDisabled = !!field.disabled;
+  const groupColor = field["aria-invalid"] ? (color ?? "error") : color;
   const [selectedValue, setSelectedValue] = useControllableState<string | number | undefined>({
     value,
     defaultValue,
@@ -49,6 +55,9 @@ export function RadioGroup({
       role="radiogroup"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
+      aria-describedby={field["aria-describedby"]}
+      aria-invalid={field["aria-invalid"]}
+      aria-required={field["aria-required"]}
       aria-orientation={orientation}
       aria-busy={skeleton || undefined}
       className={cn("flex", orientation === "vertical" ? "flex-col gap-3" : "flex-wrap gap-x-4 gap-y-2", block && "w-full", className)}
@@ -61,12 +70,12 @@ export function RadioGroup({
           label={opt.label}
           description={opt.description}
           skeleton={skeleton}
-          disabled={disabled || opt.disabled}
+          disabled={groupDisabled || opt.disabled}
           checked={selectedValue === opt.value}
           onChange={() => setSelectedValue(opt.value)}
           size={size}
           variant={variant}
-          color={color}
+          color={groupColor}
           type={type}
         />
       ))}

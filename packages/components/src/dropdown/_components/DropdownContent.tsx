@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@mari-ui/core";
 import type { DropdownContentProps } from "../types";
 import { useDropdown } from "../useDropdown";
 import { elevationClass } from "../../lib/elevationClass";
-import { computePanelPosition, getFocusable } from "../utils";
+import type { Side } from "../../lib/floating";
+import { useFloatingPosition } from "../../lib/useFloatingPosition";
+import { getFocusable } from "../utils";
 
 /**
  * Yapısal ölçüler (boşluk, ok konumu) ant.design'ın canlı Dropdown sayfasından
@@ -20,8 +22,6 @@ const ARROW_GAP_PX = 12;
 const ARROW_INSET_PX = 20;
 /** Panel viewport kenarına YAPIŞMASIN diye bırakılan minimum boşluk. */
 const EDGE_PADDING_PX = 8;
-
-type Side = "top" | "bottom" | "left" | "right";
 
 /** ant.design okunun birebir `clip-path`i: 16×8, ucu yuvarlak, taban köşeleri panele yumuşakça karışan üçgen. */
 const ARROW_FILL_PATH = "M 0 8 A 4 4 0 0 0 2.82843 6.82843 L 6.58579 3.07107 A 2 2 0 0 1 9.41421 3.07107 L 13.1716 6.82843 A 4 4 0 0 0 16 8 Z";
@@ -81,46 +81,15 @@ function DropdownArrow({ side, offset }: { side: Side; offset: number }) {
  */
 export function DropdownContent({ placement = "bottom-end", children, className, customVisible, arrow, offset = 0 }: DropdownContentProps) {
   const { visible, anchorRef, panelRef, panelId, focusPanelOnOpenRef, hoverMode, scheduleHoverClose, cancelHoverClose } = useDropdown();
-  const [coords, setCoords] = useState<{ top: number; left: number; side: Side; arrowOffset: number; minWidth: number | undefined } | null>(null);
   const isVisible = customVisible ?? visible;
   const hasArrow = !!arrow;
   const pointAtCenter = typeof arrow === "object" && !!arrow.pointAtCenter;
-
-  useEffect(() => {
-    if (!isVisible) {
-      setCoords(null);
-      return;
-    }
-
-    let frameId: number;
-
-    const updatePosition = () => {
-      const anchorEl = anchorRef.current;
-      if (anchorEl) {
-        const rect = anchorEl.getBoundingClientRect();
-        const panelRect = panelRef.current?.getBoundingClientRect();
-        const { top, left, side, arrowOffset } = computePanelPosition(
-          { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
-          { width: panelRect?.width ?? 0, height: panelRect?.height ?? 0 },
-          placement,
-          { width: window.innerWidth, height: window.innerHeight },
-          (hasArrow ? ARROW_GAP_PX : GAP_PX) + offset,
-          EDGE_PADDING_PX,
-          hasArrow ? { inset: ARROW_INSET_PX, pointAtCenter } : undefined
-        );
-        const minWidth = side === "top" || side === "bottom" ? rect.width : undefined;
-        setCoords((prev) =>
-          prev && prev.top === top && prev.left === left && prev.side === side && prev.arrowOffset === arrowOffset && prev.minWidth === minWidth
-            ? prev
-            : { top, left, side, arrowOffset, minWidth }
-        );
-      }
-      frameId = requestAnimationFrame(updatePosition);
-    };
-
-    frameId = requestAnimationFrame(updatePosition);
-    return () => cancelAnimationFrame(frameId);
-  }, [isVisible, placement, hasArrow, pointAtCenter, offset, anchorRef, panelRef]);
+  const coords = useFloatingPosition(isVisible, anchorRef, panelRef, {
+    placement,
+    gap: (hasArrow ? ARROW_GAP_PX : GAP_PX) + offset,
+    edge: EDGE_PADDING_PX,
+    arrow: hasArrow ? { inset: ARROW_INSET_PX, pointAtCenter } : undefined,
+  });
 
   // Panel `body`'nin sonuna portal edildiğinden Tab ile tetikleyiciden panele
   // DOM sırasıyla ulaşılamaz. Klavyeyle (Enter/Boşluk) açıldıysa odağı
@@ -157,7 +126,7 @@ export function DropdownContent({ placement = "bottom-end", children, className,
         !coords && "invisible",
         className
       )}
-      style={{ top: coords?.top ?? 0, left: coords?.left ?? 0, minWidth: coords?.minWidth }}
+      style={{ top: coords?.top ?? 0, left: coords?.left ?? 0, minWidth: coords?.anchorWidth }}
     >
       {hasArrow && coords && <DropdownArrow side={coords.side} offset={coords.arrowOffset} />}
       {children}

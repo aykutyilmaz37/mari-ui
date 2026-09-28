@@ -6,6 +6,7 @@ import { ClearButton, clearIconOf } from "./_components/FieldAdornments";
 import type { InputClassNames, InputShape, InputVariant, InputCountConfig, TextareaAutoSize } from "./types";
 import type { ColorRole, Size } from "@mari-ui/core";
 import { skeletonBoxProps, type SkeletonableProps } from "../lib/skeleton";
+import { useFieldControl } from "../lib/fieldContext";
 import {
   FIELD_BASE_CLASS,
   FIELD_DISABLED_CLASS,
@@ -36,6 +37,8 @@ export interface TextareaProps extends SkeletonableProps {
   required?: boolean;
   "aria-label"?: string;
   "aria-labelledby"?: string;
+  /** İpucu/hata metnine bağlantı (Field içindeyse otomatik). */
+  "aria-describedby"?: string;
   "aria-invalid"?: boolean | "true" | "false";
   size?: Size;
   shape?: InputShape;
@@ -85,9 +88,16 @@ function fitHeight(el: HTMLTextAreaElement, autoSize: TextareaAutoSize) {
  * gerçek bir TS hatasıydı (bkz. plan denetimi). Artık Textarea kendi tam
  * tip setini tanımlıyor, `Input`tan miras almıyor.
  */
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  (
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>((outerProps, ref) => {
+  // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
+  return <TextareaInner {...useFieldControl(outerProps)} forwardedRef={ref} />;
+});
+
+Textarea.displayName = "Textarea";
+
+const TextareaInner = (
     {
+      forwardedRef: ref,
       placeholder,
       allowClear = false,
       clearLabel = "Temizle",
@@ -118,9 +128,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       required,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
+      "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalidProp,
-    },
-    ref
+    }: TextareaProps & { forwardedRef: React.ForwardedRef<HTMLTextAreaElement> }
   ) => {
     const resolvedVariant = resolveLegacyInputVariant(variant);
     const resolvedColor = resolveInputColor(color, status);
@@ -180,7 +190,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     );
 
     return (
-      <div className="flex flex-col gap-2">
+      // `w-full`: Input gibi kapsayıcısını doldurur — `items-start`lı bir flex sütununda (Field) büzülüyordu.
+      <div className="flex w-full flex-col gap-2">
         <div className={wrapperClass}>
           <textarea
             id={id}
@@ -199,6 +210,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             required={required}
             aria-label={ariaLabel}
             aria-labelledby={ariaLabelledBy}
+            aria-describedby={ariaDescribedBy}
             aria-invalid={ariaInvalid}
             className={textareaClass}
           />
@@ -211,7 +223,4 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
       </div>
     );
-  }
-);
-
-Textarea.displayName = "Textarea";
+  };

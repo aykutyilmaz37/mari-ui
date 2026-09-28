@@ -21,7 +21,12 @@ export interface OtpSingleFieldProps {
   display: (raw: string) => string;
   separator?: React.ReactNode | ((i: number) => React.ReactNode);
   className?: string;
-  ariaLabel: string;
+  /** Field içinde `undefined` — ad `<label htmlFor>`dan gelir. */
+  ariaLabel?: string;
+  /** Field bağlantıları. */
+  id?: string;
+  describedBy?: string;
+  required?: boolean;
   inputMode: "numeric" | "text";
   skeleton: boolean;
   linePosition: "center" | "bottom";
@@ -55,6 +60,9 @@ export function OtpSingleField({
   separator,
   className,
   ariaLabel,
+  id,
+  describedBy,
+  required,
   inputMode,
   skeleton,
   linePosition,
@@ -155,7 +163,10 @@ export function OtpSingleField({
         // `maxLength` YOK: tarayıcı yapıştırılan "482 913" gibi biçimli bir kodu
         // temizlemeden ÖNCE kırpıp "482 91" bırakırdı. Uzunluk `handleChange`de.
         disabled={disabled}
+        id={id}
+        required={required}
         aria-label={ariaLabel}
+        aria-describedby={describedBy}
         aria-invalid={color === "error" || undefined}
         inputMode={inputMode}
         autoComplete="one-time-code"
