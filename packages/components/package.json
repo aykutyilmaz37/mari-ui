@@ -135,6 +135,10 @@
       "types": "./dist/segmented.d.ts",
       "import": "./dist/segmented.js"
     },
+    "./popover": {
+      "types": "./dist/popover.d.ts",
+      "import": "./dist/popover.js"
+    },
     "./progress": {
       "types": "./dist/progress.d.ts",
       "import": "./dist/progress.js"
