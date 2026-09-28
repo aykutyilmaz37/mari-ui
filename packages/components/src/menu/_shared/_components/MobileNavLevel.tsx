@@ -7,6 +7,7 @@ import { bgSubtleClass, textClass } from "../../../lib/colorClasses";
 import type { MenuItemType } from "../../types";
 import { isMenuItemActive } from "../../utils";
 import { MenuLink } from "../MenuLink";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 export interface MobileNavLevelProps {
   /** Bu seviyede listelenen öğeler. */
@@ -55,7 +56,7 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
           <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-2">
             <span className="text-base font-semibold text-mari-foreground">{parent.title}</span>
             {parent.route && (
-              <MenuLink route={parent.route} onNavigate={onNavigate} onSelect={() => onSelect(parent)} className={cn("shrink-0 cursor-pointer text-sm font-medium hover:underline", textClass[color])}>
+              <MenuLink route={parent.route} target={parent.target} reloadDocument={parent.reloadDocument} onNavigate={onNavigate} onSelect={() => onSelect(parent)} className={cn("shrink-0 cursor-pointer text-sm font-medium hover:underline", textClass[color])}>
                 Tümünü gör
               </MenuLink>
             )}
@@ -90,7 +91,10 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
                 reserveIconSlot && <span aria-hidden="true" className="size-5 shrink-0" />
               )}
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate">{item.title}</span>
+                <span className="flex min-w-0 items-center gap-1">
+                  <span className="truncate">{item.title}</span>
+                  <NewTabHint target={item.target} />
+                </span>
                 {item.description && <span className="line-clamp-1 text-xs text-mari-muted">{item.description}</span>}
               </span>
               {hasChildren && <ChevronRightIcon aria-hidden="true" size={18} className="shrink-0 text-mari-muted" />}
@@ -102,7 +106,7 @@ export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack
               {content}
             </button>
           ) : (
-            <MenuLink route={item.route} onNavigate={onNavigate} onSelect={() => onSelect(item)} disabled={item.disabled} current={active} className={rowClass}>
+            <MenuLink route={item.route} target={item.target} reloadDocument={item.reloadDocument} onNavigate={onNavigate} onSelect={() => onSelect(item)} disabled={item.disabled} current={active} className={rowClass}>
               {content}
             </MenuLink>
           );

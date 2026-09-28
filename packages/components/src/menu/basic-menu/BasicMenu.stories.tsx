@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { MariLogo } from "../../logo";
-import { BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
+import { ActivityIcon, BookOpenIcon, BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, NewspaperIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
 import { BasicMenu } from "./BasicMenu";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
@@ -30,10 +30,10 @@ const meta: Meta<typeof BasicMenu> = {
           summary:
             "Yatay üst gezinme çubuğu. `data` içindeki `children`'ı olan öğeler üzerine gelindiğinde otomatik " +
             "olarak bir dropdown açar: veri düzse (tek seviye) kompakt bir liste, veri gerçekten 3 seviyeliyse " +
-            "(çocukların kendi çocukları varsa) başlıklı gruplu kolonlar. Route'u olan her öğe gerçek bir linktir. " +
-            "Router kullanıyorsanız uygulamanın kökünde bir kez `<MariLinkProvider component={NextLink}>` (React Router: " +
-            "`component={Link} hrefProp=\"to\"`) verin — tüm menü, Breadcrumb ve Dropdown linkleri onu kullanır; " +
-            "verilmezse düz `<a href>`. Alternatif olarak `onNavigate` düz sol tıkları yakalayıp router'a devreder.",
+            "(çocukların kendi çocukları varsa) başlıklı gruplu kolonlar. Route'u olan her öğe gerçek bir `<a href>`'dir. " +
+            "Component hangi router'ı kullandığınızı bilmez: sayfa yenilenmeden geçiş için `onNavigate`e router'ınızın " +
+            "gezinme fonksiyonunu verin (Next: `router.push`, React Router: `navigate`); verilmezse tarayıcı sayfayı " +
+            "yükler. Öğe bazında `target` (`_blank`, `_parent`, `_top`, çerçeve adı) ve `reloadDocument` router'ı atlar.",
           whenToUse: ["Bir uygulamanın üst seviye sayfaları arasında yatay, her zaman görünür bir gezinme çubuğu gerektiğinde."],
           a11y:
             "Öğeler `<nav aria-label=\"Ana menü\">` içinde bir `<ul>` listesi; route'u olan öğeler gerçek link (orta tık / " +
@@ -227,28 +227,77 @@ export const StickyPosition: Story = {
   },
 };
 
-export const WithRouterLink: Story = {
-  name: "Router Linki (Next.js / React Router)",
+export const WithRouter: Story = {
+  name: "Router ile Kullanım (Next.js / React Router)",
   ...storyDoc(
-    "Kütüphane hiçbir router'a bağımlı değildir. Uygulamanın kökünde bir kez router'ın link bileşenini verin; " +
-      "menü, Breadcrumb ve Dropdown linkleri onu kullanır (Next'te prefetch, React Router'da client-side geçiş). " +
-      "Hiçbiri verilmezse düz `<a href>` render edilir.",
+    "Component router bağımsızdır. `onNavigate` verilince düz sol tık router'a devredilir, sayfa yenilenmez; " +
+      "⌘/Ctrl/orta tık yine yeni sekmede açar. Her sayfada tekrar yazmamak için menüyü projenizde bir kez sarın.",
     `
-// Next.js — app/layout.tsx
-import NextLink from "next/link";
-import { MariLinkProvider } from "@mari-ui/components/link";
+// Next.js (App Router)
+"use client";
+import { useRouter } from "next/navigation";
 
-<MariLinkProvider component={NextLink}>{children}</MariLinkProvider>
+export function AppMenu(props: BasicMenuProps) {
+  const router = useRouter();
+  return <BasicMenu {...props} onNavigate={(route) => router.push(route)} />;
+}
 
-// React Router — Link \`to\` bekler
-import { Link } from "react-router";
+// React Router
+import { useNavigate } from "react-router";
 
-<MariLinkProvider component={Link} hrefProp="to">{children}</MariLinkProvider>
+export function AppMenu(props: BasicMenuProps) {
+  const navigate = useNavigate();
+  return <BasicMenu {...props} onNavigate={(route) => navigate(route)} />;
+}
 
-// Sonra her yerde:
+// Router yok (düz site): onNavigate vermeyin, linkler sayfayı yükler.
 <BasicMenu data={data} logo={<Logo />} logoHref="/" />`
   ),
   args: { data: corporateData, logo: <MariLogo size={36} />, logoHref: "/" },
+};
+
+const linkTargetData: MenuItemType[] = [
+  { key: "home", title: "Ana Sayfa", route: "/", icon: icon(HomeIcon) },
+  { key: "docs", title: "Dokümantasyon", route: "https://docs.example.com", target: "_blank", icon: icon(BookOpenIcon) },
+  { key: "blog", title: "Blog", route: "/blog", reloadDocument: true, icon: icon(NewspaperIcon) },
+  {
+    key: "support",
+    title: "Destek",
+    icon: icon(HeadphonesIcon),
+    children: [
+      { key: "faq", title: "SSS", route: "/destek/sss", icon: icon(InfoIcon), description: "Uygulama içi sayfa — router ile açılır." },
+      { key: "status", title: "Sistem Durumu", route: "https://status.example.com", target: "_blank", icon: icon(ActivityIcon), description: "Ayrı bir sitede, yeni sekmede açılır." },
+      { key: "mail", title: "E-posta Gönder", route: "mailto:destek@example.com", icon: icon(MailIcon), description: "Posta uygulamasını açar." },
+    ],
+  },
+];
+
+export const LinkTargets: Story = {
+  name: "Link Hedefleri (target / reloadDocument)",
+  ...storyDoc(
+    "Öğe bazında davranış: `target: \"_blank\"` yeni sekmede açar (`rel=\"noopener noreferrer\"`, dış bağlantı ikonu ve " +
+      "ekran okuyucuya \"yeni sekmede açılır\" otomatik); `_parent`, `_top` ve çerçeve adları da geçerlidir. " +
+      "`reloadDocument: true` aynı sekmede ama router'ı atlayarak tam sayfa yükler (aynı domain'de ayrı bir site, " +
+      "`/logout` gibi sunucu yönlendirmeleri). `https:`, `mailto:`, `tel:` adresleri kendiliğinden tarayıcıya bırakılır.",
+    `
+const data: MenuItemType[] = [
+  { key: "home", title: "Ana Sayfa", route: "/" },                                   // router
+  { key: "docs", title: "Dokümantasyon", route: "https://docs.example.com", target: "_blank" },
+  { key: "blog", title: "Blog", route: "/blog", reloadDocument: true },             // tam sayfa
+  {
+    key: "support",
+    title: "Destek",
+    children: [
+      { key: "faq", title: "SSS", route: "/destek/sss" },
+      { key: "status", title: "Sistem Durumu", route: "https://status.example.com", target: "_blank" },
+      { key: "mail", title: "E-posta Gönder", route: "mailto:destek@example.com" },
+    ],
+  },
+];
+
+<BasicMenu data={data} onNavigate={(route) => router.push(route)} />`
+  ),
+  args: { data: linkTargetData, logo: <MariLogo size={36} />, logoHref: "/" },
 };
 
 function SkeletonDemo(args: React.ComponentProps<typeof BasicMenu>) {

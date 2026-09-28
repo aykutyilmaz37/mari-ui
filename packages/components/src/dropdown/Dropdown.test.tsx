@@ -461,4 +461,22 @@ describe("Dropdown", () => {
     fireEvent.mouseEnter(container.firstElementChild as Element);
     expect(screen.queryByText("İçerik")).not.toBeInTheDocument();
   });
+
+  it("DropdownItem target=_blank güvenli rel taşır ve yeni sekmede açıldığını duyurur", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown>
+        <DropdownTrigger>Yardım</DropdownTrigger>
+        <DropdownContent>
+          <DropdownItem href="https://docs.example.com" target="_blank">
+            Dokümanlar
+          </DropdownItem>
+        </DropdownContent>
+      </Dropdown>
+    );
+    await user.click(screen.getByRole("button", { name: "Yardım" }));
+    const link = screen.getByRole("link", { name: "Dokümanlar (yeni sekmede açılır)" });
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });

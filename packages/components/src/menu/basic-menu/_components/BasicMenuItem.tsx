@@ -6,6 +6,7 @@ import type { MenuItemType, MenuNavigationProps } from "../../types";
 import { getItemClass } from "../../utils";
 import { touchTargetClass } from "../../../lib/sizeClasses";
 import { MenuLink } from "../../_shared/MenuLink";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 export interface BasicMenuItemProps extends MenuNavigationProps {
   item: MenuItemType;
@@ -27,6 +28,8 @@ export function BasicMenuItem({ item, activeKey, setActiveKey, color, onNavigate
       route={item.route}
       onNavigate={onNavigate}
       disabled={item.disabled}
+      target={item.target}
+      reloadDocument={item.reloadDocument}
       current={item.key === activeKey}
       onSelect={() => setActiveKey(item.key)}
       className={cn(
@@ -38,6 +41,7 @@ export function BasicMenuItem({ item, activeKey, setActiveKey, color, onNavigate
     >
       {item.icon}
       {item.title}
+      <NewTabHint target={item.target} />
     </MenuLink>
   );
 }

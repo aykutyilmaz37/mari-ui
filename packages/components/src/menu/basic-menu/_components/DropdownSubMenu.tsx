@@ -40,6 +40,8 @@ function LeafRow({ item, activeKey, setActiveKey, color, onNavigate, onAfterSele
       route={item.route}
       onNavigate={onNavigate}
       disabled={item.disabled}
+      target={item.target}
+      reloadDocument={item.reloadDocument}
       current={item.key === activeKey}
       className={getSubMenuRowClass(item)}
       onSelect={() => {

@@ -136,4 +136,10 @@ describe("Breadcrumb", () => {
     expect(container.querySelector("a")?.parentElement).toHaveClass("invisible");
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("target=_blank öğe güvenli rel taşır ve yeni sekmede açıldığını duyurur", () => {
+    render(<Breadcrumb items={[{ title: "Yardım", href: "https://yardim.example.com", target: "_blank" }, { title: "SSS" }]} />);
+    const link = screen.getByRole("link", { name: "Yardım (yeni sekmede açılır)" });
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
 });

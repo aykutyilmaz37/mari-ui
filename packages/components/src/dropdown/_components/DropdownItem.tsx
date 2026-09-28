@@ -4,14 +4,14 @@ import React from "react";
 import { cn } from "@mari-ui/core";
 import type { DropdownItemProps } from "../types";
 import { useDropdown } from "../useDropdown";
-import { MariLink } from "../../link";
+import { NewTabHint, getLinkAttrs } from "../../lib/linkBehavior";
 
 /**
  * Yapı ant.design menü öğesinden: 32px yükseklik (5px/12px iç boşluk, 22px
  * satır yüksekliği), 4px yarıçap, ikon + metin, disabled durumu. Renkler kendi
  * token'larımızdan: hover'da hafif zemin, danger'da hafif kırmızı zemin.
  */
-export function DropdownItem({ children, icon, extra, danger = false, disabled = false, href, onClick, className }: DropdownItemProps) {
+export function DropdownItem({ children, icon, extra, danger = false, disabled = false, href, target, onClick, className }: DropdownItemProps) {
   const { setVisible, triggerRef } = useDropdown();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
@@ -37,6 +37,7 @@ export function DropdownItem({ children, icon, extra, danger = false, disabled =
         </span>
       )}
       <span className="min-w-0 flex-1">{children}</span>
+      {href && <NewTabHint target={target} />}
       {extra && <span className="ms-4 shrink-0 text-xs text-mari-muted">{extra}</span>}
     </>
   );
@@ -45,9 +46,9 @@ export function DropdownItem({ children, icon, extra, danger = false, disabled =
   // Devre dışı öğe her durumda `disabled` bir düğmedir: `<a>`nın `disabled` özniteliği yok.
   if (href && !disabled) {
     return (
-      <MariLink href={href} onClick={handleClick} className={classes}>
+      <a href={href} {...getLinkAttrs(target)} onClick={handleClick} className={classes}>
         {content}
-      </MariLink>
+      </a>
     );
   }
 

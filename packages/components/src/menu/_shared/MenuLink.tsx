@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { MariLink } from "../../link";
+import { bypassesRouter, getLinkAttrs, isPlainLeftClick, type LinkBehaviorProps } from "../../lib/linkBehavior";
 
-export interface MenuLinkProps {
+export interface MenuLinkProps extends LinkBehaviorProps {
   /** Varsa gerçek bir `<a href>` render edilir; yoksa (ya da `disabled`) düğme. */
   route?: string;
   onNavigate?: (route: string) => void;
@@ -20,12 +20,14 @@ export interface MenuLinkProps {
  * Faz 15.5 — menü öğeleri eskiden `<button>` + `window.location.href` idi:
  * orta tık / "yeni sekmede aç" / adres önizlemesi çalışmıyor, arama motorları
  * menüdeki sayfaları hiç göremiyordu. Artık route'u olan öğe gerçek bir link.
- * `onNavigate` verilmişse DÜZ sol tık engellenip router'a devredilir (SPA
- * geçişi); değiştirici tuşlu tıklamalar (⌘/Ctrl/Shift/orta tık) tarayıcıya
- * bırakılır — yeni sekmede açma her zaman çalışır. Link, `MariLinkProvider`da
- * verilen router bileşenidir (Next `Link`, React Router `Link`); yoksa `<a>`.
+ *
+ * Router bağımsızdır (component Next mi React Router mı bilmez): `onNavigate`
+ * verilmişse DÜZ sol tık engellenip ona devredilir (Next: `router.push`,
+ * React Router: `navigate`) → sayfa yenilenmeden geçiş. Değiştirici tuşlu
+ * tıklamalar, `target` (`_self` dışı), `reloadDocument` ve dış adresler
+ * (`https:`, `mailto:`…) her zaman tarayıcıya bırakılır.
  */
-export function MenuLink({ route, onNavigate, onSelect, disabled, current, className, children }: MenuLinkProps) {
+export function MenuLink({ route, onNavigate, onSelect, disabled, current, target, reloadDocument, className, children }: MenuLinkProps) {
   if (!route || disabled) {
     return (
       <button type="button" disabled={disabled} onClick={onSelect} className={className}>
@@ -34,18 +36,19 @@ export function MenuLink({ route, onNavigate, onSelect, disabled, current, class
     );
   }
   return (
-    <MariLink
+    <a
       href={route}
+      {...getLinkAttrs(target)}
       aria-current={current ? "page" : undefined}
       className={className}
       onClick={(event) => {
         onSelect?.();
-        if (!onNavigate || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!onNavigate || !isPlainLeftClick(event) || bypassesRouter(route, { target, reloadDocument })) return;
         event.preventDefault();
         onNavigate(route);
       }}
     >
       {children}
-    </MariLink>
+    </a>
   );
 }

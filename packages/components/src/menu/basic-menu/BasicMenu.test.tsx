@@ -159,6 +159,34 @@ describe("BasicMenu", () => {
       expect(screen.queryByRole("button", { name: "Giriş" })).not.toBeInTheDocument();
       expect(await getA11yViolations(container)).toEqual([]);
     });
+
+    it("target, reloadDocument ve dış adresli öğeler onNavigate'e devredilmez; _blank güvenli rel + 'yeni sekmede' duyurusu taşır", () => {
+      const onNavigate = vi.fn();
+      render(
+        <BasicMenu
+          onNavigate={onNavigate}
+          data={[
+            { key: "docs", title: "Dokümanlar", route: "/docs", target: "_blank" },
+            { key: "blog", title: "Blog", route: "/blog", reloadDocument: true },
+            { key: "gh", title: "GitHub", route: "https://github.com" },
+            { key: "about", title: "Hakkımızda", route: "/about" },
+          ]}
+        />
+      );
+      const docs = screen.getByRole("link", { name: /Dokümanlar/ });
+      expect(docs).toHaveAttribute("target", "_blank");
+      expect(docs).toHaveAttribute("rel", "noopener noreferrer");
+      expect(docs).toHaveAccessibleName("Dokümanlar (yeni sekmede açılır)");
+      expect(screen.getByRole("link", { name: "Blog" })).not.toHaveAttribute("target");
+
+      for (const name of [/Dokümanlar/, "Blog", "GitHub"]) {
+        const link = screen.getByRole("link", { name });
+        link.addEventListener("click", (event) => event.preventDefault());
+        fireEvent.click(link);
+      }
+      expect(onNavigate).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("link", { name: "Hakkımızda" }));
+      expect(onNavigate).toHaveBeenCalledWith("/about");
+    });
   });
 });
-

@@ -6,7 +6,7 @@ import { cn } from "@mari-ui/core";
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from "../dropdown";
 import { skeletonFill } from "../lib/skeleton";
 import { SkeletonSlot } from "../lib/SkeletonSlot";
-import { MariLink } from "../link";
+import { NewTabHint, getLinkAttrs } from "../lib/linkBehavior";
 import type { BreadcrumbItemType, BreadcrumbProps } from "./types";
 import {
   getInteractiveClass,
@@ -73,7 +73,7 @@ export function Breadcrumb({
           </DropdownTrigger>
           <DropdownContent placement="bottom-start">
             {item.menu.items.map((sub, i) => (
-              <DropdownItem key={sub.key ?? sub.href ?? i} href={sub.href} icon={sub.icon} onClick={sub.onClick}>
+              <DropdownItem key={sub.key ?? sub.href ?? i} href={sub.href} target={sub.target} icon={sub.icon} onClick={sub.onClick}>
                 {sub.title}
               </DropdownItem>
             ))}
@@ -83,9 +83,10 @@ export function Breadcrumb({
     }
     if (item.href) {
       return (
-        <MariLink href={item.href} className={getInteractiveClass(isCurrent, item.className)} onClick={item.onClick} aria-current={ariaCurrent}>
+        <a href={item.href} {...getLinkAttrs(item.target)} className={getInteractiveClass(isCurrent, item.className)} onClick={item.onClick} aria-current={ariaCurrent}>
           {inner}
-        </MariLink>
+          <NewTabHint target={item.target} />
+        </a>
       );
     }
     if (item.onClick) {

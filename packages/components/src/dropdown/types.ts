@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, Placement as CorePlacement, Variant } from "@mari-ui/core";
+import type { LinkTarget } from "../lib/linkBehavior";
 
 /** Sadece 4 ana yön render edilir — bkz. tooltip/utils.ts'teki aynı not. */
 export type Placement = CorePlacement;
@@ -64,6 +65,8 @@ export interface DropdownItemProps {
   extra?: React.ReactNode;
   /** Verilirse öğe gerçek bir `<a>` olarak render edilir (orta tık, yeni sekme, adres önizlemesi). */
   href?: string;
+  /** `href`li öğenin açılacağı yer; `_blank` → yeni sekme (`rel="noopener noreferrer"` + ikon otomatik). */
+  target?: LinkTarget;
   /** Öğeye tıklanınca çağrılır; ardından dropdown kapanır. */
   onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   className?: string;

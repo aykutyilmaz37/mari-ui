@@ -1,11 +1,14 @@
 import type React from "react";
 import type { SkeletonableProps } from "../lib/skeleton";
+import type { LinkTarget } from "../lib/linkBehavior";
 
 /** Bir öğenin açılır menüsündeki kardeş sayfa (ör. aynı seviyedeki diğer kategoriler). */
 export interface BreadcrumbMenuItem {
   key?: React.Key;
   title: React.ReactNode;
   href?: string;
+  /** `href`in açılacağı yer; `_blank` → yeni sekme. */
+  target?: LinkTarget;
   icon?: React.ReactNode;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
 }
@@ -13,6 +16,8 @@ export interface BreadcrumbMenuItem {
 export interface BreadcrumbItemType {
   title: React.ReactNode;
   href?: string;
+  /** `href`in açılacağı yer; `_blank` → yeni sekme (`rel="noopener noreferrer"` + ikon otomatik). */
+  target?: LinkTarget;
   path?: string;
   /** Başlığın solunda gösterilen ikon (14px'e ölçeklenir). */
   icon?: React.ReactNode;

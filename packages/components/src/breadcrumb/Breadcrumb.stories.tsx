@@ -31,7 +31,7 @@ const meta: Meta<typeof Breadcrumb> = {
     },
   },
   argTypes: {
-    items: { control: "object", description: "Yol öğeleri: `title`, `href`, `onClick`, `icon`, `menu`, `path`, `className`." },
+    items: { control: "object", description: "Yol öğeleri: `title`, `href`, `target`, `onClick`, `icon`, `menu`, `path`, `className`. `target: \"_blank\"` yeni sekmede açar (güvenli `rel` + ikon otomatik)." },
     separator: { control: "text", description: "Öğeler arası ayırıcı (metin ya da ikon).", table: { defaultValue: { summary: '"/"' } } },
     maxItems: { control: { type: "number", min: 2 }, description: "Aşılınca ortadaki öğeler \"…\" düğmesine katlanır." },
     skeleton: { control: "boolean", description: "Veri gelene kadar her öğe yerine iskelet.", table: { defaultValue: { summary: "false" } } },
