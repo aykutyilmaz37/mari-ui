@@ -578,6 +578,48 @@ export const Surfaces: Story = {
   ),
 };
 
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` kartın TÜM bölgelerini iskelete çevirir: kapak, başlık, `extra`, gövde, `footer` ve `actions`. " +
+      "Gerçek içerik görünmez olarak yerinde kalır, böylece iskelet ↔ yüklü geçişinde kart zıplamaz; link/tıklanabilir " +
+      "kart iskeletteyken etkileşimsizdir. Yüklenen bölgeye `aria-busy` vermek tüketicinin işidir.",
+    `
+<Card
+  skeleton={isLoading}
+  cover={<img src={cover} alt="" />}
+  title="Mobil uygulama v3"
+  extra={<Tag color="success">Yolunda</Tag>}
+  footer="Son güncelleme: 2 saat önce"
+  actions={[…]}
+>
+  …
+</Card>`
+  ),
+  render: () => {
+    const [skeleton, setSkeleton] = useState(true);
+    return (
+      <div className="mx-auto max-w-sm space-y-4" aria-busy={skeleton}>
+        <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
+        <Card
+          skeleton={skeleton}
+          cover={<ArtCover Icon={LaptopIcon} ratio="aspect-[16/9]" />}
+          title="Mobil uygulama v3"
+          extra={<Tag color="success">Yolunda</Tag>}
+          footer={<span className="text-sm text-mari-muted">Son güncelleme: 2 saat önce</span>}
+          actions={[
+            <Button key="e" variant="ghost" color="neutral" size="sm" aria-label="Düzenle" icon={<PencilIcon size={16} aria-hidden />} />,
+            <Button key="s" variant="ghost" color="neutral" size="sm" aria-label="Paylaş" icon={<Share2Icon size={16} aria-hidden />} />,
+          ]}
+        >
+          <p className="text-sm text-mari-foreground">iOS ve Android için yeniden yazılan uygulamanın üçüncü sürümü.</p>
+          <p className="mt-2 text-sm text-mari-muted">Teslim: 12 Eki</p>
+        </Card>
+      </div>
+    );
+  },
+};
+
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
   args: {

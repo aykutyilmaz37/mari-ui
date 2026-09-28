@@ -70,14 +70,27 @@ describe("Card", () => {
     expect(screen.getByRole("button", { name: "Sil" })).toBeInTheDocument();
   });
 
-  it("skeleton iken içerik yerine iskelet gösterilir, başlık korunur", () => {
-    render(
-      <Card title="Gelir" skeleton>
+  it("skeleton başlık, extra, gövde, footer ve actions'ı iskelete çevirir; içerik yer tutmak için görünmez kalır", () => {
+    const { container } = render(
+      <Card title="Gelir" extra={<a href="#t">Tümü</a>} footer="Güncellendi" actions={[<button key="d">Düzenle</button>]} skeleton>
         Gizli içerik
       </Card>
     );
-    expect(screen.getByText("Gelir")).toBeInTheDocument();
-    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+    for (const text of ["Gelir", "Tümü", "Gizli içerik", "Güncellendi", "Düzenle"]) {
+      const el = screen.getByText(text);
+      // Görünmez (yükseklik korunur, tab sırasından çıkar) ve ekran okuyucudan gizli.
+      expect(el.closest(".invisible")).not.toBeNull();
+      expect(el.closest("[aria-hidden='true']")).not.toBeNull();
+    }
+    // Her bölge için bir yer tutucu: başlık + extra + gövde + footer + 1 aksiyon.
+    expect(container.querySelectorAll(".invisible")).toHaveLength(5);
+  });
+
+  it("skeleton iken link/tıklanabilir kart etkileşimsizdir", () => {
+    const { rerender } = render(<Card href="/urun/1" skeleton>İçerik</Card>);
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    rerender(<Card onClick={() => {}} skeleton>İçerik</Card>);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("eski `loading` adı skeleton'ın takma adı olarak çalışmaya devam eder", () => {
@@ -86,7 +99,7 @@ describe("Card", () => {
         Gizli içerik
       </Card>
     );
-    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+    expect(screen.getByText("Gizli içerik").closest(".invisible")).not.toBeNull();
   });
 
   it("CardMeta avatar, başlık ve açıklama gösterir", () => {

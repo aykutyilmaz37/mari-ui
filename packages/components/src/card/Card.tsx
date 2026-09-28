@@ -1,10 +1,44 @@
 import React, { forwardRef } from "react";
 import { cn } from "@mari-ui/core";
-import { Skeleton } from "../skeleton";
+import { Skeleton, SkeletonBlock } from "../skeleton";
+import { skeletonFill } from "../lib/skeleton";
 import type { CardMetaProps, CardProps } from "./types";
 import { cardPadding, getBaseClassname } from "./utils";
 
 export type { CardProps, CardMetaProps };
+
+/**
+ * İskelette bir bölgeyi yer tutucuya çevirir: gerçek içerik `invisible` olarak
+ * aynı grid hücresinde kalır (yükseklik/genişlik korunur, tab sırasından çıkar),
+ * yer tutucu üstüne biner. İçerik yoksa (veri henüz gelmedi) kutuyu yer tutucu
+ * belirler — her iki durumda da yüklenince zıplama olmaz.
+ */
+function SkeletonSlot({
+  on,
+  placeholder,
+  flow = "block",
+  className,
+  children,
+}: {
+  on: boolean;
+  placeholder: React.ReactNode;
+  /**
+   * Bölgenin YÜKLÜ hâldeki akışı: flex bir ebeveynin (aksiyon hücresi, extra)
+   * içeriği flex öğesidir, blok ebeveyninki satır kutusuna girer. Görünmez
+   * kopya aynı akışta çizilmezse yükseklik 3-4px kayar (ölçüldü).
+   */
+  flow?: "block" | "flex";
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  if (!on) return <>{children}</>;
+  return (
+    <div aria-hidden className={cn("grid", className)}>
+      <div className={cn("invisible min-w-0 [grid-area:1/1]", flow === "flex" && "flex items-center")}>{children}</div>
+      <div className="[grid-area:1/1]">{placeholder}</div>
+    </div>
+  );
+}
 
 /**
  * Faz 13.6 — yapı ant.design Card'ından, görünüm kendi token'larımızdan.
@@ -48,11 +82,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       console.warn("[@mari-ui/components] Card: `styles` prop'u kaldırıldı. Stil için `classNames` kullanın.");
     }
 
-    const isLink = Boolean(href);
-    const isButton = !isLink && Boolean(onClick);
+    // İskeletteyken kart gezinmez/tıklanmaz: henüz var olmayan bir kaydın
+    // sayfasına gitmek ya da onClick'i veri yokken çağırmak yanlış.
+    const isLink = !skeleton && Boolean(href);
+    const isButton = !skeleton && !isLink && Boolean(onClick);
     const base = getBaseClassname({
       bordered,
-      hoverable: hoverable ?? isLink,
+      hoverable: !skeleton && (hoverable ?? isLink),
       interactive: isLink || isButton,
       size,
       inset,
@@ -70,29 +106,59 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <>
         {cover && (
           // Üst köşeleri karttan miras al — görsel yuvarlak kenardan taşmasın.
-          <div className={cn("overflow-hidden rounded-t-[inherit] [&_img]:block [&_img]:w-full [&_img]:object-cover", classNames?.cover)}>
-            {cover}
+          // İskelette kapak kendi kutusunu (en-boy oranı) korur, içi parıltı olur.
+          <div
+            className={cn(
+              "overflow-hidden rounded-t-[inherit] [&_img]:block [&_img]:w-full [&_img]:object-cover",
+              skeleton && skeletonFill(true),
+              classNames?.cover
+            )}
+            aria-hidden={skeleton || undefined}
+          >
+            {skeleton ? <div className="invisible">{cover}</div> : cover}
           </div>
         )}
 
         {(title || extra) && (
           <div className={cn("flex items-center gap-3 border-b border-mari-border", cardPadding.header(size), classNames?.header)}>
-            {title && <div className="min-w-0 flex-1 truncate font-heading font-semibold">{title}</div>}
-            {extra && <div className="ml-auto flex shrink-0 items-center text-sm">{extra}</div>}
+            {title && (
+              <div className="min-w-0 flex-1 truncate font-heading font-semibold">
+                <SkeletonSlot on={skeleton} className="items-center" placeholder={<SkeletonBlock active width="40%" height="1rem" radius="sm" />}>
+                  {title}
+                </SkeletonSlot>
+              </div>
+            )}
+            {extra && (
+              <div className="ml-auto flex shrink-0 items-center text-sm">
+                <SkeletonSlot on={skeleton} flow="flex" className="items-center justify-items-end" placeholder={<SkeletonBlock active width="3rem" height="0.75rem" radius="sm" />}>
+                  {extra}
+                </SkeletonSlot>
+              </div>
+            )}
           </div>
         )}
 
         <div className={cn("flex-1", cardPadding.body(size), classNames?.body)}>
-          {skeleton ? <Skeleton active title={false} paragraph={{ rows: 3 }} /> : children}
+          <SkeletonSlot on={skeleton} placeholder={<Skeleton active title={false} paragraph={{ rows: 3 }} />}>
+            {children}
+          </SkeletonSlot>
         </div>
 
-        {footer && <div className={cn("border-t border-mari-border", cardPadding.footer(size), classNames?.footer)}>{footer}</div>}
+        {footer && (
+          <div className={cn("border-t border-mari-border", cardPadding.footer(size), classNames?.footer)}>
+            <SkeletonSlot on={skeleton} className="items-center" placeholder={<SkeletonBlock active width="45%" height="0.75rem" radius="sm" />}>
+              {footer}
+            </SkeletonSlot>
+          </div>
+        )}
 
         {actions && actions.length > 0 && (
           <ul className={cn("flex divide-x divide-mari-border border-t border-mari-border", classNames?.actions)}>
             {actions.map((action, i) => (
               <li key={i} className={cn("flex min-w-0 flex-1 items-center justify-center", cardPadding.action(size))}>
-                {action}
+                <SkeletonSlot on={skeleton} flow="flex" className="place-items-center" placeholder={<SkeletonBlock active width="2.5rem" height="0.75rem" radius="full" />}>
+                  {action}
+                </SkeletonSlot>
               </li>
             ))}
           </ul>
