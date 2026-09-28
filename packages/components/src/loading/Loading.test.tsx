@@ -13,9 +13,28 @@ describe("Loading", () => {
     expect(status.className).not.toContain("fixed");
   });
 
-  it("fullscreen: sabit örtü", () => {
-    render(<Loading fullscreen />);
-    expect(screen.getByRole("status", { name: "Yükleniyor" }).className).toContain("fixed");
+  it("fullscreen: body'ye portal edilmiş sabit örtü (transform'lu atanın içinde de ekranı kaplar)", () => {
+    const { container } = render(
+      <div style={{ transform: "translateX(0)" }}>
+        <Loading fullscreen />
+      </div>
+    );
+    const overlay = screen.getByRole("status", { name: "Yükleniyor" });
+    expect(overlay.className).toContain("fixed");
+    expect(container.contains(overlay)).toBe(false);
+    expect(overlay.parentElement).toBe(document.body);
+  });
+
+  it("spinner boyutu rem (px kök fontla ölçeklenmiyordu)", () => {
+    const { container } = render(<Loading size="lg" />);
+    const svg = container.querySelector("svg")!;
+    expect(svg.style.width).toBe("2.5rem");
+    expect(svg).not.toHaveAttribute("width");
+  });
+
+  it("aria-valuenow 0-100 aralığına sınırlanır", () => {
+    render(<Loading percent={150} tip="Yükleniyor" />);
+    expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
   });
 
   it("spinning=false iken satır içi/tam ekran hiçbir şey render etmez", () => {
