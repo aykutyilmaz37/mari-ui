@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { MariLogo } from "../../logo";
 import { HeadphonesIcon, HomeIcon, LaptopIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon, UserIcon } from "lucide-react";
 import { MegaMenu } from "./MegaMenu";
 import type { MenuItemType } from "../types";
@@ -158,7 +159,7 @@ export const RealWorldEcommerce: Story = {
   args: {
     data: ecommerceData,
     menuItemJustify: "left",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
+    logo: <MariLogo size={36} />,
     actions: (
       <>
         <Button variant="ghost" color="neutral">
@@ -193,7 +194,7 @@ export const EcommerceNoPromo: Story = {
       children: item.children?.map((child) => ({ ...child, promoTiles: undefined })),
     })),
     menuItemJustify: "left",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
+    logo: <MariLogo size={36} />,
   },
 };
 
@@ -210,6 +211,6 @@ export const StickyPosition: Story = {
     data: ecommerceData,
     menuItemJustify: "left",
     menuPosition: "sticky",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
+    logo: <MariLogo size={36} />,
   },
 };

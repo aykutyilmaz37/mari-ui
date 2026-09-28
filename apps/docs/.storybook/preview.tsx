@@ -35,7 +35,7 @@ const preview: Preview = {
         order: [
           "Genel Bakış",
           "Foundations",
-          ["Yumuşak İris", "Renkler", "Tipografi", "Spacing", "Elevation"],
+          ["Yumuşak İris", "Marka", "Renkler", "Tipografi", "Spacing", "Elevation"],
           "Genel",
           "Navigasyon",
           "Veri Girişi",

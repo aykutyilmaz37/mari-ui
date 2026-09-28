@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { MariLogo } from "../../logo";
 import { BarChart3Icon, LayoutDashboardIcon, LifeBuoyIcon, MenuIcon, PackageIcon, ReceiptIcon, SettingsIcon, ShoppingCartIcon, UserIcon, UsersIcon } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import type { MenuItemType } from "../types";
@@ -175,7 +176,7 @@ const amazonData: MenuItemType[] = [
   { key: "sign-out", title: "Çıkış Yap", route: "/sign-out" },
 ];
 
-const brandLogo = <span className="text-lg font-bold text-mari-primary">Mari</span>;
+const brandLogo = <MariLogo size={36} />;
 
 const meta: Meta<typeof Sidebar> = {
   title: "Navigasyon/Sidebar",
@@ -267,7 +268,7 @@ export const OnlyIconRail: Story = {
     "`onlyIcon`: ray hiç genişlemez; alt menüsü olan öğeler rayın yanında panel açar (akordeon rayda anlamsız olurdu). " +
       "Etiket, üzerine gelince `title` ipucu olarak görünür."
   ),
-  args: { onlyIcon: true, logo: <span className="text-lg font-bold text-mari-primary">M</span> },
+  args: { onlyIcon: true, logo: <MariLogo variant="mark" size={40} /> },
 };
 
 export const ClickLeft: Story = {

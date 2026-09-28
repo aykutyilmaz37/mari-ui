@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { MariLogo } from "../../logo";
 import { BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
 import { BasicMenu } from "./BasicMenu";
 import type { MenuItemType } from "../types";
@@ -114,7 +115,7 @@ export const RealWorldEcommerce: Story = {
   args: {
     data: ecommerceData,
     menuItemJustify: "center",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
+    logo: <MariLogo size={36} />,
     actions: (
       <>
         <Button variant="ghost" color="neutral">
@@ -160,7 +161,7 @@ export const RealWorldCorporate: Story = {
   args: {
     data: corporateData,
     menuItemJustify: "left",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari Ajans</span>,
+    logo: <MariLogo size={36} />,
     // Navbar'daki tek CTA sayfanın en yüksek vurgulu öğesi olmalı — `solid`.
     // `outline`/`ghost` daha düşük vurgulu ikincil eylemler içindir (bkz.
     // e-ticaret story'sindeki "Giriş Yap").
@@ -183,7 +184,7 @@ export const ActiveFromCurrentPath: Story = {
     data: ecommerceData,
     menuItemJustify: "center",
     currentPath: "/products/electronics",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
+    logo: <MariLogo size={36} />,
   },
 };
 
@@ -200,6 +201,6 @@ export const StickyPosition: Story = {
     data: ecommerceData,
     menuItemJustify: "center",
     menuPosition: "sticky",
-    logo: <span className="text-lg font-bold text-mari-primary">Mari</span>,
+    logo: <MariLogo size={36} />,
   },
 };
