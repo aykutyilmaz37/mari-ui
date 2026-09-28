@@ -2,6 +2,7 @@ import React from "react";
 import { PanelLeftCloseIcon, PanelLeftOpenIcon, PanelRightCloseIcon, PanelRightOpenIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import type { SidebarPosition } from "../../types";
+import { touchTargetSquareClass } from "../../../lib/sizeClasses";
 
 export interface SidebarButtonProps {
   position: SidebarPosition;
@@ -29,7 +30,9 @@ export function SidebarButton({ position, setVisible, visible, controlsId }: Sid
       aria-controls={controlsId}
       onClick={() => setVisible(!visible)}
       className={cn(
-        "mt-3 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center self-start border border-mari-border bg-mari-surface text-mari-muted shadow-mari-sm transition-colors hover:bg-mari-surface-alt hover:text-mari-foreground",
+        "relative mt-3 inline-flex size-9 shrink-0",
+        touchTargetSquareClass.md,
+        " cursor-pointer items-center justify-center self-start border border-mari-border bg-mari-surface text-mari-muted shadow-mari-sm transition-colors hover:bg-mari-surface-alt hover:text-mari-foreground",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
         isLeft ? "rounded-r-lg border-l-0" : "rounded-l-lg border-r-0"
       )}

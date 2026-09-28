@@ -5,13 +5,17 @@ import { cn } from "@mari-ui/core";
 import { NavDrawer } from "../_shared/NavDrawer";
 import { useHoverIntent } from "../_shared/useHoverIntent";
 import type { MenuColorProps, MenuItemType, MenuNavigationProps, SidebarPosition, SidebarVariant } from "../types";
-import { findActiveKeyByRoute, getSidebarWidthClass, navigateTo } from "../utils";
+import { findActiveKeyByRoute, getSidebarWidthClass } from "../utils";
+import { MenuLink } from "../_shared/MenuLink";
+import { getFocusable, getRovingTarget } from "../../dropdown/utils";
+import { SkeletonSlot } from "../../lib/SkeletonSlot";
+import { skeletonFill, type SkeletonableProps } from "../../lib/skeleton";
 import { SidebarButton } from "./_components/SidebarButton";
 import { SidebarMegaPanel } from "./_components/SidebarMegaPanel";
 import { SidebarMenu } from "./_components/SidebarMenu";
 import type { SidebarSubMode } from "./_components/SidebarItem";
 
-export interface SidebarProps extends MenuNavigationProps, MenuColorProps {
+export interface SidebarProps extends MenuNavigationProps, MenuColorProps, SkeletonableProps {
   data: MenuItemType[];
   /**
    * - `"hover"`: 64px ikon rayı, üzerine gelince (veya klavyeyle odaklanınca) 256px'e genişler.
@@ -31,7 +35,12 @@ export interface SidebarProps extends MenuNavigationProps, MenuColorProps {
    * kütüphanenin varsayılanı olarak marka varlığı barındırmak yanlıştı
    * (bkz. plan denetimi). Artık verilmezse hiç logo render edilmez. */
   logo?: React.ReactNode;
+  /** Verilirse logo bu adrese giden gerçek bir link olur (genelde `"/"`). */
+  logoHref?: string;
+  /** Logo bir düğme olarak davranır (`logoHref` yoksa). İkisi de yoksa logo etkileşimsizdir. */
   onLogoClick?: () => void;
+  /** Etkileşimli logonun erişilebilir adı. Varsayılan "Ana sayfa". */
+  logoLabel?: string;
   /**
    * Menünün üstünde render edilen keyfi içerik. `variant="drawer"`da Amazon'daki
    * "Merhaba, {isim}" bandı olur (rol renginin dolgusuyla). Sidebar tüketicinin
@@ -64,6 +73,13 @@ const MEGA_CLOSE_DELAY_MS = 200;
  *   tetikleyici. `mega` 2 seviyeli veride anlamsız bir "chip" şeridi
  *   gösteriyordu → düz veride açıklamalı satırlar, 3 seviyede ray + kolonlar.
  * - Amazon örneği → `variant="drawer"` (bkz. `NavDrawer`).
+ *
+ * Faz 15.5: yaprak satırlar gerçek link (`MenuLink`: `target`/`reloadDocument`,
+ * `onNavigate` yalnız düz sol tıkı yakalar). Satırlar arasında ↑/↓/Home/End/harf.
+ * `mega` paneli odakla açılmıyor (Tab ile gezerken her satırda açılıyordu):
+ * hover ya da Enter/Boşluk/→ açar ve odağı panele taşır; panelde ok tuşları,
+ * Escape satıra döndürür, dışarı tıklama kapatır. Logo `logoHref` ile link.
+ * `skeleton`: logo, başlık ve kök satırlar (ikon + metin çubuğu) yer tutucu.
  */
 export function Sidebar({
   data,
@@ -73,7 +89,9 @@ export function Sidebar({
   dropdown = false,
   mega = false,
   logo,
+  logoHref,
   onLogoClick,
+  logoLabel = "Ana sayfa",
   header,
   open = false,
   onOpenChange,
@@ -81,6 +99,7 @@ export function Sidebar({
   color = "primary",
   onNavigate,
   currentPath,
+  skeleton = false,
 }: SidebarProps) {
   const [expanded, setExpanded] = useState(false);
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -116,32 +135,86 @@ export function Sidebar({
   const [megaFocusRequest, setMegaFocusRequest] = useState(0);
   useEffect(() => {
     if (megaFocusRequest === 0) return;
-    megaPanelRef.current?.querySelector<HTMLElement>("button:not([disabled]), a[href]")?.focus();
+    const panel = megaPanelRef.current;
+    // Seçili ray öğesi (aktif sayfanın kategorisi) varsa ona — ilk öğeye odaklanmak rayı ona çevirirdi.
+    (panel?.querySelector<HTMLElement>("[data-selected]") ?? getFocusable(panel)[0])?.focus();
   }, [megaFocusRequest]);
 
-  // Mega panel açıkken Escape kapatır; odak paneldeyse kendi kök satırına döner.
+  // Mega panel açıkken: Escape kapatır (odak paneldeyse kök satırına döner),
+  // panelde ↑/↓/Home/End/harf gezinir, dışarı tıklama kapatır.
   useEffect(() => {
     if (!megaKey) return;
+    const focusRow = () =>
+      Array.from(wrapperRef.current?.querySelectorAll<HTMLElement>("[data-sidebar-key]") ?? [])
+        .find((row) => row.dataset.sidebarKey === megaKey)
+        ?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      const focusInPanel = !!megaPanelRef.current?.contains(document.activeElement);
-      setMegaKey(null);
-      if (focusInPanel) {
-        const rows = wrapperRef.current?.querySelectorAll<HTMLElement>("[data-sidebar-key]") ?? [];
-        Array.from(rows)
-          .find((row) => row.dataset.sidebarKey === megaKey)
-          ?.focus();
+      const panel = megaPanelRef.current;
+      const focusInPanel = !!panel?.contains(document.activeElement);
+      if (event.key === "Escape") {
+        setMegaKey(null);
+        if (focusInPanel) focusRow();
+        return;
       }
+      if (!focusInPanel || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = getRovingTarget(getFocusable(panel), document.activeElement, event.key);
+      if (!target) return;
+      event.preventDefault();
+      target.focus();
+    };
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) setMegaKey(null);
     };
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
   }, [megaKey]);
 
+  // Satırlar arasında ↑/↓/Home/End/harf (Tab sırası da çalışmaya devam eder).
+  // Kapalı akordeonun içindeki satırlar `tabIndex=-1` olduğundan atlanır.
+  const navRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = getRovingTarget(getFocusable(nav), document.activeElement, event.key);
+      if (!target) return;
+      event.preventDefault();
+      target.focus();
+    };
+    nav.addEventListener("keydown", handleKeyDown);
+    return () => nav.removeEventListener("keydown", handleKeyDown);
+  }, [variant]);
+
+  // Gezinmenin kendisi `MenuLink`te; burada yalnızca seçim işlenir.
   const handleSelect = (item: MenuItemType) => {
     setActiveKey(item.key);
     setMegaKey(null);
-    navigateTo(item.route, onNavigate);
   };
+
+  const logoClass = "flex shrink-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring";
+  let logoNode: React.ReactNode = null;
+  if (logo && logoHref) {
+    logoNode = (
+      <MenuLink route={logoHref} onNavigate={onNavigate} className={logoClass}>
+        <span className="sr-only">{logoLabel}</span>
+        <span aria-hidden="true">{logo}</span>
+      </MenuLink>
+    );
+  } else if (logo && onLogoClick) {
+    logoNode = (
+      <button type="button" aria-label={logoLabel} className={cn(logoClass, "cursor-pointer")} onClick={onLogoClick}>
+        {logo}
+      </button>
+    );
+  } else if (logo) {
+    logoNode = <div className="flex shrink-0 items-center">{logo}</div>;
+  }
+  const blockPlaceholder = <span className={cn("block size-full min-h-8 rounded-md", skeletonFill(true))} />;
 
   if (variant === "drawer") {
     return (
@@ -201,15 +274,21 @@ export function Sidebar({
           getSidebarWidthClass(variant, expanded, onlyIcon)
         )}
       >
-        {header && <div className="shrink-0 overflow-hidden border-b border-mari-border px-2 py-2 whitespace-nowrap">{header}</div>}
-        {logo && (
-          <div className="flex h-14 shrink-0 items-center overflow-hidden border-b border-mari-border px-4">
-            <button type="button" className="flex shrink-0 cursor-pointer items-center" onClick={onLogoClick}>
-              {logo}
-            </button>
+        {header && (
+          <div className="shrink-0 overflow-hidden border-b border-mari-border px-2 py-2 whitespace-nowrap">
+            <SkeletonSlot on={skeleton} placeholder={blockPlaceholder}>
+              {header}
+            </SkeletonSlot>
           </div>
         )}
-        <nav aria-label={label} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 py-3">
+        {logoNode && (
+          <div className="flex h-14 shrink-0 items-center overflow-hidden border-b border-mari-border px-4">
+            <SkeletonSlot on={skeleton} placeholder={blockPlaceholder}>
+              {logoNode}
+            </SkeletonSlot>
+          </div>
+        )}
+        <nav ref={navRef} aria-label={label} aria-busy={skeleton || undefined} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-2 py-3">
           <SidebarMenu
             data={data}
             level={0}
@@ -221,6 +300,7 @@ export function Sidebar({
             collapsed={collapsed}
             showMonogram={railCapable || onlyIcon}
             tabbable
+            skeleton={skeleton}
             position={position}
             megaKey={megaKey}
             onMegaOpen={(item, fromKeyboard) => {

@@ -21,6 +21,11 @@ export interface MenuLinkProps extends LinkBehaviorProps {
   "data-menu-key"?: string;
   /** Seçili ray öğesi — klavyeyle açılan panelde odak buraya gelir. */
   "data-selected"?: boolean;
+  "data-sidebar-key"?: string;
+  /** Kapalı akordeonun içindeki satırlar Tab sırasından çıkar (`-1`). */
+  tabIndex?: number;
+  /** Daraltılmış rayda tam başlık ipucu. */
+  title?: string;
 }
 
 /**

@@ -9,6 +9,10 @@ import { SubMenuPanelBody, getSubMenuPanelWidthClass } from "../../basic-menu/_c
 import type { MenuItemType, MenuNavigationProps, SidebarPosition } from "../../types";
 import { isMenuItemActive } from "../../utils";
 import { SidebarMenu } from "./SidebarMenu";
+import { MenuLink } from "../../_shared/MenuLink";
+import { SkeletonSlot } from "../../../lib/SkeletonSlot";
+import { skeletonFill } from "../../../lib/skeleton";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 /** Alt öğelerin nasıl açıldığı — `Sidebar` prop'larından türetilir. */
 export type SidebarSubMode = "accordion" | "dropdown" | "mega";
@@ -18,7 +22,7 @@ export interface SidebarItemProps extends MenuNavigationProps {
   /** 0 = kök seviye. İç seviyeler her zaman akordeon + girintili. */
   level: number;
   activeKey: string | null;
-  /** Yaprak seçildi: aktif öğeyi günceller + `navigateTo`. */
+  /** Yaprak seçildi (gezinmeden önce): aktif öğeyi günceller, açık paneli kapatır. Gezinme `MenuLink`te. */
   onSelect: (item: MenuItemType) => void;
   /** Sadece aktif anahtarı günceller — kendi navigasyonunu yapan paneller (dropdown) için. */
   setActiveKey: (key: string) => void;
@@ -38,6 +42,8 @@ export interface SidebarItemProps extends MenuNavigationProps {
   /** `fromKeyboard`: Enter/Boşluk ile açıldı — odak panele taşınsın. */
   onMegaOpen: (item: MenuItemType, fromKeyboard?: boolean) => void;
   onMegaClose: () => void;
+  /** Satırlar ikon + metin çubuğu biçiminde yer tutucu; alt öğeler kapalı. */
+  skeleton: boolean;
 }
 
 /** Kök altındaki kılavuz çizgisi ikonun ortasından (24px), daha derin seviyeler üst satırın metin başından (12px) iner. */
@@ -110,11 +116,34 @@ function RowContent({ item, collapsed, reserveIconSlot, position, showMonogram, 
     <>
       <ItemIcon item={item} showMonogram={showMonogram} reserveIconSlot={reserveIconSlot} />
       <span className={cn("min-w-0 flex-1 truncate transition-opacity duration-150", collapsed ? "opacity-0" : "opacity-100")}>{item.title}</span>
+      {!collapsed && <NewTabHint target={item.target} />}
       {chevron === "accordion" && (
         <ChevronDownIcon aria-hidden="true" size={16} className={cn("shrink-0 text-mari-muted transition-transform duration-200", open && "rotate-180", collapsed && "hidden")} />
       )}
       {chevron === "flyout" && <FlyoutChevron aria-hidden="true" size={16} className={cn("shrink-0 text-mari-muted", collapsed && "hidden")} />}
     </>
+  );
+}
+
+/** İskelet satırı: satırın kendi kutusunda ikon karesi + metin çubuğu (daraltılmış rayda yalnızca ikon). */
+function RowPlaceholder({ level, collapsed, hasIcon }: { level: number; collapsed: boolean; hasIcon: boolean }) {
+  return (
+    <span className={cn("flex h-full items-center gap-3", level === 0 ? "px-3.5" : "px-3")}>
+      {hasIcon && <span className={cn("size-5 shrink-0 rounded-sm", skeletonFill(true))} />}
+      {!collapsed && <span className={cn("h-3 flex-1 rounded-sm", skeletonFill(true))} />}
+    </span>
+  );
+}
+
+/** Satırı iskelette yer tutucuya çevirir; gerçek satır görünmez olarak kalır → yüklenince zıplamaz. */
+function RowSlot({ props, level, children }: { props: SidebarItemProps; level: number; children: React.ReactNode }) {
+  const { skeleton, collapsed, item, showMonogram, reserveIconSlot } = props;
+  // Satırın gerçek ikon yuvasıyla aynı: ikon, rayda baş harf ya da kardeşler için ayrılmış boşluk.
+  const hasIcon = !!item.icon || (showMonogram && level === 0) || reserveIconSlot || collapsed;
+  return (
+    <SkeletonSlot on={skeleton} placeholder={<RowPlaceholder level={level} collapsed={collapsed} hasIcon={hasIcon} />}>
+      {children}
+    </SkeletonSlot>
   );
 }
 
@@ -131,6 +160,7 @@ function SidebarDropdownItem(props: SidebarItemProps) {
 
   return (
     <li>
+      <RowSlot props={props} level={0}>
       <Dropdown hover className="block self-auto">
         <DropdownTrigger className={cn(rowClass, "aria-expanded:bg-mari-surface-alt")}>
           <RowContent {...props} showMonogram={showMonogram} chevron="flyout" />
@@ -143,6 +173,7 @@ function SidebarDropdownItem(props: SidebarItemProps) {
           <SubMenuPanelBody items={children} activeKey={activeKey} setActiveKey={setActiveKey} color={color} onNavigate={onNavigate} currentPath={currentPath} />
         </DropdownContent>
       </Dropdown>
+      </RowSlot>
     </li>
   );
 }
@@ -165,43 +196,71 @@ export function SidebarItem(props: SidebarItemProps) {
   return mode === "mega" ? <SidebarMegaItem {...props} /> : <SidebarAccordionItem {...props} />;
 }
 
-/** `mega` modunun kök satırı: hover/odak paneli açar, Enter odağı panele taşır. */
+/**
+ * `mega` modunun kök satırı. Faz 15.5: panel artık ODAKLA açılmıyor (Tab ile
+ * gezerken her satırda panel açılıyordu) — fareyle üzerine gelince, ya da
+ * Enter/Boşluk/→ (sağdaki sidebar'da ←) ile açılır ve odak panele taşınır.
+ * Çocuksuz satır gerçek bir link.
+ */
 function SidebarMegaItem(props: SidebarItemProps) {
-  const { item, activeKey, color, collapsed, showMonogram, megaKey, onMegaOpen, onMegaClose, onSelect } = props;
+  const { item, activeKey, color, collapsed, showMonogram, megaKey, onMegaOpen, onMegaClose, onSelect, onNavigate, position } = props;
   const hasChildren = !!item.children?.length;
   const containsActive = isMenuItemActive(item, activeKey);
   const isActiveLeaf = !hasChildren && item.key === activeKey;
   const isOpen = megaKey === item.key;
-  const hoverOrFocus = item.disabled ? undefined : () => (hasChildren ? onMegaOpen(item) : onMegaClose());
+  const rowClass = getRowClass({ level: 0, collapsed, disabled: item.disabled, highlighted: isActiveLeaf || isOpen || (collapsed && containsActive), containsActive, color });
+  const openKey = position === "left" ? "ArrowRight" : "ArrowLeft";
 
   return (
     <li>
-      <button
-        type="button"
-        data-sidebar-key={item.key}
-        disabled={item.disabled}
-        aria-expanded={hasChildren ? isOpen : undefined}
-        aria-current={isActiveLeaf ? "page" : undefined}
-        title={collapsed ? item.title : undefined}
-        onMouseEnter={hoverOrFocus}
-        onFocus={hoverOrFocus}
-        onClick={(event) => {
-          if (item.disabled) return;
-          // `detail === 0`: click'i fare değil klavye üretti.
-          if (hasChildren) onMegaOpen(item, event.detail === 0);
-          else onSelect(item);
-        }}
-        className={getRowClass({ level: 0, collapsed, disabled: item.disabled, highlighted: isActiveLeaf || isOpen || (collapsed && containsActive), containsActive, color })}
-      >
-        <RowContent {...props} showMonogram={showMonogram} chevron={hasChildren ? "flyout" : undefined} />
-      </button>
+      <RowSlot props={props} level={0}>
+        {hasChildren ? (
+          <button
+            type="button"
+            data-sidebar-key={item.key}
+            disabled={item.disabled}
+            aria-expanded={isOpen}
+            title={collapsed ? item.title : undefined}
+            onMouseEnter={item.disabled ? undefined : () => onMegaOpen(item)}
+            onClick={(event) => {
+              // `detail === 0`: click'i fare değil klavye üretti → odak panele.
+              if (!item.disabled) onMegaOpen(item, event.detail === 0);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== openKey || item.disabled) return;
+              event.preventDefault();
+              onMegaOpen(item, true);
+            }}
+            className={rowClass}
+          >
+            <RowContent {...props} showMonogram={showMonogram} chevron="flyout" />
+          </button>
+        ) : (
+          <MenuLink
+            route={item.route}
+            target={item.target}
+            reloadDocument={item.reloadDocument}
+            onNavigate={onNavigate}
+            disabled={item.disabled}
+            current={isActiveLeaf}
+            data-sidebar-key={item.key}
+            title={collapsed ? item.title : undefined}
+            onMouseEnter={item.disabled ? undefined : onMegaClose}
+            onSelect={() => onSelect(item)}
+            className={rowClass}
+          >
+            <RowContent {...props} showMonogram={showMonogram} />
+          </MenuLink>
+        )}
+      </RowSlot>
     </li>
   );
 }
 
 /** Varsayılan mod: alt öğeler satırın altında girintili bir akordeonla açılır. */
 function SidebarAccordionItem(props: SidebarItemProps) {
-  const { item, level, activeKey, onSelect, color, collapsed, showMonogram, tabbable, position, ...shared } = props;
+  const { item, level, activeKey, onSelect, color, collapsed, showMonogram, tabbable, position, skeleton, ...shared } = props;
+  const { onNavigate } = props;
   const hasChildren = !!item.children?.length;
   const containsActive = isMenuItemActive(item, activeKey);
   const isActiveLeaf = !hasChildren && item.key === activeKey;
@@ -212,27 +271,44 @@ function SidebarAccordionItem(props: SidebarItemProps) {
     if (hasChildren && containsActive) setOpen(true);
   }, [hasChildren, containsActive]);
 
+  // İskelette gruplar yüklü hâldeki gibi açık/kapalı kalır (iç satırlar da yer tutucu) → yüklenince zıplama yok.
   const expandedBody = open && !collapsed;
+  const rowClass = getRowClass({ level, collapsed, disabled: item.disabled, highlighted: isActiveLeaf || (collapsed && containsActive), containsActive, color });
 
   return (
     <li>
-      <button
-        type="button"
-        data-sidebar-key={item.key}
-        disabled={item.disabled}
-        tabIndex={tabbable ? undefined : -1}
-        aria-expanded={hasChildren ? open : undefined}
-        aria-current={isActiveLeaf ? "page" : undefined}
-        title={collapsed ? item.title : undefined}
-        onClick={() => {
-          if (item.disabled) return;
-          if (hasChildren) setOpen((prev) => !prev);
-          else onSelect(item);
-        }}
-        className={getRowClass({ level, collapsed, disabled: item.disabled, highlighted: isActiveLeaf || (collapsed && containsActive), containsActive, color })}
-      >
-        <RowContent {...props} showMonogram={showMonogram && level === 0} chevron={hasChildren ? "accordion" : undefined} open={open} />
-      </button>
+      <RowSlot props={props} level={level}>
+        {hasChildren ? (
+          <button
+            type="button"
+            data-sidebar-key={item.key}
+            disabled={item.disabled}
+            tabIndex={tabbable ? undefined : -1}
+            aria-expanded={open}
+            title={collapsed ? item.title : undefined}
+            onClick={() => !item.disabled && setOpen((prev) => !prev)}
+            className={rowClass}
+          >
+            <RowContent {...props} showMonogram={showMonogram && level === 0} chevron="accordion" open={open} />
+          </button>
+        ) : (
+          <MenuLink
+            route={item.route}
+            target={item.target}
+            reloadDocument={item.reloadDocument}
+            onNavigate={onNavigate}
+            disabled={item.disabled}
+            current={isActiveLeaf}
+            data-sidebar-key={item.key}
+            tabIndex={tabbable ? undefined : -1}
+            title={collapsed ? item.title : undefined}
+            onSelect={() => onSelect(item)}
+            className={rowClass}
+          >
+            <RowContent {...props} showMonogram={showMonogram && level === 0} />
+          </MenuLink>
+        )}
+      </RowSlot>
 
       {hasChildren && (
         // Yükseklik `grid-template-rows` 0fr→1fr ile animasyonlu: içerik ne kadar
@@ -247,6 +323,7 @@ function SidebarAccordionItem(props: SidebarItemProps) {
               collapsed={collapsed}
               showMonogram={showMonogram}
               position={position}
+              skeleton={skeleton}
               data={item.children ?? []}
               level={level + 1}
               tabbable={tabbable && expandedBody}

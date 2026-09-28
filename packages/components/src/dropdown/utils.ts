@@ -6,7 +6,9 @@ export { computePanelPosition, parsePlacement } from "../lib/floating";
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function getFocusable(root: HTMLElement | null): HTMLElement[] {
-  return root ? Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : [];
+  // `tabIndex < 0`: seçici `a[href]`/`button` ile eşleşse de Tab sırasından bilerek çıkarılmış
+  // (kapalı akordeonun satırları gibi) — ok tuşu gezinmesi de onları atlamalı.
+  return root ? Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((el) => el.tabIndex >= 0) : [];
 }
 
 /**
