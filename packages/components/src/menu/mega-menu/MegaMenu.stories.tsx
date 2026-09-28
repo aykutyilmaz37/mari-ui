@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { MariLogo } from "../../logo";
 import { HeadphonesIcon, HomeIcon, LaptopIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon, UserIcon } from "lucide-react";
@@ -21,20 +22,20 @@ const meta: Meta<typeof MegaMenu> = {
       description: {
         component: componentDoc({
           summary:
-            "`BasicMenu`nun genişletilmiş hâli: `children`'ı olan öğeler üzerine gelindiğinde (hover) tam genişlikte " +
-            "bir alt panel (mega menu) açar — sol tarafta kategori rayı, sağda seçili kategorinin çok kolonlu grupları " +
-            "ve (varsa) promosyon kartları (bkz. `MegaPanel`, `menu/_shared`). `onNavigate` verilmezse `window.location.href` " +
-            "ile tam sayfa geçiş yapar.",
+            "`BasicMenu`nun genişletilmiş hâli: `children`'ı olan öğeler tam genişlikte bir alt panel (mega menu) açar — " +
+            "solda kategori rayı, sağda seçili kategorinin çok kolonlu grupları ve (varsa) promosyon kartları. Tüm öğeler " +
+            "gerçek `<a href>`; sayfa yenilenmeden geçiş için `onNavigate`e router'ınızın gezinme fonksiyonunu verin " +
+            "(Next: `router.push`, React Router: `navigate`). Öğe bazında `target`/`reloadDocument` router'ı atlar.",
           whenToUse: ["Gerçek bir e-ticaret kategori mega menüsü gerektiğinde: çok sayıda kategori, her birinin kendi alt gruplandırması ve isteğe bağlı görsel promosyonlar."],
+          whenNotToUse: ["Birkaç düz alt sayfa için — `BasicMenu`nün tetikleyiciye sabit paneli yeterli."],
           a11y:
-            "Her üst öğe gerçek bir `<button>` (Button component'i) — BasicMenu'yle AYNI görsel dil: hover/aktifte " +
-            "sadece metin/alt çizgi rengi değişir (rezerve edilmiş `border-b-2`, jitter yok), primary renk arka " +
-            "plan olarak KULLANILMAZ. Alt panel üst öğe düğmesi klavyeyle odaklanınca (`onFocus`) da açılır, odak " +
-            "ayrılınca (`onBlur`) kapanır. Panel açıkken **Escape** kapatır. Panel içeriği (ray/kolon/promosyon " +
-            "satırları) gerçek `menuitem`ler değil, bu yüzden sarmalayıcılara `role=\"menuitem\"`/`role=\"menu\"` UYGULANMAZ " +
-            "(kod tabanının geri kalanıyla aynı, belgelenmiş karar). `mobileBreakpoint` altında hover'a dayalı panel yerine " +
-            "hamburger + kademeli (drill-down) bir `role=\"dialog\"` çekmece gelir: odak içeri taşınır ve içinde döner, " +
-            "seviye değişince odak geri düğmesine / girilen satıra geçer, Escape/scrim kapatır.",
+            "Öğeler `<nav aria-label=\"Ana menü\">` içinde bir liste. Çocuklu öğe bir açma düğmesi (`aria-expanded`, " +
+            "`aria-controls` → panelin `region`ı): fareyle üzerine gelince açılır; **Enter/Boşluk/↓** açıp odağı panelin " +
+            "ilk öğesine taşır (Tab ile gezerken panel kendiliğinden açılmaz). Panelde **↑/↓/Home/End** ve harf tuşlarıyla " +
+            "gezilir, **Escape** kapatıp odağı tetikleyiciye döndürür; panelin sonundan **Tab** bir sonraki üst öğeye geçer. " +
+            "Kapalı panel görünmezdir, linkleri Tab sırasına girmez. `currentPath` eşleşen öğe alt çizgiyle vurgulanır, " +
+            "panel o kategoriyle açılır, link `aria-current=\"page\"` taşır. `mobileBreakpoint` altında hamburger + " +
+            "kademeli `role=\"dialog\"` çekmece.",
         }),
       },
     },
@@ -44,6 +45,11 @@ const meta: Meta<typeof MegaMenu> = {
     menuItemJustify: { control: "select", options: ["left", "center", "right"], description: "Menü öğelerinin yatay hizalanması." },
     menuPosition: { control: "select", options: ["default", "sticky", "fixed"], description: "Menünün sayfa kaydırmasına göre konumlanma davranışı." },
     actions: { control: false, description: "Sağ tarafta gösterilecek keyfi içerik (örn. \"Giriş Yap\" düğmesi, sepet ikonu)." },
+    currentPath: { control: "text", description: "Aktif sayfa — eşleşen üst öğe vurgulanır, panel o kategoriyle açılır." },
+    logoHref: { control: "text", description: "Logoyu bu adrese giden bir link yapar (genelde `/`)." },
+    logoLabel: { control: "text", description: "Etkileşimli logonun erişilebilir adı.", table: { defaultValue: { summary: '"Ana sayfa"' } } },
+    skeleton: { control: "boolean", description: "Logo, öğeler ve `actions` yer tutucu.", table: { defaultValue: { summary: "false" } } },
+    "aria-label": { control: "text", description: "`<nav>`ın erişilebilir adı.", table: { defaultValue: { summary: '"Ana menü"' } } },
   },
   args: {
     onNavigate: () => {},
@@ -160,6 +166,7 @@ export const RealWorldEcommerce: Story = {
     data: ecommerceData,
     menuItemJustify: "left",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
     actions: (
       <>
         <Button variant="ghost" color="neutral">
@@ -195,12 +202,19 @@ export const EcommerceNoPromo: Story = {
     })),
     menuItemJustify: "left",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
   },
 };
 
 export const StickyPosition: Story = {
   name: "Yapışkan (Sticky) Konum",
-  ...storyDoc("Sayfa kaydırılırken üstte yapışık kalır — aşağı kaydırın."),
+  ...storyDoc(
+    "Sayfa kaydırılırken üstte yapışık kalır — aşağı kaydırın. Panel body'ye portal edilir ve çubuğun gerçek " +
+      "konumunu izler; kaydırılan kapsayıcı onu kırpmaz.",
+    `
+<MegaMenu data={data} menuPosition="sticky" logo={<MariLogo size={36} />} logoHref="/" />
+<main>…</main>`
+  ),
   render: (args) => (
     <div className="h-96 overflow-y-auto">
       <MegaMenu {...args} />
@@ -212,5 +226,44 @@ export const StickyPosition: Story = {
     menuItemJustify: "left",
     menuPosition: "sticky",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
   },
 };
+
+/** "Elektronik > Ses & Görüntü > Kulaklık > JBL" — ray'ın ilk öğesi DEĞİL, ön seçim görülebilsin diye. */
+const ACTIVE_PATH = "/c/hp/jbl";
+
+export const ActiveFromCurrentPath: Story = {
+  name: "Mevcut Yoldan Aktif Öğe",
+  ...storyDoc(
+    "`currentPath` bir panel linkiyle eşleşirse üst öğe alt çizgiyle vurgulanır; panel açılınca ray o kategoriyle " +
+      "gelir ve link vurgulu + `aria-current=\"page\"` olur — kullanıcı nerede olduğunu panelde de görür.",
+    `<MegaMenu data={data} currentPath={pathname} onNavigate={(route) => router.push(route)} />`
+  ),
+  args: { ...RealWorldEcommerce.args, currentPath: ACTIVE_PATH },
+};
+
+function SkeletonDemo(args: React.ComponentProps<typeof MegaMenu>) {
+  const [loading, setLoading] = useState(true);
+  return (
+    <div>
+      <MegaMenu {...args} skeleton={loading} />
+      <label className="m-4 flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
+        Yükleniyor
+      </label>
+    </div>
+  );
+}
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` logo, öğeler ve `actions`ı kendi kutularında yer tutucuya çevirir (kategori ağacı sunucudan " +
+      "geliyorsa); yüklenince çubuk zıplamaz, iskeletteyken panel açılmaz.",
+    `<MegaMenu data={categories ?? []} logo={<MariLogo size={36} />} logoHref="/" actions={actions} skeleton={!categories} />`
+  ),
+  render: (args) => <SkeletonDemo {...args} />,
+  args: { ...RealWorldEcommerce.args },
+};
+

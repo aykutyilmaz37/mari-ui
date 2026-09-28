@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { MegaMenu } from "./MegaMenu";
@@ -19,20 +19,114 @@ describe("MegaMenu", () => {
     const user = userEvent.setup();
     const onNavigate = vi.fn();
     render(<MegaMenu data={data} onNavigate={onNavigate} />);
-    await user.click(screen.getByRole("button", { name: "Ana Sayfa" }));
+    await user.click(screen.getByRole("link", { name: "Ana Sayfa" }));
     expect(onNavigate).toHaveBeenCalledWith("/home");
   });
 
-  it("üst öğe klavyeyle odaklanınca (mouse olmadan) alt panel açılır (Faz 13.5 kullanıcı bulgusu — eskiden sadece hover ile açılıyordu)", async () => {
+  it("Tab ile gezerken panel kendiliğinden açılmaz; Enter açar ve odağı panelin ilk öğesine taşır, Escape odağı tetikleyiciye döndürür", async () => {
     const user = userEvent.setup();
     render(<MegaMenu data={data} onNavigate={() => {}} />);
+    const trigger = screen.getByRole("button", { name: "Hizmetler" });
+    trigger.focus();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText("Web Geliştirme")).not.toBeInTheDocument();
 
-    // Sıra: mobil hamburger (masaüstünde CSS ile gizli; jsdom CSS uygulamaz) → Ana Sayfa → Hizmetler.
+    await user.keyboard("{Enter}");
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    const panel = await screen.findByRole("region", { name: "Hizmetler" });
+    expect(trigger).toHaveAttribute("aria-controls", panel.id);
+    await waitFor(() => expect(within(panel).getAllByRole("link")[0]).toHaveFocus());
+
+    await user.keyboard("{Escape}");
+    expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("↓ paneli açar; panelin son öğesinden Tab bir sonraki üst öğeye geçip paneli kapatır", async () => {
+    const user = userEvent.setup();
+    const twoMenus: MenuItemType[] = [...data, { key: "contact", title: "İletişim", route: "/contact" }];
+    render(<MegaMenu data={twoMenus} onNavigate={() => {}} />);
+    const trigger = screen.getByRole("button", { name: "Hizmetler" });
+    trigger.focus();
+    await user.keyboard("{ArrowDown}");
+    const panel = await screen.findByRole("region", { name: "Hizmetler" });
+    const links = within(panel).getAllByRole("link");
+    await waitFor(() => expect(links[0]).toHaveFocus());
+    links.at(-1)?.focus();
     await user.tab();
-    await user.tab();
-    await user.tab();
-    expect(await screen.findByText("Web Geliştirme")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "İletişim" })).toHaveFocus();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("fareyle hover'da açılan panel, ardından tetikleyiciye tıklayınca KAPANMAZ; dışarı tıklamak kapatır", async () => {
+    const user = userEvent.setup();
+    render(
+      <div>
+        <MegaMenu data={data} onNavigate={() => {}} />
+        <button type="button">Dışarı</button>
+      </div>
+    );
+    const trigger = screen.getByRole("button", { name: "Hizmetler" });
+    await user.hover(trigger);
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await user.click(screen.getByRole("button", { name: "Dışarı" }));
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("currentPath: üst öğe vurgulanır, panel açılınca ray o kategoriyle gelir ve link aria-current taşır", async () => {
+    const user = userEvent.setup();
+    const rich: MenuItemType[] = [
+      {
+        key: "electronics",
+        title: "Elektronik",
+        children: [
+          { key: "phones", title: "Telefonlar", children: [{ key: "ios", title: "iOS", children: [{ key: "iphone", title: "iPhone", route: "/iphone" }] }] },
+          { key: "computers", title: "Bilgisayarlar", children: [{ key: "laptop", title: "Laptop", children: [{ key: "lenovo", title: "Lenovo", route: "/lenovo" }] }] },
+        ],
+      },
+    ];
+    render(<MegaMenu data={rich} onNavigate={() => {}} currentPath="/lenovo" />);
+    const trigger = screen.getByRole("button", { name: "Elektronik" });
+    expect(trigger.className).toContain("after:scale-x-100");
+    await user.hover(trigger);
+    expect(await screen.findByRole("link", { name: "Lenovo" })).toHaveAttribute("aria-current", "page");
+    expect(screen.queryByText("iPhone")).not.toBeInTheDocument();
+  });
+
+  it("klavyeyle açınca odak aktif sayfanın ray kategorisine gider (ilk öğeye değil — ön seçimi ezmesin)", async () => {
+    const user = userEvent.setup();
+    const rich: MenuItemType[] = [
+      {
+        key: "electronics",
+        title: "Elektronik",
+        children: [
+          { key: "phones", title: "Telefonlar", children: [{ key: "ios", title: "iOS", children: [{ key: "iphone", title: "iPhone", route: "/iphone" }] }] },
+          { key: "computers", title: "Bilgisayarlar", children: [{ key: "laptop", title: "Laptop", children: [{ key: "lenovo", title: "Lenovo", route: "/lenovo" }] }] },
+        ],
+      },
+    ];
+    render(<MegaMenu data={rich} onNavigate={() => {}} currentPath="/lenovo" />);
+    screen.getByRole("button", { name: "Elektronik" }).focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(screen.getByRole("button", { name: "Bilgisayarlar" })).toHaveFocus());
+    expect(screen.getByRole("link", { name: "Lenovo" })).toBeInTheDocument();
+  });
+
+  it("kapalı panel görünmezdir (invisible) — linkleri Tab sırasına girmez", async () => {
+    const user = userEvent.setup();
+    render(<MegaMenu data={data} onNavigate={() => {}} />);
+    const trigger = screen.getByRole("button", { name: "Hizmetler" });
+    await user.click(trigger);
+    const panel = await screen.findByRole("region", { name: "Hizmetler" });
+    await user.keyboard("{Escape}");
+    expect(panel).toHaveClass("invisible");
+  });
+
+  it("skeleton: öğeler yer tutucudur, panel açılamaz", () => {
+    render(<MegaMenu data={data} onNavigate={() => {}} skeleton />);
+    expect(screen.queryByRole("button", { name: "Hizmetler" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
   it("üst öğe düğmesi gerçek bir <button>dır, iç içe etkileşimli eleman yok", () => {
@@ -74,7 +168,7 @@ describe("MegaMenu", () => {
     ];
     render(<MegaMenu data={richData} onNavigate={onNavigate} />);
     await user.hover(screen.getByRole("button", { name: "Elektronik" }));
-    await user.click(await screen.findByRole("button", { name: "Monitörler" }));
+    await user.click(await screen.findByRole("link", { name: "Monitörler" }));
     expect(onNavigate).toHaveBeenCalledWith("/promo/monitors");
   });
 });

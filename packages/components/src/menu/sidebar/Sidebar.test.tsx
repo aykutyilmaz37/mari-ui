@@ -25,7 +25,7 @@ describe("Sidebar", () => {
     const user = userEvent.setup();
     const onNavigate = vi.fn();
     render(<Sidebar data={data} onNavigate={onNavigate} />);
-    await user.click(screen.getByRole("button", { name: "Panel" }));
+    await user.click(screen.getByRole("link", { name: "Panel" }));
     expect(onNavigate).toHaveBeenCalledWith("/dashboard");
   });
 
@@ -85,7 +85,7 @@ describe("Sidebar", () => {
     const user = userEvent.setup();
     render(<Sidebar data={nested} onNavigate={() => {}} variant="click" />);
     const parent = screen.getByRole("button", { name: "Ürünler" });
-    const child = screen.getByRole("button", { name: "Ürün Listesi", hidden: true });
+    const child = screen.getByRole("link", { name: "Ürün Listesi", hidden: true });
     expect(parent).toHaveAttribute("aria-expanded", "false");
     expect(child).toHaveAttribute("tabindex", "-1");
 
@@ -96,7 +96,7 @@ describe("Sidebar", () => {
 
   it("currentPath: aktif yaprak aria-current='page', grubu başlangıçta açık", () => {
     render(<Sidebar data={nested} onNavigate={() => {}} variant="click" currentPath="/products/categories" />);
-    expect(screen.getByRole("button", { name: "Kategoriler" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Kategoriler" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("button", { name: "Ürünler" })).toHaveAttribute("aria-expanded", "true");
   });
 
@@ -105,9 +105,9 @@ describe("Sidebar", () => {
     const onNavigate = vi.fn();
     render(<Sidebar data={nested} onNavigate={onNavigate} variant="click" />);
     await user.click(screen.getByRole("button", { name: "Ürünler" }));
-    await user.click(screen.getByRole("button", { name: "Kategoriler" }));
+    await user.click(screen.getByRole("link", { name: "Kategoriler" }));
     expect(onNavigate).toHaveBeenCalledWith("/products/categories");
-    expect(screen.getByRole("button", { name: "Kategoriler" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Kategoriler" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("button", { name: "Ürünler" }).className).toMatch(/text-mari-primary/);
   });
 
@@ -146,8 +146,8 @@ describe("Sidebar", () => {
     const panel = await screen.findByRole("region", { name: "Ürünler" });
     // Kolon başlığı + bağlantılar görünür; rayın "seçili değilse gizli" davranışı yok.
     expect(within(panel).getByText("Katalog")).toBeInTheDocument();
-    expect(within(panel).getByRole("button", { name: "Markalar" })).toBeInTheDocument();
-    expect(within(panel).getByRole("button", { name: "Stok Durumu" })).toBeInTheDocument();
+    expect(within(panel).getByRole("link", { name: "Markalar" })).toBeInTheDocument();
+    expect(within(panel).getByRole("link", { name: "Stok Durumu" })).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("region", { name: "Ürünler" })).not.toBeInTheDocument();
@@ -159,7 +159,7 @@ describe("Sidebar", () => {
     render(<Sidebar data={flat} onNavigate={() => {}} variant="click" mega />);
     screen.getByRole("button", { name: "Siparişler" }).focus();
     await user.keyboard("{Enter}");
-    expect(await screen.findByRole("button", { name: /Tüm Siparişler/ })).toHaveFocus();
+    expect(await screen.findByRole("link", { name: /Tüm Siparişler/ })).toHaveFocus();
   });
 
   it("variant='drawer': kontrollü dialog — header, bölüm başlıkları; Escape onOpenChange(false) çağırır", async () => {
@@ -176,5 +176,77 @@ describe("Sidebar", () => {
 
     await user.keyboard("{Escape}");
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  describe("Faz 15.5", () => {
+    const megaData: MenuItemType[] = [
+      { key: "orders", title: "Siparişler", children: [{ key: "all", title: "Tüm Siparişler", route: "/orders" }] },
+      { key: "reports", title: "Raporlar", route: "/reports" },
+    ];
+
+    it("mega: Tab ile odaklanınca panel açılmaz; → açar ve odağı panele taşır, Escape satıra döndürür", async () => {
+      const user = userEvent.setup();
+      render(<Sidebar data={megaData} onNavigate={() => {}} variant="click" mega />);
+      const row = screen.getByRole("button", { name: "Siparişler" });
+      row.focus();
+      expect(row).toHaveAttribute("aria-expanded", "false");
+      expect(screen.queryByRole("region")).not.toBeInTheDocument();
+
+      await user.keyboard("{ArrowRight}");
+      expect(await screen.findByRole("link", { name: "Tüm Siparişler" })).toHaveFocus();
+      await user.keyboard("{Escape}");
+      expect(row).toHaveFocus();
+      expect(screen.queryByRole("region")).not.toBeInTheDocument();
+    });
+
+    it("mega: dışarı tıklamak paneli kapatır", async () => {
+      const user = userEvent.setup();
+      render(
+        <div>
+          <Sidebar data={megaData} onNavigate={() => {}} variant="click" mega />
+          <button type="button">Dışarı</button>
+        </div>
+      );
+      await user.hover(screen.getByRole("button", { name: "Siparişler" }));
+      expect(await screen.findByRole("region", { name: "Siparişler" })).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Dışarı" }));
+      expect(screen.queryByRole("region")).not.toBeInTheDocument();
+    });
+
+    it("satırlar arasında ↓/↑/End ile gezilir", async () => {
+      const user = userEvent.setup();
+      render(<Sidebar data={megaData} onNavigate={() => {}} variant="click" />);
+      screen.getByRole("button", { name: "Siparişler" }).focus();
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("link", { name: "Raporlar" })).toHaveFocus();
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("button", { name: "Siparişler" })).toHaveFocus();
+    });
+
+    it("yaprak satırlar gerçek link; target=_blank güvenli rel taşır ve onNavigate'e devredilmez", async () => {
+      const user = userEvent.setup();
+      const onNavigate = vi.fn();
+      render(<Sidebar onNavigate={onNavigate} variant="click" data={[{ key: "docs", title: "Dokümanlar", route: "https://docs.example.com", target: "_blank" }]} />);
+      const link = screen.getByRole("link", { name: "Dokümanlar (yeni sekmede açılır)" });
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+      link.addEventListener("click", (event) => event.preventDefault());
+      await user.click(link);
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
+    it("logoHref → adlandırılmış link; logo tek başına etkileşimsiz", () => {
+      const { rerender } = render(<Sidebar data={data} onNavigate={() => {}} variant="click" logo={<svg data-testid="logo" />} logoHref="/" />);
+      expect(screen.getByRole("link", { name: "Ana sayfa" })).toHaveAttribute("href", "/");
+      rerender(<Sidebar data={data} onNavigate={() => {}} variant="click" logo={<svg data-testid="logo" />} />);
+      expect(screen.getByTestId("logo").closest("a, button")).toBeNull();
+    });
+
+    it("skeleton: satırlar ve logo yer tutucudur, odaklanılamaz; nav aria-busy", async () => {
+      const { container } = render(<Sidebar data={data} onNavigate={() => {}} variant="click" logo={<span>Logo</span>} logoHref="/" skeleton />);
+      expect(screen.getByRole("navigation", { name: "Ana menü" })).toHaveAttribute("aria-busy", "true");
+      expect(screen.queryByRole("link")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Hizmetler" })).not.toBeInTheDocument();
+      expect(await getA11yViolations(container)).toEqual([]);
+    });
   });
 });

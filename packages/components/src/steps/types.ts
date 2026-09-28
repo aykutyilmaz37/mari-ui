@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 /** ant.design ile aynı dört durum. */
 export type StepStatus = "wait" | "process" | "finish" | "error";
@@ -28,7 +29,11 @@ export type StepsVariant = "filled" | "outlined";
 export type StepsSize = "sm" | "md";
 export type StepsLabelPlacement = "horizontal" | "vertical";
 
-export interface StepsProps {
+/**
+ * `skeleton`: göstergeler aynı dairelerde, başlık/açıklama kendi metin
+ * kutularında yer tutucu; çizgiler nötr; eylem düğmeleri iskelet; etkileşimsiz.
+ */
+export interface StepsProps extends SkeletonableProps {
   data: StepData;
   /** Geçerli adım (1 tabanlı, `StepItem.step` ile eşleşir). */
   currentStep: number;

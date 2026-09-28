@@ -196,11 +196,12 @@ const meta: Meta<typeof Sidebar> = {
             "sidebar'ın yanında tam yükseklikte bir panelde açılır. `onlyIcon` her zaman ray olarak kalır; alt menüler " +
             "rayın yanında açılır. İkon yalnızca anlamını taşıyorsa verilmeli — ikonsuz kök öğe rayda baş harfiyle görünür.",
           a11y:
-            "Her satır gerçek bir `<button>`; akordeon üst öğesi `aria-expanded`, aktif sayfa `aria-current=\"page\"` taşır. " +
-            "Kapalı akordeonun satırları Tab sırasından çıkar. Hover rayı klavye odağıyla da genişler (eskiden Tab'la gezen " +
-            "kullanıcı kesik etiketler görüyordu); daraltılmış raydaki bölüm başlıkları görsel olarak ayraç olsa da metinleri " +
-            "ekran okuyucuya açıktır. `mega` modunda satıra odaklanmak paneli açar, Enter odağı panele taşır, Escape kapatıp " +
-            "satıra döndürür. `drawer` bir `role=\"dialog\"`: odak içeride döner, Escape/scrim kapatır, odak tetikleyiciye döner.",
+            "Yaprak satırlar gerçek link (orta tık / yeni sekme çalışır; `target`/`reloadDocument` desteklenir), aktif sayfa " +
+            "`aria-current=\"page\"`; alt öğesi olan satır `aria-expanded` taşıyan bir düğme. Satırlar arasında **↑/↓/Home/End** " +
+            "ve harf tuşlarıyla gezilir; kapalı akordeonun satırları atlanır. Hover rayı klavye odağıyla da genişler. `mega` " +
+            "modunda panel odakla açılmaz: fareyle üzerine gelince ya da **Enter/Boşluk/→** ile açılır ve odak panele geçer; " +
+            "panelde ok tuşları, **Escape** kapatıp satıra döndürür, dışarı tıklama kapatır. Logo `logoHref` ile \"Ana sayfa\" " +
+            "adlı bir link. `drawer` bir `role=\"dialog\"`: odak içeride döner, Escape/scrim kapatır, odak tetikleyiciye döner.",
         }),
       },
     },
@@ -211,10 +212,15 @@ const meta: Meta<typeof Sidebar> = {
     onlyIcon: { control: { type: "boolean" }, description: "Her zaman ikon rayı olarak kalır." },
     dropdown: { control: { type: "boolean" }, description: "Alt öğeleri akordeon yerine satırın yanındaki panelde açar." },
     mega: { control: { type: "boolean" }, description: "Alt öğeleri sidebar'ın yanında tam yükseklikte bir panelde açar." },
+    logoHref: { control: "text", description: "Logoyu bu adrese giden bir link yapar (genelde `/`)." },
+    logoLabel: { control: "text", description: "Etkileşimli logonun erişilebilir adı.", table: { defaultValue: { summary: '"Ana sayfa"' } } },
+    skeleton: { control: "boolean", description: "Logo, başlık ve satırlar yer tutucu.", table: { defaultValue: { summary: "false" } } },
+    currentPath: { control: "text", description: "Aktif sayfa — eşleşen satır vurgulanır, grubu açık başlar." },
   },
   args: {
     data: adminData,
     onNavigate: () => {},
+    logoHref: "/",
   },
   decorators: [
     (Story) => (
@@ -303,7 +309,21 @@ export const AmazonDrawer: Story = {
   ...storyDoc(
     "`variant=\"drawer\"`: Amazon'un hamburger menüsünün yapısı. Üstte `header` ile rol renginde bir \"Merhaba\" bandı; " +
       "bölümler ayraçlarla ayrılır (`heading: true`); satırlar ikonsuz; alt kategorisi olan satır chevron taşır ve bir " +
-      "seviye içeri kayar (\"Ana Menü\"ye dönüş, üst öğenin route'u varsa \"Tümünü gör\"). Tetikleyici tüketiciye ait."
+      "seviye içeri kayar (\"Ana Menü\"ye dönüş, üst öğenin route'u varsa \"Tümünü gör\"). Tetikleyici tüketiciye ait.",
+    `
+const [open, setOpen] = useState(false);
+
+<Button variant="ghost" color="neutral" icon={<MenuIcon size={18} />} onClick={() => setOpen(true)}>
+  Tümü
+</Button>
+<Sidebar
+  variant="drawer"
+  data={data}
+  open={open}
+  onOpenChange={setOpen}
+  header={<span className="text-base font-semibold">Merhaba, aykut</span>}
+  onNavigate={(route) => router.push(route)}
+/>`
   ),
   render: function AmazonDrawerRender(args) {
     const [open, setOpen] = useState(false);
@@ -319,6 +339,7 @@ export const AmazonDrawer: Story = {
   args: {
     variant: "drawer",
     data: amazonData,
+    logoHref: undefined,
     header: (
       <div className="flex items-center gap-3 py-3">
         {/* Bandın dolgusu rol rengi: siluet `currentColor` ile bandın kontrast rengini alır (Avatar'ın kendi zemini burada kayboluyordu). */}
@@ -329,4 +350,28 @@ export const AmazonDrawer: Story = {
       </div>
     ),
   },
+};
+
+function SkeletonDemo(args: React.ComponentProps<typeof Sidebar>) {
+  const [loading, setLoading] = useState(true);
+  return (
+    <>
+      <Sidebar {...args} skeleton={loading} />
+      <label className="absolute top-4 right-4 flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
+        Yükleniyor
+      </label>
+    </>
+  );
+}
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` logo, başlık ve her satırı kendi kutusunda ikon karesi + metin çubuğu olarak çizer (menü yetkiye göre " +
+      "sunucudan geliyorsa); gruplar yüklü hâldeki gibi açık kalır, yüklenince satırlar zıplamaz. `nav` `aria-busy` taşır.",
+    `<Sidebar variant="hover" data={menu ?? placeholderRows} logo={<MariLogo />} logoHref="/" skeleton={!menu} />`
+  ),
+  render: (args) => <SkeletonDemo {...args} />,
+  args: { variant: "hover", logo: brandLogo, currentPath: "/products" },
 };

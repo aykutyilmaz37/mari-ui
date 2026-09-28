@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Dropdown } from "./Dropdown";
 import { DropdownTrigger } from "./_components/DropdownTrigger";
 import { DropdownContent } from "./_components/DropdownContent";
-import { DropdownDivider, DropdownItem } from "./_components/DropdownItem";
+import { DropdownDivider, DropdownItem, DropdownLabel } from "./_components/DropdownItem";
 import { getA11yViolations } from "../testUtils/a11y";
 
 function setup() {
@@ -358,5 +358,125 @@ describe("Dropdown", () => {
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {
     const { container } = setup();
     expect(await getA11yViolations(container)).toEqual([]);
+  });
+
+  describe("Faz 15.5 — klavye gezinmesi", () => {
+    function menu() {
+      return render(
+        <Dropdown>
+          <DropdownTrigger>İşlemler</DropdownTrigger>
+          <DropdownContent>
+            <DropdownLabel>Dosya</DropdownLabel>
+            <DropdownItem>Düzenle</DropdownItem>
+            <DropdownItem disabled>Kopyala</DropdownItem>
+            <DropdownItem>Paylaş</DropdownItem>
+            <DropdownItem extra="⌫">Sil</DropdownItem>
+          </DropdownContent>
+        </Dropdown>
+      );
+    }
+
+    it("tetikleyicide ↓ açar ve ilk öğeye, ↑ açar ve son öğeye odaklanır", async () => {
+      const user = userEvent.setup();
+      menu();
+      screen.getByRole("button", { name: "İşlemler" }).focus();
+      await user.keyboard("{ArrowDown}");
+      await waitFor(() => expect(screen.getByRole("button", { name: "Düzenle" })).toHaveFocus());
+      await user.keyboard("{Escape}");
+      expect(screen.getByRole("button", { name: "İşlemler" })).toHaveFocus();
+      await user.keyboard("{ArrowUp}");
+      await waitFor(() => expect(screen.getByRole("button", { name: /Sil/ })).toHaveFocus());
+    });
+
+    it("panelde ↓/↑ devre dışı öğeyi atlayıp sarar, Home/End uçlara gider", async () => {
+      const user = userEvent.setup();
+      menu();
+      screen.getByRole("button", { name: "İşlemler" }).focus();
+      await user.keyboard("{ArrowDown}");
+      await waitFor(() => expect(screen.getByRole("button", { name: "Düzenle" })).toHaveFocus());
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("button", { name: "Paylaş" })).toHaveFocus();
+      await user.keyboard("{ArrowDown}{ArrowDown}");
+      expect(screen.getByRole("button", { name: "Düzenle" })).toHaveFocus();
+      await user.keyboard("{ArrowUp}");
+      expect(screen.getByRole("button", { name: /Sil/ })).toHaveFocus();
+      await user.keyboard("{Home}");
+      expect(screen.getByRole("button", { name: "Düzenle" })).toHaveFocus();
+      await user.keyboard("{End}");
+      expect(screen.getByRole("button", { name: /Sil/ })).toHaveFocus();
+    });
+
+    it("harfe basınca o harfle başlayan sonraki öğeye atlar", async () => {
+      const user = userEvent.setup();
+      menu();
+      screen.getByRole("button", { name: "İşlemler" }).focus();
+      await user.keyboard("{ArrowDown}");
+      await waitFor(() => expect(screen.getByRole("button", { name: "Düzenle" })).toHaveFocus());
+      await user.keyboard("s");
+      expect(screen.getByRole("button", { name: /Sil/ })).toHaveFocus();
+      await user.keyboard("p");
+      expect(screen.getByRole("button", { name: "Paylaş" })).toHaveFocus();
+    });
+
+    it("extra sağda ikincil metin olarak, DropdownLabel odaklanamayan başlık olarak render edilir", async () => {
+      const user = userEvent.setup();
+      menu();
+      await user.click(screen.getByRole("button", { name: "İşlemler" }));
+      expect(screen.getByText("⌫")).toHaveClass("text-mari-muted");
+      expect(screen.getByText("Dosya").tabIndex).toBe(-1);
+    });
+  });
+
+  it("DropdownItem href alınca gerçek link olur; devre dışıysa düğmeye döner", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown>
+        <DropdownTrigger>Git</DropdownTrigger>
+        <DropdownContent>
+          <DropdownItem href="/profil">Profil</DropdownItem>
+          <DropdownItem href="/faturalar" disabled>
+            Faturalar
+          </DropdownItem>
+        </DropdownContent>
+      </Dropdown>
+    );
+    await user.click(screen.getByRole("button", { name: "Git" }));
+    expect(screen.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/profil");
+    expect(screen.getByRole("button", { name: "Faturalar" })).toBeDisabled();
+  });
+
+  it("skeleton: tetikleyici etkileşimsiz bir yer tutucudur, hover ile de panel açılmaz", () => {
+    const { container } = render(
+      <Dropdown hover skeleton>
+        <DropdownTrigger className="rounded-full px-3">Hesabım</DropdownTrigger>
+        <DropdownContent>
+          <div>İçerik</div>
+        </DropdownContent>
+      </Dropdown>
+    );
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    const box = container.querySelector("[data-skeleton]");
+    expect(box).toHaveAttribute("aria-hidden", "true");
+    expect(box).toHaveClass("rounded-full", "px-3");
+    fireEvent.mouseEnter(container.firstElementChild as Element);
+    expect(screen.queryByText("İçerik")).not.toBeInTheDocument();
+  });
+
+  it("DropdownItem target=_blank güvenli rel taşır ve yeni sekmede açıldığını duyurur", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown>
+        <DropdownTrigger>Yardım</DropdownTrigger>
+        <DropdownContent>
+          <DropdownItem href="https://docs.example.com" target="_blank">
+            Dokümanlar
+          </DropdownItem>
+        </DropdownContent>
+      </Dropdown>
+    );
+    await user.click(screen.getByRole("button", { name: "Yardım" }));
+    const link = screen.getByRole("link", { name: "Dokümanlar (yeni sekmede açılır)" });
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 });

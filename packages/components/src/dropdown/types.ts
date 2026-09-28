@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, Placement as CorePlacement, Variant } from "@mari-ui/core";
+import type { LinkTarget } from "../lib/linkBehavior";
 
 /** Sadece 4 ana yön render edilir — bkz. tooltip/utils.ts'teki aynı not. */
 export type Placement = CorePlacement;
@@ -41,6 +42,11 @@ export interface DropdownProps {
     | React.ReactElement<DropdownContentProps>;
   hover?: boolean;
   /**
+   * Veri gelene kadar tetikleyici kendi kutusunda iskelet çizer (içeriği
+   * görünmez olarak yerinde kalır → yüklenince zıplamaz); panel açılmaz.
+   */
+  skeleton?: boolean;
+  /**
    * Sarmalayıcı kutunun sınıfı. Varsayılan `inline-block self-start`: kutu
    * tetikleyicinin boyutuna sarılır, panel de TETİKLEYİCİYE hizalanır. Tetikleyici
    * kapsayıcının tam genişliğini kaplayacaksa (`w-full` menü satırı) `"block self-auto"` verin.
@@ -55,7 +61,13 @@ export interface DropdownItemProps {
   /** Yıkıcı işlem (Sil, Çıkış…): kırmızı metin, hover'da dolu kırmızı zemin. */
   danger?: boolean;
   disabled?: boolean;
+  /** Sağa yaslı ikincil bilgi — klavye kısayolu ("⌘C"), sayı rozeti vb. */
+  extra?: React.ReactNode;
+  /** Verilirse öğe gerçek bir `<a>` olarak render edilir (orta tık, yeni sekme, adres önizlemesi). */
+  href?: string;
+  /** `href`li öğenin açılacağı yer; `_blank` → yeni sekme (`rel="noopener noreferrer"` + ikon otomatik). */
+  target?: LinkTarget;
   /** Öğeye tıklanınca çağrılır; ardından dropdown kapanır. */
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   className?: string;
 }

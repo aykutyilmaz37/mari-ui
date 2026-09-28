@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CheckIcon, XIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { Button } from "../button";
+import { skeletonFill } from "../lib/skeleton";
 import type { StepItem, StepStatus, StepsProps, StepsSize } from "./types";
 import {
   getDotClass,
@@ -53,6 +54,15 @@ const groupHoverTitleClass: Record<ColorRole, string> = {
 };
 
 type StepsLayout = "inline" | "stacked" | "vertical" | "compact";
+
+/**
+ * İskelette metin: kendi satır kutusunda dolgu, harfler görünmez — başlığın/
+ * açıklamanın gerçek genişliğini ve satır kırılmasını korur (sıfır zıplama).
+ * `box-decoration-clone`: çok satırlı açıklamada her satır ayrı yuvarlanır.
+ */
+const skeletonTextClass = cn("rounded-sm text-transparent box-decoration-clone", skeletonFill(true));
+/** İskelette gösterge: aynı daire, durum rengi/kenarlığı yok, içerik görünmez. */
+const skeletonIndicatorClass = cn("border-transparent text-transparent [&_svg]:invisible", skeletonFill(true));
 
 /**
  * inline: başlık göstergenin yanında; stacked: altında ortalı; vertical:
@@ -114,6 +124,7 @@ export function Steps({
   content,
   className,
   "aria-label": ariaLabel = "İlerleme adımları",
+  skeleton = false,
 }: StepsProps) {
   const [rootRef, width] = useContainerWidth(!vertical && responsive !== false);
   const isNarrow = responsive !== false && width !== undefined && width < responsive;
@@ -134,7 +145,7 @@ export function Steps({
             className={cn(
               "rounded-full transition-[background-color,transform] duration-200 motion-reduce:transition-none",
               status === "process" || status === "error" ? "size-2.5" : "size-2",
-              getDotClass(status, color)
+              skeleton ? skeletonFill(true) : getDotClass(status, color)
             )}
           />
         </span>
@@ -143,7 +154,9 @@ export function Steps({
 
     const glyph = renderGlyph(item, index, status, iconPx[size]);
 
-    const showRing = status === "process" && percent !== undefined;
+    const hasRing = status === "process" && percent !== undefined;
+    // İskelette halka çizilmez ama payı (`mx-1`) korunur — yüklenince kaymasın.
+    const showRing = hasRing && !skeleton;
     // Halka ile daire arasında ~3px boşluk (ant.design ile aynı his).
     const ringSize = indicatorPx[size] + 10;
     const radius = ringSize / 2 - 1;
@@ -159,9 +172,9 @@ export function Steps({
           "relative inline-flex shrink-0 items-center justify-center rounded-full border font-semibold tabular-nums",
           "transition-colors duration-200 motion-reduce:transition-none",
           indicatorSizeClass[size],
-          getIndicatorClass(status, color, variant),
+          skeleton ? skeletonIndicatorClass : getIndicatorClass(status, color, variant),
           // Halka 5px taşar — komşu çizgi/başlıkla çakışmasın.
-          showRing && "mx-1"
+          hasRing && "mx-1"
         )}
       >
         {glyph}
@@ -201,13 +214,17 @@ export function Steps({
     return (
       <div aria-hidden className="-mt-3 flex flex-col gap-0.5">
         <p className={cn("flex flex-wrap items-baseline gap-x-2", titleSizeClass[size])}>
-          <span className={cn("text-mari-muted", descSizeClass[size])}>
+          <span className={cn("text-mari-muted", descSizeClass[size], skeleton && skeletonTextClass)}>
             Adım {index + 1}/{data.length}
           </span>
-          <span className={getTitleClass(status)}>{item.title}</span>
-          {item.subTitle && <span className={cn("text-mari-muted", descSizeClass[size])}>{item.subTitle}</span>}
+          <span className={cn(getTitleClass(status), skeleton && skeletonTextClass)}>{item.title}</span>
+          {item.subTitle && <span className={cn("text-mari-muted", descSizeClass[size], skeleton && skeletonTextClass)}>{item.subTitle}</span>}
         </p>
-        {item.description && <p className={cn("text-mari-muted", descSizeClass[size])}>{item.description}</p>}
+        {item.description && (
+          <p className={cn("text-mari-muted", descSizeClass[size])}>
+            <span className={cn(skeleton && skeletonTextClass)}>{item.description}</span>
+          </p>
+        )}
       </div>
     );
   };
@@ -221,7 +238,8 @@ export function Steps({
             layout === "inline" && "whitespace-nowrap",
             titleSizeClass[size],
             getTitleClass(status),
-            isInteractive && !item.disabled && !isCurrent && groupHoverTitleClass[color]
+            isInteractive && !item.disabled && !isCurrent && groupHoverTitleClass[color],
+            skeleton && skeletonTextClass
           )}
         >
           {item.title}
@@ -231,132 +249,141 @@ export function Steps({
             {status === "process" && percent !== undefined ? `, %${Math.round(percent)}` : ""})
           </span>
         </span>
-        {item.subTitle && <span className={cn("whitespace-nowrap text-mari-muted", descSizeClass[size])}>{item.subTitle}</span>}
+        {item.subTitle && <span className={cn("whitespace-nowrap text-mari-muted", descSizeClass[size], skeleton && skeletonTextClass)}>{item.subTitle}</span>}
         {withRail}
       </span>
       {item.description && (
         <span className={cn("mt-0.5 leading-relaxed", descSizeClass[size], status === "wait" ? "text-mari-muted/80" : "text-mari-muted")}>
-          {item.description}
+          {/* Dolgu iç `<span>`de: satır satır sarılsın (blok kutunun tamamı değil). */}
+          <span className={cn(skeleton && skeletonTextClass)}>{item.description}</span>
         </span>
       )}
     </span>
   );
 
-  const renderItem = (item: StepItem, index: number) => {
+  /** Her yerleşimin ortak girdileri — `renderItem` yerleşim başına ayrı fonksiyonlara dağıtır (tek dev fonksiyon 38 karmaşıklıktaydı). */
+  const itemContext = (item: StepItem, index: number) => {
     const step = getStepNumber(item, index);
     const status = resolveStepStatus(item, index, currentStep, currentStatus);
     const isCurrent = step === currentStep;
-    const isLast = index === data.length - 1;
-    const clickable = isInteractive && !item.disabled;
-    const railClass = cn("rounded-full transition-colors duration-200 motion-reduce:transition-none", getRailClass(status, color));
+    const clickable = isInteractive && !item.disabled && !skeleton;
+    return {
+      item,
+      index,
+      step,
+      status,
+      isCurrent,
+      isLast: index === data.length - 1,
+      liCurrent: !isInteractive && isCurrent ? ("step" as const) : undefined,
+      // İskelette çizgiler durum rengini taşımaz (henüz durum yok).
+      railClass: cn("rounded-full transition-colors duration-200 motion-reduce:transition-none", skeleton ? "bg-mari-border" : getRailClass(status, color)),
+      // Etkileşimli ise gerçek <button> — Enter/Space/Tab tarayıcıdan gelir.
+      Wrapper: (isInteractive ? "button" : "div") as "button" | "div",
+      wrapperProps: isInteractive
+        ? {
+            type: "button" as const,
+            disabled: item.disabled,
+            tabIndex: skeleton ? -1 : undefined,
+            "aria-current": isCurrent ? ("step" as const) : undefined,
+            onClick: () => !skeleton && step !== currentStep && onChange?.(step),
+          }
+        : {},
+      interactiveClass: cn(
+        "group rounded-md text-left",
+        clickable && "cursor-pointer",
+        item.disabled && "cursor-not-allowed opacity-50",
+        skeleton && "pointer-events-none",
+        isInteractive && "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mari-ring"
+      ),
+    };
+  };
+  type ItemContext = ReturnType<typeof itemContext>;
 
-    // Etkileşimli ise gerçek <button> — Enter/Space/Tab tarayıcıdan gelir.
-    const Wrapper = isInteractive ? "button" : "div";
-    const wrapperProps = isInteractive
-      ? {
-          type: "button" as const,
-          disabled: item.disabled,
-          "aria-current": isCurrent ? ("step" as const) : undefined,
-          onClick: () => step !== currentStep && onChange?.(step),
-        }
-      : {};
-    const interactiveClass = cn(
-      "group rounded-md text-left",
-      clickable && "cursor-pointer",
-      item.disabled && "cursor-not-allowed opacity-50",
-      isInteractive && "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-mari-ring"
-    );
+  const renderCompactItem = ({ item, index, step, status, isLast, liCurrent, railClass, Wrapper, wrapperProps, interactiveClass }: ItemContext) => (
+    <li key={step} aria-current={liCurrent} className={cn("flex min-w-0 items-center", isLast ? "flex-none" : "flex-1")}>
+      {/* Başlık görünmez ama erişilebilir ad olarak kalır. Dokunma hedefi
+          için gösterge etrafında 6px pay (32px → 44px). */}
+      <Wrapper {...wrapperProps} className={cn(interactiveClass, "-m-1.5 shrink-0 rounded-full p-1.5")}>
+        {renderIndicator(item, index, status)}
+        <span className="sr-only">
+          {item.title} ({statusLabel[status]})
+        </span>
+      </Wrapper>
+      {!isLast && <span aria-hidden className={cn("mx-3 h-px min-w-3 flex-1", railClass)} />}
+    </li>
+  );
 
-    if (layout === "compact") {
-      return (
-        <li
-          key={step}
-          aria-current={!isInteractive && isCurrent ? "step" : undefined}
-          className={cn("flex min-w-0 items-center", isLast ? "flex-none" : "flex-1")}
-        >
-          {/* Başlık görünmez ama erişilebilir ad olarak kalır. Dokunma hedefi
-              için gösterge etrafında 6px pay (32px → 44px). */}
-          <Wrapper {...wrapperProps} className={cn(interactiveClass, "-m-1.5 shrink-0 rounded-full p-1.5")}>
-            {renderIndicator(item, index, status)}
-            <span className="sr-only">
-              {item.title} ({statusLabel[status]})
-            </span>
-          </Wrapper>
-          {!isLast && <span aria-hidden className={cn("mx-3 h-px min-w-3 flex-1", railClass)} />}
-        </li>
-      );
-    }
-
-    if (layout === "vertical") {
-      return (
-        <li key={step} aria-current={!isInteractive && isCurrent ? "step" : undefined} className="flex">
-          <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex w-full gap-3")}>
-            <span className="flex flex-col items-center">
-              {renderIndicator(item, index, status)}
-              {!isLast && <span className={cn("my-1.5 w-px min-h-6 flex-1", dot && "w-0.5", railClass)} />}
-            </span>
-            <span className={cn("flex min-w-0 flex-1", !isLast && (size === "sm" ? "pb-4" : "pb-6"))}>{renderText(item, status, isCurrent, null)}</span>
-          </Wrapper>
-        </li>
-      );
-    }
-
-    if (layout === "stacked") {
-      const half = dot ? 5 : indicatorPx[size] / 2;
-      const gap = dot ? 12 : 8;
-      return (
-        <li key={step} aria-current={!isInteractive && isCurrent ? "step" : undefined} className="relative min-w-0 flex-1">
-          {!isLast && (
-            <span
-              aria-hidden
-              className={cn("absolute", dot ? "h-0.5" : "h-px", railClass)}
-              style={{
-                top: indicatorPx[size] / 2 - (dot ? 1 : 0.5),
-                left: `calc(50% + ${half + gap}px)`,
-                width: `calc(100% - ${2 * (half + gap)}px)`,
-              }}
-            />
-          )}
-          <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex w-full flex-col items-center gap-2 px-2")}>
-            {renderIndicator(item, index, status)}
-            {renderText(item, status, isCurrent, null)}
-          </Wrapper>
-        </li>
-      );
-    }
-
-    return (
-      <li
-        key={step}
-        aria-current={!isInteractive && isCurrent ? "step" : undefined}
-        className={cn("flex min-w-0", isLast ? "flex-none" : "flex-1")}
-      >
-        <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex min-w-0 flex-1 items-start gap-3")}>
+  const renderVerticalItem = ({ item, index, step, status, isCurrent, isLast, liCurrent, railClass, Wrapper, wrapperProps, interactiveClass }: ItemContext) => (
+    <li key={step} aria-current={liCurrent} className="flex">
+      <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex w-full gap-3")}>
+        <span className="flex flex-col items-center">
           {renderIndicator(item, index, status)}
-          {renderText(item, status, isCurrent, !isLast && <span aria-hidden className={cn("ml-1 mr-3 h-px min-w-6 flex-1", railClass)} />)}
+          {!isLast && <span className={cn("my-1.5 w-px min-h-6 flex-1", dot && "w-0.5", railClass)} />}
+        </span>
+        <span className={cn("flex min-w-0 flex-1", !isLast && (size === "sm" ? "pb-4" : "pb-6"))}>{renderText(item, status, isCurrent, null)}</span>
+      </Wrapper>
+    </li>
+  );
+
+  const renderStackedItem = ({ item, index, step, status, isCurrent, isLast, liCurrent, railClass, Wrapper, wrapperProps, interactiveClass }: ItemContext) => {
+    const half = dot ? 5 : indicatorPx[size] / 2;
+    const gap = dot ? 12 : 8;
+    return (
+      <li key={step} aria-current={liCurrent} className="relative min-w-0 flex-1">
+        {!isLast && (
+          <span
+            aria-hidden
+            className={cn("absolute", dot ? "h-0.5" : "h-px", railClass)}
+            style={{
+              top: indicatorPx[size] / 2 - (dot ? 1 : 0.5),
+              left: `calc(50% + ${half + gap}px)`,
+              width: `calc(100% - ${2 * (half + gap)}px)`,
+            }}
+          />
+        )}
+        <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex w-full flex-col items-center gap-2 px-2")}>
+          {renderIndicator(item, index, status)}
+          {renderText(item, status, isCurrent, null)}
         </Wrapper>
       </li>
     );
   };
 
+  const renderInlineItem = ({ item, index, step, status, isCurrent, isLast, liCurrent, railClass, Wrapper, wrapperProps, interactiveClass }: ItemContext) => (
+    <li key={step} aria-current={liCurrent} className={cn("flex min-w-0", isLast ? "flex-none" : "flex-1")}>
+      <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex min-w-0 flex-1 items-start gap-3")}>
+        {renderIndicator(item, index, status)}
+        {renderText(item, status, isCurrent, !isLast && <span aria-hidden className={cn("ml-1 mr-3 h-px min-w-6 flex-1", railClass)} />)}
+      </Wrapper>
+    </li>
+  );
+
+  const layoutRenderer: Record<StepsLayout, (context: ItemContext) => React.ReactNode> = {
+    compact: renderCompactItem,
+    vertical: renderVerticalItem,
+    stacked: renderStackedItem,
+    inline: renderInlineItem,
+  };
+  const renderItem = (item: StepItem, index: number) => layoutRenderer[layout](itemContext(item, index));
+
   return (
-    <div ref={rootRef} className={cn("flex w-full flex-col gap-6", className)}>
-      <ol aria-label={ariaLabel} className={cn("flex w-full", layout === "vertical" ? "flex-col" : "flex-row items-start")}>
+    <div ref={rootRef} aria-busy={skeleton || undefined} className={cn("flex w-full flex-col gap-6", className)}>
+      <ol aria-label={ariaLabel} aria-hidden={skeleton || undefined} className={cn("flex w-full", layout === "vertical" ? "flex-col" : "flex-row items-start")}>
         {data.map(renderItem)}
       </ol>
       {layout === "compact" && renderCompactCaption()}
       {content}
       {onChange && actionsVisible && (
         <div className="flex justify-between gap-4 border-t border-mari-border pt-6">
-          <Button color="neutral" variant="outline" disabled={isFirstStep} onClick={() => onChange(currentStep - 1)}>
+          <Button skeleton={skeleton} color="neutral" variant="outline" disabled={isFirstStep} onClick={() => onChange(currentStep - 1)}>
             Geri
           </Button>
           {isLastStep ? (
-            <Button color={color} disabled={!onComplete} onClick={onComplete}>
+            <Button skeleton={skeleton} color={color} disabled={!onComplete} onClick={onComplete}>
               Tamamla
             </Button>
           ) : (
-            <Button color={color} onClick={() => onChange(currentStep + 1)}>
+            <Button skeleton={skeleton} color={color} onClick={() => onChange(currentStep + 1)}>
               İleri
             </Button>
           )}

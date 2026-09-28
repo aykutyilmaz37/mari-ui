@@ -1,7 +1,13 @@
 import type React from "react";
 import type { ColorRole } from "@mari-ui/core";
+import type { LinkBehaviorProps } from "../lib/linkBehavior";
 
-export interface MenuItemType {
+/**
+ * `target` (`_blank` → yeni sekme) ve `reloadDocument` (router'ı atlayıp tam
+ * sayfa yükleme) `LinkBehaviorProps`tan gelir; bu öğeler `onNavigate`e
+ * devredilmez. Dış adresler (`https:`, `mailto:`…) de otomatik olarak tarayıcıya bırakılır.
+ */
+export interface MenuItemType extends LinkBehaviorProps {
   title: string;
   description?: string;
   key: string;
@@ -30,7 +36,8 @@ export interface MenuItemType {
 }
 
 /** `MegaPanel`in promosyon ızgarasındaki tek bir kart. */
-export interface MenuPromoTile {
+/** `target`/`reloadDocument` menü öğeleriyle aynı anlamda (bkz. `LinkBehaviorProps`). */
+export interface MenuPromoTile extends LinkBehaviorProps {
   title: string;
   image: string;
   href?: string;

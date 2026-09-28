@@ -3,6 +3,7 @@
 import React from "react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import type { MenuItemType } from "../../types";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 /** Literal tablolar — Tailwind birleştirilmiş/dinamik sınıf adlarını taramaz. */
 const TILE_HOVER_CLASS: Record<ColorRole, string> = {
@@ -82,8 +83,9 @@ export function SubMenuRowContent({ item, active, color, trailing }: SubMenuRowC
         </span>
       )}
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className={cn("text-sm font-medium transition-colors duration-150", active ? TITLE_ACTIVE_CLASS[color] : cn("text-mari-foreground", interactive && TITLE_HOVER_CLASS[color]))}>
+        <span className={cn("inline-flex items-center gap-1 text-sm font-medium transition-colors duration-150", active ? TITLE_ACTIVE_CLASS[color] : cn("text-mari-foreground", interactive && TITLE_HOVER_CLASS[color]))}>
           {item.title}
+          <NewTabHint target={item.target} />
         </span>
         {item.description && <span className="line-clamp-2 text-xs leading-snug text-mari-muted">{item.description}</span>}
       </span>

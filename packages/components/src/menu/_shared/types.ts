@@ -9,7 +9,9 @@ export interface MegaPanelProps extends MenuNavigationProps {
   layout: "full" | "compact";
   /** `"vertical"`: ray üstte, kolonlar altta — Sidebar'ın yan-açılan panelleri (dar genişlik) için. Varsayılan `"horizontal"`. */
   orientation?: "horizontal" | "vertical";
-  /** Bir öğeye tıklanınca `navigateTo`dan ÖNCE çağrılır — host kendi panelini kapatabilsin diye. */
+  /** Bir öğeye tıklanınca (gezinmeden ÖNCE) çağrılır — host kendi panelini kapatabilsin diye. */
   onItemClick?: (item: MenuItemType) => void;
+  /** Geçerli sayfanın öğe anahtarı: ray başlangıçta onu içeren kategoriyi seçer, link `aria-current="page"` + vurgu alır. */
+  activeKey?: string | null;
   className?: string;
 }

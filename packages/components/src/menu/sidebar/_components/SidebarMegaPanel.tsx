@@ -63,11 +63,34 @@ export const SidebarMegaPanel = React.forwardRef<HTMLDivElement, SidebarMegaPane
       )}
     >
       <div className="mb-4 text-base font-semibold text-mari-foreground">{item.title}</div>
-      {shape === "rail" && <MegaPanel items={children} layout="compact" orientation="horizontal" color={color} onNavigate={onNavigate} onItemClick={onClose} />}
+      {shape === "rail" && (
+        <MegaPanel
+          items={children}
+          layout="compact"
+          orientation="horizontal"
+          color={color}
+          onNavigate={onNavigate}
+          activeKey={activeKey}
+          onItemClick={(picked) => {
+            setActiveKey(picked.key);
+            onClose();
+          }}
+        />
+      )}
       {shape === "columns" && (
         <div className={cn("gap-8", children.length > 4 ? "columns-3" : "columns-2")}>
           {children.map((group) => (
-            <MegaPanelColumn key={group.key} group={group} color={color} onNavigate={onNavigate} onItemClick={onClose} />
+            <MegaPanelColumn
+              key={group.key}
+              group={group}
+              color={color}
+              onNavigate={onNavigate}
+              activeKey={activeKey}
+              onItemClick={(picked) => {
+                setActiveKey(picked.key);
+                onClose();
+              }}
+            />
           ))}
         </div>
       )}

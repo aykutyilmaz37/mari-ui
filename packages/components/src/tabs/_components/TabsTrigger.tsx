@@ -5,6 +5,10 @@ import { cn } from "@mari-ui/core";
 import { getTabId, useTabs } from "../useTabs";
 import { getCountClass, getTriggerClass } from "../utils";
 import type { TabsTriggerProps } from "../types";
+import { skeletonFill } from "../../lib/skeleton";
+
+/** İskelette etiket: kendi metin kutusunda dolgu, harfler görünmez (genişlik korunur). */
+const skeletonTextClass = cn("rounded-sm text-transparent", skeletonFill(true));
 
 /**
  * Faz 13.6: artık `Button`'ı sarmalamıyor — Button'ın `h-8` sabit yüksekliği
@@ -15,7 +19,7 @@ import type { TabsTriggerProps } from "../types";
  * - `icon` / `count` / `disabled`.
  */
 export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ children, value, icon, count, disabled, className }, ref) => {
-  const { activeTab, setActiveTab, baseId, color, variant, orientation, size, fill } = useTabs();
+  const { activeTab, setActiveTab, baseId, color, variant, orientation, size, fill, skeleton } = useTabs();
   const active = activeTab === value;
 
   return (
@@ -26,20 +30,21 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ ch
       id={getTabId(baseId, value, "tab")}
       aria-selected={active}
       aria-controls={getTabId(baseId, value, "panel")}
-      tabIndex={active ? 0 : -1}
+      tabIndex={active && !skeleton ? 0 : -1}
       disabled={disabled}
       data-value={value}
       data-state={active ? "active" : "inactive"}
-      onClick={() => setActiveTab(value)}
-      className={cn(getTriggerClass({ active, variant, orientation, size, color, fill }), className)}
+      onClick={() => !skeleton && setActiveTab(value)}
+      // İskelette sekme kutusu (dolgu, kenarlık, kart zemini) aynı kalır; yalnız içerik yer tutucu olur.
+      className={cn(getTriggerClass({ active, variant, orientation, size, color, fill }), skeleton && "pointer-events-none", className)}
     >
       {icon && (
-        <span aria-hidden className="inline-flex shrink-0 [&>svg]:size-4">
+        <span aria-hidden className={cn("inline-flex shrink-0 [&>svg]:size-4", skeleton && cn("rounded-sm [&>svg]:invisible", skeletonFill(true)))}>
           {icon}
         </span>
       )}
-      <span>{children}</span>
-      {count !== undefined && <span className={getCountClass(active, color)}>{count}</span>}
+      <span className={cn(skeleton && skeletonTextClass)}>{children}</span>
+      {count !== undefined && <span className={cn(getCountClass(active, color), skeleton && skeletonTextClass)}>{count}</span>}
     </button>
   );
 });

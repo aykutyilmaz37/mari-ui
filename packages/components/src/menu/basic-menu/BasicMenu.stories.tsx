@@ -1,6 +1,7 @@
+import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { MariLogo } from "../../logo";
-import { BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
+import { ActivityIcon, BookOpenIcon, BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, NewspaperIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
 import { BasicMenu } from "./BasicMenu";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
@@ -29,17 +30,18 @@ const meta: Meta<typeof BasicMenu> = {
           summary:
             "Yatay üst gezinme çubuğu. `data` içindeki `children`'ı olan öğeler üzerine gelindiğinde otomatik " +
             "olarak bir dropdown açar: veri düzse (tek seviye) kompakt bir liste, veri gerçekten 3 seviyeliyse " +
-            "(çocukların kendi çocukları varsa) tetikleyiciye sabitlenmiş bir ray+kolon paneli (`MegaPanel`, " +
-            "promosuz — tam genişlikteki hâli için `MegaMenu`ya bakın). `onNavigate` verilmezse `window.location.href` " +
-            "ile tam sayfa geçiş yapar — bir router (örn. Next.js `useRouter`) kullanıyorsanız `onNavigate` ile " +
-            "client-side gezinmeye bağlayın.",
+            "(çocukların kendi çocukları varsa) başlıklı gruplu kolonlar. Route'u olan her öğe gerçek bir `<a href>`'dir. " +
+            "Component hangi router'ı kullandığınızı bilmez: sayfa yenilenmeden geçiş için `onNavigate`e router'ınızın " +
+            "gezinme fonksiyonunu verin (Next: `router.push`, React Router: `navigate`); verilmezse tarayıcı sayfayı " +
+            "yükler. Öğe bazında `target` (`_blank`, `_parent`, `_top`, çerçeve adı) ve `reloadDocument` router'ı atlar.",
           whenToUse: ["Bir uygulamanın üst seviye sayfaları arasında yatay, her zaman görünür bir gezinme çubuğu gerektiğinde."],
           a11y:
-            "Her öğe gerçek bir `<button>` (Button component'i) — Tab ile odaklanılıp Enter/Boşluk ile aktifleştirilebilir. " +
-            "`children`'ı olan öğeler için alt menü tetikleyicisi de tek bir gerçek `<button>`dır. Alt panel açıkken " +
-            "tetikleyiciden panele geçerken menü kapanmaz (Faz 13.5 round 2 — hover-intent gecikmesi, bkz. Dropdown). " +
-            "`mobileBreakpoint` altında hamburger (`aria-expanded`/`aria-controls`) bir `role=\"dialog\"` çekmece açar: " +
-            "odak içeri taşınır ve içinde döner, Escape/scrim kapatır, kapanınca odak hamburger'e döner; aktif sayfa `aria-current=\"page\"`.",
+            "Öğeler `<nav aria-label=\"Ana menü\">` içinde bir `<ul>` listesi; route'u olan öğeler gerçek link (orta tık / " +
+            "yeni sekmede aç çalışır), geçerli sayfa `aria-current=\"page\"`. Alt menü tetikleyicisi `aria-expanded` taşıyan " +
+            "tek bir `<button>`: Enter/Boşluk/↓ açar, panelde ↑/↓/Home/End ve harf tuşlarıyla gezilir, Escape kapatır. " +
+            "Tetikleyiciden panele geçerken menü kapanmaz (hover-intent). `mobileBreakpoint` altında hamburger bir " +
+            "`role=\"dialog\"` çekmece açar: odak içeri taşınır ve içinde döner, Escape/scrim kapatır, odak hamburger'e döner. " +
+            "Logo `logoHref` ile \"Ana sayfa\" adlı bir link olur.",
         }),
       },
     },
@@ -50,6 +52,10 @@ const meta: Meta<typeof BasicMenu> = {
     menuPosition: { control: "select", options: ["default", "sticky", "fixed"], description: "Menünün sayfa kaydırmasına göre konumlanma davranışı." },
     currentPath: { control: "text", description: "Aktif öğeyi belirlemek için mevcut yol — verilirse ve `data`da eşleşen bir `route` varsa başlangıçta o öğe vurgulanır." },
     actions: { control: false, description: "Sağ tarafta gösterilecek keyfi içerik (örn. \"Giriş Yap\" düğmesi, sepet ikonu)." },
+    logoHref: { control: "text", description: "Logoyu bu adrese giden bir link yapar (genelde `/`)." },
+    logoLabel: { control: "text", description: "Etkileşimli logonun erişilebilir adı.", table: { defaultValue: { summary: '"Ana sayfa"' } } },
+    skeleton: { control: "boolean", description: "Logo, öğeler ve `actions` yer tutucu.", table: { defaultValue: { summary: "false" } } },
+    "aria-label": { control: "text", description: "`<nav>`ın erişilebilir adı.", table: { defaultValue: { summary: '"Ana menü"' } } },
   },
   args: {
     onNavigate: () => {},
@@ -116,6 +122,7 @@ export const RealWorldEcommerce: Story = {
     data: ecommerceData,
     menuItemJustify: "center",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
     actions: (
       <>
         <Button variant="ghost" color="neutral">
@@ -162,6 +169,7 @@ export const RealWorldCorporate: Story = {
     data: corporateData,
     menuItemJustify: "left",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
     // Navbar'daki tek CTA sayfanın en yüksek vurgulu öğesi olmalı — `solid`.
     // `outline`/`ghost` daha düşük vurgulu ikincil eylemler içindir (bkz.
     // e-ticaret story'sindeki "Giriş Yap").
@@ -185,12 +193,25 @@ export const ActiveFromCurrentPath: Story = {
     menuItemJustify: "center",
     currentPath: "/products/electronics",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
   },
 };
 
 export const StickyPosition: Story = {
   name: "Yapışkan (Sticky) Konum",
-  ...storyDoc("Sayfa kaydırılırken üstte yapışık kalır — aşağı kaydırın."),
+  ...storyDoc(
+    "Sayfa kaydırılırken üstte yapışık kalır — aşağı kaydırın. `sticky`/`fixed` konumda çubuk `z-mari-sticky` " +
+      "katmanındadır; kayan içerik üstüne binmez.",
+    `
+<BasicMenu
+  data={data}
+  menuPosition="sticky"
+  menuItemJustify="center"
+  logo={<MariLogo size={36} />}
+  logoHref="/"
+/>
+<main>…</main>`
+  ),
   render: (args) => (
     <div className="h-96 overflow-y-auto">
       <BasicMenu {...args} />
@@ -202,5 +223,105 @@ export const StickyPosition: Story = {
     menuItemJustify: "center",
     menuPosition: "sticky",
     logo: <MariLogo size={36} />,
+    logoHref: "/",
   },
 };
+
+export const WithRouter: Story = {
+  name: "Router ile Kullanım (Next.js / React Router)",
+  ...storyDoc(
+    "Component router bağımsızdır. `onNavigate` verilince düz sol tık router'a devredilir, sayfa yenilenmez; " +
+      "⌘/Ctrl/orta tık yine yeni sekmede açar. Her sayfada tekrar yazmamak için menüyü projenizde bir kez sarın.",
+    `
+// Next.js (App Router)
+"use client";
+import { useRouter } from "next/navigation";
+
+export function AppMenu(props: BasicMenuProps) {
+  const router = useRouter();
+  return <BasicMenu {...props} onNavigate={(route) => router.push(route)} />;
+}
+
+// React Router
+import { useNavigate } from "react-router";
+
+export function AppMenu(props: BasicMenuProps) {
+  const navigate = useNavigate();
+  return <BasicMenu {...props} onNavigate={(route) => navigate(route)} />;
+}
+
+// Router yok (düz site): onNavigate vermeyin, linkler sayfayı yükler.
+<BasicMenu data={data} logo={<Logo />} logoHref="/" />`
+  ),
+  args: { data: corporateData, logo: <MariLogo size={36} />, logoHref: "/" },
+};
+
+const linkTargetData: MenuItemType[] = [
+  { key: "home", title: "Ana Sayfa", route: "/", icon: icon(HomeIcon) },
+  { key: "docs", title: "Dokümantasyon", route: "https://docs.example.com", target: "_blank", icon: icon(BookOpenIcon) },
+  { key: "blog", title: "Blog", route: "/blog", reloadDocument: true, icon: icon(NewspaperIcon) },
+  {
+    key: "support",
+    title: "Destek",
+    icon: icon(HeadphonesIcon),
+    children: [
+      { key: "faq", title: "SSS", route: "/destek/sss", icon: icon(InfoIcon), description: "Uygulama içi sayfa — router ile açılır." },
+      { key: "status", title: "Sistem Durumu", route: "https://status.example.com", target: "_blank", icon: icon(ActivityIcon), description: "Ayrı bir sitede, yeni sekmede açılır." },
+      { key: "mail", title: "E-posta Gönder", route: "mailto:destek@example.com", icon: icon(MailIcon), description: "Posta uygulamasını açar." },
+    ],
+  },
+];
+
+export const LinkTargets: Story = {
+  name: "Link Hedefleri (target / reloadDocument)",
+  ...storyDoc(
+    "Öğe bazında davranış: `target: \"_blank\"` yeni sekmede açar (`rel=\"noopener noreferrer\"`, dış bağlantı ikonu ve " +
+      "ekran okuyucuya \"yeni sekmede açılır\" otomatik); `_parent`, `_top` ve çerçeve adları da geçerlidir. " +
+      "`reloadDocument: true` aynı sekmede ama router'ı atlayarak tam sayfa yükler (aynı domain'de ayrı bir site, " +
+      "`/logout` gibi sunucu yönlendirmeleri). `https:`, `mailto:`, `tel:` adresleri kendiliğinden tarayıcıya bırakılır.",
+    `
+const data: MenuItemType[] = [
+  { key: "home", title: "Ana Sayfa", route: "/" },                                   // router
+  { key: "docs", title: "Dokümantasyon", route: "https://docs.example.com", target: "_blank" },
+  { key: "blog", title: "Blog", route: "/blog", reloadDocument: true },             // tam sayfa
+  {
+    key: "support",
+    title: "Destek",
+    children: [
+      { key: "faq", title: "SSS", route: "/destek/sss" },
+      { key: "status", title: "Sistem Durumu", route: "https://status.example.com", target: "_blank" },
+      { key: "mail", title: "E-posta Gönder", route: "mailto:destek@example.com" },
+    ],
+  },
+];
+
+<BasicMenu data={data} onNavigate={(route) => router.push(route)} />`
+  ),
+  args: { data: linkTargetData, logo: <MariLogo size={36} />, logoHref: "/" },
+};
+
+function SkeletonDemo(args: React.ComponentProps<typeof BasicMenu>) {
+  const [loading, setLoading] = useState(true);
+  return (
+    <div>
+      <BasicMenu {...args} skeleton={loading} />
+      <label className="m-4 flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
+        Yükleniyor
+      </label>
+    </div>
+  );
+}
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` logo, öğeler ve `actions`ı kendi kutularında yer tutucuya çevirir (menü verisi ya da oturum " +
+      "bilgisi sunucudan geliyorsa). Gerçek içerik görünmez olarak yerinde kaldığı için yüklenince çubuk zıplamaz; " +
+      "çubuk `aria-busy` taşır.",
+    `<BasicMenu data={data} logo={<MariLogo size={36} />} logoHref="/" actions={actions} skeleton={!ready} />`
+  ),
+  render: (args) => <SkeletonDemo {...args} />,
+  args: { ...RealWorldEcommerce.args },
+};
+

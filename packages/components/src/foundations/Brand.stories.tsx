@@ -22,7 +22,7 @@ export const LogoAilesi: Story = {
   name: "Logo ve uygulama simgesi",
   render: () => (
     <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
-      <section className="rounded-2xl border border-mari-border bg-mari-surface p-6">
+      <section className="rounded-xl border border-mari-border bg-mari-surface p-6">
         <h2 className="mb-1 font-heading text-lg font-semibold">Yazı logosu</h2>
         <p className="mb-5 text-sm text-mari-muted">
           Dokümantasyon, web ve sunumlarda kullanılır.
@@ -52,7 +52,7 @@ export const LogoAilesi: Story = {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-mari-border bg-mari-surface p-6">
+      <section className="rounded-xl border border-mari-border bg-mari-surface p-6">
         <h2 className="mb-1 font-heading text-lg font-semibold">Uygulama simgesi</h2>
         <p className="mb-5 text-sm text-mari-muted">
           Küçük alanlarda yalnızca iris monogramını kullan.

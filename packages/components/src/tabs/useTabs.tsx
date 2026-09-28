@@ -20,6 +20,7 @@ export function TabsProvider({
   align = "start",
   keepMounted = false,
   activationMode = "automatic",
+  skeleton = false,
   children,
 }: TabsProviderProps) {
   const [resolvedActiveTab, setActiveTab] = useControllableState<string>({
@@ -44,8 +45,9 @@ export function TabsProvider({
       align,
       keepMounted,
       activationMode,
+      skeleton,
     }),
-    [resolvedActiveTab, setActiveTab, isControlled, baseId, color, variant, size, orientation, fill, align, keepMounted, activationMode]
+    [resolvedActiveTab, setActiveTab, isControlled, baseId, color, variant, size, orientation, fill, align, keepMounted, activationMode, skeleton]
   );
 
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;

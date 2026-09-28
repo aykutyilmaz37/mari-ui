@@ -7,7 +7,7 @@ import { cn, type ColorRole } from "@mari-ui/core";
 import { bgSolidClass, textSolidContrastClass } from "../../lib/colorClasses";
 import { useModalBehavior, usePresence } from "../../lib/overlay";
 import type { MenuItemType, MenuNavigationProps } from "../types";
-import { findActiveKeyByRoute, navigateTo } from "../utils";
+import { findActiveKeyByRoute } from "../utils";
 import { MegaPanelPromoGrid } from "./_components/MegaPanelPromoGrid";
 import { MobileNavLevel } from "./_components/MobileNavLevel";
 
@@ -99,10 +99,10 @@ export function NavDrawer({
     panelRef.current?.querySelector("[data-nav-drawer-body]")?.scrollTo?.({ top: 0 });
   }, [trail, open]);
 
+  // Gezinmenin kendisi `MenuLink`te (gerçek `<a href>`); burada yalnızca seçim bildirilip çekmece kapanır.
   const handleSelect = (item: MenuItemType) => {
     onItemSelect?.(item);
     onClose();
-    navigateTo(item.route, onNavigate);
   };
 
   const handleBack = () => {
@@ -163,6 +163,7 @@ export function NavDrawer({
             onDrill={(item) => setTrail((prev) => [...prev, item])}
             onBack={handleBack}
             onSelect={handleSelect}
+            onNavigate={onNavigate}
           />
           {parent?.promoTiles && parent.promoTiles.length > 0 && (
             <MegaPanelPromoGrid tiles={parent.promoTiles} onNavigate={onNavigate} onTileClick={onClose} className="w-full px-4 pb-6" />

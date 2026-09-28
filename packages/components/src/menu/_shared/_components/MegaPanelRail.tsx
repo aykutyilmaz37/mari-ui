@@ -5,7 +5,9 @@ import { ChevronRightIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { textClass } from "../../../lib/colorClasses";
 import type { MenuItemType, MenuNavigationProps } from "../../types";
-import { navigateTo } from "../../utils";
+import { isMenuItemActive } from "../../utils";
+import { MenuLink } from "../MenuLink";
+import { NewTabHint } from "../../../lib/linkBehavior";
 
 /** Seçili satırın sol şeridi — literal tablo (Tailwind birleştirilmiş sınıf adını taramaz). */
 const INDICATOR_COLOR_CLASS: Record<ColorRole, string> = {
@@ -25,6 +27,7 @@ export interface MegaPanelRailProps extends MenuNavigationProps {
   color: ColorRole;
   orientation: "horizontal" | "vertical";
   onItemClick?: (item: MenuItemType) => void;
+  activeKey?: string | null;
 }
 
 /**
@@ -43,7 +46,7 @@ export interface MegaPanelRailProps extends MenuNavigationProps {
  * `orientation="vertical"` (Sidebar'ın dar yan panelleri) ray'i üstte yatay
  * bir şerit hâline getirir; orada sol şerit/ayraç yerine altta bir ayraç olur.
  */
-export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation, onNavigate, onItemClick }: MegaPanelRailProps) {
+export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation, onNavigate, onItemClick, activeKey = null }: MegaPanelRailProps) {
   if (items.length === 0) return null;
 
   const horizontal = orientation === "horizontal";
@@ -55,15 +58,21 @@ export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation
         const indicatorClass = selected ? INDICATOR_COLOR_CLASS[color] : "before:bg-transparent";
         return (
           <li key={item.key}>
-            <button
-              type="button"
+            <MenuLink
+              route={item.route}
+              target={item.target}
+              reloadDocument={item.reloadDocument}
+              onNavigate={onNavigate}
               disabled={item.disabled}
+              current={item.key === activeKey}
+              data-selected={selected || undefined}
               onMouseEnter={() => !item.disabled && onSelect(item.key)}
               onFocus={() => !item.disabled && onSelect(item.key)}
-              onClick={() => {
+              // Route'suz ray öğesi yalnızca kategori seçer; route'lu olan gider ve paneli kapatır.
+              onSelect={() => {
                 if (item.disabled) return;
-                onItemClick?.(item);
-                navigateTo(item.route, onNavigate);
+                onSelect(item.key);
+                if (item.route) onItemClick?.(item);
               }}
               className={cn(
                 "relative flex w-full items-center gap-2 rounded-md py-2 text-start text-sm transition-colors duration-150",
@@ -77,15 +86,17 @@ export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation
                   : "px-3",
                 item.disabled && "cursor-not-allowed opacity-50",
                 !item.disabled && "cursor-pointer",
-                selected ? cn(textClass[color], "bg-mari-surface-alt font-medium") : "font-normal text-mari-foreground/80 hover:bg-mari-surface-alt"
+                selected || isMenuItemActive(item, activeKey) ? cn(textClass[color], "font-medium") : "font-normal text-mari-foreground/80",
+                selected ? "bg-mari-surface-alt" : "hover:bg-mari-surface-alt"
               )}
             >
               {item.icon}
               <span className="flex-1 truncate">{item.title}</span>
+              <NewTabHint target={item.target} />
               {horizontal && item.children && item.children.length > 0 && (
                 <ChevronRightIcon aria-hidden="true" size={16} className={cn("shrink-0 transition-colors", selected ? textClass[color] : "text-mari-muted")} />
               )}
-            </button>
+            </MenuLink>
           </li>
         );
       })}

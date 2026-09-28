@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computePanelPosition, parsePlacement } from "./utils";
+import { computePanelPosition, getRovingTarget, parsePlacement } from "./utils";
 
 const VIEWPORT = { width: 1000, height: 800 };
 const PANEL = { width: 200, height: 100 };
@@ -129,3 +129,33 @@ describe("computePanelPosition", () => {
     expect(pos.top + 40).toBeGreaterThanOrEqual(anchorCenter + 12);
   });
 });
+
+describe("getRovingTarget", () => {
+  const make = (...labels: string[]) =>
+    labels.map((label) => {
+      const el = document.createElement("button");
+      el.textContent = label;
+      return el;
+    });
+
+  it("↓/↑ sarar, Home/End uçlara gider, başka tuşta null", () => {
+    const items = make("A", "B", "C");
+    expect(getRovingTarget(items, items[2]!, "ArrowDown")).toBe(items[0]);
+    expect(getRovingTarget(items, items[0]!, "ArrowUp")).toBe(items[2]);
+    expect(getRovingTarget(items, null, "ArrowDown")).toBe(items[0]);
+    expect(getRovingTarget(items, items[1]!, "End")).toBe(items[2]);
+    expect(getRovingTarget(items, items[1]!, "Home")).toBe(items[0]);
+    expect(getRovingTarget(items, items[1]!, "Enter")).toBeNull();
+    expect(getRovingTarget(items, items[1]!, " ")).toBeNull();
+    expect(getRovingTarget([], null, "ArrowDown")).toBeNull();
+  });
+
+  it("harfle atlama Türkçe büyük/küçük harf duyarsızdır ve mevcut öğeden sonrasına bakar", () => {
+    const items = make("İndir", "Ayarlar", "ırmak", "İptal");
+    expect(getRovingTarget(items, items[0]!, "i")).toBe(items[3]);
+    expect(getRovingTarget(items, items[3]!, "i")).toBe(items[0]);
+    expect(getRovingTarget(items, null, "ı")).toBe(items[2]);
+    expect(getRovingTarget(items, items[0]!, "z")).toBeNull();
+  });
+});
+

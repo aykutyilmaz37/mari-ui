@@ -135,4 +135,17 @@ describe("Steps", () => {
     const { container } = render(<Steps data={data} currentStep={2} onChange={() => {}} />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("skeleton: liste aria-hidden, adımlar etkileşimsiz, eylem düğmeleri iskelet; aria-busy", async () => {
+    const onChange = vi.fn();
+    const { container } = render(<Steps data={data} currentStep={2} onChange={onChange} skeleton />);
+    expect(container.firstElementChild).toHaveAttribute("aria-busy", "true");
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+    const stepButtons = container.querySelectorAll("ol button");
+    for (const button of stepButtons) expect(button).toHaveAttribute("tabindex", "-1");
+    (stepButtons[0] as HTMLElement).click();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "İleri" })).not.toBeInTheDocument();
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
 });

@@ -708,6 +708,53 @@ export const Colors: Story = {
   ),
 };
 
+function SkeletonDemo() {
+  const [loading, setLoading] = useState(true);
+  return (
+    <div className="flex flex-col gap-6">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
+        Yükleniyor
+      </label>
+      {(["line", "card", "pills"] as const).map((variant) => (
+        <Tabs key={variant} variant={variant} defaultActiveTab="orders" skeleton={loading}>
+          <TabsList aria-label="Hesap">
+            <TabsTrigger value="orders" count={3}>
+              Siparişlerim
+            </TabsTrigger>
+            <TabsTrigger value="addresses">Adreslerim</TabsTrigger>
+            <TabsTrigger value="payment">Ödeme Yöntemleri</TabsTrigger>
+          </TabsList>
+          <TabsContent value="orders">
+            <p className="text-sm text-mari-muted">3 aktif siparişiniz var. En yakın teslimat yarın 14:00–18:00 arasında.</p>
+          </TabsContent>
+          <TabsContent value="addresses">Kayıtlı adresler</TabsContent>
+          <TabsContent value="payment">Kayıtlı kartlar</TabsContent>
+        </Tabs>
+      ))}
+    </div>
+  );
+}
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` — sekme etiketleri (ve sayı rozetleri) kendi kutularında, aktif panelin içeriği satır çubuklarıyla yer " +
+      "tutucu; sekme kutuları (kenarlık, kart zemini) aynı kalır, gösterge gizli, sekmeler seçilemez. Gerçek içerik " +
+      "görünmez olarak yerinde kaldığından yüklenince zıplama olmaz.",
+    `
+<Tabs variant="card" defaultActiveTab="orders" skeleton={!account}>
+  <TabsList aria-label="Hesap">
+    <TabsTrigger value="orders" count={account?.orderCount}>Siparişlerim</TabsTrigger>
+    <TabsTrigger value="addresses">Adreslerim</TabsTrigger>
+  </TabsList>
+  <TabsContent value="orders">…</TabsContent>
+  <TabsContent value="addresses">…</TabsContent>
+</Tabs>`
+  ),
+  render: () => <SkeletonDemo />,
+};
+
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
   args: { variant: "line", size: "md", color: "primary", orientation: "horizontal", fill: false, align: "start", defaultActiveTab: "week" },

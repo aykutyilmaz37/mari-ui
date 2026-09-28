@@ -1,5 +1,6 @@
 import type React from "react";
 import type { ColorRole, Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 /** `line`: alt çizgili (varsayılan). `card`: kart sekmeler. `pills`: kayan zeminli segmented kontrol. */
 export type TabsVariant = "line" | "card" | "pills";
@@ -19,9 +20,14 @@ export interface TabsContextType {
   align: "start" | "center";
   keepMounted: boolean;
   activationMode: "automatic" | "manual";
+  skeleton: boolean;
 }
 
-export interface TabsProps {
+/**
+ * `skeleton`: sekme etiketleri kendi metin kutularında, aktif panelin içeriği
+ * satır çubuklarıyla yer tutucu; gösterge gizli, sekmeler etkileşimsiz.
+ */
+export interface TabsProps extends SkeletonableProps {
   defaultActiveTab?: string;
   activeTab?: string;
   onChange?: (value: string) => void;
