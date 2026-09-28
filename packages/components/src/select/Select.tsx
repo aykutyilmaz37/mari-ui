@@ -5,6 +5,7 @@ import { ChevronDownIcon, Loader2Icon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import { ClearButton } from "../input/_components/FieldAdornments";
 import { FIELD_BASE_CLASS, FIELD_DISABLED_CLASS, FIELD_MOBILE_TEXT_CLASS, getShapeClasses, getVariantClasses } from "../input/utils";
+import { useFieldControl } from "../lib/fieldContext";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { sizeClass, touchTargetClass } from "../lib/sizeClasses";
 import { useFloatingPosition } from "../lib/useFloatingPosition";
@@ -138,7 +139,9 @@ function SelectSuffix({ loading, open }: { loading: boolean; open: boolean }) {
  * `aria-activedescendant`. ↑/↓/Home/End, Enter/Boşluk, Escape, Tab (seçip
  * geçer), harfle atlama; çokluda Backspace son etiketi siler.
  */
-export function Select(props: SelectProps) {
+export function Select(outerProps: SelectProps) {
+  // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
+  const props = useFieldControl(outerProps) as SelectProps;
   const {
     placeholder = "Seçin",
     showSearch = false,

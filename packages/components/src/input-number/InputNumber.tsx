@@ -4,6 +4,7 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import { FIELD_BASE_CLASS, FIELD_DISABLED_CLASS, FIELD_MOBILE_TEXT_CLASS, getShapeClasses, getVariantClasses } from "../input/utils";
+import { useFieldControl } from "../lib/fieldContext";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { sizeClass, touchTargetClass } from "../lib/sizeClasses";
 import type { InputNumberProps } from "./types";
@@ -112,8 +113,14 @@ function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, 
  * Klavye: ↑/↓ adım (Shift ×10), PageUp/PageDown ×10, Home/End min/max, Enter
  * onaylar. `aria-valuenow/min/max` + `aria-valuetext` (önek/sonekle, ör. "1.234,50 ₺").
  */
-export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(function InputNumber(
+export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(function InputNumber(outerProps, ref) {
+  // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
+  return <InputNumberInner {...useFieldControl(outerProps)} forwardedRef={ref} />;
+});
+
+function InputNumberInner(
   {
+    forwardedRef: ref,
     value,
     defaultValue = null,
     onChange,
@@ -146,8 +153,7 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(functi
     onPressEnter,
     className,
     skeleton = false,
-  },
-  ref
+  }: InputNumberProps & { forwardedRef: React.ForwardedRef<HTMLInputElement> }
 ) {
   const config: NumberFormatConfig = { locale, precision, grouping };
   const [current, setCurrent] = useControllableState<number | null>({ value, defaultValue });
@@ -300,4 +306,4 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(functi
       )}
     </div>
   );
-});
+}

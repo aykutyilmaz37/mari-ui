@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
+import { FieldContext, useFieldControl, useFieldGroup } from "../lib/fieldContext";
 import type { SkeletonableProps } from "../lib/skeleton";
 import { Input } from "./Input";
 import { OtpSingleField } from "./_components/OtpSingleField";
 import type { InputShape, InputVariant } from "./types";
-import { resolveInputColor, resolveLegacyInputVariant } from "./utils";
+import { resolveLegacyInputVariant } from "./utils";
 
 export interface OtpInputProps extends SkeletonableProps {
   length?: number;
@@ -71,12 +72,18 @@ export function OtpInput({
   formatter,
   separator,
   className,
-  "aria-label": ariaLabel = "Doğrulama kodu",
+  "aria-label": ariaLabelProp,
   inputMode = "numeric",
   skeleton = false,
   layout = "separated",
   linePosition = "center",
 }: OtpInputProps) {
+  // Field içinde: kutucuklu düzen bir GRUP (etiket grubun adı), tek kutu düzeni tek bir ALAN (label htmlFor).
+  // Varsayılan "Doğrulama kodu" adı yalnız hiç ad yoksa — Field'ın etiketini ezmesin.
+  const inField = useContext(FieldContext) !== null;
+  const group = useFieldGroup({ "aria-label": ariaLabelProp, disabled }, layout === "separated");
+  const control = useFieldControl({ disabled, color: color ?? status });
+  const ariaLabel = ariaLabelProp ?? (inField ? undefined : "Doğrulama kodu");
   const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -161,11 +168,14 @@ export function OtpInput({
         length={length}
         value={value}
         defaultValue={defaultValue}
-        disabled={disabled}
+        disabled={!!control.disabled}
         size={size}
         shape={shape}
         variant={resolveLegacyInputVariant(resolvedVariant)}
-        color={resolveInputColor(color, status)}
+        color={control.color}
+        id={control.id}
+        describedBy={control["aria-describedby"]}
+        required={control.required}
         onChange={onChange}
         onInput={onInput}
         display={(raw) => resolveDisplayValue(raw, formatter, mask)}
@@ -195,7 +205,15 @@ export function OtpInput({
   }
 
   return (
-    <div role="group" aria-label={ariaLabel} className="flex items-center gap-2">
+    <div
+      role="group"
+      aria-label={group["aria-labelledby"] ? undefined : (ariaLabel ?? "Doğrulama kodu")}
+      aria-labelledby={group["aria-labelledby"]}
+      aria-describedby={group["aria-describedby"]}
+      className="flex items-center gap-2"
+    >
+      {/* Hücreler Field'ın bağlantılarını ALMAZ — hepsi aynı id'yi alırdı; bağlantılar gruptadır. */}
+      <FieldContext.Provider value={null}>
       {Array.from({ length }).map((_, i) => {
         const rawValue = otpValues[i] ?? "";
         const displayValue = resolveDisplayValue(rawValue, formatter, mask);
@@ -215,11 +233,11 @@ export function OtpInput({
               inputMode={inputMode}
               // SMS kodunu klavye önerisi olarak sunar — sadece ilk hücrede.
               autoComplete={i === 0 ? "one-time-code" : "off"}
-              disabled={disabled}
+              disabled={!!group.disabled}
               size={size}
               shape={shape}
               variant={resolvedVariant}
-              color={color}
+              color={group["aria-invalid"] ? (color ?? status ?? "error") : color}
               status={status}
               className={cn(WIDTH_CLASS[size], className)}
               classNames={{ input: "w-full text-center font-medium" }}
@@ -232,6 +250,7 @@ export function OtpInput({
           </React.Fragment>
         );
       })}
+      </FieldContext.Provider>
     </div>
   );
 }

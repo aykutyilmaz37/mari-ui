@@ -11,6 +11,7 @@ import { MailPlusIcon, ReceiptIcon, Trash2Icon, UserPlusIcon } from "lucide-reac
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Modal } from "./Modal";
+import { Field } from "../field";
 import { Button } from "../button";
 import { Checkbox } from "../checkbox";
 import { Input } from "../input";
@@ -80,16 +81,6 @@ export default meta;
 type Story = StoryObj<typeof Modal>;
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-function Field({ label, hint, children }: { label: string; hint?: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-mari-foreground">{label}</span>
-      {children}
-      {hint && <span className="text-xs text-mari-muted">{hint}</span>}
-    </label>
-  );
-}
 
 /* ─────────────────────────── 1. Yıkıcı onay ─────────────────────────── */
 
@@ -285,8 +276,9 @@ const roles = [
 export const InviteForm: Story = {
   name: "Davet Formu",
   ...storyDoc(
-    "Kısa form modalı: özel `icon` + `color=\"primary\"`, ilk alan `data-autofocus` ile odaklanır, doğrulama " +
-      "hatası alanın hemen altında. Gönderim sırasında `confirmLoading`.",
+    "Kısa form modalı: özel `icon` + `color=\"primary\"`, ilk alan `data-autofocus` ile odaklanır. Alanlar `Field` ile: " +
+      "doğrulama hatası (`error`) alanın altında, alana bağlı ve ekran okuyucuya okunur; Rol grubunun adı da Field'ın " +
+      "etiketi. Gönderim sırasında `confirmLoading`.",
     `
 <Modal
   open={open}
@@ -300,8 +292,12 @@ export const InviteForm: Story = {
   confirmLoading={sending}
   onConfirm={send}
 >
-  <label data-autofocus>E-posta <Input type="email" … /></label>
-  <RadioGroup options={roles} … />
+  <Field label="E-posta adresi" required error={emailError}>
+    <Input data-autofocus type="email" … />
+  </Field>
+  <Field label="Rol">
+    <RadioGroup options={roles} … />
+  </Field>
 </Modal>`
   ),
   render: () => {
@@ -346,26 +342,19 @@ export const InviteForm: Story = {
           }}
         >
           <div className="space-y-5 pb-1">
-            <label className="flex flex-col gap-1.5" data-autofocus>
-              <span className="text-sm font-medium text-mari-foreground">E-posta adresi</span>
+            <Field label="E-posta adresi" required error={touched && !valid ? "Geçerli bir e-posta adresi girin." : undefined}>
               <Input
+                data-autofocus
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => setTouched(true)}
                 placeholder="ad@sirket.com"
-                status={touched && !valid ? "error" : undefined}
               />
-              {touched && !valid && (
-                <span className="text-xs text-mari-error" role="alert">
-                  Geçerli bir e-posta adresi girin.
-                </span>
-              )}
-            </label>
-            <fieldset>
-              <legend className="mb-2 text-sm font-medium text-mari-foreground">Rol</legend>
-              <RadioGroup aria-label="Rol" options={roles} value={role} onChange={(v) => setRole(String(v))} />
-            </fieldset>
+            </Field>
+            <Field label="Rol" hint="Yöneticiler üye davet edebilir ve faturalamayı görür.">
+              <RadioGroup options={roles} value={role} onChange={(v) => setRole(String(v))} />
+            </Field>
           </div>
         </Modal>
       </>

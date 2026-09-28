@@ -115,6 +115,10 @@
       "types": "./dist/autocomplete.d.ts",
       "import": "./dist/autocomplete.js"
     },
+    "./field": {
+      "types": "./dist/field.d.ts",
+      "import": "./dist/field.js"
+    },
     "./input-number": {
       "types": "./dist/input-number.d.ts",
       "import": "./dist/input-number.js"

@@ -33,6 +33,7 @@ import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Drawer } from "./Drawer";
 import { Button } from "../button";
 import { Checkbox } from "../checkbox";
+import { Field } from "../field";
 import { Input } from "../input";
 import { Slider } from "../slider";
 
@@ -98,16 +99,6 @@ export default meta;
 type Story = StoryObj<typeof Drawer>;
 
 const tl = (n: number) => n.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
-
-function Field({ label, children, className = "", initialFocus }: { label: string; children: React.ReactNode; className?: string; initialFocus?: boolean }) {
-  return (
-    // `data-autofocus`: Drawer açılınca odak bu alanın input'una gider (kapat düğmesine değil).
-    <label className={`flex flex-col gap-1.5 ${className}`} data-autofocus={initialFocus || undefined}>
-      <span className="text-sm font-medium text-mari-foreground">{label}</span>
-      {children}
-    </label>
-  );
-}
 
 /* ─────────────────────────── 1. Sepet ─────────────────────────── */
 
@@ -398,7 +389,9 @@ export const EditRecord: Story = {
     </div>
   }
 >
-  <label data-autofocus>Ad <Input … /></label>
+  <Field label="Ad">
+    <Input data-autofocus … />
+  </Field>
 </Drawer>`
   ),
   render: (args) => {
@@ -466,8 +459,9 @@ export const EditRecord: Story = {
           }
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Ad" initialFocus>
-              <Input defaultValue="Deniz" />
+            <Field label="Ad">
+              {/* `data-autofocus`: Drawer açılınca (ve veri gelince) odak buraya gider, Kapat'a değil. */}
+              <Input data-autofocus defaultValue="Deniz" />
             </Field>
             <Field label="Soyad">
               <Input defaultValue="Kaya" />

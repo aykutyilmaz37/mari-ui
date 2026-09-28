@@ -2,6 +2,7 @@
 
 import React, { useId, useLayoutEffect, useRef, useState } from "react";
 import { cn, useControllableState, type Size } from "@mari-ui/core";
+import { useFieldGroup } from "../lib/fieldContext";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { touchTargetClass } from "../lib/sizeClasses";
 import type { SegmentedOption, SegmentedProps, SegmentedValue } from "./types";
@@ -58,13 +59,17 @@ export function Segmented({
   onChange,
   block = false,
   size = "md",
-  disabled = false,
+  disabled: ownDisabled = false,
   name,
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledBy,
+  "aria-label": ownAriaLabel,
+  "aria-labelledby": ownAriaLabelledBy,
   className,
   skeleton = false,
 }: SegmentedProps) {
+  // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
+  const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled: ownDisabled });
+  const { "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy } = field;
+  const disabled = !!field.disabled;
   const items = options.map(normalize);
   const fallbackName = useId();
   const groupName = name ?? fallbackName;
@@ -134,6 +139,9 @@ export function Segmented({
       role="radiogroup"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
+      aria-describedby={field["aria-describedby"]}
+      aria-invalid={field["aria-invalid"]}
+      aria-required={field["aria-required"]}
       aria-disabled={disabled || undefined}
       className={cn(containerClass, className)}
     >

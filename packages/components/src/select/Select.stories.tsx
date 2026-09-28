@@ -11,6 +11,7 @@ import { BanknoteIcon, CreditCardIcon, LandmarkIcon, WalletIcon } from "lucide-r
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { Avatar } from "../avatar";
+import { Field } from "../field";
 import { Select } from "./Select";
 import type { SelectOption, SelectOptionGroup, SelectValue } from "./types";
 
@@ -75,24 +76,6 @@ const meta: Meta<typeof Select> = {
 export default meta;
 type Story = StoryObj<typeof Select>;
 
-function Field({ label, htmlFor, hint, error, children }: { label: string; htmlFor: string; hint?: string; error?: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-mari-foreground">
-        {label}
-      </label>
-      {children}
-      {error ? (
-        <span id={`${htmlFor}-error`} className="text-xs text-mari-error">
-          {error}
-        </span>
-      ) : (
-        hint && <span className="text-xs text-mari-muted">{hint}</span>
-      )}
-    </div>
-  );
-}
-
 /* ─────────────────────────── 1. Bağımlı il / ilçe ─────────────────────────── */
 
 const DISTRICTS: Record<string, string[]> = {
@@ -109,14 +92,16 @@ export const DependentAddress: Story = {
   name: "Teslimat Adresi (Bağımlı Seçim)",
   ...storyDoc(
     "İl seçilince ilçeler \"yükleniyor\"; il değişince ilçe sıfırlanır. İl aranabilir (\"izmir\", \"mugla\" yazın). " +
-      "`<label htmlFor>` doğrudan tetikleyiciye bağlanır.",
+      "`Field` etiketi ve ipucunu tetikleyiciye bağlar (id'ler otomatik).",
     `
-<label htmlFor="city">İl</label>
-<Select id="city" showSearch options={cities} value={city} onChange={setCity} />
+<Field label="İl">
+  <Select showSearch options={cities} value={city} onChange={setCity} />
+</Field>
 
-<label htmlFor="district">İlçe</label>
-<Select id="district" options={districts} value={district} onChange={setDistrict}
-  disabled={!city} loading={loadingDistricts} placeholder={city ? "İlçe seçin" : "Önce il seçin"} />`
+<Field label="İlçe" hint={loadingDistricts ? "İlçeler yükleniyor…" : undefined}>
+  <Select options={districts} value={district} onChange={setDistrict}
+    disabled={!city} loading={loadingDistricts} placeholder={city ? "İlçe seçin" : "Önce il seçin"} />
+</Field>`
   ),
   render: () => {
     const [city, setCity] = useState<SelectValue | null>(null);
@@ -138,10 +123,10 @@ export const DependentAddress: Story = {
 
     return (
       <div className="grid max-w-xl gap-4 sm:grid-cols-2">
-        <Field label="İl" htmlFor="city">
+        <Field label="İl">
           <Select id="city" showSearch placeholder="İl seçin" options={cityOptions} value={city} onChange={(v) => setCity(v)} />
         </Field>
-        <Field label="İlçe" htmlFor="district" hint={loading ? "İlçeler yükleniyor…" : undefined}>
+        <Field label="İlçe" hint={loading ? "İlçeler yükleniyor…" : undefined}>
           <Select
             id="district"
             showSearch
@@ -196,7 +181,7 @@ export const AssignPeople: Story = {
     const [value, setValue] = useState<SelectValue[]>(["dk", "ec"]);
     return (
       <div className="max-w-md">
-        <Field label="Atananlar" htmlFor="assignees" hint={`${value.length} kişi atandı`}>
+        <Field label="Atananlar" hint={`${value.length} kişi atandı`}>
           <Select
             id="assignees"
             mode="multiple"
@@ -250,7 +235,7 @@ export const PaymentMethod: Story = {
   ),
   render: () => (
     <div className="max-w-sm">
-      <Field label="Ödeme yöntemi" htmlFor="payment">
+      <Field label="Ödeme yöntemi">
         <Select id="payment" defaultValue="credit" options={paymentOptions} />
       </Field>
     </div>
@@ -287,23 +272,25 @@ export const Appearance: Story = {
 export const States: Story = {
   name: "Durumlar",
   ...storyDoc(
-    "Doğrulama hatası (`color=\"error\"` → kırmızı kenarlık + `aria-invalid`; hata metnini `aria-describedby` ile bağlayın), " +
-      "devre dışı ve veri gelene kadar `skeleton`.",
+    "Doğrulama hatası: `Field`'a `error` verin — Select kırmızı kenarlık + `aria-invalid` alır, hata metni ona bağlanır " +
+      "(Field dışında: `color=\"error\"` + kendi `aria-describedby`niz). Devre dışı ve veri gelene kadar `skeleton`.",
     `
-<Select color="error" aria-describedby="category-error" … />
+<Field label="Kategori" error="Bir kategori seçin">
+  <Select options={…} />
+</Field>
 <Select disabled … />
 <Select skeleton … />`
   ),
   render: () => (
     <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
-      <Field label="Kategori" htmlFor="category" error="Bir kategori seçin">
-        <Select id="category" color="error" aria-describedby="category-error" options={smallOptions} />
+      <Field label="Kategori" error="Bir kategori seçin">
+        <Select options={smallOptions} />
       </Field>
-      <Field label="Durum" htmlFor="status-disabled" hint="Yayındaki içerik değiştirilemez">
-        <Select id="status-disabled" disabled defaultValue="published" options={smallOptions} />
+      <Field label="Durum" hint="Yayındaki içerik değiştirilemez">
+        <Select disabled defaultValue="published" options={smallOptions} />
       </Field>
-      <Field label="Yükleniyor" htmlFor="status-skeleton">
-        <Select id="status-skeleton" skeleton options={smallOptions} />
+      <Field label="Yükleniyor">
+        <Select skeleton options={smallOptions} />
       </Field>
     </div>
   ),

@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { InputNumber } from "./InputNumber";
+import { Field } from "../field";
 
 const meta: Meta<typeof InputNumber> = {
   title: "Veri Girişi/InputNumber",
@@ -66,18 +67,6 @@ type Story = StoryObj<typeof InputNumber>;
 
 const tl = (n: number) => n.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
 
-function Field({ label, htmlFor, hint, children }: { label: string; htmlFor: string; hint?: React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-mari-foreground">
-        {label}
-      </label>
-      {children}
-      {hint && <span className="text-xs text-mari-muted">{hint}</span>}
-    </div>
-  );
-}
-
 /* ─────────────────────────── 1. Sepet ─────────────────────────── */
 
 export const CartQuantity: Story = {
@@ -123,13 +112,13 @@ export const Pricing: Story = {
     const sale = (price ?? 0) * (1 - (discount ?? 0) / 100);
     return (
       <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
-        <Field label="Liste fiyatı" htmlFor="price">
+        <Field label="Liste fiyatı">
           <InputNumber id="price" prefix="₺" precision={2} min={0} step={10} value={price} onChange={setPrice} />
         </Field>
-        <Field label="İndirim" htmlFor="discount" hint={`Satış fiyatı: ${tl(sale)}`}>
+        <Field label="İndirim" hint={`Satış fiyatı: ${tl(sale)}`}>
           <InputNumber id="discount" suffix="%" min={0} max={100} value={discount} onChange={setDiscount} />
         </Field>
-        <Field label="Kargo ağırlığı" htmlFor="weight" hint="0,5 kg adımlarla">
+        <Field label="Kargo ağırlığı" hint="0,5 kg adımlarla">
           <InputNumber id="weight" suffix="kg" step={0.5} min={0} precision={1} value={weight} onChange={setWeight} />
         </Field>
       </div>

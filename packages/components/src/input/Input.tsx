@@ -5,6 +5,7 @@ import { InputMask } from "@react-input/mask";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { touchTargetClass } from "../lib/sizeClasses";
 import { cn, useControllableState } from "@mari-ui/core";
+import { useFieldControl } from "../lib/fieldContext";
 import type { InputProps } from "./types";
 import { ClearButton, clearIconOf, PasswordToggle } from "./_components/FieldAdornments";
 import {
@@ -21,9 +22,16 @@ import {
 
 export type { InputProps };
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
+export const Input = forwardRef<HTMLInputElement, InputProps>((outerProps, ref) => {
+  // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
+  return <InputInner {...useFieldControl(outerProps)} forwardedRef={ref} />;
+});
+
+Input.displayName = "Input";
+
+const InputInner = (
     {
+      forwardedRef: ref,
       placeholder,
       allowClear = false,
       clearLabel = "Temizle",
@@ -61,8 +69,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       max,
       min,
       ...nativeProps
-    },
-    ref
+    }: InputProps & { forwardedRef: React.ForwardedRef<HTMLInputElement> }
   ) => {
     const innerRef = React.useRef<HTMLInputElement | null>(null);
     const setRefs = (el: HTMLInputElement | null) => {
@@ -212,7 +219,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
-);
-
-Input.displayName = "Input";
+  };
