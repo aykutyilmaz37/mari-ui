@@ -215,9 +215,10 @@ export const Sizes: Story = {
   ),
   render: () => (
     <div className="flex flex-col gap-4">
-      <Pagination size="sm" defaultPage={4} totalItems={200} showSizeChanger align="start" />
-      <Pagination size="md" defaultPage={4} totalItems={200} showSizeChanger align="start" />
-      <Pagination size="lg" defaultPage={4} totalItems={200} showSizeChanger align="start" />
+      {/* Sayfada birden çok sayfalama varsa her biri ayrı ad taşımalı (axe landmark-unique). */}
+      <Pagination size="sm" defaultPage={4} totalItems={200} showSizeChanger align="start" aria-label="Sayfalama (sm)" />
+      <Pagination size="md" defaultPage={4} totalItems={200} showSizeChanger align="start" aria-label="Sayfalama (md)" />
+      <Pagination size="lg" defaultPage={4} totalItems={200} showSizeChanger align="start" aria-label="Sayfalama (lg)" />
     </div>
   ),
 };
@@ -234,10 +235,10 @@ export const Variants: Story = {
   ),
   render: () => (
     <div className="flex flex-col gap-4">
-      <Pagination variant="outline" defaultPage={3} totalItems={100} align="start" />
-      <Pagination variant="soft" defaultPage={3} totalItems={100} align="start" />
-      <Pagination variant="solid" defaultPage={3} totalItems={100} align="start" />
-      <Pagination variant="solid" color="accent" defaultPage={3} totalItems={100} align="start" />
+      <Pagination variant="outline" defaultPage={3} totalItems={100} align="start" aria-label="Sayfalama (outline)" />
+      <Pagination variant="soft" defaultPage={3} totalItems={100} align="start" aria-label="Sayfalama (soft)" />
+      <Pagination variant="solid" defaultPage={3} totalItems={100} align="start" aria-label="Sayfalama (solid)" />
+      <Pagination variant="solid" color="accent" defaultPage={3} totalItems={100} align="start" aria-label="Sayfalama (solid, accent)" />
     </div>
   ),
 };

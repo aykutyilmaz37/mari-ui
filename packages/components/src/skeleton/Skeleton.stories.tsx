@@ -236,6 +236,40 @@ export const Basic: Story = {
   ),
 };
 
+export const ControlShapes: Story = {
+  name: "Kontrol Parçaları",
+  ...storyDoc(
+    "`SkeletonButton` / `SkeletonInput` gerçek Button/Input'la aynı yükseklik ve köşe yarıçapında (sm `rounded-sm`, " +
+      "md/lg `rounded-md`); `shape` Button'ınkiyle aynı: `default` / `pill` / `circle` (kare-daire) / `square`. " +
+      "Solda iskelet, sağda gerçeği — yüklenince zıplamaz.",
+    `
+<SkeletonButton active size="sm" />
+<SkeletonButton active shape="pill" />
+<SkeletonButton active shape="circle" />
+<SkeletonInput active size="lg" />`
+  ),
+  render: () => (
+    <div className="grid max-w-xl grid-cols-[auto_auto] items-center justify-start gap-x-8 gap-y-4">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <React.Fragment key={size}>
+          <div className="flex items-center gap-3">
+            <SkeletonButton active size={size} />
+            <SkeletonButton active size={size} shape="pill" />
+            <SkeletonButton active size={size} shape="circle" />
+          </div>
+          <div className="flex items-center gap-3">
+            <Button size={size}>Kaydet</Button>
+            <Button size={size} shape="pill">
+              Takip et
+            </Button>
+            <Button size={size} shape="circle" aria-label="Kamera" icon={<CameraIcon size={16} aria-hidden />} />
+          </div>
+        </React.Fragment>
+      ))}
+    </div>
+  ),
+};
+
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
   args: { active: true, avatar: true, title: true, round: false, paragraph: { rows: 3 } },

@@ -11,6 +11,6 @@ export interface SkeletonInputProps {
 // Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
 export function SkeletonInput({ active = false, size = "md", className }: SkeletonInputProps) {
   return (
-    <div aria-hidden className={cn("rounded-md", skeletonFill(active), INPUT_SIZE_CLASS[size], className)} />
+    <div aria-hidden className={cn(skeletonFill(active), INPUT_SIZE_CLASS[size], className)} />
   );
 }

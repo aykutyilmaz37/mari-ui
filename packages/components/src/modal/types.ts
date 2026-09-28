@@ -1,9 +1,10 @@
 import type React from "react";
 import type { ColorRole, Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type ButtonPositionType = "left" | "right";
 
-export interface ModalProps {
+export interface ModalProps extends SkeletonableProps {
   open: boolean;
   onClose: () => void;
   /** Başlık — dialog'un erişilebilir adı. */
@@ -52,6 +53,11 @@ export interface ModalProps {
   maskClosable?: boolean;
   /** Escape kapatsın. Varsayılan: `true`. */
   keyboard?: boolean;
+  /**
+   * Veri gelene kadar başlık (ikon dahil), gövde ve alt çubuk içeriğin kendi
+   * şeklinde iskelete döner. Kapat düğmesi ve Escape çalışmaya devam eder.
+   */
+  skeleton?: boolean;
   /** Başlık yoksa erişilebilir ad. */
   "aria-label"?: string;
   className?: string;

@@ -1,11 +1,12 @@
 import type React from "react";
 import type { Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export type DrawerPosition = "top" | "bottom" | "left" | "right";
 export type DrawerSize = Size;
 export type DrawerCloseButtonPosition = "left" | "right";
 
-export interface DrawerProps {
+export interface DrawerProps extends SkeletonableProps {
   open: boolean;
   onClose: () => void;
   /** Açıldığı kenar. Varsayılan: `"right"`. */
@@ -36,7 +37,13 @@ export interface DrawerProps {
   showCloseButton?: boolean;
   /** Varsayılan: `"right"`. */
   closeButtonPosition?: DrawerCloseButtonPosition;
-  /** Gövde yerine iskelet gösterir. */
+  /**
+   * Veri gelene kadar başlık, açıklama, `extra`, gövde ve alt çubuk iskelete
+   * döner. Kapat düğmesi ve Escape çalışmaya devam eder — kullanıcı yüklemeyi
+   * beklemeden çıkabilmeli.
+   */
+  skeleton?: boolean;
+  /** @deprecated Faz 15 — `skeleton` kullanın; bir sonraki major'da kaldırılacak. */
   loading?: boolean;
   /** Arka plan örtüsü (scrim). Varsayılan: `true`. */
   mask?: boolean;

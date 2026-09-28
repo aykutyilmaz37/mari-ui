@@ -1,12 +1,16 @@
 import type React from "react";
 import type { Size } from "@mari-ui/core";
 
-export type SkeletonButtonShape = "circle" | "round" | "square" | "default";
+/** Button `shape` ile aynı; `round` = `pill`'in eski adı. */
+export type SkeletonButtonShape = "default" | "pill" | "circle" | "square" | "round";
 export type SkeletonAvatarShape = "circle" | "square";
 
+/** Avatar'ın kendisiyle aynı geometri: sm 24 / md 32 / lg 40px, varsayılan daire. */
 export interface SkeletonAvatarProps {
   active?: boolean;
+  /** Varsayılan: `"circle"` (Avatar gibi). */
   shape?: SkeletonAvatarShape;
+  /** `sm`/`md`/`lg` ya da px. Varsayılan: `md`. */
   size?: number | Size;
 }
 

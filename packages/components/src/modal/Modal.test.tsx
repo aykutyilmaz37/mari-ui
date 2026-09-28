@@ -131,4 +131,70 @@ describe("Modal", () => {
     );
     expect(await getA11yViolations(document.body)).toEqual([]);
   });
+
+  it("taşan ve odaklanabilir öğe içermeyen gövde Tab durağı olur (axe scrollable-region-focusable); sığan gövde olmaz", () => {
+    // jsdom'da yerleşim ve ResizeObserver yok: ikisini de taklit et.
+    const observe = vi.fn();
+    vi.stubGlobal("ResizeObserver", class { observe = observe; disconnect() {} });
+    const heights = vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(900);
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(300);
+    const { unmount } = render(
+      <Modal open onClose={() => {}} title="Kullanım koşulları">
+        <p>Uzun metin</p>
+      </Modal>
+    );
+    expect(document.querySelector("[data-modal-body]")).toHaveAttribute("tabindex", "0");
+    unmount();
+
+    heights.mockReturnValue(300);
+    render(
+      <Modal open onClose={() => {}} title="Kısa">
+        <p>Kısa metin</p>
+      </Modal>
+    );
+    expect(document.querySelector("[data-modal-body]")).not.toHaveAttribute("tabindex");
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  describe("skeleton", () => {
+    const renderSkeleton = (skeleton: boolean, extra: Partial<React.ComponentProps<typeof Modal>> = {}) => (
+      <Modal open onClose={() => {}} title="Sipariş #42" description="Detaylar" cancelButtonText="Vazgeç" confirmButtonText="Kaydet" skeleton={skeleton} {...extra}>
+        <input aria-label="Ad" />
+      </Modal>
+    );
+
+    it("başlık/gövde/alt çubuk erişilebilirlik ağacından çıkar; ad, Kapat ve aria-busy kalır", async () => {
+      render(renderSkeleton(true));
+      const dialog = screen.getByRole("dialog", { name: "Sipariş #42" });
+      expect(dialog).toHaveAttribute("aria-busy", "true");
+      expect(screen.queryByRole("textbox", { name: "Ad" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Kaydet" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Kapat" })).toBeInTheDocument();
+      expect(await getA11yViolations(document.body)).toEqual([]);
+    });
+
+    it("iskelette odak Kapat'ta kalır ve Tab görünmez düğmelere takılmaz", async () => {
+      const user = userEvent.setup();
+      render(renderSkeleton(true));
+      const close = screen.getByRole("button", { name: "Kapat" });
+      expect(close).toHaveFocus();
+      await user.tab();
+      expect(close).toHaveFocus();
+    });
+
+    it("yıkıcı onayda initialFocus iskeletteki görünmez Vazgeç'e gitmez; veri gelince oraya taşınır", () => {
+      const props = { color: "error" as const };
+      const { rerender } = render(renderSkeleton(true, props));
+      expect(screen.getByRole("button", { name: "Kapat" })).toHaveFocus();
+      rerender(renderSkeleton(false, props));
+      expect(screen.getByRole("button", { name: "Vazgeç" })).toHaveFocus();
+    });
+
+    it("veri gelince odak gövdedeki ilk alana taşınır", () => {
+      const { rerender } = render(renderSkeleton(true));
+      rerender(renderSkeleton(false));
+      expect(screen.getByRole("textbox", { name: "Ad" })).toHaveFocus();
+    });
+  });
 });

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef } from "react";
 import { cn } from "@mari-ui/core";
+import { useScrollable } from "../lib/useScrollable";
 import { TableAccordion } from "./_components/TableAccordion";
 import { TableBody } from "./_components/TableBody";
 import { TableHeader } from "./_components/TableHeader";
@@ -44,16 +45,7 @@ export function Table<T extends { id: string }>({
   // `scrollable-region-focusable`): SADECE gerçekten taşarken tab durağı olur —
   // sığan bir tabloya boşuna bir durak eklemesin.
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [scrollable, setScrollable] = useState(false);
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const check = () => setScrollable(el.scrollWidth > el.clientWidth + 1);
-    check();
-    const ro = new ResizeObserver(check);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  const scrollable = useScrollable(scrollRef, "x");
 
   const pageData = useMemo(() => {
     if (!pagination || paginationMode !== "client") return data;

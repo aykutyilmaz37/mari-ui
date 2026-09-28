@@ -268,7 +268,8 @@ export const ArrowsPlacements: Story = {
       {(["sides", "top-left", "top-right", "bottom-left", "bottom-right"] as const).map((placement) => (
         <div key={`arrows-${placement}`} className="w-full max-w-[640px]">
           <p className="mb-2 font-medium">arrowsPlacement: {placement}</p>
-          <Carousel arrows arrowsPlacement={placement}>
+          {/* Aynı sayfadaki carousel'ler ayrı ad taşımalı (axe landmark-unique). */}
+          <Carousel arrows arrowsPlacement={placement} label={`Ürünler (oklar: ${placement})`}>
             {productSlides}
           </Carousel>
         </div>
@@ -294,14 +295,14 @@ export const DotPositions: Story = {
       {(["top", "bottom", "left", "right"] as const).map((position) => (
         <div key={`dots-${position}`} className="w-full max-w-[640px]">
           <p className="mb-2 font-medium">Noktalar: {position}</p>
-          <Carousel dotPosition={position} arrows={false}>
+          <Carousel dotPosition={position} arrows={false} label={`Ürünler (noktalar: ${position})`}>
             {productSlides}
           </Carousel>
         </div>
       ))}
       <div className="w-full max-w-[640px]">
         <p className="mb-2 font-medium">Noktalar: outside</p>
-        <Carousel dotsPlacement="outside" arrows={false}>
+        <Carousel dotsPlacement="outside" arrows={false} label="Ürünler (noktalar: outside)">
           {productSlides}
         </Carousel>
       </div>

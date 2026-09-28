@@ -253,7 +253,8 @@ export function Steps({
         {withRail}
       </span>
       {item.description && (
-        <span className={cn("mt-0.5 leading-relaxed", descSizeClass[size], status === "wait" ? "text-mari-muted/80" : "text-mari-muted")}>
+        // Bekleyen adımda da tam `muted`: `/80` açık zeminde 4.5:1'in altına düşüyordu (axe color-contrast).
+        <span className={cn("mt-0.5 leading-relaxed text-mari-muted", descSizeClass[size])}>
           {/* Dolgu iç `<span>`de: satır satır sarılsın (blok kutunun tamamı değil). */}
           <span className={cn(skeleton && skeletonTextClass)}>{item.description}</span>
         </span>

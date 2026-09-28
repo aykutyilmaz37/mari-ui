@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@mari-ui/core";
 import { getTabId, useTabs } from "../useTabs";
 import type { TabsContentProps } from "../types";
@@ -12,9 +12,11 @@ import { skeletonFill } from "../../lib/skeleton";
  * artık sadece sekme çubuğundan ayıran üst boşluk (ant.design: 16px).
  */
 export function TabsContent({ children, value, forceMount = false, className }: TabsContentProps) {
-  const { activeTab, baseId, keepMounted, orientation, skeleton } = useTabs();
+  const { activeTab, baseId, keepMounted, orientation, skeleton, registerPanel } = useTabs();
   const active = activeTab === value;
-  if (!active && !keepMounted && !forceMount) return null;
+  const mounted = active || keepMounted || forceMount;
+  useEffect(() => (mounted ? registerPanel(value) : undefined), [mounted, value, registerPanel]);
+  if (!mounted) return null;
 
   // İskelet: gerçek içerik görünmez olarak akışta kalır ve paneli O boyar (yüklenince zıplamaz);
   // satır çubukları üstüne biner, sığmayanlar kırpılır. İçerik boşsa en az bir satırlık yer.

@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@mari-ui/core";
 import type { SkeletonAvatarProps, SkeletonBlockProps, SkeletonParagraphProps, SkeletonProps, SkeletonTitleProps } from "./types";
-import { getAvatarShapeClass, getAvatarSizeStyleOrClass, getLineClass, skeletonFill, widthToStyle } from "./utils";
+import { getAvatarShapeClasses, getAvatarSizeStyle, getLineClass, skeletonFill, widthToStyle } from "./utils";
 
 export type { SkeletonProps };
 
@@ -39,7 +39,7 @@ export function Skeleton({
   const rows = paragraphProps.rows ?? 3;
   const paragraphWidths = resolveParagraphWidths(paragraphProps.width, rows);
 
-  const avatarSize = getAvatarSizeStyleOrClass(avatarProps.size);
+  const avatarSize = avatarProps.size ?? "md";
 
   return (
     // Faz 13.6: eskiden `animate-pulse` `active`ten bağımsız HER ZAMAN vardı.
@@ -50,8 +50,8 @@ export function Skeleton({
       <div className="flex gap-4">
         {avatar && (
           <div
-            className={cn("shrink-0", skeletonFill(avatarProps.active ?? active), getAvatarShapeClass(avatarProps.shape), avatarSize.className)}
-            style={avatarSize.style}
+            className={cn(getAvatarShapeClasses(avatarProps.shape ?? "circle", avatarSize), skeletonFill(avatarProps.active ?? active))}
+            style={getAvatarSizeStyle(avatarSize)}
           />
         )}
         <div className="min-w-0 flex-1">
