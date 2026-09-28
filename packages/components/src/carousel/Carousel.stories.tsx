@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import type { Meta, StoryObj } from "@storybook/react";
 import { Camera, Gamepad2, Headphones, Sparkles, Truck, Wallet, Watch, ShoppingBag } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { Switch } from "../switch";
 import { Button } from "../button";
 import { Carousel } from "./Carousel";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
@@ -90,11 +92,11 @@ const TONE_CLASS: Record<(typeof products)[number]["tone"], string> = {
   error: "bg-mari-error-subtle text-mari-error-subtle-contrast",
 };
 
-function makeProductSlides(count: number) {
+function makeProductSlides(count: number, { gutter = true }: { gutter?: boolean } = {}) {
   return Array.from({ length: count }, (_, i) => {
     const product = products[i % products.length]!;
     return (
-      <div key={`product-${i}`} className="px-1.5">
+      <div key={`product-${i}`} className={gutter ? "px-1.5" : undefined}>
         <div className="overflow-hidden rounded-lg border border-mari-border bg-mari-surface">
           <div className={`flex h-48 items-center justify-center ${TONE_CLASS[product.tone]}`}>{product.icon}</div>
           <div className="p-3">
@@ -146,10 +148,22 @@ export const PromoBanner: Story = {
   name: "Kampanya Bannerı",
   ...storyDoc(
     "Bir e-ticaret sayfasının üst kısmında dönen kampanya banner'ı. `autoplay` + `loop` açık, her slaytın kendi " +
-      "başlığı/açıklaması/eylem butonu var."
+      "başlığı/açıklaması/eylem butonu var. Otomatik oynatma üzerine gelince ve klavye odağı içerideyken duraklar; " +
+      "noktaların solundaki düğme kalıcı olarak durdurur/başlatır (WCAG 2.2.2). `prefers-reduced-motion` açıksa " +
+      "kendiliğinden başlamaz. Ekran dışındaki slaytların düğmeleri Tab sırasına girmez.",
+    `
+<Carousel label="Kampanyalar" autoplay autoplayDelay={4000} loop>
+  {campaigns.map((c) => (
+    <div key={c.id} className="flex h-72 flex-col items-center justify-center gap-3 text-center">
+      <h3 className="text-2xl font-bold">{c.title}</h3>
+      <p>{c.description}</p>
+      <Button>{c.cta}</Button>
+    </div>
+  ))}
+</Carousel>`
   ),
   render: () => (
-    <Carousel autoplay autoplayDelay={4000} loop arrows dots>
+    <Carousel label="Kampanyalar" autoplay autoplayDelay={4000} loop arrows dots>
       {promoSlides.map((slide) => (
         <div key={slide.key} className={`flex h-72 flex-col items-center justify-center gap-3 px-8 text-center ${slide.className}`}>
           {slide.icon}
@@ -167,7 +181,10 @@ export const PromoBanner: Story = {
 
 export const Basic: Story = {
   name: "Temel",
-  ...storyDoc("Varsayılan hâl: tek seferde bir slayt, oklar/noktalar kapalı (yalnızca sürükleyerek gezinilir)."),
+  ...storyDoc(
+    "Varsayılan hâl: tek seferde bir slayt, oklar ve noktalar açık, sürüklenebilir, `loop` açık. Odak carousel'in " +
+      "içindeyken ←/→ tuşları önceki/sonraki slayta geçer."
+  ),
   args: {
     children: productSlides,
   },
@@ -239,11 +256,17 @@ export const SlidesToScroll: Story = {
 
 export const ArrowsPlacements: Story = {
   name: "Ok Yerleşimleri",
-  ...storyDoc("`arrowsPlacement`: `sides` (varsayılan) veya dört köşeden biri (`top-left`/`top-right`/`bottom-left`/`bottom-right`) — köşe değerlerinde oklar tek grupta yan yana durur."),
+  ...storyDoc(
+    "`arrowsPlacement`: `sides` (varsayılan) veya dört köşeden biri (`top-left`/`top-right`/`bottom-left`/`bottom-right`) — köşe değerlerinde oklar tek grupta yan yana durur.",
+    `
+<Carousel arrowsPlacement="sides">{slides}</Carousel>
+<Carousel arrowsPlacement="top-right">{slides}</Carousel>
+<Carousel arrowsPlacement="bottom-left">{slides}</Carousel>`
+  ),
   render: () => (
     <div className="flex flex-col gap-6">
       {(["sides", "top-left", "top-right", "bottom-left", "bottom-right"] as const).map((placement) => (
-        <div key={`arrows-${placement}`} className="w-[640px]">
+        <div key={`arrows-${placement}`} className="w-full max-w-[640px]">
           <p className="mb-2 font-medium">arrowsPlacement: {placement}</p>
           <Carousel arrows arrowsPlacement={placement}>
             {productSlides}
@@ -260,19 +283,23 @@ export const DotPositions: Story = {
     "`dotPosition`: `top`/`bottom`/`left`/`right` — bunlar `dotsPlacement=\"overlay\"` (varsayılan) iken carousel'in " +
       "üzerine biner. `dotsPlacement=\"outside\"` ise `dotPosition`'dan bağımsız, noktaları normal akışa alıp " +
       "carousel'in ALTINA render eder — 3'lü/4'lü gösterilen galerilerde (slayt içeriğiyle çakışmasın diye) tercih " +
-      "edilen yerleşim budur. Aktif nokta `aria-current` taşır. Oklar burada kapalı — odak noktaları göstermek."
+      "edilen yerleşim budur. Aktif nokta `aria-current` taşır. Oklar burada kapalı — odak noktaları göstermek.",
+    `
+<Carousel dotPosition="top" arrows={false}>{slides}</Carousel>
+<Carousel dotPosition="left" arrows={false}>{slides}</Carousel>
+<Carousel dotsPlacement="outside" arrows={false}>{slides}</Carousel>`
   ),
   render: () => (
     <div className="flex flex-col gap-6">
       {(["top", "bottom", "left", "right"] as const).map((position) => (
-        <div key={`dots-${position}`} className="w-[640px]">
+        <div key={`dots-${position}`} className="w-full max-w-[640px]">
           <p className="mb-2 font-medium">Noktalar: {position}</p>
           <Carousel dotPosition={position} arrows={false}>
             {productSlides}
           </Carousel>
         </div>
       ))}
-      <div className="w-[640px]">
+      <div className="w-full max-w-[640px]">
         <p className="mb-2 font-medium">Noktalar: outside</p>
         <Carousel dotsPlacement="outside" arrows={false}>
           {productSlides}
@@ -363,5 +390,36 @@ export const Responsive: Story = {
     loop: true,
     dotsPlacement: "outside",
     children: makeProductSlides(6),
+  },
+};
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` her slaytı kendi kutusunda parıltıya çevirir (içerik görünmez olarak yerinde kalır → yüklenince " +
+      "zıplama yok); oklar gizlenir, noktalar iskelet çubuğu olur, sürükleme ve otomatik oynatma kapanır. Bölge " +
+      "`aria-busy` alır. Slaytlar arası boşluğu `itemClassName` ile verin (slayt içeriğine değil) — iskelet kutuları " +
+      "da aynı aralıkla çizilir.",
+    `
+<Carousel skeleton={isLoading} slidesToShow={3} itemClassName="px-1.5" dotsPlacement="outside">
+  {products.map((p) => <ProductCard key={p.id} product={p} />)}
+</Carousel>`
+  ),
+  render: () => {
+    const [skeleton, setSkeleton] = useState(true);
+    return (
+      <div className="space-y-4">
+        <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
+        <Carousel
+          skeleton={skeleton}
+          slidesToShow={3}
+          itemClassName="px-1.5"
+          dotsPlacement="outside"
+          responsive={[{ breakpoint: 640, slidesToShow: 1 }]}
+        >
+          {makeProductSlides(6, { gutter: false })}
+        </Carousel>
+      </div>
+    );
   },
 };

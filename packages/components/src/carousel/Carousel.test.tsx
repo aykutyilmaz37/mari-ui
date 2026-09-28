@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it } from "vitest";
 import { Carousel } from "./Carousel";
+import { getA11yViolations } from "../testUtils/a11y";
 
 const slides = [
   <div key="1">Slayt 1</div>,
@@ -83,5 +84,58 @@ describe("Carousel", () => {
     const dot = screen.getByRole("button", { name: "1. slayta git" });
     expect(dot.parentElement?.className).not.toContain("absolute");
     expect(dot.parentElement?.className).toContain("mt-3");
+  });
+
+  it("carousel bölgesi ve slayt grupları APG'deki gibi etiketlenir", () => {
+    render(<Carousel label="Kampanyalar">{slides}</Carousel>);
+    const region = screen.getByRole("region", { name: "Kampanyalar" });
+    expect(region).toHaveAttribute("aria-roledescription", "carousel");
+    const groups = screen.getAllByRole("group");
+    expect(groups).toHaveLength(2);
+    expect(groups[0]).toHaveAttribute("aria-roledescription", "slayt");
+    expect(groups[0]).toHaveAttribute("aria-label", "1 / 2");
+  });
+
+  it("autoplay açıkken durdur/başlat düğmesi gösterilir (WCAG 2.2.2), kapalıyken gösterilmez", () => {
+    const { rerender } = render(<Carousel>{slides}</Carousel>);
+    expect(screen.queryByRole("button", { name: /otomatik oynatmayı/i })).not.toBeInTheDocument();
+    rerender(<Carousel autoplay>{slides}</Carousel>);
+    expect(screen.getByRole("button", { name: /otomatik oynatmayı/i })).toBeInTheDocument();
+  });
+
+  it("skeleton iken içerik görünmez yer tutar, oklar görünmez, noktalar düğme değildir, bölge aria-busy", () => {
+    render(
+      <Carousel skeleton autoplay>
+        {slides}
+      </Carousel>
+    );
+    expect(screen.getByRole("region")).toHaveAttribute("aria-busy", "true");
+    const content = screen.getByText("Slayt 1");
+    expect(content.closest(".invisible")).not.toBeNull();
+    expect(content.closest("[aria-hidden='true']")).not.toBeNull();
+    // `invisible` → tab sırasından da çıkar.
+    expect(screen.getByRole("button", { name: "Önceki slayt", hidden: true }).className).toContain("invisible");
+    expect(screen.queryByRole("button", { name: /slayta git/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /otomatik oynatmayı/i })).not.toBeInTheDocument();
+  });
+
+  it("slayt içindeki bir metin kutusunda ok tuşları carousel'i kaydırmaz", () => {
+    render(
+      <Carousel>
+        {[<input key="a" aria-label="Not" />, <div key="b">İki</div>]}
+      </Carousel>
+    );
+    const input = screen.getByRole("textbox", { name: "Not" });
+    const notPrevented = fireEvent.keyDown(input, { key: "ArrowRight" });
+    expect(notPrevented).toBe(true);
+  });
+
+  it("erişilebilirlik ihlali içermez (axe-core)", async () => {
+    const { container } = render(
+      <Carousel label="Ürünler" autoplay>
+        {slides}
+      </Carousel>
+    );
+    expect(await getA11yViolations(container)).toEqual([]);
   });
 });
