@@ -147,4 +147,20 @@ describe("Tabs", () => {
     const { container } = setup(props);
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("skeleton: sekmeler odaklanamaz ve seçilemez, panel içeriği görünmez kopyada, aria-busy", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const { container } = setup({ skeleton: true, onChange });
+    expect(container.firstElementChild).toHaveAttribute("aria-busy", "true");
+    const tabs = container.querySelectorAll('[role="tab"]');
+    for (const tab of tabs) expect(tab).toHaveAttribute("tabindex", "-1");
+    (tabs[1] as HTMLElement).click();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByText("Sekme 1 içeriği").closest(".invisible")).not.toBeNull();
+    expect(container.querySelector('[role="tabpanel"]')).toHaveAttribute("tabindex", "-1");
+    await user.tab();
+    expect(document.body).toHaveFocus();
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
 });

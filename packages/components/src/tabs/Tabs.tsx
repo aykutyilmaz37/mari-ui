@@ -40,6 +40,7 @@ export function Tabs({ className, children, orientation = "horizontal", responsi
     <TabsProvider {...providerProps} orientation={effective}>
       <div
         ref={rootRef}
+        aria-busy={providerProps.skeleton || undefined}
         data-orientation={effective}
         className={cn("flex min-w-0", vertical ? "flex-row gap-6" : "flex-col", className)}
       >

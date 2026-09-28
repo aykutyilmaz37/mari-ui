@@ -95,7 +95,7 @@ export function TabsList({ children, extra, className, cardTabs, "aria-label": a
   // Eski `cardTabs` prop'u: bu listenin altındaki sekmeler için varyantı
   // `card`'a çevirir (geriye uyumluluk).
   const ctx = useMemo(() => (cardTabs ? { ...context, variant: "card" as const } : context), [context, cardTabs]);
-  const { activeTab, setActiveTab, isControlled, variant, orientation, size, fill, align, color, activationMode } = ctx;
+  const { activeTab, setActiveTab, isControlled, variant, orientation, size, fill, align, color, activationMode, skeleton } = ctx;
   const vertical = orientation === "vertical";
 
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -186,7 +186,7 @@ export function TabsList({ children, extra, className, cardTabs, "aria-label": a
 
   return (
     <TabsContext.Provider value={ctx}>
-      <div className={cn("flex min-w-0", vertical ? "shrink-0 flex-col" : "items-end", getBarClass(variant, orientation), className)}>
+      <div aria-hidden={skeleton || undefined} className={cn("flex min-w-0", vertical ? "shrink-0 flex-col" : "items-end", getBarClass(variant, orientation), className)}>
         <div
           ref={scrollerRef}
           onScroll={measure}
@@ -215,7 +215,8 @@ export function TabsList({ children, extra, className, cardTabs, "aria-label": a
                 "pointer-events-none absolute",
                 getIndicatorClass(variant, orientation, color),
                 animate && "transition-[left,top,width,height] duration-300 ease-out motion-reduce:transition-none",
-                !indicator && "opacity-0"
+                // İskelette aktif sekme henüz anlamlı değil — gösterge gizli.
+                (!indicator || skeleton) && "opacity-0"
               )}
               style={indicatorStyle}
             />
