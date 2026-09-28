@@ -21,6 +21,10 @@ export interface TabsContextType {
   keepMounted: boolean;
   activationMode: "automatic" | "manual";
   skeleton: boolean;
+  /** DOM'da olan panellerin `value`'ları — sekme yalnız bunlara `aria-controls` verir. */
+  mountedPanels: ReadonlySet<string>;
+  /** Panel mount olunca kaydolur; dönen fonksiyon kaydı siler. */
+  registerPanel: (value: string) => () => void;
 }
 
 /**

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useId, useMemo } from "react";
+import React, { createContext, useCallback, useContext, useId, useMemo, useState } from "react";
 import { useControllableState } from "@mari-ui/core";
 import type { TabsContextType, TabsProps } from "./types";
 
@@ -31,6 +31,20 @@ export function TabsProvider({
   const baseId = useId();
   const isControlled = activeTab !== undefined;
 
+  // `aria-controls` var olmayan bir id'yi gösteremez (axe aria-valid-attr-value):
+  // Tabs yalnız filtre çubuğu olarak (paneli olmadan) kullanılabilir, pasif
+  // paneller de `keepMounted` yoksa DOM'da değildir.
+  const [mountedPanels, setMountedPanels] = useState<ReadonlySet<string>>(() => new Set());
+  const registerPanel = useCallback((panel: string) => {
+    setMountedPanels((prev) => (prev.has(panel) ? prev : new Set(prev).add(panel)));
+    return () =>
+      setMountedPanels((prev) => {
+        const next = new Set(prev);
+        next.delete(panel);
+        return next;
+      });
+  }, []);
+
   const value = useMemo<TabsContextType>(
     () => ({
       activeTab: resolvedActiveTab,
@@ -46,8 +60,10 @@ export function TabsProvider({
       keepMounted,
       activationMode,
       skeleton,
+      mountedPanels,
+      registerPanel,
     }),
-    [resolvedActiveTab, setActiveTab, isControlled, baseId, color, variant, size, orientation, fill, align, keepMounted, activationMode, skeleton]
+    [resolvedActiveTab, setActiveTab, isControlled, baseId, color, variant, size, orientation, fill, align, keepMounted, activationMode, skeleton, mountedPanels, registerPanel]
   );
 
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;

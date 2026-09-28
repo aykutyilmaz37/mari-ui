@@ -163,4 +163,29 @@ describe("Tabs", () => {
     expect(document.body).toHaveFocus();
     expect(await getA11yViolations(container)).toEqual([]);
   });
+
+  it("aria-controls yalnız DOM'daki panele işaret eder (axe aria-valid-attr-value: panelsiz filtre çubuğu, pasif paneller)", async () => {
+    const user = userEvent.setup();
+    const { container } = setup();
+    const [first, second] = screen.getAllByRole("tab");
+    expect(first).toHaveAttribute("aria-controls", screen.getByRole("tabpanel").id);
+    expect(second).not.toHaveAttribute("aria-controls");
+    await user.click(second!);
+    expect(second).toHaveAttribute("aria-controls", screen.getByRole("tabpanel").id);
+    expect(first).not.toHaveAttribute("aria-controls");
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
+
+  it("paneli olmayan Tabs (filtre çubuğu) aria-controls vermez ve ihlal içermez", async () => {
+    const { container } = render(
+      <Tabs defaultActiveTab="week">
+        <TabsList>
+          <TabsTrigger value="day">Gün</TabsTrigger>
+          <TabsTrigger value="week">Hafta</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    );
+    for (const tab of screen.getAllByRole("tab")) expect(tab).not.toHaveAttribute("aria-controls");
+    expect(await getA11yViolations(container)).toEqual([]);
+  });
 });

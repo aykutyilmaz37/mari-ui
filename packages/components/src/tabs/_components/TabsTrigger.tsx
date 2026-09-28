@@ -19,7 +19,7 @@ const skeletonTextClass = cn("rounded-sm text-transparent", skeletonFill(true));
  * - `icon` / `count` / `disabled`.
  */
 export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ children, value, icon, count, disabled, className }, ref) => {
-  const { activeTab, setActiveTab, baseId, color, variant, orientation, size, fill, skeleton } = useTabs();
+  const { activeTab, setActiveTab, baseId, color, variant, orientation, size, fill, skeleton, mountedPanels } = useTabs();
   const active = activeTab === value;
 
   return (
@@ -29,7 +29,7 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ ch
       role="tab"
       id={getTabId(baseId, value, "tab")}
       aria-selected={active}
-      aria-controls={getTabId(baseId, value, "panel")}
+      aria-controls={mountedPanels.has(value) ? getTabId(baseId, value, "panel") : undefined}
       tabIndex={active && !skeleton ? 0 : -1}
       disabled={disabled}
       data-value={value}
