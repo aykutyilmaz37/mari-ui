@@ -133,6 +133,17 @@ describe("InputNumber", () => {
     expect(spin()).toHaveAttribute("aria-invalid", "true");
   });
 
+  it.each([
+    ["sm", "w-5", "10"],
+    ["md", "w-6", "12"],
+    ["lg", "w-7", "14"],
+  ] as const)("%s: düğme sütunu ve ikon boyutla ölçeklenir (sm'de 12px ikon kutudan taşıyordu)", (size, widthClass, iconSize) => {
+    render(<InputNumber aria-label="Adet" size={size} defaultValue={1} />);
+    const inc = screen.getByRole("button", { name: "Artır" });
+    expect(inc.parentElement!.className.split(" ")).toContain(widthClass);
+    expect(inc.querySelector("svg")).toHaveAttribute("width", iconSize);
+  });
+
   it("skeleton: etkileşimsiz, Input'la aynı yükseklik", () => {
     const { container } = render(<InputNumber aria-label="Adet" skeleton size="lg" />);
     expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();

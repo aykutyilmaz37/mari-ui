@@ -33,6 +33,16 @@ function useHoldRepeat(action: (direction: 1 | -1) => void) {
   return { start, stop };
 }
 
+/**
+ * Düğme sütunu boyuta göre ölçeklenir. `sm` kutunun iç yüksekliği 22px: iki
+ * düğme + 1px ayraç 12px ikonla en az 25px istiyordu → düğmeler kutudan
+ * taşıp alt ok kenarlığın üstüne biniyordu (kullanıcı bulgusu). İkon ve
+ * genişlik boyutla birlikte küçülür; `min-h-0` düğmelerin paylaşımlı
+ * yüksekliğe inmesine izin verir.
+ */
+const STEPPER_WIDTH: Record<NonNullable<InputNumberProps["size"]>, string> = { sm: "w-5", md: "w-6", lg: "w-7" };
+const STEPPER_ICON: Record<NonNullable<InputNumberProps["size"]>, number> = { sm: 10, md: 12, lg: 14 };
+
 const textOf = (node: React.ReactNode) => (typeof node === "string" || typeof node === "number" ? String(node) : "");
 
 interface StepperProps {
@@ -67,7 +77,7 @@ function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, 
       onPointerLeave={onStop}
       onPointerCancel={onStop}
       className={cn(
-        "relative flex flex-1 cursor-pointer items-center justify-center text-mari-muted transition-colors hover:bg-mari-surface-alt hover:text-mari-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent",
+        "relative flex min-h-0 flex-1 cursor-pointer items-center justify-center text-mari-muted transition-colors hover:bg-mari-surface-alt hover:text-mari-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent",
         "pointer-coarse:w-8 pointer-coarse:flex-none",
         touchTargetClass[size]
       )}
@@ -78,9 +88,14 @@ function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, 
   );
   return (
     // DOM sırası [azalt, artır]: masaüstünde col-reverse ile artır üstte, dokunmatikte satırda azalt solda.
-    <div className="flex w-6 shrink-0 flex-col-reverse self-stretch overflow-hidden border-l border-mari-input [border-bottom-right-radius:inherit] [border-top-right-radius:inherit] pointer-coarse:w-auto pointer-coarse:flex-row [&>button+button]:border-b [&>button+button]:border-mari-input pointer-coarse:[&>button+button]:border-b-0 pointer-coarse:[&>button+button]:border-l">
-      {button(-1, canDecrement, decrementLabel, <ChevronDownIcon size={12} aria-hidden />, <MinusIcon size={16} aria-hidden />)}
-      {button(1, canIncrement, incrementLabel, <ChevronUpIcon size={12} aria-hidden />, <PlusIcon size={16} aria-hidden />)}
+    <div
+      className={cn(
+        "flex shrink-0 flex-col-reverse self-stretch overflow-hidden border-l border-mari-input [border-bottom-right-radius:inherit] [border-top-right-radius:inherit] pointer-coarse:w-auto pointer-coarse:flex-row [&>button+button]:border-b [&>button+button]:border-mari-input pointer-coarse:[&>button+button]:border-b-0 pointer-coarse:[&>button+button]:border-l",
+        STEPPER_WIDTH[size]
+      )}
+    >
+      {button(-1, canDecrement, decrementLabel, <ChevronDownIcon size={STEPPER_ICON[size]} aria-hidden />, <MinusIcon size={16} aria-hidden />)}
+      {button(1, canIncrement, incrementLabel, <ChevronUpIcon size={STEPPER_ICON[size]} aria-hidden />, <PlusIcon size={16} aria-hidden />)}
     </div>
   );
 }
