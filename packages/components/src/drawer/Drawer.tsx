@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useId, useRef } from "react";
+import React, { useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { XIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import { Skeleton, SkeletonBlock } from "../skeleton";
 import { ContentSkeleton } from "../lib/ContentSkeleton";
+import { useScrollable } from "../lib/useScrollable";
 import { touchTargetSquareClass } from "../lib/sizeClasses";
-import { findAutofocus, firstFocusable, useModalBehavior, usePresence } from "../lib/overlay";
+import { findAutofocus, firstFocusable, useModalBehavior, usePresence, useRefocusAfterSkeleton } from "../lib/overlay";
 import type { DrawerProps } from "./types";
 import { getPanelClass, getTranslateClass, isSide } from "./utils";
 
@@ -100,21 +101,12 @@ export function Drawer({
   const titleId = useId();
   const descriptionId = useId();
   const present = usePresence(open, EXIT_MS);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const bodyScrollable = useScrollable(bodyRef, "y", [children, skeleton, present]);
   useModalBehavior(open, panelRef, onClose, { closeOnEscape: keyboard, getInitialFocus: getDrawerInitialFocus });
 
   // İskelet → içerik geldi: odak hâlâ Kapat'ta/panelde ise forma taşı.
-  const wasSkeleton = useRef(skeleton);
-  useEffect(() => {
-    const panel = panelRef.current;
-    if (open && wasSkeleton.current && !skeleton && panel) {
-      const active = document.activeElement;
-      if (active === panel || (active instanceof HTMLElement && active.hasAttribute("data-drawer-close"))) {
-        const body = panel.querySelector<HTMLElement>("[data-drawer-body]");
-        (findAutofocus(panel) ?? (body && firstFocusable(body)))?.focus();
-      }
-    }
-    wasSkeleton.current = skeleton;
-  }, [skeleton, open]);
+  useRefocusAfterSkeleton(open, skeleton, panelRef, getDrawerInitialFocus, "[data-drawer-close]");
 
   if (!present || typeof document === "undefined") return null;
 
@@ -200,7 +192,17 @@ export function Drawer({
           </div>
         )}
 
-        <div data-drawer-body className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6", bodyClassName)}>
+        <div
+          ref={bodyRef}
+          data-drawer-body
+          // Taşan ve içinde odaklanabilir öğe olmayan gövde de klavyeyle kaydırılabilsin (axe scrollable-region-focusable).
+          tabIndex={bodyScrollable && !skeleton ? 0 : undefined}
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6",
+            "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mari-ring",
+            bodyClassName
+          )}
+        >
           <ContentSkeleton on={skeleton} fallback={<Skeleton active paragraph={{ rows: 6 }} />}>
             {children}
           </ContentSkeleton>

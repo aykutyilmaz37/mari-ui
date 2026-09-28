@@ -36,14 +36,20 @@ function isVisualBox(el: Element, style: CSSStyleDeclaration): boolean {
 
 function measure(root: HTMLElement): Block[] {
   const origin = root.getBoundingClientRect();
+  // `getBoundingClientRect` atalardaki transform'u içerir: Modal açılırken
+  // `scale(0.98)`den başlar ve ölçüm o anda yapılır — bloklar %2 dar kalıyordu
+  // (transform değişimi ResizeObserver'ı tetiklemez). Ölçek çarpanıyla
+  // düzeltilir; bloklar transform'un İÇİNDE çizildiği için yerel px gerekir.
+  const scale = root.offsetWidth > 0 && origin.width > 0 ? origin.width / root.offsetWidth : 1;
   const blocks: Block[] = [];
-  /** Viewport koordinatlı kutu → bölgeye göreli blok. */
+  /** Viewport koordinatlı kutu → bölgeye göreli, ölçeksiz blok. */
   const push = (x: number, y: number, w: number, h: number, radius: string) => {
-    const left = Math.max(x - origin.left, 0);
+    const left = Math.max(x - origin.left, 0) / scale;
     // `truncate`lı metnin satır kutusu kırpılan kısmı da kapsar — bölgeye sığdır.
-    const width = Math.min(x + w - origin.left, origin.width) - left;
-    if (width < MIN_SIZE || h < MIN_SIZE) return;
-    blocks.push({ left, top: y - origin.top, width, height: h, radius });
+    const width = Math.min(x + w - origin.left, origin.width) / scale - left;
+    const height = h / scale;
+    if (width < MIN_SIZE || height < MIN_SIZE) return;
+    blocks.push({ left, top: (y - origin.top) / scale, width, height, radius });
   };
 
   /** Satır başına bir çubuk; yüksekliği yazı boyuna göre (satır aralığı değil). */

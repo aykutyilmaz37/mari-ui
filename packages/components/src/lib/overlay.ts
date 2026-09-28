@@ -30,6 +30,39 @@ export function firstFocusable(root: ParentNode): HTMLElement | null {
   return getFocusables(root)[0] ?? null;
 }
 
+/** Öğe var ve iskeletin görünmez kopyasında (aria-hidden/inert) değilse kendisi. */
+export function reachable(el: HTMLElement | null | undefined): HTMLElement | null {
+  return el && !el.closest('[aria-hidden="true"], [inert]') ? el : null;
+}
+
+/**
+ * İskelet → içerik geldi: iskelette odak "Kapat"a (ya da panele) düşer;
+ * içerik gelince odak hâlâ orada ise normal ilk odağa taşınır. Kullanıcı
+ * bu arada odağı başka yere taşıdıysa dokunulmaz.
+ */
+export function useRefocusAfterSkeleton(
+  open: boolean,
+  skeleton: boolean,
+  panelRef: RefObject<HTMLElement | null>,
+  getInitialFocus: (panel: HTMLElement) => HTMLElement | null | undefined,
+  closeSelector: string
+) {
+  const wasSkeleton = useRef(skeleton);
+  const getInitialFocusRef = useRef(getInitialFocus);
+  getInitialFocusRef.current = getInitialFocus;
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (open && wasSkeleton.current && !skeleton && panel) {
+      const active = document.activeElement;
+      if (active === panel || (active instanceof HTMLElement && active.matches(closeSelector))) {
+        const target = getInitialFocusRef.current(panel);
+        if (target && target !== active) target.focus();
+      }
+    }
+    wasSkeleton.current = skeleton;
+  }, [skeleton, open, panelRef, closeSelector]);
+}
+
 /**
  * Açılışta hemen mount; kapanışta `exitMs` (çıkış animasyonu) bitince
  * unmount. `mounted` false iken hiç render etmeyin.

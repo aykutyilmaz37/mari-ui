@@ -69,6 +69,10 @@ const meta: Meta<typeof Modal> = {
     confirmLoading: { control: "boolean" },
     maskClosable: { control: "boolean", description: "Varsayılan: `true`." },
     keyboard: { control: "boolean", description: "Escape kapatsın. Varsayılan: `true`." },
+    skeleton: {
+      control: "boolean",
+      description: "Veri gelene kadar başlık, gövde ve alt çubuk içeriğin kendi şeklinde iskelet; Kapat çalışır.",
+    },
   },
 };
 
@@ -369,6 +373,79 @@ export const InviteForm: Story = {
   },
 };
 
+/* ─────────────────────────── 3b. Veri yüklenirken ─────────────────────────── */
+
+const orderLines = [
+  ["Kablosuz kulaklık", "1 adet", "1.899,00 ₺"],
+  ["Şarj kablosu (USB-C)", "2 adet", "298,00 ₺"],
+] as const;
+
+export const OrderDetail: Story = {
+  name: "Sipariş Detayı (Yükleniyor)",
+  // Controls'taki `skeleton` açıkken modal iskelette kalır (incelemek için);
+  // kapalıyken "Detay" 1.2 sn'lik gerçek bir yükleme taklidi yapar.
+  args: { skeleton: false },
+  ...storyDoc(
+    "Veri modal açıldıktan sonra geliyor: `skeleton` başlığı, gövdeyi ve alt çubuğu içeriğin kendi şeklinde " +
+      "iskelete çevirir (satır satır metin, düğme düğme alt çubuk) — yüklenince yükseklik zıplamaz. Kapat ve " +
+      "Escape bu sırada da çalışır; veri gelince odak ilk düğmeye taşınır.",
+    `
+<Modal
+  open={open}
+  onClose={close}
+  skeleton={isLoading}
+  title="Sipariş #10482"
+  description="12 Eylül 2026 · 2 ürün"
+  cancelButtonText="Tamam"
+  confirmButtonText="Faturayı indir"
+>
+  <OrderLines order={order} />
+</Modal>`
+  ),
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const openModal = () => {
+      setOpen(true);
+      setLoading(true);
+      setTimeout(() => setLoading(false), 1200);
+    };
+    return (
+      <>
+        <Button variant="outline" color="neutral" icon={<ReceiptIcon size={16} aria-hidden />} onClick={openModal}>
+          Detay
+        </Button>
+        <Modal
+          open={open}
+          onClose={() => setOpen(false)}
+          skeleton={args.skeleton || loading}
+          title="Sipariş #10482"
+          description="12 Eylül 2026 · 2 ürün"
+          cancelButtonText="Tamam"
+          confirmButtonText="Faturayı indir"
+          onConfirm={() => setOpen(false)}
+        >
+          <dl className="divide-y divide-mari-border">
+            {orderLines.map(([name, qty, price]) => (
+              <div key={name} className="flex items-baseline justify-between gap-4 py-2.5">
+                <dt className="min-w-0">
+                  <span className="block font-medium text-mari-foreground">{name}</span>
+                  <span className="text-xs text-mari-muted">{qty}</span>
+                </dt>
+                <dd className="tabular-nums">{price}</dd>
+              </div>
+            ))}
+            <div className="flex justify-between gap-4 py-2.5 font-semibold">
+              <dt>Toplam</dt>
+              <dd className="tabular-nums">2.197,00 ₺</dd>
+            </div>
+          </dl>
+        </Modal>
+      </>
+    );
+  },
+};
+
 /* ─────────────────────────── 4. Başarı ─────────────────────────── */
 
 export const PaymentSuccess: Story = {
@@ -567,6 +644,7 @@ export const Playground: Story = {
     showCloseButton: true,
     maskClosable: true,
     keyboard: true,
+    skeleton: false,
   },
   render: (args) => {
     const [open, setOpen] = useState(false);
