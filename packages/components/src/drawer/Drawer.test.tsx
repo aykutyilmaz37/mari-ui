@@ -132,7 +132,8 @@ describe("Drawer", () => {
         Gizli içerik
       </Drawer>
     );
-    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+    // İçerik ölçülmek için görünmez kopya olarak yerinde; erişilebilirlik ağacında yok.
+    expect(screen.getByText("Gizli içerik").closest('[data-skeleton][aria-hidden="true"]')).not.toBeNull();
   });
 
   it("skeleton başlık/extra/alt çubuğu da gizler; dialog adını ve Kapat'ı korur, meşgul bildirir", () => {
@@ -143,7 +144,7 @@ describe("Drawer", () => {
     );
     const dialog = screen.getByRole("dialog", { name: "Sipariş #42" });
     expect(dialog).toHaveAttribute("aria-busy", "true");
-    expect(screen.queryByText("Gizli içerik")).not.toBeInTheDocument();
+    expect(screen.getByText("Gizli içerik").closest('[data-skeleton][aria-hidden="true"]')).not.toBeNull();
     // Görünmez kopyalar aria-hidden bölgede: erişilebilirlik ağacında yoklar.
     expect(screen.queryByRole("button", { name: "Sil" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Kaydet" })).not.toBeInTheDocument();

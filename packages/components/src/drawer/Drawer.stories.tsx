@@ -375,6 +375,9 @@ export const Filters: Story = {
 
 export const EditRecord: Story = {
   name: "Kayıt Düzenleme",
+  // Controls'taki `skeleton` açıkken çekmece iskelette kalır (incelemek için);
+  // kapalıyken "Düzenle" 900ms'lik gerçek bir yükleme taklidi yapar.
+  args: { skeleton: false },
   ...storyDoc(
     "Liste satırını sayfadan ayrılmadan düzenleme: `size=\"lg\"`, veri gelene kadar `skeleton` (başlık, Sil ve alt " +
       "çubuk dahil her bölge iskelet; Kapat çalışır), başlıkta " +
@@ -398,7 +401,7 @@ export const EditRecord: Story = {
   <label data-autofocus>Ad <Input … /></label>
 </Drawer>`
   ),
-  render: () => {
+  render: (args) => {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const openDrawer = () => {
@@ -408,13 +411,16 @@ export const EditRecord: Story = {
     };
 
     return (
-      <div className="max-w-2xl overflow-hidden rounded-xl border border-mari-border">
+      <div className="relative max-w-2xl overflow-hidden rounded-xl border border-mari-border">
         <table className="w-full text-left text-sm">
           <thead className="bg-mari-surface-alt text-mari-muted">
             <tr>
               <th className="px-4 py-2.5 font-medium">Müşteri</th>
               <th className="hidden px-4 py-2.5 font-medium sm:table-cell">Şehir</th>
-              <th className="px-4 py-2.5" aria-label="İşlemler" />
+              {/* aria-label boş başlığı düzeltmez (axe empty-table-header) — metin gerekir. */}
+              <th className="px-4 py-2.5">
+                <span className="sr-only">İşlemler</span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-mari-border">
@@ -442,7 +448,7 @@ export const EditRecord: Story = {
           size="lg"
           open={open}
           onClose={() => setOpen(false)}
-          skeleton={loading}
+          skeleton={args.skeleton || loading}
           title="Müşteriyi düzenle"
           description="Deniz Kaya · #C-1042"
           extra={

@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { XIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import { Skeleton, SkeletonBlock } from "../skeleton";
-import { SkeletonSlot } from "../lib/SkeletonSlot";
+import { ContentSkeleton } from "../lib/ContentSkeleton";
 import { touchTargetSquareClass } from "../lib/sizeClasses";
 import { findAutofocus, firstFocusable, useModalBehavior, usePresence } from "../lib/overlay";
 import type { DrawerProps } from "./types";
@@ -26,7 +26,17 @@ function getDrawerInitialFocus(panel: HTMLElement): HTMLElement | null {
   return findAutofocus(panel) ?? (body && firstFocusable(body)) ?? panel.querySelector<HTMLElement>("[data-drawer-close]");
 }
 
-/** Alt çubuğun iskeleti: en yaygın düzen sağa yaslı İptal / Kaydet. */
+/*
+ * Ölçülecek içerik yoksa (başlık/alt çubuk da veriden geliyor ya da
+ * yerleşimsiz ortam) gösterilen genel yer tutucular.
+ */
+const TITLE_PLACEHOLDER = (
+  <div className="flex flex-col gap-2 py-1">
+    <SkeletonBlock active width="45%" height="1rem" radius="sm" />
+  </div>
+);
+
+/** Alt çubuğun genel iskeleti: en yaygın düzen sağa yaslı İptal / Kaydet. */
 const FOOTER_PLACEHOLDER = (
   <div className="flex h-full items-center justify-end gap-2">
     <SkeletonBlock active width="4.5rem" height="2rem" />
@@ -57,10 +67,10 @@ function getCustomSizeStyle(side: boolean, custom: boolean, width?: number | str
  *
  * Faz 15.6 — `skeleton` (eski `loading` takma adı) artık yalnız gövdeyi değil
  * başlık/açıklama/extra/alt çubuğu da iskelete çevirir; Kapat düğmesi canlı
- * kalır. Başlık bölgelerinin gerçek içeriği `SkeletonSlot` ile görünmez
- * kopya olarak kalır (yükseklik zıplamaz); gövde çekmecenin sabit boyutlu
- * kaydırma alanı olduğu için yalnız yer tutucu çizer — görünmez bir form
- * odak/kaydırma karmaşası yaratırdı.
+ * kalır. Her bölge `ContentSkeleton` ile içeriğin kendi şeklinde (satır satır
+ * metin, alan alan form, düğme düğme alt çubuk) iskelete döner; gerçek içerik
+ * görünmez olarak yerinde kalır → yükseklik zıplamaz.
+ * Görünmez kopyalar `aria-hidden` bölgede — odak tuzağı onları atlar.
  */
 export function Drawer({
   open,
@@ -163,44 +173,44 @@ export function Drawer({
         {hasHeader && (
           <div className={cn("flex shrink-0 items-start gap-3 border-b border-mari-border px-4 py-4 sm:px-6", position === "bottom" && "pt-2")}>
             {closeButtonPosition === "left" && closeButton}
-            <div className="min-w-0 flex-1 self-center">
-              {header ?? (
-                <>
-                  {title && (
-                    <SkeletonSlot on={skeleton} className="items-center" placeholder={<SkeletonBlock active width="45%" height="1rem" radius="sm" />}>
+            <ContentSkeleton on={skeleton} fallback={TITLE_PLACEHOLDER} className="min-w-0 flex-1 self-center">
+              <div className="min-w-0 flex-1 self-center">
+                {header ?? (
+                  <>
+                    {title && (
                       <h2 id={titleId} className="truncate text-base font-semibold leading-6 text-mari-foreground">
                         {title}
                       </h2>
-                    </SkeletonSlot>
-                  )}
-                  {description && (
-                    <SkeletonSlot on={skeleton} className="items-end" placeholder={<SkeletonBlock active width="70%" height="0.75rem" radius="sm" className="mb-1" />}>
+                    )}
+                    {description && (
                       <p id={descriptionId} className="mt-0.5 text-sm text-mari-muted">
                         {description}
                       </p>
-                    </SkeletonSlot>
-                  )}
-                </>
-              )}
-            </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </ContentSkeleton>
             {extra && (
-              <SkeletonSlot on={skeleton} flow="flex" className="shrink-0 self-center" placeholder={<SkeletonBlock active width="100%" height="100%" />}>
+              <ContentSkeleton on={skeleton} fallback={null} className="shrink-0 self-center">
                 <div className="flex shrink-0 items-center gap-2 self-center">{extra}</div>
-              </SkeletonSlot>
+              </ContentSkeleton>
             )}
             {closeButtonPosition === "right" && closeButton}
           </div>
         )}
 
         <div data-drawer-body className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6", bodyClassName)}>
-          {skeleton ? <Skeleton active paragraph={{ rows: 6 }} /> : children}
+          <ContentSkeleton on={skeleton} fallback={<Skeleton active paragraph={{ rows: 6 }} />}>
+            {children}
+          </ContentSkeleton>
         </div>
 
         {footer && (
           <div className="shrink-0 border-t border-mari-border px-4 py-3 sm:px-6">
-            <SkeletonSlot on={skeleton} placeholder={FOOTER_PLACEHOLDER}>
+            <ContentSkeleton on={skeleton} fallback={FOOTER_PLACEHOLDER}>
               {footer}
-            </SkeletonSlot>
+            </ContentSkeleton>
           </div>
         )}
       </div>
