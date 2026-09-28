@@ -135,6 +135,10 @@
       "types": "./dist/segmented.d.ts",
       "import": "./dist/segmented.js"
     },
+    "./popconfirm": {
+      "types": "./dist/popconfirm.d.ts",
+      "import": "./dist/popconfirm.js"
+    },
     "./popover": {
       "types": "./dist/popover.d.ts",
       "import": "./dist/popover.js"

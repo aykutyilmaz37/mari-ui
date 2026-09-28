@@ -85,6 +85,27 @@ function useFocusOnOpen(open: boolean, positioned: boolean, moveFocus: boolean, 
   }, [open, positioned, moveFocus, panelRef]);
 }
 
+/**
+ * Panel, odak İÇİNDEYKEN kapanırsa (içindeki "Vazgeç"/"Uygula" gibi bir
+ * düğmeyle ya da kontrollü `open` ile) odak tetikleyiciye döner — panel DOM'dan
+ * kalkınca odak aksi halde `<body>`ye düşüyordu. Dışarı tıklamada odak zaten
+ * tıklanan yere geçtiği için dokunulmaz.
+ */
+function useReturnFocus(open: boolean, anchorRef: ElRef) {
+  const focusInside = useRef(false);
+  useEffect(() => {
+    if (open || !focusInside.current) return;
+    focusInside.current = false;
+    triggerEl(anchorRef.current)?.focus();
+  }, [open, anchorRef]);
+  return {
+    onFocus: () => (focusInside.current = true),
+    onBlur: (e: React.FocusEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node)) focusInside.current = false;
+    },
+  };
+}
+
 /** Üzerine gelme niyeti: açarken kısa gecikme, kapatırken tetikleyiciden panele geçecek kadar süre. */
 function useHoverIntent(setOpen: (open: boolean) => void) {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -118,6 +139,9 @@ export function Popover({
   defaultOpen = false,
   onOpenChange,
   "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  role = "dialog",
   className,
   skeleton = false,
 }: PopoverProps) {
@@ -136,6 +160,7 @@ export function Popover({
 
   useDismiss(open, anchorRef, panelRef, () => setOpen(false));
   useFocusOnOpen(open, coords !== null, trigger === "click", panelRef);
+  const trackFocus = useReturnFocus(open, anchorRef);
 
   const decorated = isValidElement<Record<string, unknown>>(children)
     ? React.cloneElement(children, {
@@ -165,6 +190,10 @@ export function Popover({
           title={title}
           content={content}
           ariaLabel={ariaLabel}
+          ariaLabelledBy={ariaLabelledBy}
+          ariaDescribedBy={ariaDescribedBy}
+          role={role}
+          focusTracking={trackFocus}
           coords={coords}
           arrow={arrow}
           skeleton={skeleton}
@@ -183,6 +212,10 @@ interface PopoverPanelProps {
   title: React.ReactNode;
   content: React.ReactNode;
   ariaLabel?: string;
+  ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
+  role: "dialog" | "alertdialog";
+  focusTracking: ReturnType<typeof useReturnFocus>;
   coords: ReturnType<typeof useFloatingPosition>;
   arrow: boolean;
   skeleton: boolean;
@@ -191,17 +224,37 @@ interface PopoverPanelProps {
   className?: string;
 }
 
-function PopoverPanel({ panelRef, id, titleId, title, content, ariaLabel, coords, arrow, skeleton, hover, className }: PopoverPanelProps) {
+function PopoverPanel({
+  panelRef,
+  id,
+  titleId,
+  title,
+  content,
+  ariaLabel,
+  ariaLabelledBy,
+  ariaDescribedBy,
+  role,
+  focusTracking,
+  coords,
+  arrow,
+  skeleton,
+  hover,
+  className,
+}: PopoverPanelProps) {
   if (typeof document === "undefined") return null;
+  const labelledBy = ariaLabelledBy ?? (title ? titleId : undefined);
   return createPortal(
     <div
       ref={panelRef}
       id={id}
-      role="dialog"
+      role={role}
       tabIndex={-1}
-      aria-labelledby={title ? titleId : undefined}
-      aria-label={title ? undefined : ariaLabel}
+      aria-labelledby={labelledBy}
+      aria-label={labelledBy ? undefined : ariaLabel}
+      aria-describedby={ariaDescribedBy}
       aria-busy={skeleton || undefined}
+      onFocus={focusTracking.onFocus}
+      onBlur={focusTracking.onBlur}
       onMouseEnter={hover?.cancel}
       onMouseLeave={hover?.leave}
       className={cn(

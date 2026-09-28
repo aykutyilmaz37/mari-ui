@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -116,6 +117,24 @@ describe("Popover", () => {
     act(() => trigger.focus());
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(trigger).toHaveFocus();
+  });
+
+  it("içindeki bir düğmeyle kapanınca (kontrollü open) odak tetikleyiciye döner — body'ye düşmez", async () => {
+    const user = userEvent.setup();
+    function Controlled() {
+      const [open, setOpen] = useState(false);
+      return (
+        <Popover open={open} onOpenChange={setOpen} title="Filtre" content={<button onClick={() => setOpen(false)}>Uygula</button>}>
+          <button>Durum</button>
+        </Popover>
+      );
+    }
+    render(<Controlled />);
+    await user.click(screen.getByRole("button", { name: "Durum" }));
+    await nextFrame();
+    await user.click(screen.getByRole("button", { name: "Uygula" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Durum" })).toHaveFocus();
   });
 
   it("skeleton: içerik yer tutucu, meşgul bildirir", async () => {

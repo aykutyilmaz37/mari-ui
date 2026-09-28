@@ -29,6 +29,15 @@ export interface PopoverProps extends SkeletonableProps {
   onOpenChange?: (open: boolean) => void;
   /** Başlık yoksa panelin erişilebilir adı. */
   "aria-label"?: string;
+  /** Başlığı içerikte kendiniz çiziyorsanız (Popconfirm gibi) adın id'si. */
+  "aria-labelledby"?: string;
+  /** Açıklama metninin id'si — `alertdialog`da zorunlu. */
+  "aria-describedby"?: string;
+  /**
+   * `alertdialog`: kullanıcıdan onay isteyen, dikkat gerektiren panel
+   * (Popconfirm). Varsayılan: `dialog`.
+   */
+  role?: "dialog" | "alertdialog";
   /** Panele ek sınıf (ör. genişlik: `w-80`). */
   className?: string;
 }
