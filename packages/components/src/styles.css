@@ -54,6 +54,21 @@
   }
 }
 
+/*
+ * Progress `status="active"`: dolu kısmın üstünde soldan sağa akan parıltı
+ * (süren işlem). Hareket azaltma tercihinde parıltı öğesi `motion-reduce:hidden`.
+ */
+@keyframes mari-progress-active {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
 /* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
 @layer base {
   body { font-family: var(--mari-font-sans); }

@@ -115,6 +115,14 @@
       "types": "./dist/autocomplete.d.ts",
       "import": "./dist/autocomplete.js"
     },
+    "./alert": {
+      "types": "./dist/alert.d.ts",
+      "import": "./dist/alert.js"
+    },
+    "./badge": {
+      "types": "./dist/badge.d.ts",
+      "import": "./dist/badge.js"
+    },
     "./field": {
       "types": "./dist/field.d.ts",
       "import": "./dist/field.js"
@@ -126,6 +134,22 @@
     "./segmented": {
       "types": "./dist/segmented.d.ts",
       "import": "./dist/segmented.js"
+    },
+    "./popconfirm": {
+      "types": "./dist/popconfirm.d.ts",
+      "import": "./dist/popconfirm.js"
+    },
+    "./popover": {
+      "types": "./dist/popover.d.ts",
+      "import": "./dist/popover.js"
+    },
+    "./progress": {
+      "types": "./dist/progress.d.ts",
+      "import": "./dist/progress.js"
+    },
+    "./statistic": {
+      "types": "./dist/statistic.d.ts",
+      "import": "./dist/statistic.js"
     },
     "./select": {
       "types": "./dist/select.d.ts",

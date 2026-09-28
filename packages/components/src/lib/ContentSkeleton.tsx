@@ -76,6 +76,10 @@ function measure(root: HTMLElement): Block[] {
   const visit = (el: Element) => {
     const style = getComputedStyle(el);
     if (style.display === "none") return;
+    // Yalnız ekran okuyucu için (sr-only: 1×1px kırpılmış kutu) — görünmeyen metnin
+    // satır ölçüsü yine tam genişlik döner; iskelette fazladan çubuk çiziliyordu.
+    const box = el.getBoundingClientRect();
+    if (box.width <= 1 && box.height <= 1) return;
     if (!el.matches(CONTROL_SELECTOR) && !isVisualBox(el, style)) {
       walk(el);
       return;
