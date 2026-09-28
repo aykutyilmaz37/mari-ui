@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { cn } from "@mari-ui/core";
 import type { DropdownProps } from "./types";
 import { DropdownProvider, useDropdown } from "./useDropdown";
-import { getFocusable } from "./utils";
+import { getFocusable, getRovingTarget } from "./utils";
 
 export type { DropdownProps };
 
@@ -21,7 +21,7 @@ export type { DropdownProps };
  * trigger'a tekrar tıklamaktı. İkisi de eklendi.
  */
 function DropdownRoot({ children, hover = false, className }: DropdownProps) {
-  const { visible, setVisible, anchorRef, panelRef, triggerRef, scheduleHoverClose, cancelHoverClose } = useDropdown();
+  const { visible, setVisible, anchorRef, panelRef, triggerRef, scheduleHoverClose, cancelHoverClose, skeleton } = useDropdown();
 
   useEffect(() => {
     if (!visible) return;
@@ -50,6 +50,18 @@ function DropdownRoot({ children, hover = false, className }: DropdownProps) {
         setVisible(false);
         if (focusInPanel) triggerRef.current?.focus();
         return;
+      }
+
+      // Faz 15.5: panel içi ↑/↓/Home/End/harf gezinmesi (bkz. `getRovingTarget`).
+      // Bir metin alanındaki (panel içi arama vb.) tuşlar o alana aittir.
+      const typing = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
+      if (focusInPanel && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        const target = getRovingTarget(getFocusable(panel), document.activeElement, event.key);
+        if (target) {
+          event.preventDefault();
+          target.focus();
+          return;
+        }
       }
 
       if (event.key === "Tab" && focusInPanel) {
@@ -91,7 +103,7 @@ function DropdownRoot({ children, hover = false, className }: DropdownProps) {
       ref={anchorRef}
       className={cn("inline-block self-start", className)}
       onMouseEnter={
-        hover
+        hover && !skeleton
           ? () => {
               cancelHoverClose();
               setVisible(true);
@@ -108,7 +120,7 @@ function DropdownRoot({ children, hover = false, className }: DropdownProps) {
 /** `DropdownProvider`ı kendi içine gömer — tüketicinin ayrıca sarması gerekmez. */
 export function Dropdown(props: DropdownProps) {
   return (
-    <DropdownProvider hover={props.hover}>
+    <DropdownProvider hover={props.hover} skeleton={props.skeleton}>
       <DropdownRoot {...props} />
     </DropdownProvider>
   );

@@ -34,8 +34,10 @@ interface DropdownContextType {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   /** Panelin `id`si — tetikleyicinin `aria-controls`ü bunu gösterir. */
   panelId: string;
-  /** Klavyeyle açıldıysa `true`: panel görünür olunca odak içine taşınır (bkz. `DropdownContent`). */
-  focusPanelOnOpenRef: React.MutableRefObject<boolean>;
+  /** Klavyeyle açıldıysa panel görünür olunca odağın gideceği uç (Enter/Boşluk/↓ → ilk öğe, ↑ → son öğe); `false` → odak taşınmaz. */
+  focusPanelOnOpenRef: React.MutableRefObject<false | "first" | "last">;
+  /** `skeleton` açıkken tetikleyici yer tutucu çizer ve panel açılmaz. */
+  skeleton: boolean;
   /** `hover` modundayken hem tetikleyici hem panel tarafından paylaşılan gecikmeli kapatma. */
   hoverMode: boolean;
   scheduleHoverClose: () => void;
@@ -52,12 +54,12 @@ const DropdownContext = createContext<DropdownContextType | null>(null);
  * kalıyordu (bkz. plan denetimi). Artık `Dropdown` component'i Provider'ı
  * kendi içine gömüyor; tüketicinin bundan haberi olmasına gerek yok.
  */
-export function DropdownProvider({ children, hover = false }: { children: React.ReactNode; hover?: boolean }) {
+export function DropdownProvider({ children, hover = false, skeleton = false }: { children: React.ReactNode; hover?: boolean; skeleton?: boolean }) {
   const { isOpen, open, close } = useDisclosure();
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const focusPanelOnOpenRef = useRef(false);
+  const focusPanelOnOpenRef = useRef<false | "first" | "last">(false);
   const panelId = useId();
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -74,8 +76,8 @@ export function DropdownProvider({ children, hover = false }: { children: React.
   }, [cancelHoverClose, close]);
 
   const value = useMemo<DropdownContextType>(
-    () => ({ visible: isOpen, setVisible: (v: boolean) => (v ? open() : close()), anchorRef, panelRef, triggerRef, panelId, focusPanelOnOpenRef, hoverMode: hover, scheduleHoverClose, cancelHoverClose }),
-    [isOpen, open, close, hover, scheduleHoverClose, cancelHoverClose, panelId]
+    () => ({ visible: isOpen, setVisible: (v: boolean) => (v ? open() : close()), anchorRef, panelRef, triggerRef, panelId, focusPanelOnOpenRef, hoverMode: hover, skeleton, scheduleHoverClose, cancelHoverClose }),
+    [isOpen, open, close, hover, skeleton, scheduleHoverClose, cancelHoverClose, panelId]
   );
   return <DropdownContext.Provider value={value}>{children}</DropdownContext.Provider>;
 }

@@ -127,10 +127,13 @@ export function DropdownContent({ placement = "bottom-end", children, className,
   // panele biz taşırız — ama `invisible` (visibility: hidden) bir öğeye odak
   // verilemediğinden konum hesaplanana (`coords`) kadar beklenir.
   useEffect(() => {
-    if (!isVisible || !coords || !focusPanelOnOpenRef.current) return;
+    const edge = focusPanelOnOpenRef.current;
+    if (!isVisible || !coords || !edge) return;
     focusPanelOnOpenRef.current = false;
     const panel = panelRef.current;
-    (getFocusable(panel)[0] ?? panel)?.focus();
+    const focusable = getFocusable(panel);
+    const target = edge === "last" ? focusable.at(-1) : focusable[0];
+    (target ?? panel)?.focus();
   }, [isVisible, coords, focusPanelOnOpenRef, panelRef]);
 
   if (!isVisible || typeof document === "undefined") return null;
@@ -148,7 +151,8 @@ export function DropdownContent({ placement = "bottom-end", children, className,
       onMouseEnter={hoverMode ? cancelHoverClose : undefined}
       onMouseLeave={hoverMode ? scheduleHoverClose : undefined}
       className={cn(
-        "fixed text-wrap z-mari-dropdown w-max max-w-2xl text-sm p-1 rounded-lg bg-mari-surface outline-none",
+        // Genişlik viewport'tan 1rem dar kalır: 375px'te geniş bir panel ekrandan taşmaz.
+        "fixed text-wrap z-mari-dropdown w-max max-w-[min(42rem,calc(100vw-1rem))] text-sm p-1 rounded-lg bg-mari-surface outline-none",
         elevationClass.md,
         !coords && "invisible",
         className

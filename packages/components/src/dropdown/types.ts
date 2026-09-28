@@ -41,6 +41,11 @@ export interface DropdownProps {
     | React.ReactElement<DropdownContentProps>;
   hover?: boolean;
   /**
+   * Veri gelene kadar tetikleyici kendi kutusunda iskelet çizer (içeriği
+   * görünmez olarak yerinde kalır → yüklenince zıplamaz); panel açılmaz.
+   */
+  skeleton?: boolean;
+  /**
    * Sarmalayıcı kutunun sınıfı. Varsayılan `inline-block self-start`: kutu
    * tetikleyicinin boyutuna sarılır, panel de TETİKLEYİCİYE hizalanır. Tetikleyici
    * kapsayıcının tam genişliğini kaplayacaksa (`w-full` menü satırı) `"block self-auto"` verin.
@@ -55,6 +60,8 @@ export interface DropdownItemProps {
   /** Yıkıcı işlem (Sil, Çıkış…): kırmızı metin, hover'da dolu kırmızı zemin. */
   danger?: boolean;
   disabled?: boolean;
+  /** Sağa yaslı ikincil bilgi — klavye kısayolu ("⌘C"), sayı rozeti vb. */
+  extra?: React.ReactNode;
   /** Verilirse öğe gerçek bir `<a>` olarak render edilir (orta tık, yeni sekme, adres önizlemesi). */
   href?: string;
   /** Öğeye tıklanınca çağrılır; ardından dropdown kapanır. */

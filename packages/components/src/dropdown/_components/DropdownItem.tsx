@@ -10,7 +10,7 @@ import { useDropdown } from "../useDropdown";
  * satır yüksekliği), 4px yarıçap, ikon + metin, disabled durumu. Renkler kendi
  * token'larımızdan: hover'da hafif zemin, danger'da hafif kırmızı zemin.
  */
-export function DropdownItem({ children, icon, danger = false, disabled = false, href, onClick, className }: DropdownItemProps) {
+export function DropdownItem({ children, icon, extra, danger = false, disabled = false, href, onClick, className }: DropdownItemProps) {
   const { setVisible, triggerRef } = useDropdown();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
@@ -21,7 +21,7 @@ export function DropdownItem({ children, icon, danger = false, disabled = false,
   };
 
   const classes = cn(
-    "flex min-h-8 w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-[0.3125rem] text-start text-sm leading-[1.375rem] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mari-ring disabled:cursor-not-allowed disabled:opacity-25",
+    "flex min-h-8 pointer-coarse:min-h-11 w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-[0.3125rem] text-start text-sm leading-[1.375rem] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mari-ring disabled:cursor-not-allowed disabled:opacity-25",
     danger
       ? "text-mari-error hover:bg-mari-error-subtle disabled:hover:bg-transparent"
       : "text-mari-foreground hover:bg-mari-foreground/[0.04] disabled:hover:bg-transparent",
@@ -35,7 +35,8 @@ export function DropdownItem({ children, icon, danger = false, disabled = false,
           {icon}
         </span>
       )}
-      {children}
+      <span className="min-w-0 flex-1">{children}</span>
+      {extra && <span className="ms-4 shrink-0 text-xs text-mari-muted">{extra}</span>}
     </>
   );
 
@@ -54,6 +55,11 @@ export function DropdownItem({ children, icon, danger = false, disabled = false,
       {content}
     </button>
   );
+}
+
+/** Grup başlığı ("Hesap", kullanıcı e-postası…): odaklanılamaz, soluk küçük metin. */
+export function DropdownLabel({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={cn("px-3 pb-1 pt-1.5 text-xs text-mari-muted", className)}>{children}</div>;
 }
 
 /** Menü ayırıcısı: 1px, dikeyde 4px boşluk, hafif çizgi. */
