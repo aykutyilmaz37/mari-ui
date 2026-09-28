@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { MinusIcon, PauseIcon, PlayIcon, RotateCcwIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import { Button } from "../button";
-import { skeletonFill } from "../lib/skeleton";
+import { ContentSkeleton } from "../lib/ContentSkeleton";
+import { SkeletonBlock } from "../skeleton";
 import type { ClockProps, CountdownProps, StatisticProps, StopwatchProps } from "./types";
 import { formatCountdown, formatStopwatch, formatValue, spokenDuration, trendTone, type TrendTone } from "./utils";
 
@@ -17,8 +18,6 @@ const TONE_CLASS: Record<TrendTone, string> = {
   neutral: "text-mari-muted",
 };
 const TONE_WORD: Record<TrendTone, string> = { good: "olumlu", bad: "olumsuz", neutral: "değişmedi" };
-
-const skeletonText = cn("rounded-sm text-transparent", skeletonFill(true));
 
 interface ShellProps {
   title?: React.ReactNode;
@@ -36,31 +35,46 @@ interface ShellProps {
   valueAs?: "p" | "time";
 }
 
+/** Ölçülecek içerik yoksa (yerleşimsiz ortam) genel yer tutucu: başlık, değer, alt satır. */
+const PLACEHOLDER = (
+  <div className="flex flex-col gap-2 py-0.5">
+    <SkeletonBlock active width="40%" height="0.75rem" radius="sm" />
+    <SkeletonBlock active width="60%" height="1.5rem" radius="sm" />
+    <SkeletonBlock active width="50%" height="0.75rem" radius="sm" />
+  </div>
+);
+
 /**
  * Ortak düzen: soluk başlık, büyük değer (önek/sonekle), altta trend ya da
- * açıklama. İskelette her bölge kendi yerinde metin kutusu dolgusu —
- * yüklenince yükseklik zıplamaz.
+ * açıklama. İskelet `ContentSkeleton` ile içeriğin KENDİ şeklinde: her metin
+ * satırı ve ikon kendi genişliğinde blok, gerçek içerik görünmez olarak yerinde
+ * (yükseklik zıplamaz). Eskiden bölgeleri tam genişlik çubuğa çevirip metni
+ * saydam yapıyordu — kendi rengi olan önek/sonek (₺, %) ve trend (yeşil/kırmızı
+ * metin, ikon) iskeletin üstünde görünür kalıyordu (kullanıcı bulgusu).
  */
 function StatisticShell({ title, prefix, suffix, description, footer, size, skeleton, className, children, valueProps, valueAs = "p" }: ShellProps) {
   const Value = valueAs;
   return (
-    <div className={cn("flex min-w-0 flex-col gap-1", className)} aria-busy={skeleton || undefined}>
-      {title && <p className={cn("text-sm text-mari-muted", skeleton && skeletonText)}>{title}</p>}
-      <Value
-        {...valueProps}
-        aria-hidden={skeleton || undefined}
-        className={cn("flex min-w-0 items-baseline gap-1 font-semibold tabular-nums tracking-tight text-mari-foreground", VALUE_SIZE[size], skeleton && skeletonText)}
-      >
-        {prefix && <span className="text-[0.6em] font-medium text-mari-muted">{prefix}</span>}
-        <span className="truncate">{children}</span>
-        {suffix && <span className="text-[0.6em] font-medium text-mari-muted">{suffix}</span>}
-      </Value>
-      {(footer || description) && (
-        <div className={cn("flex flex-wrap items-center gap-x-2 gap-y-1 text-sm", skeleton && skeletonText)}>
-          {footer}
-          {description && <span className="text-mari-muted">{description}</span>}
+    <div className={cn("min-w-0", className)} aria-busy={skeleton || undefined}>
+      <ContentSkeleton on={skeleton} fallback={PLACEHOLDER}>
+        <div className="flex min-w-0 flex-col gap-1">
+          {title && <p className="text-sm text-mari-muted">{title}</p>}
+          <Value {...valueProps} className={cn("flex min-w-0 items-baseline gap-1 font-semibold tabular-nums tracking-tight text-mari-foreground", VALUE_SIZE[size])}>
+            {prefix && <span className="text-[0.6em] font-medium text-mari-muted">{prefix}</span>}
+            <span className="truncate">{children}</span>
+            {suffix && <span className="text-[0.6em] font-medium text-mari-muted">{suffix}</span>}
+          </Value>
+          {/* Trend + açıklama bir CÜMLE gibi akar ("▲ %12 geçen aya göre"): dar kartta açıklama kelime
+              kelime sarar. Eskiden flex öğeleriydi — 1px sığmayınca açıklamanın TAMAMI alt satıra atlıyordu. */}
+          {(footer || description) && (
+            <div className="text-sm leading-6">
+              {footer}
+              {footer && description && " "}
+              {description && <span className="text-mari-muted">{description}</span>}
+            </div>
+          )}
         </div>
-      )}
+      </ContentSkeleton>
     </div>
   );
 }
@@ -79,7 +93,7 @@ function Trend({ trend, locale }: { trend: NonNullable<StatisticProps["trend"]>;
     verb = "düşüş";
   }
   return (
-    <span className={cn("inline-flex items-center gap-1 font-medium", TONE_CLASS[tone])}>
+    <span className={cn("mr-0.5 inline-flex items-center gap-1 align-top font-medium", TONE_CLASS[tone])}>
       <Icon aria-hidden size={16} />
       {text}
       {/* Yön ve anlam ikon/renkte — ekran okuyucuya sözle. */}
@@ -228,6 +242,9 @@ export function Stopwatch({ title, controls = true, autoStart = false, onStop, p
     setAnnounce("Sıfırlandı");
   };
 
+  // Açıklama ("Hedef: 1 dakika") değerin altında KENDİ satırında, düğmeler onun altında —
+  // KPI'daki gibi aynı satırda düğmelerin yanına düşmesin.
+  const descriptionLine = description ? <span className="block text-mari-muted">{description}</span> : null;
   const footer = controls ? (
     <div className="mt-1 flex gap-2">
       {running ? (
@@ -251,8 +268,14 @@ export function Stopwatch({ title, controls = true, autoStart = false, onStop, p
         title={title}
         prefix={prefix}
         suffix={suffix}
-        description={description}
-        footer={footer}
+        footer={
+          descriptionLine || footer ? (
+            <>
+              {descriptionLine}
+              {footer}
+            </>
+          ) : undefined
+        }
         size={size}
         skeleton={skeleton}
         className={className}

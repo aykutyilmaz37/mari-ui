@@ -155,25 +155,35 @@ export const WorldClocks: Story = {
 
 /* ─────────────────────────── 4. Kronometre ─────────────────────────── */
 
-export const TaskStopwatch: Story = {
-  name: "Görev Kronometresi",
+const TARGET_MS = 60_000;
+
+export const PlankStopwatch: Story = {
+  name: "Antrenman Kronometresi (Plank)",
   ...storyDoc(
-    "Başlat / Duraklat / Devam et / Sıfırla. Salise görünür ama duyurulmaz; durdurunca geçen süre okunur ve `onStop` ile " +
-      "kaydedilebilir.",
-    `<Stopwatch title="Ödeme sayfası tasarımı" onStop={(ms) => saveTimeEntry(ms)} />`
+    "Plank süresini ölç: Başlat / Duraklat / Devam et / Sıfırla. Salise görünür ama ekran okuyucuya duyurulmaz; " +
+      "durdurunca geçen süre okunur ve `onStop` ile kayda geçer (son denemeler, hedefe ulaşılıp ulaşılmadığı).",
+    `<Stopwatch title="Plank" description="Hedef: 1 dakika" onStop={(ms) => saveAttempt(ms)} />`
   ),
   render: () => {
-    const [log, setLog] = useState<number[]>([]);
+    const [attempts, setAttempts] = useState<number[]>([48_300, 55_120]);
+    const best = Math.max(0, ...attempts);
     return (
       <div className={`${card} max-w-sm`}>
-        <Stopwatch title="Ödeme sayfası tasarımı" size="lg" onStop={(ms) => ms > 0 && setLog((l) => [ms, ...l].slice(0, 3))} />
-        {log.length > 0 && (
-          <ul className="mt-3 space-y-1 border-t border-mari-border pt-3 text-sm text-mari-muted">
-            {log.map((ms, i) => (
-              <li key={i}>Kayıt: {Math.round(ms / 1000)} sn</li>
+        <Stopwatch title="Plank" description="Hedef: 1 dakika" size="lg" onStop={(ms) => ms >= 1000 && setAttempts((a) => [ms, ...a].slice(0, 4))} />
+        <div className="mt-4 border-t border-mari-border pt-3">
+          <p className="mb-2 text-sm font-medium text-mari-foreground">Son denemeler</p>
+          <ul className="space-y-1.5 text-sm">
+            {attempts.map((ms, i) => (
+              <li key={i} className="flex items-center justify-between gap-3">
+                <span className="tabular-nums text-mari-foreground">{(ms / 1000).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sn</span>
+                <span className={ms >= TARGET_MS ? "text-mari-success" : "text-mari-muted"}>
+                  {ms >= TARGET_MS ? "Hedef tamam" : `${Math.ceil((TARGET_MS - ms) / 1000)} sn eksik`}
+                  {ms === best && attempts.length > 1 ? " · en iyi" : ""}
+                </span>
+              </li>
             ))}
           </ul>
-        )}
+        </div>
       </div>
     );
   },
