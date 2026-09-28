@@ -1,4 +1,5 @@
 import type React from "react";
+import type { SkeletonableProps } from "../lib/skeleton";
 
 export interface ActionProps<T> {
   onEditWithDrawer?: {
@@ -40,6 +41,13 @@ export interface ColumnDef<T> {
   info?: boolean;
   /** Hücre/başlık metninin hizalanması. Varsayılan: `"start"` (sola hizalı). */
   align?: TableColumnAlign;
+  /**
+   * Hücrenin özel içeriği (ant.design `render`): durum için `Tag`, kişi için
+   * `Avatar` + isim, biçimlendirilmiş tutar, link… Verilmezse değer düz metin
+   * olarak (2 satırda kırpılıp taşarsa tooltip'le) gösterilir. Satır içi
+   * düzenleme sırasında `columnName`'li sütunlar yine `Input` olur.
+   */
+  render?: (value: T[keyof T] | undefined, row: T, rowIndex: number) => React.ReactNode;
 }
 
 export interface TableEmptyStateConfig {
@@ -60,8 +68,13 @@ export interface TablePaginationConfig {
   onPageSizeChange?: (pageSize: number) => void;
 }
 
-export interface TableProps<T extends { id: string }> {
+export interface TableProps<T extends { id: string }> extends SkeletonableProps {
   data: T[];
+  /**
+   * Tablonun erişilebilir adı (ör. "Kullanıcılar") — ekran okuyucuya
+   * `<caption>` olarak okunur, yatay kaydırma bölgesinin adı da olur.
+   */
+  label?: string;
   columns: ColumnDef<T>[];
   className?: string;
   /** Veri boş dizi olduğunda gösterilecek `Empty` içeriği. */

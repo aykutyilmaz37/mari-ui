@@ -1,5 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { Avatar } from "../avatar";
+import { Switch } from "../switch";
+import { Tag } from "../tag";
 import { Table } from "./Table";
 import type { ColumnDef, TablePaginationConfig } from "./types";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
@@ -41,12 +45,15 @@ const meta: Meta<typeof Table<DataType>> = {
         component: componentDoc({
           summary:
             "Tip güvenli veri tablosu. Her sütun bir `ColumnDef<T>` ile tanımlanır: `header` başlık metni, " +
-            "`columnName` verinin hangi alandan okunacağı (`keyof T`), `actions` satır içi düzenleme/silme, `info` " +
+            "`columnName` verinin hangi alandan okunacağı (`keyof T`), `render` hücrenin özel içeriği (Tag, Avatar, " +
+            "tutar…), `actions` satır içi düzenleme/silme, `info` " +
             "değeri bir tooltip içinde de gösterir, `align` metin hizalamasını belirler (varsayılan `\"start\"`).",
           whenToUse: ["Satır/sütun yapısında, tipik olarak sıralanabilir/eylem içeren tablo verisi göstermek için."],
           whenNotToUse: ["Basit bir liste yeterliyse — bir tablo overhead getirir, `Card`/düz liste daha sade olabilir."],
           a11y:
-            "Başlık hücreleri (`<th>`) `scope=\"col\"` taşır. Sayfalama düğmeleri `aria-label`/`aria-current` taşır. " +
+            "`label` tabloya ekran okuyucu başlığı (`<caption>`) verir. Başlık hücreleri (`<th>`) `scope=\"col\"` taşır. " +
+            "Satır eylem düğmeleri satırın adını taşır (\"Sil: Aykut Yılmaz\"). Tablo taşıyorsa kaydırma bölgesi " +
+            "klavyeyle odaklanıp ←/→ ile kaydırılabilir. Sayfalama düğmeleri `aria-label`/`aria-current` taşır. " +
             "**Not:** eskiden `tableHeader: string[]` ve `tableBody: ColumnProps[]` iki ayrı, elle senkron tutulan " +
             "dizi olarak geçiliyordu — artık tek bir `columns` dizisi hem başlığı hem veri eşlemesini taşıyor. " +
             "Ayrıca `0`/`false`/`\"\"` gibi falsy ama geçerli değerler eskiden \"-\" olarak gösteriliyordu (yalnızca " +
@@ -75,7 +82,7 @@ export const Default: Story = {
       { header: "Yaş", columnName: "age", align: "end" },
       { header: "Şehir", columnName: "city", info: true },
     ];
-    return <Table<DataType> data={initialData} columns={columns} />;
+    return <Table<DataType> label="Kullanıcılar" data={initialData} columns={columns} />;
   },
 };
 
@@ -96,59 +103,127 @@ export const EmptyData: Story = {
   },
 };
 
-interface WideDataType {
+interface UserRow {
   id: string;
   name: string;
-  age: number;
-  city: string;
-  status: string;
   email: string;
-  phone: string;
   department: string;
+  status: "Aktif" | "Pasif" | "Davet edildi";
+  phone: string;
   joinDate: string;
+  orders: number;
 }
 
-/** Sütunlar Storybook canvas'ının normal genişliğine kasıtlı olarak SIĞMASIN diye — yatay kaydırmayı gerçekten tetiklemek için. */
-const wideData: WideDataType[] = [
-  { id: "1", name: "Aykut Yılmaz", age: 32, city: "İstanbul", status: "Aktif", email: "aykut@example.com", phone: "0532 111 22 33", department: "Mühendislik", joinDate: "12.03.2021" },
-  { id: "2", name: "Deniz Kaya", age: 28, city: "Ankara", status: "Aktif", email: "deniz@example.com", phone: "0533 222 33 44", department: "Tasarım", joinDate: "05.07.2022" },
-  { id: "3", name: "Elif Şahin", age: 41, city: "İzmir", status: "Pasif", email: "elif@example.com", phone: "0534 333 44 55", department: "Satış", joinDate: "20.11.2019" },
+/** Sütunlar dar ekrana kasıtlı olarak SIĞMASIN diye geniş — yatay kaydırma + sabit işlemler sütunu görünsün. */
+const users: UserRow[] = [
+  { id: "1", name: "Aykut Yılmaz", email: "aykut@example.com", department: "Mühendislik", status: "Aktif", phone: "0532 111 22 33", joinDate: "12.03.2021", orders: 128 },
+  { id: "2", name: "Deniz Kaya", email: "deniz@example.com", department: "Tasarım", status: "Davet edildi", phone: "0533 222 33 44", joinDate: "05.07.2022", orders: 0 },
+  { id: "3", name: "Elif Şahin", email: "elif@example.com", department: "Satış", status: "Pasif", phone: "0534 333 44 55", joinDate: "20.11.2019", orders: 1542 },
+  { id: "4", name: "Mert Demir", email: "mert.demir@example.com", department: "Müşteri Başarısı", status: "Aktif", phone: "0535 444 55 66", joinDate: "01.02.2024", orders: 37 },
 ];
 
-const WithActionsStory = () => {
-  const [data, setData] = useState(wideData);
+const STATUS_COLOR = { Aktif: "success", Pasif: "neutral", "Davet edildi": "info" } as const;
 
-  const columns: ColumnDef<WideDataType>[] = [
-    { header: "İsim", columnName: "name" },
-    { header: "Yaş", columnName: "age", align: "end" },
-    { header: "Şehir", columnName: "city" },
-    { header: "Durum", columnName: "status" },
-    { header: "E-posta", columnName: "email" },
-    { header: "Telefon", columnName: "phone" },
-    { header: "Departman", columnName: "department" },
-    { header: "Katılım Tarihi", columnName: "joinDate" },
+function userColumns(actions?: ColumnDef<UserRow>["actions"]): ColumnDef<UserRow>[] {
+  const columns: ColumnDef<UserRow>[] = [
     {
-      header: "İşlemler",
-      actions: {
-        editRowInInline: {
-          onChange: (updated) => setData((prev) => prev.map((row) => (row.id === updated.id ? updated : row))),
-        },
-        deleteRow: (id) => setData((prev) => prev.filter((row) => row.id !== id)),
-      },
+      header: "Kullanıcı",
+      columnName: "name",
+      render: (_, row) => (
+        <div className="flex items-center gap-3 whitespace-nowrap">
+          <Avatar size="sm" alt={row.name} />
+          <div className="min-w-0">
+            <p className="font-medium text-mari-foreground">{row.name}</p>
+            <p className="text-xs text-mari-muted">{row.email}</p>
+          </div>
+        </div>
+      ),
     },
+    { header: "Departman", columnName: "department" },
+    {
+      header: "Durum",
+      columnName: "status",
+      render: (value) => <Tag color={STATUS_COLOR[value as UserRow["status"]]}>{String(value)}</Tag>,
+    },
+    { header: "Telefon", columnName: "phone", render: (value) => <span className="whitespace-nowrap tabular-nums">{String(value)}</span> },
+    { header: "Katılım", columnName: "joinDate", render: (value) => <span className="whitespace-nowrap tabular-nums">{String(value)}</span> },
+    { header: "Sipariş", columnName: "orders", align: "end", render: (value) => <span className="tabular-nums">{Number(value).toLocaleString("tr-TR")}</span> },
   ];
+  return actions ? [...columns, { header: "İşlemler", align: "end", actions }] : columns;
+}
 
-  return <Table<WideDataType> data={data} columns={columns} />;
+const WithActionsStory = () => {
+  const [data, setData] = useState(users);
+  const columns = userColumns({
+    editRowInInline: {
+      onChange: (updated) => setData((prev) => prev.map((row) => (row.id === updated.id ? updated : row))),
+    },
+    deleteRow: (id) => setData((prev) => prev.filter((row) => row.id !== id)),
+  });
+  return <Table<UserRow> label="Kullanıcılar" data={data} columns={columns} />;
 };
 
 export const WithActions: Story = {
-  name: "İşlem Sütunlu",
+  name: "Özel Hücreler ve İşlemler",
   ...storyDoc(
-    "`actions.editRowInInline` satırı düzenlenebilir hücrelere çevirir. Sütunlar sığmadığında tablo yatay kaydırılır " +
-      "— işlemler sütunu ikonlara göre DAR kalır (kullanıcı bulgusu: eskiden gereksiz yere genişti, başlık ikonlarla " +
-      "aynı hizada değildi) ve kaydırma sırasında sağda sabit (`sticky`) kalır."
+    "`render` ile hücreye özel içerik: kullanıcı (Avatar + isim + e-posta), durum `Tag`'i, satır kırılmayan telefon/" +
+      "tarih ve sağa hizalı, binlik ayraçlı sayı. `actions.editRowInInline` satırı düzenlenebilir hücrelere çevirir " +
+      "(`columnName`'li sütunlar `Input` olur). Sütunlar sığmadığında tablo yatay kaydırılır — işlemler sütunu dar " +
+      "kalır ve sağda sabittir. Eylem düğmeleri satırın adını taşır (\"Sil: Aykut Yılmaz\").",
+    `
+const columns: ColumnDef<User>[] = [
+  {
+    header: "Kullanıcı",
+    columnName: "name",
+    render: (_, row) => (
+      <div className="flex items-center gap-3">
+        <Avatar size="sm" alt={row.name} />
+        <div>
+          <p className="font-medium">{row.name}</p>
+          <p className="text-xs text-mari-muted">{row.email}</p>
+        </div>
+      </div>
+    ),
+  },
+  { header: "Durum", columnName: "status", render: (v) => <Tag color={STATUS_COLOR[v]}>{v}</Tag> },
+  { header: "Sipariş", columnName: "orders", align: "end", render: (v) => v.toLocaleString("tr-TR") },
+  { header: "İşlemler", align: "end", actions: { editRowInInline: { onChange: save }, deleteRow: remove } },
+];
+
+<Table label="Kullanıcılar" data={users} columns={columns} />`
   ),
   render: () => <WithActionsStory />,
+};
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` başlıkları, hücreleri, işlemler sütununu ve sayfalamayı iskelete çevirir. Veri varken (yenileme) " +
+      "gerçek hücreler görünmez olarak yerinde kalır → satır yükseklikleri korunur, zıplama olmaz. Veri henüz yokken " +
+      "(ilk yükleme) sayfa boyu kadar (en çok 10, varsayılan 5) tek satırlık sahte satır çizilir. Tablo `aria-busy` alır.",
+    `
+<Table label="Kullanıcılar" skeleton={isLoading} data={data ?? []} columns={columns} pagination={pagination} />`
+  ),
+  render: () => {
+    const [skeleton, setSkeleton] = useState(true);
+    const [firstLoad, setFirstLoad] = useState(true);
+    const [page, setPage] = useState(1);
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-6">
+          <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
+          <Switch checked={firstLoad} onChange={setFirstLoad} label="İlk yükleme (veri yok)" size="sm" />
+        </div>
+        <Table<UserRow>
+          label="Kullanıcılar"
+          skeleton={skeleton}
+          data={skeleton && firstLoad ? [] : users}
+          columns={userColumns({ deleteRow: () => {} })}
+          pagination={{ page, pageSize: 4, total: users.length, onPageChange: setPage }}
+        />
+      </div>
+    );
+  },
 };
 
 const responsiveColumns: ColumnDef<DataType>[] = [
@@ -162,12 +237,21 @@ export const Accordion: Story = {
   name: "Duyarlı — Accordion",
   ...storyDoc(
     "`responsive=\"accordion\"` iken dar ekranda (`md` altı — Storybook'un viewport aracıyla mobil önizlemeye " +
-      "geçin) tablo yerine her satır açılır/kapanır bir kart olarak gösterilir; geniş ekranda normal tablo kalır."
+      "geçin) tablo yerine her satır açılır/kapanır bir kart olarak gösterilir; geniş ekranda normal tablo kalır. " +
+      "İlk sütun (`render`'ıyla) satır başlığı olur, diğerleri açılınca etiket/değer listesi; işlemler satırda kalır.",
+    `
+<Table label="Kullanıcılar" responsive="accordion" data={users} columns={columns} />`
   ),
-  args: {
-    data: initialData,
-    columns: responsiveColumns,
-    responsive: "accordion",
+  render: () => {
+    const [data, setData] = useState(users);
+    return (
+      <Table<UserRow>
+        label="Kullanıcılar"
+        responsive="accordion"
+        data={data}
+        columns={userColumns({ deleteRow: (id) => setData((prev) => prev.filter((row) => row.id !== id)) })}
+      />
+    );
   },
 };
 

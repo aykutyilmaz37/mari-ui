@@ -1,10 +1,13 @@
 import React from "react";
 import { cn } from "@mari-ui/core";
 import type { ColumnDef } from "../types";
-import { getAlignClass } from "../utils";
+import { getActionsJustifyClass, getAlignClass, skeletonWidth } from "../utils";
+import { SkeletonSlot } from "../../lib/SkeletonSlot";
+import { TableCellSkeleton } from "./TableCellSkeleton";
 
 export interface TableHeaderProps<T extends { id: string }> {
   columns: ColumnDef<T>[];
+  skeleton?: boolean;
 }
 
 /**
@@ -14,7 +17,7 @@ export interface TableHeaderProps<T extends { id: string }> {
  * Vercel tarzı) başlığı sessiz tutar: dolgu arka plan YOK, küçük/soluk/geniş
  * harf aralıklı metin — göze asıl çarpması gereken VERİ, başlık değil.
  */
-export function TableHeader<T extends { id: string }>({ columns }: TableHeaderProps<T>) {
+export function TableHeader<T extends { id: string }>({ columns, skeleton = false }: TableHeaderProps<T>) {
   return (
     <thead>
       <tr className="w-full">
@@ -33,7 +36,17 @@ export function TableHeader<T extends { id: string }>({ columns }: TableHeaderPr
               col.actions && "sticky right-0 w-px bg-mari-surface border-l border-mari-border"
             )}
           >
-            {col.header}
+            <SkeletonSlot
+              on={skeleton}
+              className="items-center"
+              // Başlık satırı `text-xs` (16px satır) — yer tutucu da o yükseklikte.
+              placeholder={<TableCellSkeleton width={col.actions ? "2.5rem" : skeletonWidth(index + 2)} height="0.625rem" className={cn("h-4", getActionsJustifyClass(col.align))} />}
+            >
+              {col.header}
+            </SkeletonSlot>
+            {/* Sütun adı veriye bağlı değil: görsel olarak iskelet, ama ekran okuyucu
+                için başlık boş kalmasın (axe `empty-table-header`). */}
+            {skeleton && <span className="sr-only">{col.header}</span>}
           </th>
         ))}
       </tr>

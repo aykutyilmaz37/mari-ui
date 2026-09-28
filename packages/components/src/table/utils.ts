@@ -1,5 +1,5 @@
 import type React from "react";
-import type { TableColumnAlign } from "./types";
+import type { ColumnDef, TableColumnAlign } from "./types";
 
 export type DraftsSetter<T> = React.Dispatch<React.SetStateAction<Record<string, Partial<T>>>>;
 
@@ -58,4 +58,27 @@ const ACTIONS_JUSTIFY_CLASS: Record<TableColumnAlign, string> = {
 
 export function getActionsJustifyClass(align: TableColumnAlign | undefined): string {
   return ACTIONS_JUSTIFY_CLASS[align ?? "start"];
+}
+
+/**
+ * Satırın okunur adı — satır eylem düğmelerinin erişilebilir adında kullanılır
+ * ("Sil: Aykut Yılmaz"). Eskiden her satırın düğmesi aynı "Sil" adını
+ * taşıyordu; ekran okuyucu kullanıcısı hangi satırı sildiğini bilemiyordu.
+ * İlk veri sütununun değeri, yoksa `id`.
+ */
+export function getRowLabel<T extends { id: string }>(columns: ColumnDef<T>[], item: T): string {
+  const first = columns.find((c) => !c.actions && c.columnName);
+  const value = first?.columnName ? item[first.columnName] : undefined;
+  return value != null && value !== "" ? String(value) : item.id;
+}
+
+/** İskelet çubuk genişlikleri — sütuna göre değişken, deterministik (gerçek veri gibi dalgalı görünsün). */
+const SKELETON_WIDTHS = ["70%", "45%", "60%", "85%", "50%", "75%"];
+export function skeletonWidth(columnIndex: number, rowIndex = 0): string {
+  return SKELETON_WIDTHS[(columnIndex + rowIndex) % SKELETON_WIDTHS.length]!;
+}
+
+/** Veri yokken iskelette çizilecek satır sayısı: sayfa boyu (en çok 10), yoksa 5. */
+export function skeletonRowCount(pageSize?: number): number {
+  return Math.min(pageSize ?? 5, 10);
 }

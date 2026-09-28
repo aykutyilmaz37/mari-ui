@@ -4,8 +4,19 @@ import React, { useState } from "react";
 import { cn } from "@mari-ui/core";
 import { Input } from "../../input";
 import { Empty } from "../../empty";
-import { clearRowDraft, getActionsJustifyClass, getAlignClass, setRowDraftValue } from "../utils";
+import { SkeletonSlot } from "../../lib/SkeletonSlot";
+import {
+  clearRowDraft,
+  getActionsJustifyClass,
+  getAlignClass,
+  getRowLabel,
+  setRowDraftValue,
+  skeletonRowCount,
+  skeletonWidth,
+  type DraftsSetter,
+} from "../utils";
 import type { ColumnDef, TableEmptyStateConfig } from "../types";
+import { TableCellSkeleton } from "./TableCellSkeleton";
 import { TableInfoValue } from "./TableInfoValue";
 import { TableRowActions } from "./TableRowActions";
 
@@ -13,24 +24,107 @@ export interface TableBodyProps<T extends { id: string }> {
   data: T[];
   columns: ColumnDef<T>[];
   emptyState?: TableEmptyStateConfig;
+  skeleton?: boolean;
+  /** Veri yokken iskelette kaç sahte satır çizileceği (sayfa boyu). */
+  pageSize?: number;
 }
 
-export function TableBody<T extends { id: string }>({ data, columns, emptyState }: TableBodyProps<T>) {
-  // Satır içi düzenleme durumu burada (satır seviyesinde) yaşıyor çünkü
-  // aksiyon hücresindeki "düzenle" butonu AYNI satırdaki diğer (veri)
-  // hücrelerinin de <Input>'a dönüşmesini tetikliyor — bu, tek bir
-  // hücrenin kendi başına bilemeyeceği, satır çapında bir durumdur.
+/**
+ * İşlemler hücresi. `text-align` (bkz. `getAlignClass`) sadece SATIR İÇİ
+ * içeriği hizalar — `TableRowActions`'ın bloğu onu yok sayıyordu, bu yüzden
+ * hizalama `justify-*` ile bloğun KENDİSİNE uygulanır. Sütun ikonlara göre dar
+ * (`w-px whitespace-nowrap`) ve yatay kaydırmada sağda `sticky`.
+ */
+const ACTIONS_CELL_CLASS = "sticky right-0 w-px whitespace-nowrap border-l border-mari-border bg-mari-surface px-4 py-2.5";
+
+/**
+ * Veri hücresi. `max-w-64` KASITLI: `table-auto`'da sütun serbestçe
+ * büyüyüp `line-clamp-2` hiç tetiklenmiyordu (kullanıcı bulgusu: "iki satıra
+ * düşsün, horizontal scroll olacak"). `text-sm`: başlıktan (text-xs) orantılı.
+ */
+const DATA_CELL_CLASS = "max-w-64 px-4 py-2.5 text-sm break-words";
+
+interface DataCellProps<T extends { id: string }> {
+  col: ColumnDef<T>;
+  item: T;
+  rowIndex: number;
+  columnIndex: number;
+  isEditing: boolean;
+  draft: Partial<T>;
+  setDrafts: DraftsSetter<T>;
+  skeleton: boolean;
+}
+
+function DataCell<T extends { id: string }>({ col, item, rowIndex, columnIndex, isEditing, draft, setDrafts, skeleton }: DataCellProps<T>) {
+  const columnName = col.columnName;
+  const rawValue = columnName ? item[columnName] : undefined;
+  // `0`/`false`/`""` geçerli değerlerdir — sadece null/undefined "-" olur.
+  const displayValue = rawValue != null ? String(rawValue) : "-";
+
+  let content: React.ReactNode;
+  if (isEditing && columnName) {
+    const draftValue = draft[columnName];
+    content = (
+      <Input
+        aria-label={typeof col.header === "string" ? col.header : undefined}
+        // Değeri kesmeden gösterecek asgari genişlik — tablo zaten yatay kayabiliyor.
+        className="min-w-36"
+        value={draftValue !== undefined ? String(draftValue) : displayValue}
+        onChange={(e) => setRowDraftValue(setDrafts, item.id, columnName, e.target.value as T[typeof columnName])}
+      />
+    );
+  } else if (col.render) {
+    content = col.render(rawValue, item, rowIndex);
+  } else {
+    content = <TableInfoValue info={col.info} value={displayValue} />;
+  }
+
+  return (
+    <td className={cn(DATA_CELL_CLASS, getAlignClass(col.align))}>
+      <SkeletonSlot
+        on={skeleton}
+        className="items-center"
+        placeholder={<TableCellSkeleton width={skeletonWidth(columnIndex, rowIndex)} className={getActionsJustifyClass(col.align)} />}
+      >
+        {content}
+      </SkeletonSlot>
+    </td>
+  );
+}
+
+/** Veri henüz yokken (`skeleton` + boş `data`) çizilen sahte satırlar — gerçek tek satırlık satırla aynı yükseklik. */
+function PlaceholderRows<T extends { id: string }>({ columns, count }: { columns: ColumnDef<T>[]; count: number }) {
+  return (
+    <tbody aria-hidden>
+      {Array.from({ length: count }, (_, rowIndex) => (
+        <tr key={rowIndex} className="border-b border-mari-border last:border-b-0">
+          {columns.map((col, columnIndex) =>
+            col.actions ? (
+              <td key={columnIndex} className={ACTIONS_CELL_CLASS}>
+                <TableCellSkeleton width="3rem" className={getActionsJustifyClass(col.align)} />
+              </td>
+            ) : (
+              <td key={columnIndex} className={DATA_CELL_CLASS}>
+                <TableCellSkeleton width={skeletonWidth(columnIndex, rowIndex)} className={getActionsJustifyClass(col.align)} />
+              </td>
+            )
+          )}
+        </tr>
+      ))}
+    </tbody>
+  );
+}
+
+export function TableBody<T extends { id: string }>({ data, columns, emptyState, skeleton = false, pageSize }: TableBodyProps<T>) {
+  // Satır içi düzenleme durumu satır seviyesinde: aksiyon hücresindeki
+  // "düzenle" AYNI satırdaki veri hücrelerini de <Input>'a çeviriyor.
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<T>>>({});
 
+  if (skeleton && data.length === 0) return <PlaceholderRows columns={columns} count={skeletonRowCount(pageSize)} />;
+
   if (data.length === 0) {
-    // Eskiden düz "Veri yok." metniydi (kullanıcı bulgusu: "boş veri de kötü
-    // gözüküyor içeriği empty gibi olmalı") — artık gerçek `Empty` component'i.
-    // `colSpan` kaplanan hücre `text-start` MİRAS ALMIYOR gibi görünüyordu
-    // çünkü `<td>` kendi varsayılan hizalamasını (tarayıcı `text-align`
-    // başlangıç değeri `left`'tir ama bazı tarayıcı stil sıfırlamalarında
-    // `<table>` için farklı davranabilir) taşımıyordu — `text-start` açıkça
-    // eklendi (kullanıcı bulgusu: "birde sütun sağa kaymış").
+    // `text-start` açıkça: colSpan hücresi hizayı miras almıyordu (kullanıcı bulgusu).
     return (
       <tbody>
         <tr>
@@ -44,28 +138,20 @@ export function TableBody<T extends { id: string }>({ data, columns, emptyState 
 
   return (
     <tbody>
-      {data.map((item) => {
+      {data.map((item, rowIndex) => {
         const draft: Partial<T> = drafts[item.id] ?? {};
-        const isEditing = editingRowId === item.id;
-
+        const isEditing = !skeleton && editingRowId === item.id;
         return (
-          <tr key={item.id} className="border-b border-mari-border last:border-b-0 hover:bg-mari-surface-alt/50 transition-colors">
-            {columns.map((col, columnIndex) => {
-              if (col.actions) {
-                // `text-align` (bkz. `getAlignClass`) sadece SATIR İÇİ içeriği
-                // hizalar — `TableRowActions`'ın döndürdüğü `<div className=
-                // "flex ...">` bir BLOK kutu olduğu için onu yok sayıyordu,
-                // bu yüzden başlık (`text-end`) sağa kayarken ikonlar hep
-                // solda kalıyordu (kullanıcının ekran görüntüsünde yakalanan
-                // gerçek bug). Hizalama burada `justify-*` ile bloğun
-                // KENDİSİNE uygulanıyor. Sütun da (`w-px whitespace-nowrap`,
-                // bkz. `TableHeader`) artık ikonlara göre dar kalıyor.
-                return (
-                  <td key={columnIndex} className="sticky right-0 w-px whitespace-nowrap border-l border-mari-border bg-mari-surface px-4 py-2.5">
+          <tr key={item.id} className={cn("border-b border-mari-border last:border-b-0", !skeleton && "transition-colors hover:bg-mari-surface-alt/50")}>
+            {columns.map((col, columnIndex) =>
+              col.actions ? (
+                <td key={columnIndex} className={ACTIONS_CELL_CLASS}>
+                  <SkeletonSlot on={skeleton} flow="flex" className="items-center" placeholder={<TableCellSkeleton width="3rem" className={getActionsJustifyClass(col.align)} />}>
                     <div className={cn("flex", getActionsJustifyClass(col.align))}>
                       <TableRowActions
                         actions={col.actions}
                         item={item}
+                        rowLabel={getRowLabel(columns, item)}
                         isInlineEditing={isEditing}
                         onStartInlineEdit={() => setEditingRowId(item.id)}
                         onSaveInlineEdit={() => {
@@ -79,48 +165,22 @@ export function TableBody<T extends { id: string }>({ data, columns, emptyState 
                         }}
                       />
                     </div>
-                  </td>
-                );
-              }
-
-              const columnName = col.columnName;
-              const rawValue = columnName ? item[columnName] : undefined;
-              // Eskiden `value ? String(value) : "-"` idi — 0/false/"" gibi
-              // GEÇERLİ ama falsy değerler yanlışlıkla "-" gösteriyordu.
-              // Gerçek bir bug'dı; null/undefined kontrolüne düzeltildi.
-              const displayValue = rawValue != null ? String(rawValue) : "-";
-              const draftValue = columnName ? draft[columnName] : undefined;
-
-              return (
-                // `max-w-64` KASITLI: `table-auto` düzeninde sütun genişliği
-                // içeriğe göre serbestçe büyüyebiliyordu, bu da `line-clamp-2`
-                // hiçbir zaman tetiklenmiyordu (metin hep TEK satıra sığacak
-                // kadar sütun genişliyordu) — kullanıcı bulgusu: "iki satıra
-                // düşsün, genişlik sorun değil, horizontal scroll olacak".
-                // Sütun artık bu genişlikte sınırlanıyor (metin gerçekten
-                // sarıp 2 satırda kırpılıyor), TABLONUN KENDİSİ hâlâ gerekince
-                // (çok sütun varsa) yatay kayıyor — ikisi çelişmiyor.
-                // `text-sm` KASITLI: gövde metni açıkça boyutlanmamıştı, tarayıcı
-                // varsayılanına (16px) düşüp `text-xs` (12px) başlığın yanında
-                // orantısız kalın/büyük görünüyordu — kullanıcı bulgusu: "satır
-                // fontları biraz daha ince ve güzel gözükmeli, başlıklardan
-                // büyük gibi gözüküyor".
-                <td key={columnIndex} className={cn("max-w-64 px-4 py-2.5 text-sm break-words", getAlignClass(col.align))}>
-                  {isEditing && columnName ? (
-                    <Input
-                      aria-label={typeof col.header === "string" ? col.header : undefined}
-                      value={draftValue !== undefined ? String(draftValue) : displayValue}
-                      onChange={(e) => {
-                        const nextValue = e.target.value as T[typeof columnName];
-                        setRowDraftValue(setDrafts, item.id, columnName, nextValue);
-                      }}
-                    />
-                  ) : (
-                    <TableInfoValue info={col.info} value={displayValue} />
-                  )}
+                  </SkeletonSlot>
                 </td>
-              );
-            })}
+              ) : (
+                <DataCell
+                  key={columnIndex}
+                  col={col}
+                  item={item}
+                  rowIndex={rowIndex}
+                  columnIndex={columnIndex}
+                  isEditing={isEditing}
+                  draft={draft}
+                  setDrafts={setDrafts}
+                  skeleton={skeleton}
+                />
+              )
+            )}
           </tr>
         );
       })}

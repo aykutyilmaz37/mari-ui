@@ -26,7 +26,8 @@ describe("Table", () => {
       { header: "İşlemler", actions: { deleteRow: () => {} } },
     ];
     render(<Table data={data} columns={rowColumns} />);
-    expect(screen.getByRole("button", { name: "Sil" })).toBeInTheDocument();
+    // Faz 15: ad satırı da taşır — eskiden her satırın düğmesi aynı "Sil" adındaydı.
+    expect(screen.getByRole("button", { name: "Sil: Ada" })).toBeInTheDocument();
   });
 
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {
@@ -97,5 +98,60 @@ describe("Table", () => {
     expect(cell.className).toContain("line-clamp-2");
     expect(cell.className).not.toContain("line-clamp-3");
     expect(cell.className).not.toContain("truncate");
+  });
+
+  it("render hücrenin özel içeriğini çizer (değer + satır + indeks alır)", () => {
+    const rendered: ColumnDef<Row>[] = [
+      { header: "İsim", columnName: "name", render: (value, row, i) => <strong>{`${String(value)}-${row.age}-${i}`}</strong> },
+    ];
+    render(<Table data={data} columns={rendered} />);
+    expect(screen.getByText("Ada-30-0").tagName).toBe("STRONG");
+  });
+
+  it("satır içi düzenlemede render'lı sütun yine Input olur", async () => {
+    const user = userEvent.setup();
+    const editable: ColumnDef<Row>[] = [
+      { header: "İsim", columnName: "name", render: (v) => <strong>{String(v)}</strong> },
+      { header: "İşlemler", actions: { editRowInInline: { onChange: () => {} } } },
+    ];
+    render(<Table data={data} columns={editable} />);
+    await user.click(screen.getByRole("button", { name: "Düzenle: Ada" }));
+    expect(screen.getByRole("textbox", { name: "İsim" })).toHaveValue("Ada");
+  });
+
+  it("label ekran okuyucu başlığı (caption) olur", () => {
+    render(<Table label="Kullanıcılar" data={data} columns={columns} />);
+    expect(screen.getByRole("table", { name: "Kullanıcılar" })).toBeInTheDocument();
+  });
+
+  it("skeleton + veri varken hücreler görünmez yer tutar, eylemler etkileşimsiz, tablo aria-busy", () => {
+    const actionColumns: ColumnDef<Row>[] = [...columns, { header: "İşlemler", actions: { deleteRow: () => {} } }];
+    const { container } = render(<Table skeleton data={data} columns={actionColumns} />);
+    const cell = screen.getByText("Ada");
+    expect(cell.closest(".invisible")).not.toBeNull();
+    expect(cell.closest("[aria-hidden='true']")).not.toBeNull();
+    expect(screen.queryByRole("button", { name: /Sil/ })).not.toBeInTheDocument();
+    expect(container.firstElementChild).toHaveAttribute("aria-busy", "true");
+  });
+
+  it("skeleton + veri yokken Empty yerine sayfa boyu kadar (en çok 10) sahte satır çizilir", () => {
+    const pagination: TablePaginationConfig = { page: 1, pageSize: 4, total: 0, onPageChange: () => {} };
+    const { container } = render(<Table skeleton data={[]} columns={columns} pagination={pagination} emptyState={{ title: "Kayıt Yok" }} />);
+    expect(screen.queryByText("Kayıt Yok")).not.toBeInTheDocument();
+    expect(container.querySelectorAll("tbody[aria-hidden] tr")).toHaveLength(4);
+  });
+
+  it("erişilebilirlik ihlali içermez — işlemli, render'lı ve iskelet halinde (axe-core)", async () => {
+    const full: ColumnDef<Row>[] = [
+      { header: "İsim", columnName: "name", render: (v) => <strong>{String(v)}</strong> },
+      { header: "İşlemler", actions: { deleteRow: () => {}, navigateRow: () => {} } },
+    ];
+    const loaded = render(<Table label="Kişiler" data={data} columns={full} />);
+    expect(await getA11yViolations(loaded.container)).toEqual([]);
+    loaded.unmount();
+    const sk = render(<Table label="Kişiler" skeleton data={[]} columns={full} />);
+    expect(await getA11yViolations(sk.container)).toEqual([]);
+    // İskelette başlıklar görsel olarak çubuk ama ekran okuyucu adı okur.
+    expect(screen.getByRole("columnheader", { name: "İsim" })).toBeInTheDocument();
   });
 });
