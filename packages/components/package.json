@@ -127,6 +127,10 @@
       "types": "./dist/menu.d.ts",
       "import": "./dist/menu.js"
     },
+    "./logo": {
+      "types": "./dist/logo.d.ts",
+      "import": "./dist/logo.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./manifest.json": "./dist/manifest.json",
     "./package.json": "./package.json"

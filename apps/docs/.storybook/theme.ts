@@ -6,6 +6,7 @@ export function createMariTheme(mode: ThemeMode) {
   return create({
     base: mode,
     brandTitle: "mari-ui",
+    brandImage: "/mari-ui-logo.svg",
     brandUrl: "/",
     brandTarget: "_self",
     fontBase: fontFamily.sans,
