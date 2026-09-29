@@ -131,6 +131,10 @@
       "types": "./dist/input-number.d.ts",
       "import": "./dist/input-number.js"
     },
+    "./list": {
+      "types": "./dist/list.d.ts",
+      "import": "./dist/list.js"
+    },
     "./segmented": {
       "types": "./dist/segmented.d.ts",
       "import": "./dist/segmented.js"
