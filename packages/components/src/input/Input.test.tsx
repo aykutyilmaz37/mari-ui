@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { getA11yViolations } from "../testUtils/a11y";
 import { Input } from "./Input";
 
@@ -54,6 +55,32 @@ describe("Input", () => {
     await user.click(screen.getByRole("button", { name: "Temizle" }));
     expect(screen.getByRole("textbox")).toHaveValue("");
     expect(screen.getByRole("textbox")).toHaveFocus();
+  });
+
+  it("kontrollü kullanımda temizle onChange'i boş değerle çağırır ve alan boşalır (eskiden hiçbir şey olmuyordu)", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onClear = vi.fn();
+    function Controlled() {
+      const [value, setValue] = useState("bilgisayar");
+      return (
+        <Input
+          aria-label="Ara"
+          allowClear
+          value={value}
+          onClear={onClear}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setValue(e.target.value);
+          }}
+        />
+      );
+    }
+    render(<Controlled />);
+    await user.click(screen.getByRole("button", { name: "Temizle" }));
+    expect(onChange).toHaveBeenCalledWith("");
+    expect(onClear).toHaveBeenCalledOnce();
+    expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
   it("şifre göster/gizle butonu adlandırılmış ve basılı durumunu bildirir", async () => {

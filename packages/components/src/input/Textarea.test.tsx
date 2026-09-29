@@ -1,3 +1,5 @@
+import { useState } from "react";
+import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { getA11yViolations } from "../testUtils/a11y";
@@ -56,5 +58,30 @@ describe("Textarea", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
     expect(container.querySelector("textarea")).toHaveAttribute("rows", "4");
+  });
+});
+
+describe("Textarea temizle", () => {
+  it("kontrollü kullanımda temizle onChange'i boş değerle çağırır ve alan boşalır", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    function Controlled() {
+      const [value, setValue] = useState("Kargo notu");
+      return (
+        <Textarea
+          aria-label="Not"
+          allowClear
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setValue(e.target.value);
+          }}
+        />
+      );
+    }
+    render(<Controlled />);
+    await user.click(screen.getByRole("button", { name: "Temizle" }));
+    expect(onChange).toHaveBeenCalledWith("");
+    expect(screen.getByRole("textbox")).toHaveValue("");
   });
 });

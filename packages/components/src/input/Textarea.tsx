@@ -14,6 +14,7 @@ import {
   getShapeClasses,
   getTextareaSizeClasses,
   getVariantClasses,
+  clearNativeValue,
   isClearable,
   resolveInputColor,
   resolveLegacyInputVariant,
@@ -150,7 +151,8 @@ const TextareaInner = (
     };
 
     const handleClear = () => {
-      setCurrentValue("");
+      // onChange'i gerçek olayla tetikler (handleChange → iç state + tüketici).
+      clearNativeValue(innerRef.current);
       onClear?.();
       innerRef.current?.focus();
     };

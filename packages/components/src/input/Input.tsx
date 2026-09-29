@@ -15,6 +15,7 @@ import {
   getShapeClasses,
   getSizeClasses,
   getVariantClasses,
+  clearNativeValue,
   isClearable,
   resolveInputColor,
   resolveLegacyInputVariant,
@@ -112,7 +113,8 @@ const InputInner = (
     // Temizledikten sonra odak alana döner — kullanıcı hemen yeniden yazabilsin
     // (buton kaybolduğu için odak aksi halde <body>'ye düşüyordu).
     const handleClear = () => {
-      setCurrentValue("");
+      // onChange'i gerçek olayla tetikler (handleChange → iç state + tüketici).
+      clearNativeValue(innerRef.current);
       onClear?.();
       innerRef.current?.focus();
     };
