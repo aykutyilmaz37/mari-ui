@@ -143,6 +143,10 @@
       "types": "./dist/input-number.d.ts",
       "import": "./dist/input-number.js"
     },
+    "./masonry": {
+      "types": "./dist/masonry.d.ts",
+      "import": "./dist/masonry.js"
+    },
     "./list": {
       "types": "./dist/list.d.ts",
       "import": "./dist/list.js"
