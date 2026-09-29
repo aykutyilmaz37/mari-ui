@@ -19,11 +19,24 @@ function sourceFiles(dir: string): string[] {
   });
 }
 
+/**
+ * QRCode'un nokta tipi `dotType: "rounded"` bir seçenek DEĞERİ, sınıf adı değil
+ * (kaynak renderer'ın adı). Yalnız o klasörde, tek başına tırnaklı string olarak geçtiğinde muaf.
+ */
+function isQRDotTypeValue(file: string, source: string, index: number): boolean {
+  if (!file.includes(`${join("qrcode", "")}`)) return false;
+  const quote = source[index - 1];
+  return (quote === '"' || quote === "'") && source[index + "rounded".length] === quote;
+}
+
 describe("radius token disiplini", () => {
   it("token'a bağlı olmayan rounded utility'si kullanılmaz", () => {
-    const offenders = sourceFiles(SRC).flatMap((file) =>
-      [...readFileSync(file, "utf8").matchAll(UNTOKENED)].map((m) => `${file.slice(SRC.length + 1)}: ${m[0]}`)
-    );
+    const offenders = sourceFiles(SRC).flatMap((file) => {
+      const source = readFileSync(file, "utf8");
+      return [...source.matchAll(UNTOKENED)]
+        .filter((m) => !isQRDotTypeValue(file, source, m.index))
+        .map((m) => `${file.slice(SRC.length + 1)}: ${m[0]}`);
+    });
     expect(offenders).toEqual([]);
   });
 });

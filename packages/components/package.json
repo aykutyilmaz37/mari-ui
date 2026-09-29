@@ -143,6 +143,10 @@
       "types": "./dist/input-number.d.ts",
       "import": "./dist/input-number.js"
     },
+    "./qrcode": {
+      "types": "./dist/qrcode.d.ts",
+      "import": "./dist/qrcode.js"
+    },
     "./masonry": {
       "types": "./dist/masonry.d.ts",
       "import": "./dist/masonry.js"
@@ -225,7 +229,8 @@
     "@mari-ui/core": "workspace:*",
     "@mari-ui/tokens": "workspace:*",
     "@react-input/mask": "^2.0.4",
-    "lucide-react": "^0.511.0"
+    "lucide-react": "^0.511.0",
+    "qrcode-generator": "^1.5.2"
   },
   "devDependencies": {
     "@mari-ui/eslint-config": "workspace:*",
