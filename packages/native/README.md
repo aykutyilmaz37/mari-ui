@@ -6,6 +6,8 @@ mari-ui'ın React Native katmanı. `StyleSheet` + `@mari-ui/tokens`'ın platform
 
 Sadece üç component: **Button, Input, Card**. Prop API'si web (`@mari-ui/components`) ile aynı beş eksende (`color`/`variant`/`size`/`shape`/`disabled`) konuşur; web'e özgü DOM kavramları (`href`, `target`, mouse event'leri) native'de yoktur ve uydurulmadı. Kalan 26 component (Faz 3'te web'de tamamlanan) için native karşılıkları henüz yazılmadı — bkz. proje planının "Sonraki fazlar" bölümündeki RN dalgaları (1: form, 2: overlay/geri bildirim, 3: gezinme/veri).
 
+**List (Faz 16.3 notu):** web `List` yazıldı, native karşılığı bilinçli olarak sonraya bırakıldı (kullanıcı kararı). Prop sözleşmesi FlatList'e birebir taşınacak şekilde seçildi: `dataSource`→`data`, `renderItem(item, index)`, `rowKey`→`keyExtractor`, `header`/`footer`→`ListHeaderComponent`/`ListFooterComponent`, `empty`→`ListEmptyComponent`, `split`→`ItemSeparatorComponent`, `loadMore`→`onEndReached`. `ListItem`/`ListItemMeta` aynı adlarla `View` tabanlı yazılmalı.
+
 ## Kurulum (tüketici tarafında)
 
 ```bash

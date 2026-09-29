@@ -152,10 +152,19 @@ describe("getRovingTarget", () => {
 
   it("harfle atlama Türkçe büyük/küçük harf duyarsızdır ve mevcut öğeden sonrasına bakar", () => {
     const items = make("İndir", "Ayarlar", "ırmak", "İptal");
-    expect(getRovingTarget(items, items[0]!, "i")).toBe(items[3]);
+    // i/ı/I/İ tek harf sayılır: "İndir"den sonra ilk eşleşme "ırmak".
+    expect(getRovingTarget(items, items[0]!, "i")).toBe(items[2]);
+    expect(getRovingTarget(items, items[2]!, "i")).toBe(items[3]);
     expect(getRovingTarget(items, items[3]!, "i")).toBe(items[0]);
-    expect(getRovingTarget(items, null, "ı")).toBe(items[2]);
+    expect(getRovingTarget(items, null, "ı")).toBe(items[0]);
     expect(getRovingTarget(items, items[0]!, "z")).toBeNull();
+  });
+
+  it("Latin I: 'i' tuşu 'Info'yu, 'I' tuşu 'ılık'ı bulur (tr küçültmesi I→ı yapıyordu)", () => {
+    const items = make("Ayarlar", "Info", "ılık", "iPhone");
+    expect(getRovingTarget(items, items[0]!, "i")).toBe(items[1]);
+    expect(getRovingTarget(items, items[1]!, "I")).toBe(items[2]);
+    expect(getRovingTarget(items, items[2]!, "I")).toBe(items[3]);
   });
 });
 

@@ -31,14 +31,23 @@ export function getRovingTarget(items: HTMLElement[], current: Element | null, k
       return items[items.length - 1] ?? null;
     default: {
       if (key.length !== 1 || key === " ") return null;
-      const char = key.toLocaleLowerCase("tr");
+      const char = foldCase(key);
       for (let step = 1; step <= items.length; step++) {
         const candidate = items[(index + step) % items.length];
-        if (candidate?.textContent?.trim().toLocaleLowerCase("tr").startsWith(char)) return candidate;
+        if (candidate && foldCase(candidate.textContent?.trim() ?? "").startsWith(char)) return candidate;
       }
       return null;
     }
   }
+}
+
+/**
+ * Harfle atlama için katlama. `toLocaleLowerCase("tr")` Latin "I"yı "ı" yapar
+ * ("Info" → "ınfo") ve "i" tuşu onu bulamaz. ı→i katlanır: i/ı/I/İ aynı harf
+ * sayılır (Tree ve AutoComplete aramasıyla aynı kural).
+ */
+function foldCase(text: string): string {
+  return text.toLocaleLowerCase("tr").replace(/ı/g, "i");
 }
 
 /** Renk/variant verilmemişse (eski `variant="none"` varsayılanı) düz, renksiz bir trigger döner. */

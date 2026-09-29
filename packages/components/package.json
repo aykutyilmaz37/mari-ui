@@ -31,6 +31,14 @@
       "types": "./dist/tag.d.ts",
       "import": "./dist/tag.js"
     },
+    "./timeline": {
+      "types": "./dist/timeline.d.ts",
+      "import": "./dist/timeline.js"
+    },
+    "./tree": {
+      "types": "./dist/tree.d.ts",
+      "import": "./dist/tree.js"
+    },
     "./card": {
       "types": "./dist/card.d.ts",
       "import": "./dist/card.js"
@@ -115,6 +123,10 @@
       "types": "./dist/autocomplete.d.ts",
       "import": "./dist/autocomplete.js"
     },
+    "./accordion": {
+      "types": "./dist/accordion.d.ts",
+      "import": "./dist/accordion.js"
+    },
     "./alert": {
       "types": "./dist/alert.d.ts",
       "import": "./dist/alert.js"
@@ -130,6 +142,18 @@
     "./input-number": {
       "types": "./dist/input-number.d.ts",
       "import": "./dist/input-number.js"
+    },
+    "./qrcode": {
+      "types": "./dist/qrcode.d.ts",
+      "import": "./dist/qrcode.js"
+    },
+    "./masonry": {
+      "types": "./dist/masonry.d.ts",
+      "import": "./dist/masonry.js"
+    },
+    "./list": {
+      "types": "./dist/list.d.ts",
+      "import": "./dist/list.js"
     },
     "./segmented": {
       "types": "./dist/segmented.d.ts",
@@ -205,7 +229,8 @@
     "@mari-ui/core": "workspace:*",
     "@mari-ui/tokens": "workspace:*",
     "@react-input/mask": "^2.0.4",
-    "lucide-react": "^0.511.0"
+    "lucide-react": "^0.511.0",
+    "qrcode-generator": "^1.5.2"
   },
   "devDependencies": {
     "@mari-ui/eslint-config": "workspace:*",
