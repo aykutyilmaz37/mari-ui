@@ -35,6 +35,10 @@
       "types": "./dist/timeline.d.ts",
       "import": "./dist/timeline.js"
     },
+    "./tree": {
+      "types": "./dist/tree.d.ts",
+      "import": "./dist/tree.js"
+    },
     "./card": {
       "types": "./dist/card.d.ts",
       "import": "./dist/card.js"
