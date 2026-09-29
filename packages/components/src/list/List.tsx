@@ -3,6 +3,7 @@
 import React, { createContext, useContext } from "react";
 import { cn, useControllableState, type Size } from "@mari-ui/core";
 import { ContentSkeleton } from "../lib/ContentSkeleton";
+import { InfiniteScrollFooter } from "../lib/infiniteScroll";
 import { Empty } from "../empty";
 import { Loading } from "../loading";
 import { Pagination } from "../pagination";
@@ -166,6 +167,7 @@ export function List<T>({
   grid,
   pagination,
   loadMore,
+  infinite,
   loading = false,
   empty,
   className,
@@ -229,6 +231,7 @@ export function List<T>({
         )}
         {pager("top")}
         <Loading spinning={loading}>{body}</Loading>
+        {infinite && !skeleton && hasItems && <InfiniteScrollFooter options={infinite} className={cn(showSplit && "border-t border-mari-border")} />}
         {loadMore && (
           <Region skeleton={skeleton} className={cn("flex justify-center", PAD_Y[size], showSplit && "border-t border-mari-border")}>
             {loadMore}

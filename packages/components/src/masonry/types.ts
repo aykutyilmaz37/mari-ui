@@ -1,6 +1,7 @@
 import type React from "react";
 import type { Size } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
+import type { InfiniteScrollOptions } from "../lib/infiniteScroll";
 
 export type MasonryBreakpoint = "base" | "sm" | "md" | "lg" | "xl";
 export type MasonryColumns = number | Partial<Record<MasonryBreakpoint, number>>;
@@ -19,6 +20,12 @@ export interface MasonryProps extends SkeletonableProps {
   columns?: MasonryColumns;
   /** Öğeler arası boşluk: sm 8 / md 16 / lg 24px ya da px. Varsayılan: `md`. */
   gutter?: Size | number;
+  /**
+   * Sonsuz kaydırma: pano sonu görünüme girince `onLoadMore`. Yeni öğeleri
+   * `items`a siz eklersiniz; `hasMore`/`loading`ı güncel tutun. Klavye için
+   * odaklanınca beliren "Daha fazla yükle" düğmesi de vardır.
+   */
+  infinite?: InfiniteScrollOptions;
   /** Yerleşim her değiştiğinde (öğe yüksekliği, sütun sayısı). */
   onLayoutChange?: (info: { columns: number; height: number }) => void;
   className?: string;

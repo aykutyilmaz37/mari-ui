@@ -2,7 +2,8 @@
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@mari-ui/core";
-import { ContentSkeleton } from "../lib/ContentSkeleton";
+import { SkeletonSlot } from "../lib/SkeletonSlot";
+import { InfiniteScrollFooter } from "../lib/infiniteScroll";
 import { SkeletonBlock } from "../skeleton";
 import type { MasonryItem, MasonryProps } from "./types";
 import { computeLayout, resolveColumns, resolveGap, type MasonryPosition } from "./utils";
@@ -67,6 +68,7 @@ export function Masonry({
   columns = DEFAULT_COLUMNS,
   gutter = "md",
   onLayoutChange,
+  infinite,
   className,
   skeleton = false,
   "aria-label": ariaLabel,
@@ -92,35 +94,39 @@ export function Masonry({
   }, [layout, columnCount]);
 
   return (
-    <ul
-      ref={listRef}
-      aria-label={skeleton ? undefined : ariaLabel}
-      aria-labelledby={skeleton ? undefined : ariaLabelledBy}
-      aria-hidden={skeleton || undefined}
-      aria-busy={skeleton || undefined}
-      className={cn("relative", className)}
-      style={measured ? { height: layout.height } : { columnCount, columnGap: gap }}
-    >
-      {shown.map((item, i) => {
-        const pos = measured ? layout.positions[i] : undefined;
-        return (
-          <li
-            key={item.key}
-            className={cn(
-              pos ? "absolute transition-[top,left] duration-200 ease-out motion-reduce:transition-none" : "break-inside-avoid"
-            )}
-            style={pos ? { top: pos.top, left: pos.left, width: pos.width } : { marginBottom: gap }}
-          >
-            {placeholders ? (
-              item.children
-            ) : (
-              <ContentSkeleton on={skeleton} fallback={<SkeletonBlock active height="8rem" radius="lg" />}>
-                {item.children}
-              </ContentSkeleton>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <ul
+        ref={listRef}
+        aria-label={skeleton ? undefined : ariaLabel}
+        aria-labelledby={skeleton ? undefined : ariaLabelledBy}
+        aria-hidden={skeleton || undefined}
+        aria-busy={skeleton || undefined}
+        className={cn("relative", className)}
+        style={measured ? { height: layout.height } : { columnCount, columnGap: gap }}
+      >
+        {shown.map((item, i) => {
+          const pos = measured ? layout.positions[i] : undefined;
+          return (
+            <li
+              key={item.key}
+              className={cn(
+                pos ? "absolute transition-[top,left] duration-200 ease-out motion-reduce:transition-none" : "break-inside-avoid"
+              )}
+              style={pos ? { top: pos.top, left: pos.left, width: pos.width } : { marginBottom: gap }}
+            >
+              {placeholders ? (
+                item.children
+              ) : (
+                // Kartın TAMAMI tek blok (kullanıcı kararı): içerik görünmez kalıp yüksekliği korur, blok üstüne biner.
+                <SkeletonSlot on={skeleton} placeholder={<SkeletonBlock active height="100%" radius="lg" />}>
+                  {item.children}
+                </SkeletonSlot>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {infinite && !skeleton && items.length > 0 && <InfiniteScrollFooter options={infinite} className="mt-2" />}
+    </>
   );
 }

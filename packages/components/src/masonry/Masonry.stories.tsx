@@ -184,6 +184,46 @@ export const Reviews: Story = {
   ),
 };
 
+/* ─────────────────────────── 2b. Sonsuz pano ─────────────────────────── */
+
+export const InfiniteBoard: Story = {
+  name: "Sonsuz Pano (infinite)",
+  ...storyDoc(
+    "`infinite`: pano sonu görünüme girince sonraki sayfa istenir; yeni görseller mevcut sütunların en kısasına eklenir " +
+      "(önceki öğeler yer değiştirmez). Klavye için Tab ile beliren \"Daha fazla yükle\" düğmesi.",
+    `
+<Masonry
+  aria-label="İlham panosu"
+  columns={{ base: 2, md: 3, lg: 4 }}
+  items={pins}
+  infinite={{ hasMore, loading, onLoadMore: fetchNextPage }}
+/>`
+  ),
+  render: () => {
+    const [count, setCount] = useState(8);
+    const [loading, setLoading] = useState(false);
+    const items = Array.from({ length: count }, (_, i) => ({ ...boardItems[i % boardItems.length]!, key: `pin-${i}` }));
+    return (
+      <Masonry
+        aria-label="İlham panosu"
+        columns={{ base: 2, md: 3, lg: 4 }}
+        items={items}
+        infinite={{
+          hasMore: count < 32,
+          loading,
+          onLoadMore: () => {
+            setLoading(true);
+            setTimeout(() => {
+              setCount((c) => c + 8);
+              setLoading(false);
+            }, 700);
+          },
+        }}
+      />
+    );
+  },
+};
+
 /* ─────────────────────────── 3. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {

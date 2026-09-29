@@ -372,6 +372,72 @@ export const BlogFeed: Story = {
   ),
 };
 
+/* ─────────────────────────── 4b. Sonsuz akış ─────────────────────────── */
+
+const activityNames = ["Ayşe Kaya", "Mehmet Demir", "Zeynep Arslan", "Can Yıldız", "Elif Şahin"];
+const activityActions = ["siparişi onayladı", "yorum ekledi", "ürün fiyatını güncelledi", "iade talebini kapattı", "kampanya oluşturdu"];
+const makeActivity = (from: number, count: number) =>
+  Array.from({ length: count }, (_, i) => {
+    const n = from + i;
+    return { id: n, who: activityNames[n % 5]!, what: activityActions[(n * 3) % 5]!, when: `${n + 2} dk önce` };
+  });
+
+export const InfiniteFeed: Story = {
+  name: "Sonsuz Akış (infinite)",
+  ...storyDoc(
+    "`infinite`: liste sonu görünüme girince (200px önceden) `onLoadMore`; yüklenirken \"Yükleniyor…\", bitince " +
+      "\"Hepsi bu kadar\" duyurulur. Kaydırılan bir kabın içinde de çalışır. Klavye kullanıcısı için Tab ile odaklanınca " +
+      "beliren \"Daha fazla yükle\" düğmesi vardır (yalnız kaydırmaya bağlı yükleme alt bilgiye erişimi engeller).",
+    `
+const [items, setItems] = useState(firstPage);
+const [loading, setLoading] = useState(false);
+
+<div className="h-96 overflow-y-auto">
+  <List
+    aria-label="Etkinlik akışı"
+    dataSource={items}
+    renderItem={(a) => <ListItem>…</ListItem>}
+    infinite={{
+      hasMore: items.length < total,
+      loading,
+      onLoadMore: async () => {
+        setLoading(true);
+        setItems([...items, ...(await fetchNext(items.length))]);
+        setLoading(false);
+      },
+    }}
+  />
+</div>`
+  ),
+  render: () => {
+    const TOTAL = 40;
+    const [items, setItems] = useState(() => makeActivity(0, 10));
+    const [loading, setLoading] = useState(false);
+    const onLoadMore = () => {
+      setLoading(true);
+      setTimeout(() => {
+        setItems((prev) => [...prev, ...makeActivity(prev.length, 10)]);
+        setLoading(false);
+      }, 700);
+    };
+    return (
+      // Kaydırılan bölge klavyeyle de kaydırılabilsin: içinde odaklanabilir düğme var.
+      <div className="h-96 max-w-lg overflow-y-auto rounded-lg border border-mari-border bg-mari-surface px-4">
+        <List
+          aria-label="Etkinlik akışı"
+          dataSource={items}
+          renderItem={(a) => (
+            <ListItem extra={<span className="text-xs whitespace-nowrap text-mari-muted">{a.when}</span>}>
+              <ListItemMeta avatar={<Avatar alt={a.who} size="sm" />} title={a.who} description={a.what} />
+            </ListItem>
+          )}
+          infinite={{ hasMore: items.length < TOTAL, loading, onLoadMore, endMessage: `Son ${TOTAL} etkinliğin hepsi bu kadar` }}
+        />
+      </div>
+    );
+  },
+};
+
 /* ─────────────────────────── 5. Ürün ızgarası ─────────────────────────── */
 
 const products = [

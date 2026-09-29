@@ -2,6 +2,7 @@ import type React from "react";
 import type { Size } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 import type { PaginationProps } from "../pagination";
+import type { InfiniteScrollOptions } from "../lib/infiniteScroll";
 
 export type ListItemLayout = "horizontal" | "vertical";
 
@@ -57,8 +58,15 @@ export interface ListProps<T> extends SkeletonableProps {
   grid?: ListGrid;
   /** `false` ya da verilmezse sayfalama yok. */
   pagination?: false | ListPagination;
-  /** Listenin altında "Daha fazla yükle" alanı (sonsuz liste için düğme). */
+  /** Listenin altında "Daha fazla yükle" alanı (elle yükleme düğmesi). */
   loadMore?: React.ReactNode;
+  /**
+   * Sonsuz kaydırma: liste sonu görünüme girince `onLoadMore`. Yeni kayıtları
+   * `dataSource`a siz eklersiniz; `hasMore`/`loading`ı güncel tutun. Klavye için
+   * odaklanınca beliren bir "Daha fazla yükle" düğmesi de vardır. `pagination`
+   * ile birlikte kullanmayın.
+   */
+  infinite?: InfiniteScrollOptions;
   /**
    * Bir eylem sürüyor (sayfa değişimi, yenileme): mevcut satırlar yerinde
    * soluklaşır ve etkileşime kapanır, üstte spinner. İlk yükleme için `skeleton`.
