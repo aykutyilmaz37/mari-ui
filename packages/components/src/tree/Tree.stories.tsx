@@ -14,6 +14,7 @@ import { Tree, buildIndex, conductCheck } from ".";
 import type { TreeNode } from ".";
 import { Input } from "../input";
 import { Switch } from "../switch";
+import { Tag } from "../tag";
 
 const meta: Meta<typeof Tree> = {
   title: "Veri Gösterimi/Tree",
@@ -323,29 +324,101 @@ const loadData = async (node: TreeNode) => {
   },
 };
 
-/* ─────────────────────────── 5. Çoklu seçim ve bağımsız işaret ─────────────────────────── */
+/* ─────────────────────────── 5. Çoklu seçim ─────────────────────────── */
 
-export const MultipleAndStrict: Story = {
-  name: "Çoklu Seçim ve checkStrictly",
+const categoryIndex = buildIndex(categories);
+const titleOf = (key: string) => String(categoryIndex.get(key)?.node.title ?? key);
+
+/** Seçim/işaret sonucunu gösteren kutu: ağacın NE ürettiği görünsün. */
+function ResultPanel({ title, keys, empty }: { title: string; keys: string[]; empty: string }) {
+  return (
+    <section aria-live="polite" className="flex flex-col gap-2 rounded-lg border border-mari-border bg-mari-surface-alt p-3 text-sm">
+      <h3 className="font-medium text-mari-foreground">{title}</h3>
+      {keys.length === 0 ? (
+        <p className="text-mari-muted">{empty}</p>
+      ) : (
+        <ul className="flex flex-wrap gap-1.5">
+          {keys.map((k) => (
+            <li key={k}>
+              <Tag color="primary">{titleOf(k)}</Tag>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+export const MultipleSelect: Story = {
+  name: "Çoklu Seçim (multiple)",
   ...storyDoc(
-    "Solda `multiple`: tıklama seçimi aç/kapar, seçimler birikir (`aria-multiselectable`). Sağda `checkStrictly`: " +
-      "üst ve alt bağımsız işaretlenir (ör. \"Elektronik\" kategorisinin kendisini vitrine koymak ama alt kategorileri koymamak).",
+    "Senaryo: karşılaştırma sayfası — kullanıcı yan yana karşılaştırmak istediği kategorileri seçer. `multiple`: her tıklama " +
+      "(ya da Enter) o düğümün seçimini aç/kapar, seçimler birikir; Ctrl gerekmez. Seçim onay kutusundan farklıdır: " +
+      "üst düğümü seçmek alt düğümleri seçmez. Sonuç `onSelect` ile gelir — sağda karşılaştırma listesi.",
     `
-<Tree aria-label="Karşılaştırılacak kategoriler" multiple defaultExpandAll treeData={categories} />
-<Tree aria-label="Vitrindeki kategoriler" checkable checkStrictly defaultExpandAll treeData={categories} />`
+const [selected, setSelected] = useState(["laptop", "tablet"]);
+
+<Tree aria-label="Karşılaştırılacak kategoriler" multiple selectedKeys={selected} onSelect={setSelected} treeData={categories} />
+<ul>{selected.map((k) => <li key={k}>{titleOf(k)}</li>)}</ul>`
   ),
-  render: () => (
-    <div className="grid max-w-3xl gap-8 md:grid-cols-2">
-      <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium text-mari-muted">multiple</h3>
-        <Tree aria-label="Karşılaştırılacak kategoriler" multiple defaultExpandedKeys={["elektronik", "bilgisayar"]} defaultSelectedKeys={["laptop", "tablet"]} treeData={categories} />
-      </section>
-      <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium text-mari-muted">checkable + checkStrictly</h3>
-        <Tree aria-label="Vitrindeki kategoriler" checkable checkStrictly selectable={false} defaultExpandedKeys={["elektronik"]} defaultCheckedKeys={["elektronik", "telefon"]} treeData={categories} />
-      </section>
-    </div>
+  render: () => {
+    const [selected, setSelected] = useState<string[]>(["laptop", "tablet"]);
+    return (
+      <div className="grid max-w-3xl gap-6 md:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-mari-muted">Karşılaştırmak istediğiniz kategorilere tıklayın (tekrar tıklamak çıkarır).</p>
+          <Tree
+            aria-label="Karşılaştırılacak kategoriler"
+            multiple
+            defaultExpandedKeys={["elektronik", "bilgisayar", "telefon"]}
+            selectedKeys={selected}
+            onSelect={setSelected}
+            treeData={categories}
+          />
+        </div>
+        <ResultPanel title={`Karşılaştırma (${selected.length})`} keys={selected} empty="Henüz kategori seçmediniz." />
+      </div>
+    );
+  },
+};
+
+/* ─────────────────────────── 6. Bağımsız işaret ─────────────────────────── */
+
+export const CheckStrictly: Story = {
+  name: "Bağımsız İşaret (checkStrictly)",
+  ...storyDoc(
+    "Senaryo: ana sayfa vitrini — hangi kategori kartları vitrinde gösterilsin? \"Elektronik\" kartını koymak, altındaki " +
+      "\"Bilgisayar\"ı da koymak anlamına GELMEZ. Varyasyonlu işarette (solda) üst düğüm tüm altları işaretler; " +
+      "`checkStrictly`de (sağda) her düğüm yalnız kendisidir, kısmi durum yoktur. Aynı tıklamaların sonucu altta.",
+    `
+// Varsayılan: "Elektronik" → altındaki 10 kategori de işaretlenir
+<Tree aria-label="Filtre" checkable treeData={categories} onCheck={setFilter} />
+
+// checkStrictly: "Elektronik" → yalnız Elektronik
+<Tree aria-label="Vitrindeki kategoriler" checkable checkStrictly treeData={categories} onCheck={setShowcase} />`
   ),
+  render: () => {
+    const [linked, setLinked] = useState<string[]>(["elektronik"]);
+    const [strict, setStrict] = useState<string[]>(["elektronik"]);
+    const linkedAll = conductCheck(linked, categoryIndex).checked;
+    return (
+      <div className="grid max-w-4xl gap-6 md:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium text-mari-foreground">Varsayılan (bağlı) — ör. ürün filtresi</h3>
+          <p className="text-sm text-mari-muted">"Elektronik" işaretli → tüm alt kategoriler de işaretli.</p>
+          <Tree aria-label="Ürün filtresi" checkable selectable={false} defaultExpandedKeys={["elektronik"]} checkedKeys={linked} onCheck={setLinked} treeData={categories} />
+          {/* `checkedKeys` ham girdi; ağacın gösterdiği (yayılmış) küme conductCheck ile. */}
+          <ResultPanel title={`Filtrede (${linkedAll.length})`} keys={linkedAll} empty="Filtre yok." />
+        </div>
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium text-mari-foreground">checkStrictly — ör. vitrin kartları</h3>
+          <p className="text-sm text-mari-muted">"Elektronik" işaretli → yalnız Elektronik kartı; alt kategoriler ayrı ayrı seçilir.</p>
+          <Tree aria-label="Vitrindeki kategoriler" checkable checkStrictly selectable={false} defaultExpandedKeys={["elektronik"]} checkedKeys={strict} onCheck={setStrict} treeData={categories} />
+          <ResultPanel title={`Vitrinde (${strict.length})`} keys={strict} empty="Vitrin boş." />
+        </div>
+      </div>
+    );
+  },
 };
 
 /* ─────────────────────────── 6. İskelet ─────────────────────────── */

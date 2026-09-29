@@ -103,6 +103,20 @@ export function isClearable(allowClear: boolean | { clearIcon?: React.ReactNode 
 }
 
 /**
+ * Temizle düğmesi alanı GERÇEK bir değişiklik olarak boşaltır: yerel değer
+ * setter'ı + `input` olayı → React `onChange`'i gerçek bir ChangeEvent'le
+ * çalışır. Eskiden yalnız iç state siliniyordu; kontrollü kullanımda
+ * (`value` + `onChange`) `onChange` hiç çağrılmadığı için X hiçbir şey
+ * silmiyordu (Tree arama story'sinde yakalandı).
+ */
+export function clearNativeValue(el: HTMLInputElement | HTMLTextAreaElement | null): void {
+  if (!el) return;
+  const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(proto, "value")?.set?.call(el, "");
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+/**
  * Checkbox/Radio'dakiyle aynı birleştirme: `status` artık ayrı bir eksen
  * değil, `color`'ın kendisi. `undefined` dönebilir — bu "renk AÇIKÇA
  * verilmedi, varsayılan (nötr/gri dinlenme + odakta primary) davranış
