@@ -115,6 +115,10 @@
       "types": "./dist/autocomplete.d.ts",
       "import": "./dist/autocomplete.js"
     },
+    "./accordion": {
+      "types": "./dist/accordion.d.ts",
+      "import": "./dist/accordion.js"
+    },
     "./alert": {
       "types": "./dist/alert.d.ts",
       "import": "./dist/alert.js"
