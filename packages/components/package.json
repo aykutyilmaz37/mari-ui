@@ -31,6 +31,10 @@
       "types": "./dist/tag.d.ts",
       "import": "./dist/tag.js"
     },
+    "./timeline": {
+      "types": "./dist/timeline.d.ts",
+      "import": "./dist/timeline.js"
+    },
     "./card": {
       "types": "./dist/card.d.ts",
       "import": "./dist/card.js"
