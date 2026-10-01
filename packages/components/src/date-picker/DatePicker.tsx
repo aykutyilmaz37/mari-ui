@@ -92,6 +92,12 @@ function SlotInput({ state, slot, id, label, labelledBy, describedBy, placeholde
   );
 }
 
+/** Değerin sığacağı genişlik: tek alan / aralık, tarih-saatte daha geniş. */
+function boxWidthClass({ range, mode }: PickerState): string {
+  if (mode === "datetime") return range ? "max-w-[26rem]" : "max-w-60";
+  return range ? "max-w-80" : "max-w-52";
+}
+
 type ElRef<T> = React.RefObject<T | null>;
 
 /**
@@ -118,10 +124,11 @@ function usePickerDismiss(state: PickerState, anchorRef: ElRef<HTMLDivElement>, 
       inputs.current?.[slot]?.focus();
     };
     document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
+    // Yakalama aşaması: Modal'ın (belge düzeyi) Escape dinleyicisinden ÖNCE işlenip `preventDefault` ile işaretlenir.
+    document.addEventListener("keydown", onKeyDown, true);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown, true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- refler kararlı
   }, [open, slot]);
@@ -176,8 +183,9 @@ export function DatePicker(outerProps: DatePickerProps) {
   const coords = useFloatingPosition(state.open, anchorRef, panelRef, { placement, gap: GAP_PX });
   usePickerDismiss(state, anchorRef, panelRef, inputs, () => setFocusPanel(false));
 
-  const geometry = cn("flex w-full items-center gap-2", sizeClass[size], getShapeClasses(shape, variant));
-  if (skeleton) return <div {...skeletonBoxProps(cn(geometry, state.range ? "max-w-80" : "max-w-52", className))} />;
+  // Genişlik iskeletle ORTAK — yüklenince kutu kaymasın.
+  const geometry = cn("flex w-full items-center gap-2", sizeClass[size], getShapeClasses(shape, variant), boxWidthClass(state));
+  if (skeleton) return <div {...skeletonBoxProps(cn(geometry, className))} />;
 
   const rangeProps = props as DatePickerRangeProps;
   const basePlaceholder = formatPlaceholder(state.format);
@@ -234,8 +242,6 @@ export function DatePicker(outerProps: DatePickerProps) {
         className={cn(
           geometry,
           "group relative cursor-text",
-          state.range ? "max-w-80" : "max-w-52",
-          state.mode === "datetime" && (state.range ? "max-w-[26rem]" : "max-w-60"),
           touchTargetClass[size],
           FIELD_BASE_CLASS,
           getVariantClasses(variant, color),

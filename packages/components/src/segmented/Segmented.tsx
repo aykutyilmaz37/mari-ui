@@ -2,7 +2,7 @@
 
 import React, { useId, useLayoutEffect, useRef, useState } from "react";
 import { cn, useControllableState, type Size } from "@mari-ui/core";
-import { useFieldGroup } from "../lib/fieldContext";
+import { useFieldGroup, useFieldSkeleton } from "../lib/fieldContext";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { touchTargetClass } from "../lib/sizeClasses";
 import type { SegmentedOption, SegmentedProps, SegmentedValue } from "./types";
@@ -64,10 +64,11 @@ export function Segmented({
   "aria-label": ownAriaLabel,
   "aria-labelledby": ownAriaLabelledBy,
   className,
-  skeleton = false,
+  skeleton: ownSkeleton,
 }: SegmentedProps) {
   // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
   const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled: ownDisabled });
+  const skeleton = useFieldSkeleton(ownSkeleton);
   const { "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy } = field;
   const disabled = !!field.disabled;
   const items = options.map(normalize);

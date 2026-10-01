@@ -98,7 +98,7 @@ function ColorPanel({ state, format, setFormat, props }: PanelProps) {
           type="button"
           aria-pressed={color === null}
           onClick={() => set(null, true)}
-          className="flex items-center gap-2 self-start rounded-sm text-xs text-mari-muted outline-none hover:text-mari-foreground focus-visible:ring-2 focus-visible:ring-mari-ring"
+          className="flex items-center gap-2 self-start rounded-sm text-xs text-mari-muted outline-none pointer-coarse:py-3 hover:text-mari-foreground focus-visible:ring-2 focus-visible:ring-mari-ring"
         >
           <Swatch color={null} className="size-4 rounded-sm" />
           Renk yok
@@ -187,7 +187,15 @@ export function ColorPicker(outerProps: ColorPickerProps) {
 
   const text = triggerText(showText, state.color, format);
   const geometry = cn("inline-flex shrink-0 items-center pl-[0.1875rem]", TRIGGER_CLASS[size], text ? TEXT_PAD_CLASS[size] : cn(SQUARE_CLASS[size], "justify-center pl-0"));
-  if (skeleton) return <span {...skeletonBoxProps(cn(geometry, text && "w-24", className))} />;
+  // İskelet gerçek içeriği (renk kutusu + metin) şeffaf çizer: genişlik metne göre birebir, yüklenince kayma yok.
+  if (skeleton) {
+    return (
+      <span {...skeletonBoxProps(cn(geometry, "border border-transparent", className))}>
+        <span className={cn("block shrink-0", SWATCH_CLASS[size])} />
+        {text && <span className="truncate">{text}</span>}
+      </span>
+    );
+  }
 
   const button = (
     <button
@@ -237,7 +245,7 @@ export function ColorPicker(outerProps: ColorPickerProps) {
         open={open}
         onOpenChange={setOpen}
         aria-label="Renk seçici"
-        className="w-60 max-w-[calc(100vw-1rem)]"
+        className="w-60 max-w-[calc(100vw-1rem)] pointer-coarse:w-72"
         content={<ColorPanel state={state} format={format} setFormat={setFormat} props={props} />}
       >
         {button}

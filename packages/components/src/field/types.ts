@@ -16,6 +16,11 @@ export interface FieldProps {
   /** Kontrolün id'si. Verilmezse üretilir; kontrolün kendi `id` prop'u her zaman kazanır. */
   htmlFor?: string;
   className?: string;
+  /**
+   * Veri gelene kadar etiket, ipucu ve İÇİNDEKİ KONTROL iskelet çizer (kontrol
+   * bunu Field'dan alır; ayrıca `skeleton` vermeye gerek yok).
+   */
+  skeleton?: boolean;
   /** Tek bir kontrol (Input, Select, InputNumber, RadioGroup, Segmented…). */
   children: React.ReactNode;
 }

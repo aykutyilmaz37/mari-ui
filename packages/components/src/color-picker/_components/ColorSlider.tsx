@@ -54,7 +54,7 @@ export function ColorSlider({ label, value, min, max, step = 1, valueText, backg
       onKeyDown={disabled ? undefined : onKeyDown}
       {...(disabled ? {} : drag)}
       // Dikey dolgu: tutamaç şeritten büyük, tıklama alanı da onu kapsasın.
-      className="group relative w-full cursor-pointer touch-none py-1 outline-none select-none"
+      className="group relative w-full cursor-pointer touch-none py-1 outline-none select-none pointer-coarse:py-[1.125rem]"
     >
       <div aria-hidden className={cn("relative h-2 overflow-hidden rounded-full", checker && CHECKER_CLASS)}>
         <div className="absolute inset-0" style={{ background }} />

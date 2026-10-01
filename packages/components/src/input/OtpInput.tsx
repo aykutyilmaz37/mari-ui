@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
-import { FieldContext, useFieldControl, useFieldGroup } from "../lib/fieldContext";
+import { FieldContext, useFieldControl, useFieldGroup, useFieldSkeleton } from "../lib/fieldContext";
 import type { SkeletonableProps } from "../lib/skeleton";
 import { Input } from "./Input";
 import { OtpSingleField } from "./_components/OtpSingleField";
@@ -74,7 +74,7 @@ export function OtpInput({
   className,
   "aria-label": ariaLabelProp,
   inputMode = "numeric",
-  skeleton = false,
+  skeleton: ownSkeleton,
   layout = "separated",
   linePosition = "center",
 }: OtpInputProps) {
@@ -82,6 +82,7 @@ export function OtpInput({
   // Varsayılan "Doğrulama kodu" adı yalnız hiç ad yoksa — Field'ın etiketini ezmesin.
   const inField = useContext(FieldContext) !== null;
   const group = useFieldGroup({ "aria-label": ariaLabelProp, disabled }, layout === "separated");
+  const skeleton = useFieldSkeleton(ownSkeleton);
   const control = useFieldControl({ disabled, color: color ?? status });
   const ariaLabel = ariaLabelProp ?? (inField ? undefined : "Doğrulama kodu");
   const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));

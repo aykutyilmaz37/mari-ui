@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { cn } from "@mari-ui/core";
+import { skeletonBoxProps } from "../../lib/skeleton";
 import {
   dayGridKeyStep,
   fullDateLabel,
@@ -48,6 +49,8 @@ export interface DayGridProps {
   label: string;
   /** Odak ızgaradaysa ya da `true` ise odaklanan gün DOM odağını alır. */
   takeFocus?: boolean;
+  /** Aynı ızgara, gün numaraları iskelet blok; etkileşim yok, erişilebilirlik ağacından gizli. */
+  skeleton?: boolean;
 }
 
 const RANGE_BG: Record<RangePosition, string> = {
@@ -66,6 +69,56 @@ function compactDayClass(info: DayCellInfo) {
     !strong && !info.disabled && "group-hover:bg-mari-surface-alt",
     info.outside && !strong && "text-mari-muted",
     info.disabled && "text-mari-disabled line-through decoration-mari-disabled/60"
+  );
+}
+
+/**
+ * Tam ekran hücre: numara + `cellRender` içeriği. Dar ekranda (< sm) 7 sütuna
+ * içerik sığmaz → hücre kısalır, içerik görsel olarak bir noktaya iner ama
+ * ekran okuyucu için DOM'da kalır (`sr-only`); ayrıntı gün seçilince
+ * gösterilir (mobil takvim kalıbı).
+ */
+function FullDayContent({ info, locale, cellRender }: { info: DayCellInfo; locale?: string; cellRender?: (info: DayCellInfo) => React.ReactNode }) {
+  const content = cellRender?.(info);
+  const hasContent = content !== undefined && content !== null && content !== false && content !== "";
+  return (
+    <div
+      className={cn(
+        "m-0.5 flex h-24 flex-col gap-1 overflow-hidden rounded-md border-t-2 p-1.5 text-left transition-colors max-sm:h-12 max-sm:items-center max-sm:gap-0.5 max-sm:p-1",
+        info.selected ? "border-mari-primary bg-mari-primary-subtle" : "border-mari-border",
+        !info.selected && !info.disabled && "group-hover:bg-mari-surface-alt",
+        info.outside && "text-mari-muted",
+        info.disabled && "bg-mari-surface-alt text-mari-disabled"
+      )}
+    >
+      <span aria-hidden className={cn("self-end text-sm tabular-nums max-sm:self-center", info.today && "rounded-sm bg-mari-primary-solid px-1 font-semibold text-mari-primary-solid-contrast")}>
+        {info.date.getDate()}
+      </span>
+      <span className="sr-only">{fullDateLabel(info.date, locale)}</span>
+      {/* Kaydırılmaz (hücre içi kaydırma klavyeyle erişilemezdi): içerik özet olmalı, fazlası "+N". */}
+      {hasContent && <div className="min-h-0 flex-1 overflow-hidden text-xs max-sm:sr-only">{content}</div>}
+      {hasContent && <span aria-hidden className="size-1.5 rounded-full bg-mari-primary sm:hidden" />}
+    </div>
+  );
+}
+
+/** İskelet gün hücresi: gerçek hücreyle aynı kutu, numara yerine blok. */
+function SkeletonDay({ date, full }: { date: Date; full: boolean }) {
+  if (full) {
+    return (
+      <td className="p-0 align-top">
+        <div className="m-0.5 flex h-24 flex-col rounded-md border-t-2 border-mari-border p-1.5 max-sm:h-12">
+          <span {...skeletonBoxProps("self-end rounded-sm text-sm tabular-nums")}>{date.getDate()}</span>
+        </div>
+      </td>
+    );
+  }
+  return (
+    <td className="p-0">
+      <div className="py-0.5 pointer-coarse:py-1.5">
+        <span {...skeletonBoxProps("mx-auto flex size-8 items-center justify-center rounded-md tabular-nums")}>{date.getDate()}</span>
+      </div>
+    </td>
   );
 }
 
@@ -92,6 +145,7 @@ export function DayGrid({
   cellRender,
   label,
   takeFocus = false,
+  skeleton = false,
 }: DayGridProps) {
   const tableRef = useRef<HTMLTableElement>(null);
   const today = new Date();
@@ -129,9 +183,10 @@ export function DayGrid({
   return (
     <table
       ref={tableRef}
-      role="grid"
-      aria-label={label}
-      onKeyDown={onKeyDown}
+      role={skeleton ? undefined : "grid"}
+      aria-label={skeleton ? undefined : label}
+      aria-hidden={skeleton || undefined}
+      onKeyDown={skeleton ? undefined : onKeyDown}
       onMouseLeave={() => onHover?.(null)}
       className={cn("w-full border-collapse text-sm", full ? "table-fixed" : "")}
     >
@@ -168,7 +223,8 @@ export function DayGrid({
                 outside: !isSameMonth(date, view),
                 range: rangeOf?.(date) ?? null,
               };
-              const isFocused = isSameDay(date, focused);
+              const isFocused = !skeleton && isSameDay(date, focused);
+              if (skeleton) return <SkeletonDay key={date.toDateString()} date={date} full={full} />;
               return (
                 <td
                   key={date.toDateString()}
@@ -197,24 +253,9 @@ export function DayGrid({
                   )}
                 >
                   {full ? (
-                    <div
-                      className={cn(
-                        "m-0.5 flex h-24 flex-col gap-1 overflow-hidden rounded-md border-t-2 p-1.5 text-left transition-colors",
-                        info.selected ? "border-mari-primary bg-mari-primary-subtle" : "border-mari-border",
-                        !info.selected && !info.disabled && "group-hover:bg-mari-surface-alt",
-                        info.outside && "text-mari-muted",
-                        info.disabled && "bg-mari-surface-alt text-mari-disabled"
-                      )}
-                    >
-                      <span aria-hidden className={cn("self-end text-sm tabular-nums", info.today && "rounded-sm bg-mari-primary-solid px-1 font-semibold text-mari-primary-solid-contrast")}>
-                        {date.getDate()}
-                      </span>
-                      <span className="sr-only">{fullDateLabel(date, locale)}</span>
-                      {/* Kaydırılmaz (hücre içi kaydırma klavyeyle erişilemezdi): içerik özet olmalı, fazlası "+N". */}
-                      {cellRender && <div className="min-h-0 flex-1 overflow-hidden text-xs">{cellRender(info)}</div>}
-                    </div>
+                    <FullDayContent info={info} locale={locale} cellRender={cellRender} />
                   ) : (
-                    <div className="py-0.5">
+                    <div className="py-0.5 pointer-coarse:py-1.5">
                       <span className={compactDayClass(info)}>{date.getDate()}</span>
                     </div>
                   )}

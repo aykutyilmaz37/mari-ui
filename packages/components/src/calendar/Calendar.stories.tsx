@@ -8,6 +8,11 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { addDays, formatDate, isSameDay, startOfDay } from "../lib/date";
+import { Field } from "../field";
+import { Input } from "../input";
+import { Modal } from "../modal";
+import { Segmented } from "../segmented";
+import { TimePicker } from "../date-picker";
 import { Calendar } from "./Calendar";
 
 const meta: Meta<typeof Calendar> = {
@@ -80,7 +85,8 @@ const TONE: Record<string, string> = {
 export const EventCalendar: Story = {
   name: "Ekip Etkinlik Takvimi",
   ...storyDoc(
-    "Tam ekran: `cellRender` hücreye etkinlikleri yazar — hücre sabit yükseklikte, en fazla 2 etkinlik + \"+N daha\". " +
+    "Dar ekranda hücre içeriği bir noktaya iner (ekran okuyucu yine okur); ayrıntı yan panelde. " +
+      "Tam ekran: `cellRender` hücreye etkinlikleri yazar — hücre sabit yükseklikte, en fazla 2 etkinlik + \"+N daha\". " +
       "Gün seçince yan panel o günün tamamını listeler. Ekran okuyucu hücreyi \"6 Ekim 2026 Salı, Sürüm 2.4…\" diye okur.",
     `<Calendar value={day} onChange={setDay} cellRender={(date, info) => info.type === "date" && <Events date={date} />} />`
   ),
@@ -89,13 +95,12 @@ export const EventCalendar: Story = {
     const ofDay = (d: Date) => EVENTS.filter((e) => isSameDay(e.date, d));
     return (
       <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="min-w-0 flex-1 overflow-x-auto">
-          <div className="min-w-[44rem]">
-            <Calendar
+        <div className="min-w-0 flex-1">
+          <Calendar
               value={day}
               onChange={setDay}
               cellRender={(date, info) =>
-                info.type === "date" ? (
+                info.type === "date" && ofDay(date).length > 0 ? (
                   <ul className="flex flex-col gap-0.5">
                     {ofDay(date)
                       .slice(0, 2)
@@ -109,7 +114,6 @@ export const EventCalendar: Story = {
                 ) : null
               }
             />
-          </div>
         </div>
         <aside aria-live="polite" className="w-full shrink-0 rounded-lg border border-mari-border p-4 lg:w-64">
           <h3 className="mb-2 font-semibold">{day ? formatDate(day, "d MMMM, EEEE") : "Gün seçin"}</h3>
@@ -177,4 +181,115 @@ export const YearlyLeave: Story = {
       }
     />
   ),
+};
+
+/* ─────────────────────────── 4. Etkinlik ekleme ─────────────────────────── */
+
+interface PlannedEvent {
+  id: number;
+  date: Date;
+  title: string;
+  start: Date;
+  end: Date;
+  tone: "primary" | "success" | "warning";
+}
+
+const TONE_OPTIONS = [
+  { value: "primary", label: "Toplantı" },
+  { value: "success", label: "Sosyal" },
+  { value: "warning", label: "Son tarih" },
+];
+
+const at = (h: number, m = 0) => new Date(2026, 0, 1, h, m);
+
+export const AddEvent: Story = {
+  name: "Etkinlik Ekleme (Bileşim Örneği)",
+  ...storyDoc(
+    "Calendar etkinlik KAYDETMEZ — bu uygulamanın işi (alanlar, kayıt yeri, çakışma kuralı). Kalıp: `onSelect` gün seçimini " +
+      "verir → Modal'da form (Input + TimePicker aralık + Segmented) → kaydedince etkinlik listenize eklenir, `cellRender` " +
+      "onu hücreye çizer. Tam özellikli etkinlik takvimi (hafta/gün görünümü, sürükleme, tekrar) `@mari-ui/modules` kapsamındadır.",
+    `const [draftDay, setDraftDay] = useState<Date | null>(null);
+
+<Calendar onSelect={(date, { source }) => source === "date" && setDraftDay(date)} cellRender={(date) => <Events date={date} />} />
+<Modal open={!!draftDay} title={\`Etkinlik ekle — \${formatDate(draftDay, "d MMMM")}\`} onConfirm={save} onClose={() => setDraftDay(null)}>
+  <Field label="Başlık"><Input value={title} onChange={…} /></Field>
+  <Field label="Saat"><TimePicker range minuteStep={15} value={time} onChange={setTime} /></Field>
+  <Field label="Tür"><Segmented options={types} value={tone} onChange={setTone} /></Field>
+</Modal>`
+  ),
+  render: () => {
+    const [events, setEvents] = useState<PlannedEvent[]>([{ id: 1, date: addDays(today, 1), title: "Haftalık senkron", start: at(10), end: at(10, 30), tone: "primary" }]);
+    const [draftDay, setDraftDay] = useState<Date | null>(null);
+    const [title, setTitle] = useState("");
+    const [time, setTime] = useState<[Date | null, Date | null] | null>([at(14), at(15)]);
+    const [tone, setTone] = useState<PlannedEvent["tone"]>("primary");
+    const [error, setError] = useState<string | undefined>();
+
+    const openFor = (date: Date) => {
+      setDraftDay(date);
+      setTitle("");
+      setTime([at(14), at(15)]);
+      setTone("primary");
+      setError(undefined);
+    };
+    const save = () => {
+      if (!title.trim()) {
+        setError("Başlık gerekli.");
+        return;
+      }
+      setEvents((prev) => [...prev, { id: Date.now(), date: draftDay!, title: title.trim(), start: time?.[0] ?? at(9), end: time?.[1] ?? at(10), tone }]);
+      setDraftDay(null);
+    };
+    const ofDay = (d: Date) => events.filter((e) => isSameDay(e.date, d)).sort((a, b) => a.start.getTime() - b.start.getTime());
+
+    return (
+      <>
+        <p className="mb-3 text-sm text-mari-muted">Bir güne tıklayın (ya da ok tuşlarıyla gidip Enter'a basın) — etkinlik formu açılır.</p>
+        <Calendar
+          onSelect={(date, { source }) => source === "date" && openFor(date)}
+          cellRender={(date, info) =>
+            info.type === "date" && ofDay(date).length > 0 ? (
+              <ul className="flex flex-col gap-0.5">
+                {ofDay(date)
+                  .slice(0, 2)
+                  .map((e) => (
+                    <li key={e.id} className={`truncate rounded-sm px-1 py-0.5 ${TONE[e.tone]}`}>
+                      {formatDate(e.start, "HH:mm")} {e.title}
+                    </li>
+                  ))}
+                {ofDay(date).length > 2 && <li className="px-1 text-mari-muted">+{ofDay(date).length - 2} daha</li>}
+              </ul>
+            ) : null
+          }
+        />
+        <Modal
+          open={draftDay !== null}
+          title={draftDay ? `Etkinlik ekle — ${formatDate(draftDay, "d MMMM EEEE")}` : ""}
+          confirmButtonText="Kaydet"
+          cancelButtonText="Vazgeç"
+          onConfirm={save}
+          onClose={() => setDraftDay(null)}
+        >
+          <div className="flex flex-col gap-4">
+            <Field label="Başlık" required error={error}>
+              <Input
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setError(undefined);
+                }}
+                placeholder="Ör. Tasarım incelemesi"
+              />
+            </Field>
+            <Field label="Saat">
+              <TimePicker range minuteStep={15} value={time} onChange={setTime} rangeLabels={["Başlangıç", "Bitiş"]} />
+            </Field>
+            <Field label="Tür">
+              <Segmented options={TONE_OPTIONS} value={tone} onChange={(v) => setTone(v as PlannedEvent["tone"])} />
+            </Field>
+          </div>
+        </Modal>
+      </>
+    );
+  },
 };

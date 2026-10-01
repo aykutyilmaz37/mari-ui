@@ -31,7 +31,11 @@ export interface CalendarProps extends SkeletonableProps {
   disabledDate?: (date: Date) => boolean;
   /** Seçilebilir aralık; dışındaki günler devre dışı, yıl listesi bununla sınırlı. */
   validRange?: [Date, Date];
-  /** Hücreye içerik (yalnız `fullscreen`): etkinlikler, notlar. */
+  /**
+   * Hücreye içerik (yalnız `fullscreen`): etkinlikler, notlar. İçerik yoksa
+   * `null` döndürün — dar ekranda içerikli günler nokta ile işaretlenir, boş
+   * bir kapsayıcı (`<ul />`) da "içerik var" sayılır.
+   */
   cellRender?: (date: Date, info: CalendarCellInfo) => React.ReactNode;
   /** Varsayılan: `1` (Pazartesi). */
   weekStart?: WeekStart;

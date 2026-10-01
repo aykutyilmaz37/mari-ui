@@ -3,6 +3,7 @@
 import React, { useCallback, useId, useMemo, useState } from "react";
 import { cn } from "@mari-ui/core";
 import { FieldContext, type FieldContextValue } from "../lib/fieldContext";
+import { skeletonBoxProps } from "../lib/skeleton";
 import type { FieldProps } from "./types";
 
 export type { FieldProps };
@@ -22,7 +23,7 @@ export type { FieldProps };
  * Bölge hep DOM'da (sonradan eklenen canlı bölgeyi bazı ekran okuyucular
  * duyurmuyor); hata yokken boş.
  */
-export function Field({ label, hint, error, required = false, disabled = false, layout = "vertical", htmlFor, className, children }: FieldProps) {
+export function Field({ label, hint, error, required = false, disabled = false, layout = "vertical", htmlFor, className, skeleton = false, children }: FieldProps) {
   const autoId = useId();
   const [ownControlId, setControlId] = useState<string | undefined>();
   const [isGroup, setIsGroup] = useState(false);
@@ -40,16 +41,18 @@ export function Field({ label, hint, error, required = false, disabled = false, 
   else if (showHint) describedBy = hintId;
 
   const context = useMemo<FieldContextValue>(
-    () => ({ controlId, labelId, describedBy, invalid, required, disabled, markGroup, setControlId }),
-    [controlId, labelId, describedBy, invalid, required, disabled, markGroup]
+    () => ({ controlId, labelId, describedBy, invalid, required, disabled, markGroup, setControlId, skeleton }),
+    [controlId, labelId, describedBy, invalid, required, disabled, markGroup, skeleton]
   );
 
   const horizontal = layout === "horizontal";
+  // İskelette etiket/ipucu metni şeffaf bir blok olur — gerçek metinle aynı boyut, yüklenince kayma yok.
+  const textSkeleton = (text: React.ReactNode) => (skeleton ? <span {...skeletonBoxProps("rounded-sm")}>{text}</span> : text);
   const labelContent = (
     <>
-      {label}
+      {textSkeleton(label)}
       {/* Zorunluluk kontrolün `required`ı ile okunur; yıldız yalnız görsel. */}
-      {required && (
+      {required && !skeleton && (
         <span aria-hidden className="ml-0.5 text-mari-error">
           *
         </span>
@@ -80,7 +83,7 @@ export function Field({ label, hint, error, required = false, disabled = false, 
           {children}
           {showHint && (
             <p id={hintId} className="mt-1.5 text-xs text-mari-muted">
-              {hint}
+              {textSkeleton(hint)}
             </p>
           )}
           <p id={errorId} aria-live="polite" className="mt-1.5 text-xs text-mari-error empty:mt-0">

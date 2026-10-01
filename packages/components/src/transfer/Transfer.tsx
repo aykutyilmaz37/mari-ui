@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import { Button } from "../button";
-import { useFieldGroup } from "../lib/fieldContext";
-import { skeletonBoxProps } from "../lib/skeleton";
+import { useFieldGroup, useFieldSkeleton } from "../lib/fieldContext";
 import { TransferList } from "./_components/TransferList";
 import type { TransferDirection, TransferProps } from "./types";
 import { moveKeys, splitLists } from "./utils";
@@ -26,7 +25,7 @@ interface MoveButtonProps {
  * Seçim yokken `disabled` yerine `aria-disabled`: taşıdıktan sonra düğme
  * pasifleşince odak düğmede kalır (native disabled odağı body'ye düşürürdü).
  */
-function MoveButton({ direction, enabled, label, text, onMove }: MoveButtonProps) {
+function MoveButton({ direction, enabled, label, text, onMove, skeleton }: MoveButtonProps & { skeleton: boolean }) {
   const Icon = direction === "right" ? ChevronRightIcon : ChevronLeftIcon;
   return (
     <Button
@@ -35,6 +34,7 @@ function MoveButton({ direction, enabled, label, text, onMove }: MoveButtonProps
       color={enabled ? "primary" : "neutral"}
       aria-label={label}
       aria-disabled={!enabled}
+      skeleton={skeleton}
       onClick={() => enabled && onMove()}
       // Dar ekranda listeler alt alta: oklar aşağı/yukarı döner. İkon `icon` prop'unda — children'a konunca
       // Button'un `truncate` etiket span'ine düşüp metnin üstüne sarıyordu.
@@ -75,22 +75,13 @@ export function Transfer(props: TransferProps) {
     listHeight = "14rem",
     color,
     className,
-    skeleton = false,
+    skeleton: ownSkeleton,
   } = props;
   const disabled = !!field.disabled;
+  const skeleton = useFieldSkeleton(ownSkeleton);
   const [targetKeys, setTargetKeys] = useControllableState<string[]>({ value: props.targetKeys, defaultValue: props.defaultTargetKeys ?? EMPTY });
   const [selectedKeys, setSelectedKeys] = useControllableState<string[]>({ value: props.selectedKeys, defaultValue: props.defaultSelectedKeys ?? EMPTY });
   const [announcement, setAnnouncement] = useState("");
-
-  if (skeleton) {
-    return (
-      <div aria-hidden className={cn("flex flex-col gap-3 sm:flex-row sm:items-center", className)}>
-        <div {...skeletonBoxProps("flex-1 rounded-lg")} style={{ height: `calc(${listHeight} + 2.5rem)` }} />
-        <div {...skeletonBoxProps("hidden size-8 shrink-0 rounded-md sm:block")} />
-        <div {...skeletonBoxProps("flex-1 rounded-lg")} style={{ height: `calc(${listHeight} + 2.5rem)` }} />
-      </div>
-    );
-  }
 
   const { left, right } = splitLists(dataSource, targetKeys);
   const leftKeys = new Set(left.map((i) => i.key));
@@ -123,11 +114,12 @@ export function Transfer(props: TransferProps) {
     setAnnouncement(`${result.moved.length} öğe ${to} listesine taşındı.`);
   };
 
-  const listProps = { showSearch, searchPlaceholder, filterOption, onSearch, render, showSelectAll, footer, notFoundContent, listHeight, disabled, color };
+  const listProps = { showSearch, searchPlaceholder, filterOption, onSearch, render, showSelectAll, footer, notFoundContent, listHeight, disabled, color, skeleton };
 
   return (
     <div
       role="group"
+      aria-hidden={skeleton || undefined}
       aria-label={field["aria-label"]}
       aria-labelledby={field["aria-labelledby"]}
       aria-describedby={field["aria-describedby"]}
@@ -148,6 +140,7 @@ export function Transfer(props: TransferProps) {
           label={`Seçilenleri ${titleText(1)} listesine taşı`}
           text={operations?.[0]}
           onMove={() => move("right", leftSelected)}
+          skeleton={skeleton}
         />
         {!oneWay && (
           <MoveButton
@@ -156,6 +149,7 @@ export function Transfer(props: TransferProps) {
             label={`Seçilenleri ${titleText(0)} listesine taşı`}
             text={operations?.[1]}
             onMove={() => move("left", rightSelected)}
+            skeleton={skeleton}
           />
         )}
       </div>

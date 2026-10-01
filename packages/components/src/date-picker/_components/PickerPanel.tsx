@@ -38,7 +38,7 @@ function Presets({ presets, onPick }: { presets: DatePickerPreset<Date | [Date, 
           <button
             type="button"
             onClick={() => onPick(typeof p.value === "function" ? p.value() : p.value)}
-            className="w-full rounded-md px-2 py-1 text-left text-sm text-mari-foreground outline-none hover:bg-mari-surface-alt focus-visible:outline-2 focus-visible:outline-mari-ring"
+            className="w-full rounded-md px-2 py-1 pointer-coarse:py-2.5 text-left text-sm text-mari-foreground outline-none hover:bg-mari-surface-alt focus-visible:outline-2 focus-visible:outline-mari-ring"
           >
             {p.label}
           </button>
@@ -96,6 +96,8 @@ export const PickerPanel = forwardRef<HTMLDivElement, PickerPanelProps>(function
   const seconds = state.format.includes("ss");
   const showNow = props.showNow ?? !range;
   const needsConfirm = hasTime;
+  // Panel konumu ölçülene kadar `invisible` — görünmez öğeye odak verilemez, ölçümü bekle.
+  const focusNow = takeFocus && coords !== null;
 
   if (typeof document === "undefined") return null;
 
@@ -146,11 +148,14 @@ export const PickerPanel = forwardRef<HTMLDivElement, PickerPanelProps>(function
           <div className="flex flex-col gap-4 p-3 sm:flex-row">
             {dual ? (
               <>
-                <CalendarPanel key="l" {...calendarCommon} initialDate={view} viewDate={view} onViewDateChange={setView} hideNext takeFocus={takeFocus} />
-                <CalendarPanel key="r" {...calendarCommon} initialDate={addMonths(view, 1)} viewDate={addMonths(view, 1)} onViewDateChange={(d) => setView(addMonths(d, -1))} hidePrev />
+                {/* Dar ekranda tek ay (iki ay alt alta ekrana sığmıyor, alanın üstüne biniyordu); ikinci ay sm+. */}
+                <CalendarPanel key="l" {...calendarCommon} initialDate={view} viewDate={view} onViewDateChange={setView} hideNext="sm" takeFocus={focusNow} />
+                <div className="hidden sm:block">
+                  <CalendarPanel key="r" {...calendarCommon} initialDate={addMonths(view, 1)} viewDate={addMonths(view, 1)} onViewDateChange={(d) => setView(addMonths(d, -1))} hidePrev />
+                </div>
               </>
             ) : (
-              <CalendarPanel key={`s${slot}`} {...calendarCommon} initialDate={current} takeFocus={takeFocus} />
+              <CalendarPanel key={`s${slot}`} {...calendarCommon} initialDate={current} takeFocus={focusNow} />
             )}
           </div>
         )}
@@ -163,7 +168,7 @@ export const PickerPanel = forwardRef<HTMLDivElement, PickerPanelProps>(function
               hourStep={props.hourStep}
               minuteStep={props.minuteStep}
               secondStep={props.secondStep}
-              takeFocus={takeFocus && !hasDate}
+              takeFocus={focusNow && !hasDate}
             />
           </div>
         )}

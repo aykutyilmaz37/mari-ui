@@ -22,6 +22,8 @@ export interface FieldContextValue {
   markGroup: () => void;
   /** Kontrol kendi `id`sini verdiyse etiketin `htmlFor`u ona dönsün. */
   setControlId: (id: string | undefined) => void;
+  /** Field iskelette: içindeki kontrol de iskelet çizer (tek prop kuralı). */
+  skeleton: boolean;
 }
 
 export const FieldContext = createContext<FieldContextValue | null>(null);
@@ -35,6 +37,7 @@ export interface FieldControlProps {
   required?: boolean;
   disabled?: boolean;
   color?: ColorRole;
+  skeleton?: boolean;
 }
 
 /**
@@ -61,7 +64,17 @@ export function useFieldControl<P extends FieldControlProps>(props: P): P & Fiel
     required: props.required ?? (field.required || undefined),
     disabled: props.disabled ?? (field.disabled || undefined),
     color: props.color ?? (field.invalid ? "error" : undefined),
+    skeleton: props.skeleton ?? (field.skeleton || undefined),
   };
+}
+
+/**
+ * Grup kontrolleri (RadioGroup, Segmented, OtpInput, Transfer) için: kontrolün
+ * kendi `skeleton`u verilmediyse Field'ınki geçerli.
+ */
+export function useFieldSkeleton(own: boolean | undefined): boolean {
+  const field = useContext(FieldContext);
+  return own ?? field?.skeleton ?? false;
 }
 
 export interface FieldGroupProps {

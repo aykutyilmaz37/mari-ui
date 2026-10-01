@@ -46,6 +46,8 @@ function useDismiss(open: boolean, anchorRef: ElRef, panelRef: ElRef, close: () 
     };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // Modal içinde: yalnız Popover kapansın (Modal `defaultPrevented`ı görür).
+        e.preventDefault();
         const focusWasInside = panelRef.current?.contains(document.activeElement) || anchorRef.current?.contains(document.activeElement);
         closeRef.current();
         if (focusWasInside) triggerEl(anchorRef.current)?.focus();
@@ -62,10 +64,10 @@ function useDismiss(open: boolean, anchorRef: ElRef, panelRef: ElRef, close: () 
       closeRef.current();
     };
     document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown, true);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown, true);
     };
   }, [open, anchorRef, panelRef]);
 }
