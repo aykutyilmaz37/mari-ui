@@ -42,6 +42,7 @@ function Row({ entry, state, treeId, treeLine, titleRender }: { entry: VisibleNo
   const pickable = isPickable(node, state.checkable);
   const checkState = state.checkable && node.checkable !== false ? checkStateOf(state, key) : null;
   const searchValue = state.searchResult ? state.search : undefined;
+  const loading = state.isLoading(key);
   const dim = node.disabled || (!pickable && !expandable);
 
   let checked: boolean | "mixed" | undefined;
@@ -61,6 +62,7 @@ function Row({ entry, state, treeId, treeLine, titleRender }: { entry: VisibleNo
       aria-selected={state.checkable ? undefined : selected}
       aria-checked={checked}
       aria-disabled={node.disabled || undefined}
+      aria-busy={loading || undefined}
       onMouseMove={() => !active && state.setActiveKey(key)}
       onClick={() => {
         if (pickable) state.pick(node);
@@ -74,7 +76,7 @@ function Row({ entry, state, treeId, treeLine, titleRender }: { entry: VisibleNo
       )}
     >
       <Indent level={level} showLine={treeLine} />
-      <Switcher open={open} expandable={expandable} loading={false} skeleton={false} onToggle={() => state.toggleExpand(key)} />
+      <Switcher open={open} expandable={expandable} loading={loading} skeleton={false} onToggle={() => state.toggleExpand(key)} />
       {checkState && <CheckboxBox state={checkState} disabled={!pickable} onClick={() => undefined} />}
       {node.icon && (
         <span aria-hidden className="mr-1.5 flex shrink-0 items-center text-mari-muted [&_svg]:size-4">

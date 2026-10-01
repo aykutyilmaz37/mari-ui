@@ -1,4 +1,5 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { useState } from "react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Field } from "../field";
@@ -119,6 +120,35 @@ describe("TreeSelect", () => {
     expect(container.querySelector("input[name=bolge]")).toHaveValue("cank");
     await user.click(screen.getByRole("button", { name: "Temizle" }));
     expect(container.querySelector("input[name=bolge]")).toBeNull();
+  });
+
+  it("loadData: tembel dal açılınca yüklenir (aria-busy), çocuklar görünür; hata olursa dal kapanır", async () => {
+    const user = userEvent.setup();
+    function Lazy() {
+      const [tree, setTree] = useState<TreeNode[]>([{ key: "ank", title: "Ankara" }, { key: "x", title: "Hatalı" }, { key: "leaf", title: "Yaprak", isLeaf: true }]);
+      const loadData = vi.fn(async (node: TreeNode) => {
+        await new Promise((r) => setTimeout(r, 20));
+        if (node.key === "x") throw new Error("ağ");
+        setTree((prev) => prev.map((n) => (n.key === node.key ? { ...n, children: [{ key: "cank", title: "Çankaya" }] } : n)));
+      });
+      return <TreeSelect aria-label="İlçe" treeData={tree} loadData={loadData} />;
+    }
+    render(<Lazy />);
+    const combo = screen.getByRole("combobox");
+    combo.focus();
+    await user.keyboard("{ArrowDown}");
+    await nextFrame();
+    // Çocuğu tanımsız düğüm açılabilir; isLeaf açılamaz.
+    expect(screen.getByRole("treeitem", { name: "Ankara" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("treeitem", { name: "Yaprak" })).not.toHaveAttribute("aria-expanded");
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("treeitem", { name: "Ankara" })).toHaveAttribute("aria-busy", "true");
+    await waitFor(() => expect(screen.getByRole("treeitem", { name: "Çankaya" })).toBeInTheDocument());
+    expect(screen.getByRole("treeitem", { name: "Ankara" })).not.toHaveAttribute("aria-busy");
+    await user.keyboard("{ArrowDown}{ArrowDown}{ArrowRight}");
+    expect(activeName(combo)).toBe("Hatalı");
+    await waitFor(() => expect(screen.getByRole("treeitem", { name: "Hatalı" })).toHaveAttribute("aria-expanded", "false"));
+    expect(screen.getByRole("treeitem", { name: "Hatalı" })).not.toHaveAttribute("aria-busy");
   });
 
   it("axe: kapalı ve açık ihlalsiz", async () => {

@@ -29,6 +29,14 @@ interface TreeSelectBaseProps extends SkeletonableProps {
   /** Açık dallar (kontrollü). */
   treeExpandedKeys?: string[];
   onTreeExpand?: (expandedKeys: string[]) => void;
+  /**
+   * Tembel yükleme: çocukları henüz yüklenmemiş (`children` tanımsız,
+   * `isLeaf` değil) bir dal açılınca çağrılır. Çözülene kadar açma okunda
+   * dönen gösterge ve `aria-busy`; `treeData`yı siz güncellersiniz. Reddedilirse
+   * dal kapanır. Not: arama yalnız yüklenmiş düğümlerde çalışır — sunucu
+   * tarafı arama için `onSearch`.
+   */
+  loadData?: (node: TreeNode) => Promise<void>;
   /** Girinti kılavuz çizgileri. */
   treeLine?: boolean;
   /** Düğüm başlığını özelleştir (tetikleyicideki metin `title` olarak kalır). */

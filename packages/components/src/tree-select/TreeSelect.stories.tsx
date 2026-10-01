@@ -199,7 +199,48 @@ export const TeamAssignment: Story = {
   ),
 };
 
-/* ─────────────────────────── 4. Boyutlar ve durumlar ─────────────────────────── */
+/* ─────────────────────────── 4. Tembel yükleme ─────────────────────────── */
+
+const DISTRICTS: Record<string, string[]> = {
+  istanbul: ["Adalar", "Beşiktaş", "Kadıköy", "Sarıyer", "Üsküdar"],
+  ankara: ["Çankaya", "Etimesgut", "Keçiören", "Yenimahalle"],
+  izmir: ["Bornova", "Buca", "Karşıyaka", "Konak"],
+};
+
+export const LazyLoading: Story = {
+  name: "Tembel Yükleme",
+  ...storyDoc(
+    "Büyük ağaçta yalnız açılan dal sunucudan getirilir: `loadData` çözülene kadar açma okunda dönen gösterge (`aria-busy`). " +
+      "Çocuğu bilinmeyen düğümde `children` vermeyin; gerçek yaprağı `isLeaf: true` ile işaretleyin. Gelen veriyi `treeData`ya siz eklersiniz.",
+    `const loadData = async (node) => {
+  const districts = await api.districts(node.key);
+  setTree((prev) => withChildren(prev, node.key, districts.map((d) => ({ key: d.id, title: d.name, isLeaf: true }))));
+};
+
+<TreeSelect treeData={tree} loadData={loadData} placeholder="İlçe seçin" />`
+  ),
+  render: () => {
+    const [tree, setTree] = useState<TreeNode[]>([
+      { key: "istanbul", title: "İstanbul", selectable: false },
+      { key: "ankara", title: "Ankara", selectable: false },
+      { key: "izmir", title: "İzmir", selectable: false },
+    ]);
+    const loadData = async (node: TreeNode) => {
+      await new Promise((r) => setTimeout(r, 900)); // sunucu gecikmesi
+      const children = (DISTRICTS[node.key] ?? []).map((d) => ({ key: `${node.key}/${d}`, title: d, isLeaf: true }));
+      setTree((prev) => prev.map((n) => (n.key === node.key ? { ...n, children } : n)));
+    };
+    return (
+      <div className="max-w-xs">
+        <Field label="Teslimat ilçesi" hint="İlçeler ili açınca yüklenir.">
+          <TreeSelect treeData={tree} loadData={loadData} placeholder="İlçe seçin" />
+        </Field>
+      </div>
+    );
+  },
+};
+
+/* ─────────────────────────── 5. Boyutlar ve durumlar ─────────────────────────── */
 
 export const SizesAndStates: Story = {
   name: "Boyutlar ve Durumlar",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useControllableState } from "@mari-ui/core";
 import type { TreeNode } from "../tree/types";
 import { buildIndex, flattenVisible, isExpandable, searchTree } from "../tree/utils";
@@ -35,6 +35,10 @@ export function useTreeSelectState(props: TreeSelectProps) {
     defaultValue: initialExpand,
     onChange: props.onTreeExpand,
   });
+  const expandedRef = useRef(expandedList);
+  expandedRef.current = expandedList;
+  const [loadingKeys, setLoadingKeys] = useState<ReadonlySet<string>>(new Set());
+  const lazy = Boolean(props.loadData);
   const [search, setSearchState] = useState("");
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
@@ -101,11 +105,29 @@ export function useTreeSelectState(props: TreeSelectProps) {
     if (multiple && search) setSearch("");
   };
 
+  /** Tembel dal: ilk açılışta `loadData`; hata olursa dal geri kapanır. */
+  const load = (node: TreeNode) => {
+    if (!props.loadData || node.children !== undefined || node.isLeaf || loadingKeys.has(node.key)) return;
+    setLoadingKeys((prev) => new Set(prev).add(node.key));
+    props
+      .loadData(node)
+      .catch(() => setExpandedList(expandedRef.current.filter((k) => k !== node.key)))
+      .finally(() =>
+        setLoadingKeys((prev) => {
+          const next = new Set(prev);
+          next.delete(node.key);
+          return next;
+        })
+      );
+  };
+
   const toggleExpand = (key: string, next?: boolean) => {
     const isOpen = expanded.has(key);
     const want = next ?? !isOpen;
     if (want === isOpen) return;
     setExpandedList(want ? [...expandedList, key] : expandedList.filter((k) => k !== key));
+    const node = index.get(key)?.node;
+    if (want && node) load(node);
   };
 
   return {
@@ -126,10 +148,17 @@ export function useTreeSelectState(props: TreeSelectProps) {
     searchResult,
     expanded,
     toggleExpand,
-    expandMany: (keys: string[]) => setExpandedList([...new Set([...expandedList, ...keys])]),
+    expandMany: (keys: string[]) => {
+      setExpandedList([...new Set([...expandedList, ...keys])]);
+      keys.forEach((k) => {
+        const node = index.get(k)?.node;
+        if (node) load(node);
+      });
+    },
     activeKey,
     setActiveKey,
-    canExpand: (node: TreeNode) => isExpandable(node, false),
+    canExpand: (node: TreeNode) => isExpandable(node, lazy),
+    isLoading: (key: string) => loadingKeys.has(key),
     isSelected: (key: string) => (checkable ? checkedSet.has(key) : valueSet.has(key)),
     isHalf: (key: string) => halfSet.has(key),
     pick,
