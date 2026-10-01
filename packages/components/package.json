@@ -155,6 +155,14 @@
       "types": "./dist/tree-select.d.ts",
       "import": "./dist/tree-select.js"
     },
+    "./calendar": {
+      "types": "./dist/calendar.d.ts",
+      "import": "./dist/calendar.js"
+    },
+    "./date-picker": {
+      "types": "./dist/date-picker.d.ts",
+      "import": "./dist/date-picker.js"
+    },
     "./qrcode": {
       "types": "./dist/qrcode.d.ts",
       "import": "./dist/qrcode.js"
