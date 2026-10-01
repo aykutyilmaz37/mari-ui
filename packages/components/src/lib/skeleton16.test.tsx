@@ -8,6 +8,8 @@ import { Input } from "../input";
 import { Segmented } from "../segmented";
 import { Transfer } from "../transfer";
 import { TreeSelect } from "../tree-select";
+import { FloatButton, FloatButtonGroup } from "../float-button";
+import { Tour } from "../tour";
 
 /**
  * Faz 16 kalite turu — 16.1–16.5'te eklenen bileşenlerin iskeleti: tek
@@ -82,5 +84,30 @@ describe("Faz 16 iskeletleri", () => {
       </Field>
     );
     expect(screen.getByRole("textbox")).toBeInTheDocument();
+  });
+
+  it("FloatButtonGroup skeleton içindeki düğmelere geçer; menü grubunda ana düğme yer tutucu", () => {
+    const { container, rerender } = render(
+      <FloatButtonGroup skeleton>
+        <FloatButton aria-label="A" />
+        <FloatButton aria-label="B" />
+      </FloatButtonGroup>
+    );
+    expect(container.querySelectorAll("[data-skeleton]")).toHaveLength(2);
+    expect(noInteractive(container)).toBe(0);
+    rerender(
+      <FloatButtonGroup trigger="click" skeleton>
+        <FloatButton aria-label="A" />
+      </FloatButtonGroup>
+    );
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+
+  it("Tour skeleton: panel içeriği ve düğmeler yer tutucu, panel (dialog) yerinde", () => {
+    render(<Tour open skeleton steps={[{ title: "Başlık", description: "Açıklama" }, { title: "İki" }]} />);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.querySelectorAll("[data-skeleton]").length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByRole("button", { name: "Sonraki" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Turu kapat" })).toBeInTheDocument();
   });
 });

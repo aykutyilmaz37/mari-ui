@@ -163,6 +163,14 @@
       "types": "./dist/date-picker.d.ts",
       "import": "./dist/date-picker.js"
     },
+    "./float-button": {
+      "types": "./dist/float-button.d.ts",
+      "import": "./dist/float-button.js"
+    },
+    "./tour": {
+      "types": "./dist/tour.d.ts",
+      "import": "./dist/tour.js"
+    },
     "./qrcode": {
       "types": "./dist/qrcode.d.ts",
       "import": "./dist/qrcode.js"
