@@ -23,9 +23,10 @@ import {
 
 export type { TreeProps, TreeNode };
 
-type CheckState = "checked" | "mixed" | "unchecked";
+export type CheckState = "checked" | "mixed" | "unchecked";
 
-function CheckboxBox({ state, disabled, onClick }: { state: CheckState; disabled: boolean; onClick: (e: React.MouseEvent) => void }) {
+/** TreeSelect de kullanır (aynı görsel kutu). */
+export function CheckboxBox({ state, disabled, onClick }: { state: CheckState; disabled: boolean; onClick: (e: React.MouseEvent) => void }) {
   const on = state !== "unchecked";
   return (
     // Görsel kutu: durum treeitem'in `aria-checked`ında; tıklama fare içindir, klavyede Space.
@@ -44,7 +45,8 @@ function CheckboxBox({ state, disabled, onClick }: { state: CheckState; disabled
   );
 }
 
-function Title({ node, searchValue, titleRender }: { node: TreeNode; searchValue?: string; titleRender?: TreeProps["titleRender"] }) {
+/** Başlık + arama vurgusu — TreeSelect de kullanır. */
+export function Title({ node, searchValue, titleRender }: { node: TreeNode; searchValue?: string; titleRender?: TreeProps["titleRender"] }) {
   if (titleRender) return <>{titleRender(node)}</>;
   if (!searchValue || typeof node.title !== "string") return <>{node.title}</>;
   return (
@@ -105,7 +107,7 @@ function treeitemAria({ entry, focused, open, expandable, loading, selected, sel
   } as const;
 }
 
-function Switcher({ open, expandable, loading, skeleton, onToggle }: Pick<RowProps, "open" | "expandable" | "loading" | "skeleton" | "onToggle">) {
+export function Switcher({ open, expandable, loading, skeleton, onToggle }: Pick<RowProps, "open" | "expandable" | "loading" | "skeleton" | "onToggle">) {
   let icon: React.ReactNode = null;
   if (loading) icon = <Loader2Icon size={14} className="animate-spin text-mari-muted motion-reduce:animate-none" />;
   else if (expandable && skeleton) icon = <span {...skeletonBoxProps("size-3 rounded-sm")} />;
@@ -126,7 +128,7 @@ function Switcher({ open, expandable, loading, skeleton, onToggle }: Pick<RowPro
   );
 }
 
-function Indent({ level, showLine }: { level: number; showLine: boolean }) {
+export function Indent({ level, showLine }: { level: number; showLine: boolean }) {
   return (
     <>
       {Array.from({ length: level - 1 }, (_, i) => (

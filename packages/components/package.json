@@ -151,6 +151,10 @@
       "types": "./dist/transfer.d.ts",
       "import": "./dist/transfer.js"
     },
+    "./tree-select": {
+      "types": "./dist/tree-select.d.ts",
+      "import": "./dist/tree-select.js"
+    },
     "./qrcode": {
       "types": "./dist/qrcode.d.ts",
       "import": "./dist/qrcode.js"
