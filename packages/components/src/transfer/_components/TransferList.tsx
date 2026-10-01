@@ -6,6 +6,8 @@ import { cn, type ColorRole } from "@mari-ui/core";
 import { Checkbox } from "../../checkbox";
 import { Input } from "../../input";
 import { borderStrongColorClass } from "../../lib/colorClasses";
+import { skeletonBoxProps } from "../../lib/skeleton";
+import { SkeletonSlot } from "../../lib/SkeletonSlot";
 import type { TransferDirection, TransferItem, TransferProps } from "../types";
 import { countLabel, filterItems, itemText, rangeSelect, selectAllState, toggleAll } from "../utils";
 
@@ -29,6 +31,7 @@ export interface TransferListProps {
   listHeight: string;
   disabled: boolean;
   color?: ColorRole;
+  skeleton: boolean;
 }
 
 const plainTitle = (title: React.ReactNode, fallback: string) => (typeof title === "string" ? title : fallback);
@@ -38,13 +41,29 @@ function RowContent({ item, render }: { item: TransferItem; render: TransferProp
   return <span className="block truncate">{item.title}</span>;
 }
 
+/** Liste gövdesi iskeleti: kutu + değişken uzunlukta satır (gövde yüksekliği `listHeight` ile sabit). */
+function SkeletonRows({ count }: { count: number }) {
+  const widths = ["w-32", "w-24", "w-40", "w-28", "w-36"];
+  return (
+    <>
+      {Array.from({ length: count }, (_, i) => (
+        // Konumsal yer tutucular.
+        <li key={i} className="flex items-center gap-2 px-3 py-2">
+          <span {...skeletonBoxProps("size-4 shrink-0 rounded-sm")} />
+          <span {...skeletonBoxProps(cn("h-3.5 rounded-sm", widths[i % widths.length]))} />
+        </li>
+      ))}
+    </>
+  );
+}
+
 /**
  * Tek liste: başlık (tümünü seç + sayaç + ad), isteğe bağlı arama, satırlar,
  * alt bilgi. Liste bir `section`, adı başlık; satırlar gerçek işaret kutuları
  * (Tab ile tek tek, Boşluk ile seçilir; Shift ile aralık seçimi).
  */
 export function TransferList(props: TransferListProps) {
-  const { direction, title, items, selected, onSelect, onRemove, showSearch, searchPlaceholder, filterOption, onSearch, render, showSelectAll, footer, notFoundContent, listHeight, disabled, color } = props;
+  const { direction, title, items, selected, onSelect, onRemove, showSearch, searchPlaceholder, filterOption, onSearch, render, showSelectAll, footer, notFoundContent, listHeight, disabled, color, skeleton } = props;
   const titleId = useId();
   const [query, setQuery] = useState("");
   const visible = filterItems(items, query, direction, filterOption);
@@ -84,8 +103,8 @@ export function TransferList(props: TransferListProps) {
         disabled && "bg-mari-surface-alt"
       )}
     >
-      <div className="flex h-10 shrink-0 items-center gap-2 border-b border-mari-border px-3">
-        {showSelectAll && !removable && (
+      <div className="relative flex h-10 shrink-0 items-center gap-2 border-b border-mari-border px-3">
+        {!skeleton && showSelectAll && !removable && (
           <Checkbox
             checked={all.checked}
             indeterminate={all.indeterminate}
@@ -94,8 +113,8 @@ export function TransferList(props: TransferListProps) {
             onChange={(e) => onSelect(toggleAll(visible, selected, e.target.checked))}
           />
         )}
-        <span className="text-mari-muted tabular-nums">{countLabel(removable ? 0 : selected.length, items.length)}</span>
-        {removable && items.length > 0 && (
+        {!skeleton && <span className="text-mari-muted tabular-nums">{countLabel(removable ? 0 : selected.length, items.length)}</span>}
+        {!skeleton && removable && items.length > 0 && (
           <button
             type="button"
             disabled={disabled}
@@ -103,19 +122,28 @@ export function TransferList(props: TransferListProps) {
               onRemove(visible.filter((i) => !i.disabled).map((i) => i.key));
               listRef.current?.focus();
             }}
-            className="rounded-sm text-xs text-mari-primary outline-none hover:underline focus-visible:ring-2 focus-visible:ring-mari-ring disabled:cursor-not-allowed"
+            className="relative rounded-sm text-xs text-mari-primary outline-none pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-3.5 hover:underline focus-visible:ring-2 focus-visible:ring-mari-ring disabled:cursor-not-allowed"
           >
             Tümünü kaldır
           </button>
         )}
-        <span id={titleId} className="ml-auto truncate font-medium text-mari-foreground">
+        <span id={titleId} className={cn("ml-auto truncate font-medium text-mari-foreground", skeleton && "invisible")}>
           {title}
         </span>
+        {skeleton && (
+          // Başlık yüksekliği sabit (h-10): yalnız çubuklar.
+          <span aria-hidden className="absolute inset-x-3 inset-y-0 flex items-center gap-2">
+            <span {...skeletonBoxProps("size-4 rounded-sm")} />
+            <span {...skeletonBoxProps("h-3.5 w-12 rounded-sm")} />
+            <span {...skeletonBoxProps("ml-auto h-3.5 w-20 rounded-sm")} />
+          </span>
+        )}
       </div>
 
       {showSearch && (
         <div className="shrink-0 border-b border-mari-border p-2">
           <Input
+            skeleton={skeleton}
             size="sm"
             aria-label={`${name} listesinde ara`}
             placeholder={searchPlaceholder}
@@ -145,12 +173,13 @@ export function TransferList(props: TransferListProps) {
         className="shrink-0 overflow-y-auto py-1 outline-none focus-visible:ring-2 focus-visible:ring-mari-ring focus-visible:ring-inset"
         style={{ height: listHeight }}
       >
-        {visible.length === 0 && <li className="flex h-full items-center justify-center px-3 text-center text-mari-muted">{empty}</li>}
-        {visible.map((item, index) => {
+        {skeleton && <SkeletonRows count={Math.max(items.length, 5)} />}
+        {!skeleton && visible.length === 0 && <li className="flex h-full items-center justify-center px-3 text-center text-mari-muted">{empty}</li>}
+        {!skeleton && visible.map((item, index) => {
           const isSelected = selectedSet.has(item.key);
           if (removable) {
             return (
-              <li key={item.key} className="flex items-center gap-2 px-3 py-1.5 hover:bg-mari-surface-alt">
+              <li key={item.key} className="flex items-center gap-2 px-3 py-1.5 pointer-coarse:py-2.5 hover:bg-mari-surface-alt">
                 <div className="min-w-0 flex-1">
                   <RowContent item={item} render={render} />
                   {item.description && !render && <span className="block truncate text-xs text-mari-muted">{item.description}</span>}
@@ -185,7 +214,7 @@ export function TransferList(props: TransferListProps) {
                 description={render ? undefined : item.description}
                 onChange={(e) => toggleItem(item.key, e.target.checked)}
                 classNames={{
-                  wrapper: cn("flex w-full min-w-0 px-3 py-1.5", !isSelected && !item.disabled && !disabled && "hover:bg-mari-surface-alt"),
+                  wrapper: cn("flex w-full min-w-0 px-3 py-1.5 pointer-coarse:py-3", !isSelected && !item.disabled && !disabled && "hover:bg-mari-surface-alt"),
                   label: "min-w-0 flex-1",
                 }}
               />
@@ -194,7 +223,13 @@ export function TransferList(props: TransferListProps) {
         })}
       </ul>
 
-      {footer && <div className="shrink-0 border-t border-mari-border p-2">{footer({ direction })}</div>}
+      {footer && (
+        <div className="shrink-0 border-t border-mari-border p-2">
+          <SkeletonSlot on={skeleton} placeholder={<span {...skeletonBoxProps("block h-full min-h-6 w-24 rounded-md")} />}>
+            {footer({ direction })}
+          </SkeletonSlot>
+        </div>
+      )}
     </section>
   );
 }

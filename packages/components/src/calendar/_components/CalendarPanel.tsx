@@ -26,14 +26,17 @@ export interface CalendarPanelProps {
   /** Görünen ay dışarıdan (aralıkta iki panel birlikte kayar). */
   viewDate?: Date;
   onViewDateChange?: (date: Date) => void;
-  /** Aralıkta: sol panel yalnız geri, sağ panel yalnız ileri oklarını gösterir. */
+  /**
+   * Aralıkta: sol panel yalnız geri, sağ panel yalnız ileri oklarını gösterir.
+   * `"sm"`: yalnız `sm` ve üstünde gizli (dar ekranda tek panel kalır, oklar gerekir).
+   */
   hidePrev?: boolean;
-  hideNext?: boolean;
+  hideNext?: boolean | "sm";
   className?: string;
 }
 
-const NAV_BUTTON = "grid size-7 place-items-center rounded-md text-mari-muted outline-none hover:bg-mari-surface-alt hover:text-mari-foreground focus-visible:outline-2 focus-visible:outline-mari-ring";
-const TITLE_BUTTON = "rounded-md px-1.5 py-0.5 font-medium outline-none hover:bg-mari-surface-alt hover:text-mari-primary focus-visible:outline-2 focus-visible:outline-mari-ring";
+const NAV_BUTTON = "grid size-7 pointer-coarse:size-10 place-items-center rounded-md text-mari-muted outline-none hover:bg-mari-surface-alt hover:text-mari-foreground focus-visible:outline-2 focus-visible:outline-mari-ring";
+const TITLE_BUTTON = "rounded-md px-1.5 py-0.5 pointer-coarse:py-2.5 font-medium outline-none hover:bg-mari-surface-alt hover:text-mari-primary focus-visible:outline-2 focus-visible:outline-mari-ring";
 
 const decadeStart = (year: number) => year - (year % 10);
 
@@ -132,7 +135,7 @@ export function CalendarPanel(props: CalendarPanelProps) {
         locale={locale}
         showWeek={showWeek}
         label={`${long[view.getMonth()]} ${year}`}
-        takeFocus={focusGrid}
+        takeFocus={focusGrid || !!takeFocus}
       />
     );
   } else if (mode === "month") {
@@ -192,7 +195,7 @@ export function CalendarPanel(props: CalendarPanelProps) {
   };
 
   return (
-    <div className={cn("w-[17.5rem] max-w-full", className)}>
+    <div className={cn("w-[17.5rem] max-w-full pointer-coarse:w-[19.25rem]", className)}>
       <div className="mb-2 flex items-center gap-0.5">
         {!hidePrev && (
           <>
@@ -209,8 +212,8 @@ export function CalendarPanel(props: CalendarPanelProps) {
         <div aria-live="polite" className="flex flex-1 items-center justify-center gap-0.5 text-sm">
           {title}
         </div>
-        {!hideNext && (
-          <>
+        {hideNext !== true && (
+          <span className={cn("contents", hideNext === "sm" && "sm:hidden")}>
             {mode === "date" && (
               <button type="button" className={NAV_BUTTON} aria-label="Sonraki ay" onClick={() => shift(1)}>
                 <ChevronRightIcon aria-hidden size={16} />
@@ -219,7 +222,7 @@ export function CalendarPanel(props: CalendarPanelProps) {
             <button type="button" className={NAV_BUTTON} aria-label={mode === "year" ? "Sonraki on yıl" : "Sonraki yıl"} onClick={() => shift(12)}>
               <ChevronsRightIcon aria-hidden size={16} />
             </button>
-          </>
+          </span>
         )}
       </div>
       {grid}

@@ -26,12 +26,12 @@ function PresetGroup({ preset, current, disabled, onPick }: PresetGroupProps) {
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center gap-1 rounded-sm py-0.5 text-left text-xs text-mari-muted outline-none hover:text-mari-foreground focus-visible:ring-2 focus-visible:ring-mari-ring"
+        className="flex w-full items-center gap-1 rounded-sm py-0.5 pointer-coarse:py-3 text-left text-xs text-mari-muted outline-none hover:text-mari-foreground focus-visible:ring-2 focus-visible:ring-mari-ring"
       >
         <ChevronRightIcon aria-hidden size={14} className={cn("transition-transform duration-150 motion-reduce:transition-none", open && "rotate-90")} />
         {preset.label}
       </button>
-      <ul id={listId} hidden={!open} className="mt-1.5 grid grid-cols-10 gap-1.5">
+      <ul id={listId} hidden={!open} className="mt-1.5 grid grid-cols-10 gap-1.5 pointer-coarse:grid-cols-5">
         {colors.map(({ text, hsba }) => {
           const selected = sameColor(current, hsba);
           return (

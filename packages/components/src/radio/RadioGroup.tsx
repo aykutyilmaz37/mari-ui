@@ -2,7 +2,7 @@
 
 import React, { useId } from "react";
 import { cn, useControllableState } from "@mari-ui/core";
-import { useFieldGroup } from "../lib/fieldContext";
+import { useFieldGroup, useFieldSkeleton } from "../lib/fieldContext";
 import { Radio } from "./Radio";
 import type { RadioGroupProps, RadioOption } from "./types";
 
@@ -22,12 +22,13 @@ export function RadioGroup({
   block = false,
   orientation = "horizontal",
   className,
-  skeleton = false,
+  skeleton: ownSkeleton,
   "aria-label": ownAriaLabel,
   "aria-labelledby": ownAriaLabelledBy,
 }: RadioGroupProps) {
   // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
   const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled });
+  const skeleton = useFieldSkeleton(ownSkeleton);
   const { "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy } = field;
   const groupDisabled = !!field.disabled;
   const groupColor = field["aria-invalid"] ? (color ?? "error") : color;

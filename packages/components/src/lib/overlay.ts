@@ -142,6 +142,9 @@ export function useModalBehavior(
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && closeOnEscape) {
+        // İçteki açılır bir parça (Select listesi, DatePicker/Popover paneli) Escape'i zaten işlediyse
+        // yalnız o kapanır — pencere değil.
+        if (event.defaultPrevented) return;
         event.preventDefault();
         onCloseRef.current();
         return;

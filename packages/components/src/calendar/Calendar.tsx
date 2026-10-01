@@ -60,10 +60,6 @@ export function Calendar({
   const isDisabled = disabledChecker(validRange, disabledDate);
   const long = monthNames(locale, "long");
 
-  if (skeleton) {
-    return <div {...skeletonBoxProps(cn("w-full rounded-lg", fullscreen ? "h-[38rem]" : "h-80 max-w-80", className))} />;
-  }
-
   /** Gezinme (yıl/ay seçici, ay dışına klavye) değeri de taşır — ant.design davranışı. */
   const navigate = (next: Date, nextMode: CalendarMode = mode) => {
     setView(next);
@@ -92,6 +88,7 @@ export function Calendar({
       }}
       onToday={() => choose(today, "today")}
       todayDisabled={isDisabled(today)}
+      skeleton={skeleton}
     />
   );
 
@@ -113,13 +110,14 @@ export function Calendar({
         variant={fullscreen ? "full" : "compact"}
         label={`${long[view.getMonth()]} ${view.getFullYear()}`}
         cellRender={adaptDayRender(cellRender)}
+        skeleton={skeleton}
       />
     ) : (
-      <YearBody view={view} selected={selected} today={today} fullscreen={fullscreen} locale={locale} validRange={validRange} cellRender={cellRender} onNavigate={navigate} onPick={(d) => choose(d, "month")} />
+      <YearBody view={view} selected={selected} today={today} fullscreen={fullscreen} locale={locale} validRange={validRange} cellRender={skeleton ? undefined : cellRender} onNavigate={navigate} onPick={(d) => choose(d, "month")} skeleton={skeleton} />
     );
 
   return (
-    <section aria-label={ariaLabel} className={cn("text-mari-foreground", !fullscreen && "w-full max-w-80 rounded-lg border border-mari-border bg-mari-surface", className)}>
+    <section aria-label={ariaLabel} aria-busy={skeleton || undefined} className={cn("text-mari-foreground", !fullscreen && "w-full max-w-80 pointer-coarse:max-w-[21rem] rounded-lg border border-mari-border bg-mari-surface", className)}>
       {header}
       <div className={cn(!fullscreen && "p-2")}>{body}</div>
     </section>
@@ -148,10 +146,11 @@ interface HeaderProps {
   onModeChange: (mode: CalendarMode) => void;
   onToday: () => void;
   todayDisabled: boolean;
+  skeleton: boolean;
 }
 
 /** Başlık: (tam ekranda) dönem adı, yıl ve ay seçicileri, Ay/Yıl modu, Bugün. */
-function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate, onModeChange, onToday, todayDisabled }: HeaderProps) {
+function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate, onModeChange, onToday, todayDisabled, skeleton }: HeaderProps) {
   const long = monthNames(locale, "long");
   const short = monthNames(locale, "short");
   const keepDay = (y: number, m: number) => new Date(y, m, Math.min(view.getDate(), 28));
@@ -159,12 +158,13 @@ function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate
     <div className={cn("flex flex-wrap items-center justify-end gap-2", fullscreen ? "pb-3" : "border-b border-mari-border p-2")}>
       {fullscreen && (
         <h2 aria-live="polite" className="mr-auto text-lg font-semibold text-mari-foreground">
-          {mode === "month" ? `${long[view.getMonth()]} ${view.getFullYear()}` : view.getFullYear()}
+          <span {...(skeleton ? skeletonBoxProps("rounded-sm") : {})}>{mode === "month" ? `${long[view.getMonth()]} ${view.getFullYear()}` : view.getFullYear()}</span>
         </h2>
       )}
-      <Select size="sm" aria-label="Yıl" options={yearOptions(view.getFullYear(), validRange)} value={view.getFullYear()} onChange={(y) => onNavigate(keepDay(Number(y), view.getMonth()))} className="w-24" />
+      <Select skeleton={skeleton} size="sm" aria-label="Yıl" options={yearOptions(view.getFullYear(), validRange)} value={view.getFullYear()} onChange={(y) => onNavigate(keepDay(Number(y), view.getMonth()))} className="w-24" />
       {mode === "month" && (
         <Select
+          skeleton={skeleton}
           size="sm"
           aria-label="Ay"
           options={long.map((m, i) => ({ value: i, label: fullscreen ? m : short[i] }))}
@@ -174,6 +174,7 @@ function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate
         />
       )}
       <Segmented
+        skeleton={skeleton}
         size="sm"
         aria-label="Görünüm"
         options={[
@@ -184,7 +185,7 @@ function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate
         onChange={(m) => onModeChange(m as CalendarMode)}
       />
       {fullscreen && (
-        <Button size="sm" variant="outline" color="neutral" onClick={onToday} disabled={todayDisabled}>
+        <Button skeleton={skeleton} size="sm" variant="outline" color="neutral" onClick={onToday} disabled={todayDisabled}>
           Bugün
         </Button>
       )}
@@ -202,10 +203,11 @@ interface YearBodyProps {
   cellRender?: CalendarProps["cellRender"];
   onNavigate: (date: Date) => void;
   onPick: (date: Date) => void;
+  skeleton: boolean;
 }
 
 /** Yıl modu: 12 ay (3×4 ızgara). */
-function YearBody({ view, selected, today, fullscreen, locale, validRange, cellRender, onNavigate, onPick }: YearBodyProps) {
+function YearBody({ view, selected, today, fullscreen, locale, validRange, cellRender, onNavigate, onPick, skeleton }: YearBodyProps) {
   const long = monthNames(locale, "long");
   const short = monthNames(locale, "short");
   const year = view.getFullYear();
@@ -230,6 +232,7 @@ function YearBody({ view, selected, today, fullscreen, locale, validRange, cellR
       onPage={(d) => onNavigate(addMonths(view, d * 12))}
       onSelect={(i) => onPick(new Date(year, i, 1))}
       cellRender={cellRender ? (i) => cellRender(new Date(year, i, 1), info(new Date(year, i, 1))) : undefined}
+      skeleton={skeleton}
     />
   );
 }

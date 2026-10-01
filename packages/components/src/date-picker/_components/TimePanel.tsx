@@ -49,7 +49,7 @@ function Column({ label, values, value, onChange, takeFocus }: ColumnProps) {
       ref={listRef}
       role="listbox"
       aria-label={label}
-      className="relative h-56 w-14 snap-y overflow-y-auto overscroll-contain border-l border-mari-border py-1 first:border-l-0 [scrollbar-width:thin]"
+      className="relative h-56 w-14 pointer-coarse:w-16 snap-y overflow-y-auto overscroll-contain border-l border-mari-border py-1 first:border-l-0 [scrollbar-width:thin]"
     >
       {values.map((v, i) => (
         <div
@@ -60,7 +60,7 @@ function Column({ label, values, value, onChange, takeFocus }: ColumnProps) {
           onKeyDown={onKeyDown}
           onClick={() => onChange(v)}
           className={cn(
-            "mx-1 flex h-7 cursor-pointer snap-start items-center justify-center rounded-md text-sm tabular-nums outline-none",
+            "mx-1 flex h-7 pointer-coarse:h-11 cursor-pointer snap-start items-center justify-center rounded-md text-sm tabular-nums outline-none",
             "focus-visible:outline-2 focus-visible:outline-mari-ring",
             i === index ? "bg-mari-primary-subtle font-medium text-mari-primary" : "hover:bg-mari-surface-alt"
           )}
@@ -69,7 +69,7 @@ function Column({ label, values, value, onChange, takeFocus }: ColumnProps) {
         </div>
       ))}
       {/* Son değer de en üste kayabilsin. */}
-      <div aria-hidden className="h-48" />
+      <div aria-hidden className="h-48 pointer-coarse:h-[19rem]" />
     </div>
   );
 }

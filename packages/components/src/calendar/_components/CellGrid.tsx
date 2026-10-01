@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { cn } from "@mari-ui/core";
+import { skeletonBoxProps } from "../../lib/skeleton";
 import { cellGridKeyStep } from "../../lib/date";
 
 export interface GridCell {
@@ -31,10 +32,57 @@ export interface CellGridProps {
   takeFocus?: boolean;
   /** PageUp/PageDown: sayfa (yıl / on yıl) değiştir. */
   onPage?: (delta: -1 | 1) => void;
+  skeleton?: boolean;
+}
+
+function GridCellView({ cell, focused, full, content, onClick }: { cell: GridCell; focused: boolean; full: boolean; content: React.ReactNode; onClick: () => void }) {
+  const solid = cell.selected && !full;
+  return (
+    <td
+      role="gridcell"
+      tabIndex={focused ? 0 : -1}
+      aria-label={full ? undefined : cell.fullLabel}
+      aria-selected={cell.selected}
+      aria-disabled={cell.disabled || undefined}
+      aria-current={cell.current ? "date" : undefined}
+      onClick={onClick}
+      className={cn(
+        "group relative cursor-pointer p-1 outline-none",
+        cell.disabled && "cursor-not-allowed",
+        "[&:focus-visible>div]:outline-2 [&:focus-visible>div]:outline-offset-1 [&:focus-visible>div]:outline-mari-ring"
+      )}
+    >
+      <div
+        className={cn(
+          "rounded-md transition-colors",
+          full ? "flex h-24 flex-col gap-1 border-t-2 p-1.5 text-left max-sm:h-16" : "flex h-9 items-center justify-center pointer-coarse:h-11",
+          solid && "bg-mari-primary-solid font-medium text-mari-primary-solid-contrast",
+          cell.selected && full && "border-mari-primary bg-mari-primary-subtle",
+          !cell.selected && full && "border-mari-border",
+          !cell.selected && !cell.disabled && "group-hover:bg-mari-surface-alt",
+          !cell.selected && cell.current && !full && "font-semibold text-mari-primary ring-1 ring-mari-primary ring-inset",
+          cell.outside && !cell.selected && "text-mari-muted",
+          cell.disabled && "text-mari-disabled line-through"
+        )}
+      >
+        {full ? (
+          <>
+            <span aria-hidden className={cn("self-end", cell.current && "font-semibold text-mari-primary")}>
+              {cell.label}
+            </span>
+            <span className="sr-only">{cell.fullLabel}</span>
+            {content && <div className="min-h-0 flex-1 overflow-hidden text-xs">{content}</div>}
+          </>
+        ) : (
+          cell.label
+        )}
+      </div>
+    </td>
+  );
 }
 
 /** Ay ve yıl seçimi için 3 sütunlu APG ızgarası (roving tabindex). */
-export function CellGrid({ cells, focusedIndex, onFocusIndex, onSelect, label, columns = 3, variant = "compact", cellRender, takeFocus = false, onPage }: CellGridProps) {
+export function CellGrid({ cells, focusedIndex, onFocusIndex, onSelect, label, columns = 3, variant = "compact", cellRender, takeFocus = false, onPage, skeleton = false }: CellGridProps) {
   const tableRef = useRef<HTMLTableElement>(null);
   const full = variant === "full";
   // Klavyeyle gezinince odak yeni hücreye taşınır — ay/sayfa değişince eski hücre DOM'dan
@@ -71,57 +119,41 @@ export function CellGrid({ cells, focusedIndex, onFocusIndex, onSelect, label, c
   };
 
   return (
-    <table ref={tableRef} role="grid" aria-label={label} onKeyDown={onKeyDown} className="w-full border-collapse text-sm">
+    <table
+      ref={tableRef}
+      role={skeleton ? undefined : "grid"}
+      aria-label={skeleton ? undefined : label}
+      aria-hidden={skeleton || undefined}
+      onKeyDown={skeleton ? undefined : onKeyDown}
+      className="w-full border-collapse text-sm"
+    >
       <tbody>
         {rows.map((row, r) => (
           // Satırlar konumsal ve sabit (3×4).
           <tr key={r}>
             {row.map((cell, c) => {
               const index = r * columns + c;
+              if (skeleton) {
+                return (
+                  <td key={cell.key} className="p-1">
+                    <div className={cn("flex rounded-md", full ? "h-24 flex-col border-t-2 border-mari-border p-1.5" : "h-9 items-center justify-center")}>
+                      <span {...skeletonBoxProps(cn("rounded-sm", full && "self-end"))}>{cell.label}</span>
+                    </div>
+                  </td>
+                );
+              }
               return (
-                <td
+                <GridCellView
                   key={cell.key}
-                  role="gridcell"
-                  tabIndex={index === focusedIndex ? 0 : -1}
-                  aria-label={full ? undefined : cell.fullLabel}
-                  aria-selected={cell.selected}
-                  aria-disabled={cell.disabled || undefined}
-                  aria-current={cell.current ? "date" : undefined}
+                  cell={cell}
+                  focused={index === focusedIndex}
+                  full={full}
+                  content={cellRender?.(index)}
                   onClick={() => {
                     onFocusIndex(index);
                     if (!cell.disabled) onSelect(index);
                   }}
-                  className={cn(
-                    "group relative cursor-pointer p-1 outline-none",
-                    cell.disabled && "cursor-not-allowed",
-                    "[&:focus-visible>div]:outline-2 [&:focus-visible>div]:outline-offset-1 [&:focus-visible>div]:outline-mari-ring"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "rounded-md transition-colors",
-                      full ? "flex h-24 flex-col gap-1 border-t-2 p-1.5 text-left" : "flex h-9 items-center justify-center",
-                      cell.selected && (full ? "border-mari-primary bg-mari-primary-subtle" : "bg-mari-primary-solid font-medium text-mari-primary-solid-contrast"),
-                      !cell.selected && full && "border-mari-border",
-                      !cell.selected && !cell.disabled && "group-hover:bg-mari-surface-alt",
-                      !cell.selected && cell.current && !full && "font-semibold text-mari-primary ring-1 ring-mari-primary ring-inset",
-                      cell.outside && !cell.selected && "text-mari-muted",
-                      cell.disabled && "text-mari-disabled line-through"
-                    )}
-                  >
-                    {full ? (
-                      <>
-                        <span aria-hidden className={cn("self-end", cell.current && "font-semibold text-mari-primary")}>
-                          {cell.label}
-                        </span>
-                        <span className="sr-only">{cell.fullLabel}</span>
-                        {cellRender && <div className="min-h-0 flex-1 overflow-hidden text-xs">{cellRender(index)}</div>}
-                      </>
-                    ) : (
-                      cell.label
-                    )}
-                  </div>
-                </td>
+                />
               );
             })}
           </tr>
