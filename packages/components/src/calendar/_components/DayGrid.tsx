@@ -96,7 +96,8 @@ export function DayGrid({
   const tableRef = useRef<HTMLTableElement>(null);
   const today = new Date();
   const weeks = getMonthGrid(view.getFullYear(), view.getMonth(), weekStart);
-  const shortNames = weekdayNames(locale, weekStart, variant === "full" ? "short" : "narrow");
+  // Türkçe dar adlar belirsiz (P/S/Ç/P/C/C/P — iki P, iki C) → her zaman kısa ad.
+  const shortNames = weekdayNames(locale, weekStart, "short");
   const longNames = weekdayNames(locale, weekStart, "long");
   const full = variant === "full";
 
