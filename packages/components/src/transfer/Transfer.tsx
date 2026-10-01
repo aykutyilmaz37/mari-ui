@@ -36,10 +36,11 @@ function MoveButton({ direction, enabled, label, text, onMove }: MoveButtonProps
       aria-label={label}
       aria-disabled={!enabled}
       onClick={() => enabled && onMove()}
-      className={cn(!enabled && "cursor-not-allowed opacity-50", !text && "px-1.5")}
+      // Dar ekranda listeler alt alta: oklar aşağı/yukarı döner. İkon `icon` prop'unda — children'a konunca
+      // Button'un `truncate` etiket span'ine düşüp metnin üstüne sarıyordu.
+      icon={<Icon aria-hidden size={16} className="max-sm:rotate-90" />}
+      className={cn(!enabled && "cursor-not-allowed opacity-50")}
     >
-      {/* Dar ekranda listeler alt alta: oklar aşağı/yukarı döner. */}
-      <Icon aria-hidden size={16} className="max-sm:rotate-90" />
       {text}
     </Button>
   );
