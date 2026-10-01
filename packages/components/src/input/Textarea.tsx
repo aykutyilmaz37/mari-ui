@@ -19,6 +19,8 @@ import {
   resolveInputColor,
   resolveLegacyInputVariant,
 } from "./utils";
+import type { MentionsConfig } from "./mention/types";
+import { useMention } from "./mention/useMention";
 
 export interface TextareaProps extends SkeletonableProps {
   placeholder?: string;
@@ -61,6 +63,8 @@ export interface TextareaProps extends SkeletonableProps {
   autoSize?: TextareaAutoSize;
   /** Başlangıç yüksekliği (satır). `autoSize` yoksa elle dikey büyütülebilir. Varsayılan: 3. */
   rows?: number;
+  /** `@` ile bahsetme — Input'taki `mentions` ile aynı. */
+  mentions?: MentionsConfig;
 }
 
 /**
@@ -131,6 +135,7 @@ const TextareaInner = (
       "aria-labelledby": ariaLabelledBy,
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalidProp,
+      mentions,
     }: TextareaProps & { forwardedRef: React.ForwardedRef<HTMLTextAreaElement> }
   ) => {
     const resolvedVariant = resolveLegacyInputVariant(variant);
@@ -144,6 +149,8 @@ const TextareaInner = (
     // Ayrık değişken — iç içe template literal yerine (Faz 8, SonarJS `no-nested-template-literals`).
     const countLabel = maxLength ? `${charCount} / ${maxLength}` : `${charCount}`;
     const showClear = isClearable(allowClear) && Boolean(currentValue) && !disabled;
+
+    const mention = useMention(mentions, innerRef, currentValue, "textarea");
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setCurrentValue(e.target.value);
@@ -200,9 +207,16 @@ const TextareaInner = (
             ref={innerRef}
             value={currentValue}
             onChange={handleChange}
+            {...mention.controlProps}
             onFocus={onFocus}
-            onBlur={onBlur}
-            onKeyDown={onKeyDown}
+            onBlur={(e) => {
+              mention.close();
+              onBlur?.(e);
+            }}
+            onKeyDown={(e) => {
+              mention.handleKeyDown(e);
+              onKeyDown?.(e);
+            }}
             readOnly={readOnly}
             rows={initialRows}
             placeholder={placeholder}
@@ -223,6 +237,7 @@ const TextareaInner = (
             {count?.formatter ? count.formatter({ value: currentValue, count: charCount, maxLength }) : countLabel}
           </span>
         )}
+        {mention.panel}
       </div>
     );
   };

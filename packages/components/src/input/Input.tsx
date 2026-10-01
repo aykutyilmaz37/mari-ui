@@ -7,6 +7,7 @@ import { touchTargetClass } from "../lib/sizeClasses";
 import { cn, useControllableState } from "@mari-ui/core";
 import { useFieldControl } from "../lib/fieldContext";
 import type { InputProps } from "./types";
+import { useMention } from "./mention/useMention";
 import { ClearButton, clearIconOf, PasswordToggle } from "./_components/FieldAdornments";
 import {
   FIELD_BASE_CLASS,
@@ -69,6 +70,7 @@ const InputInner = (
       visibilityIconRender,
       max,
       min,
+      mentions,
       ...nativeProps
     }: InputProps & { forwardedRef: React.ForwardedRef<HTMLInputElement> }
   ) => {
@@ -105,8 +107,13 @@ const InputInner = (
       onChange?.(e);
     };
 
+    // Maskeli alanda bahsetme yok (maske metni yeniden biçimlendirir).
+    const mention = useMention(mask ? undefined : mentions, innerRef, currentValue, "input");
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") onPressEnter?.(e);
+      // Açık öneri listesinde Enter bir öneri seçer — formu göndermesin / onPressEnter tetiklenmesin.
+      const handledByMention = mention.handleKeyDown(e);
+      if (e.key === "Enter" && !handledByMention) onPressEnter?.(e);
       onKeyDown?.(e);
     };
 
@@ -156,8 +163,9 @@ const InputInner = (
     const inputClass = cn("w-full min-w-0 flex-grow bg-transparent placeholder:text-mari-muted focus:outline-none disabled:cursor-not-allowed", FIELD_MOBILE_TEXT_CLASS, classNames.input);
 
     return (
-      // Fare kısayolu; klavye kullanıcısı zaten doğrudan <input>'a sekmeyle gelir.
-      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+      <>
+      {/* Fare kısayolu; klavye kullanıcısı zaten doğrudan <input>'a sekmeyle gelir. */}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div className={wrapperClass} style={style} onMouseDown={handleWrapperMouseDown}>
         {/* Boşluk wrapper'ın `gap-*`'ından gelir — eskiden ayrıca `mr-2` vardı, ikon ile metin arası 2 katıydı. */}
         {icon && iconPosition === "start" && <span className={cn(adornmentClass, classNames.icon)}>{icon}</span>}
@@ -192,10 +200,14 @@ const InputInner = (
             maxLength={maxLength}
             placeholder={placeholder}
             value={currentValue}
+            {...mention.controlProps}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             onFocus={onFocus}
-            onBlur={onBlur}
+            onBlur={(e) => {
+              mention.close();
+              onBlur?.(e);
+            }}
             onInput={onInput}
             onPaste={onPaste}
             className={inputClass}
@@ -220,5 +232,7 @@ const InputInner = (
           <PasswordToggle visible={passwordVisible} disabled={disabled} onToggle={() => setPasswordVisible((prev) => !prev)} iconRender={visibilityIconRender} />
         )}
       </div>
+      {mention.panel}
+      </>
     );
   };
