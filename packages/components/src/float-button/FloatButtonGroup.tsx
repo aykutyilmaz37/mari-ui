@@ -4,6 +4,7 @@ import React, { useEffect, useId, useRef } from "react";
 import { XIcon } from "lucide-react";
 import { cn, useControllableState } from "@mari-ui/core";
 import { elevationClass } from "../lib/elevationClass";
+import { skeletonBoxProps } from "../lib/skeleton";
 import { Tooltip } from "../tooltip";
 import { FloatGroupContext, floatButtonClass } from "./FloatButton";
 import type { FloatButtonGroupMenuProps, FloatButtonGroupProps } from "./types";
@@ -38,7 +39,7 @@ function useMenuDismiss(open: boolean, rootRef: React.RefObject<HTMLDivElement |
 }
 
 function MenuGroup(props: FloatButtonGroupMenuProps) {
-  const { trigger, shape = "circle", placement = "bottom-right", icon, color = "primary", tooltip, "aria-label": ariaLabel = "Hızlı işlemler", children, className } = props;
+  const { trigger, shape = "circle", placement = "bottom-right", icon, color = "primary", tooltip, "aria-label": ariaLabel = "Hızlı işlemler", children, className, skeleton = false } = props;
   const [open, setOpen] = useControllableState<boolean>({ value: props.open, defaultValue: props.defaultOpen ?? false, onChange: props.onOpenChange });
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -76,7 +77,8 @@ function MenuGroup(props: FloatButtonGroupMenuProps) {
       </span>
     </button>
   );
-  if (tooltip && !open) main = <Tooltip content={tooltip} placement={placement.endsWith("right") ? "left" : "right"} trigger={main} />;
+  if (skeleton) main = <span {...skeletonBoxProps(cn("block size-10", shape === "square" ? "rounded-lg" : "rounded-full"))} />;
+  else if (tooltip && !open) main = <Tooltip content={tooltip} placement={placement.endsWith("right") ? "left" : "right"} trigger={main} />;
 
   return (
     <div ref={rootRef} {...hover} className={cn("fixed z-mari-sticky flex items-center gap-3", up ? "flex-col-reverse" : "flex-col", PLACEMENT_CLASS[placement], className)}>
@@ -113,7 +115,7 @@ export function FloatButtonGroup(props: FloatButtonGroupProps) {
   const { shape = "circle", placement = "bottom-right", children, className, skeleton } = props;
   const joined = shape === "square";
   return (
-    <FloatGroupContext.Provider value={{ shape, joined }}>
+    <FloatGroupContext.Provider value={{ shape, joined, skeleton }}>
       <div
         role="group"
         aria-busy={skeleton || undefined}

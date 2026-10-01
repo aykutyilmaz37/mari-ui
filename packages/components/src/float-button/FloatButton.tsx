@@ -13,7 +13,7 @@ import { PLACEMENT_CLASS } from "./utils";
 export type { FloatButtonProps };
 
 /** Grup içindeki düğmeler sabit konumlanmaz; şekil gruptan gelir. */
-export const FloatGroupContext = createContext<{ shape: FloatButtonShape; joined: boolean } | null>(null);
+export const FloatGroupContext = createContext<{ shape: FloatButtonShape; joined: boolean; skeleton?: boolean } | null>(null);
 
 const SHAPE_CLASS: Record<FloatButtonShape, string> = { circle: "rounded-full", square: "rounded-lg" };
 
@@ -112,7 +112,8 @@ export function FloatButton({
   const positioned = group ? undefined : cn("fixed z-mari-sticky", PLACEMENT_CLASS[placement]);
   const shapeClass = joined ? "rounded-none" : SHAPE_CLASS[shape];
 
-  if (skeleton) {
+  // Grubun iskeleti içindeki düğmelere de geçer (tek prop).
+  if (skeleton || group?.skeleton) {
     return <span {...skeletonBoxProps(cn("block", hasDescription ? "min-h-14 w-14" : "size-10", shapeClass, positioned, className))} />;
   }
 
