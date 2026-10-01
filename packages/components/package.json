@@ -143,6 +143,18 @@
       "types": "./dist/input-number.d.ts",
       "import": "./dist/input-number.js"
     },
+    "./color-picker": {
+      "types": "./dist/color-picker.d.ts",
+      "import": "./dist/color-picker.js"
+    },
+    "./transfer": {
+      "types": "./dist/transfer.d.ts",
+      "import": "./dist/transfer.js"
+    },
+    "./tree-select": {
+      "types": "./dist/tree-select.d.ts",
+      "import": "./dist/tree-select.js"
+    },
     "./qrcode": {
       "types": "./dist/qrcode.d.ts",
       "import": "./dist/qrcode.js"
