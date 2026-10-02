@@ -10,3 +10,5 @@ export type {
   ImageFit,
   ImagePreviewConfig,
 } from "./types";
+export { ImageGallery } from "./ImageGallery";
+export type { ImageGalleryItem, ImageGalleryProps, GalleryView } from "./ImageGallery";
