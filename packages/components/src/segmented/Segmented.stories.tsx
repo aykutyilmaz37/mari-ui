@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { LayoutGridIcon, ListIcon, TableIcon } from "lucide-react";
 import { baseSizeArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Segmented } from "./Segmented";
 import type { SegmentedValue } from "./types";
 import { Input } from "../input";
@@ -66,6 +67,16 @@ const series: Record<string, number[]> = {
   Hafta: [80, 95, 70, 110, 128, 102, 90],
   Ay: [320, 410, 380, 460, 520, 490, 540],
   Yıl: [3800, 4200, 4600, 5100, 5600, 6100, 6400],
+};
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { "aria-label": "Dönem", options: ["Gün", "Hafta", "Ay", "Yıl"], block: false, size: "md", disabled: false, skeleton: false },
+  render: (args) => (
+    <div className="max-w-md">
+      <Segmented {...args} />
+    </div>
+  ),
 };
 
 export const ChartPeriod: Story = {
@@ -180,17 +191,14 @@ export const Appearance: Story = {
       ))}
       <Segmented aria-label="Plan" options={[{ value: "free", label: "Ücretsiz" }, { value: "pro", label: "Pro", disabled: true }, { value: "team", label: "Ekip" }]} />
       <Segmented aria-label="Dönem (devre dışı)" options={["Gün", "Hafta", "Ay"]} disabled />
-      <Segmented aria-label="Dönem (iskelet)" options={["Gün", "Hafta", "Ay"]} skeleton />
-    </div>
+          </div>
   ),
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { "aria-label": "Dönem", options: ["Gün", "Hafta", "Ay", "Yıl"], block: false, size: "md", disabled: false, skeleton: false },
-  render: (args) => (
-    <div className="max-w-md">
-      <Segmented {...args} />
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Segmented aria-label="Dönem" options={["Gün", "Hafta", "Ay"]} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Segmented aria-label="Dönem" options={["Gün", "Hafta", "Ay", "Yıl"]} skeleton={skeleton} />}</SkeletonDemo>,
 };

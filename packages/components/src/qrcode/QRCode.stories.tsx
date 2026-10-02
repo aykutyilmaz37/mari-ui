@@ -232,7 +232,7 @@ export const Styles: Story = {
 /* ─────────────────────────── 5. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {
-  name: "İskelet (skeleton)",
+  name: "İskelet",
   ...storyDoc("`skeleton`: değer (ör. sunucudan gelen token) hazır değilken aynı boyutta yer tutucu.", `<QRCode skeleton={!token} value={url} />`),
   render: () => {
     const [on, setOn] = useState(true);

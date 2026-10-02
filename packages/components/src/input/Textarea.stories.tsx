@@ -57,36 +57,6 @@ export const Playground: StoryObj<TextareaProps> = {
   decorators: [(Story) => <div className="max-w-md">{Story()}</div>],
 };
 
-export const AllVariants: StoryObj = {
-  name: "Tüm Varyant × Boyut",
-  ...storyDoc(
-    "4 kenarlık/arka plan stili × 3 boyut.",
-    `<Textarea variant="outline" aria-label="Not" rows={3} />
-<Textarea variant="soft" aria-label="Not" rows={3} />
-<Textarea variant="ghost" aria-label="Not" rows={3} />
-<Textarea variant="underlined" aria-label="Not" rows={3} />`
-  ),
-  render: () => {
-    const variants = ["outline", "soft", "ghost", "underlined"] as const;
-    const sizes = ["lg", "md", "sm"] as const;
-
-    return (
-      <div className="flex flex-col gap-6">
-        {variants.map((variant) => (
-          <div key={variant} className="space-y-2">
-            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {sizes.map((size) => (
-                <Textarea key={`${variant}-${size}`} aria-label={`${variant} ${size}`} variant={variant} size={size} placeholder={`Sipariş notu (${size})`} rows={2} />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  },
-};
-
 export const AutoSizeObject: StoryObj<TextareaProps> = {
   name: "Mesaj Kutusu (min/max satır)",
   ...storyDoc(
@@ -135,6 +105,36 @@ function SkeletonDemo() {
     </div>
   );
 }
+
+export const AllVariants: StoryObj = {
+  name: "Tüm Varyant × Boyut",
+  ...storyDoc(
+    "4 kenarlık/arka plan stili × 3 boyut.",
+    `<Textarea variant="outline" aria-label="Not" rows={3} />
+<Textarea variant="soft" aria-label="Not" rows={3} />
+<Textarea variant="ghost" aria-label="Not" rows={3} />
+<Textarea variant="underlined" aria-label="Not" rows={3} />`
+  ),
+  render: () => {
+    const variants = ["outline", "soft", "ghost", "underlined"] as const;
+    const sizes = ["lg", "md", "sm"] as const;
+
+    return (
+      <div className="flex flex-col gap-6">
+        {variants.map((variant) => (
+          <div key={variant} className="space-y-2">
+            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {sizes.map((size) => (
+                <Textarea key={`${variant}-${size}`} aria-label={`${variant} ${size}`} variant={variant} size={size} placeholder={`Sipariş notu (${size})`} rows={2} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  },
+};
 
 export const Skeleton: StoryObj = {
   name: "İskelet",

@@ -55,6 +55,22 @@ export default meta;
 
 type Story = StoryObj<typeof Dropdown>;
 
+export const Playground: Story = {
+  ...storyDoc("Tetikleyici + panel; kontrollerden üzerine gelince açılma (`hover`) ve iskelet."),
+  args: { hover: false, skeleton: false },
+  render: (args) => (
+    <Dropdown {...args}>
+      <DropdownTrigger className="rounded-md border border-mari-border px-3 py-1.5 text-sm">Menü</DropdownTrigger>
+      <DropdownContent className="w-48">
+        <DropdownItem>Düzenle</DropdownItem>
+        <DropdownItem>Kopyala</DropdownItem>
+        <DropdownDivider />
+        <DropdownItem danger>Sil</DropdownItem>
+      </DropdownContent>
+    </Dropdown>
+  ),
+};
+
 export const UserMenu: Story = {
   name: "Kullanıcı Menüsü",
   ...storyDoc(
@@ -134,63 +150,6 @@ export const RowActions: Story = {
   ),
 };
 
-export const Placements: Story = {
-  name: "Yerleşimler",
-  ...storyDoc(
-    "`placement` — panelin tetikleyiciye göre hangi yönde açılacağını belirler.",
-    `
-<Dropdown>
-  <DropdownTrigger color="primary" variant="solid">top</DropdownTrigger>
-  <DropdownContent placement="top" className="w-40 p-3">
-    Dropdown İçeriği
-  </DropdownContent>
-</Dropdown>
-{/* placement: "top" | "bottom" | "left" | "right" (+ "-start" / "-end") */}`
-  ),
-  render: () => (
-    <div className="flex flex-wrap items-center gap-24 py-16">
-      {(["top", "bottom", "left", "right"] as const).map((placement) => (
-        <Dropdown key={placement}>
-          <DropdownTrigger color="primary" variant="solid">
-            {placement}
-          </DropdownTrigger>
-          <DropdownContent placement={placement} className="w-40 p-3">
-            Dropdown İçeriği
-          </DropdownContent>
-        </Dropdown>
-      ))}
-    </div>
-  ),
-};
-
-export const Alignments: Story = {
-  name: "Hizalama",
-  ...storyDoc(
-    "`-start` / `-end` — panelin tetikleyicinin sol/sağ (veya üst/alt) kenarıyla hizalanmasını sağlar. Sağ kenardaki bir kebab menü için `bottom-end` doğru seçimdir.",
-    `
-<Dropdown>
-  <DropdownTrigger color="primary" variant="solid" className="w-32">bottom-start</DropdownTrigger>
-  <DropdownContent placement="bottom-start" className="w-56 p-3">
-    Tetikleyiciden geniş bir panel
-  </DropdownContent>
-</Dropdown>`
-  ),
-  render: () => (
-    <div className="flex flex-wrap items-center gap-24 py-8">
-      {(["bottom-start", "bottom", "bottom-end"] as const).map((placement) => (
-        <Dropdown key={placement}>
-          <DropdownTrigger color="primary" variant="solid" className="w-32">
-            {placement}
-          </DropdownTrigger>
-          <DropdownContent placement={placement} className="w-56 p-3">
-            Tetikleyiciden geniş bir panel
-          </DropdownContent>
-        </Dropdown>
-      ))}
-    </div>
-  ),
-};
-
 export const WithArrow: Story = {
   name: "Ok (Üçgen) ile",
   ...storyDoc(
@@ -238,42 +197,6 @@ export const WithArrow: Story = {
         ))}
       </div>
     </div>
-  ),
-};
-
-export const ItemStates: Story = {
-  name: "Öğe Durumları",
-  ...storyDoc(
-    "`DropdownItem` — normal, `disabled` ve `danger` (yıkıcı işlem) durumları; `DropdownDivider` ile gruplanır. Bir öğeye tıklanınca panel kapanır.",
-    `
-<Dropdown>
-  <DropdownTrigger color="neutral" variant="outline">Öğe Durumları</DropdownTrigger>
-  <DropdownContent placement="bottom-start" className="w-56">
-    <DropdownItem>1. menü öğesi</DropdownItem>
-    <DropdownItem disabled icon={<CopyIcon />}>2. menü öğesi (devre dışı)</DropdownItem>
-    <DropdownItem disabled>3. menü öğesi (devre dışı)</DropdownItem>
-    <DropdownDivider />
-    <DropdownItem danger icon={<Trash2Icon />}>Tehlikeli öğe</DropdownItem>
-  </DropdownContent>
-</Dropdown>`
-  ),
-  render: () => (
-    <Dropdown>
-      <DropdownTrigger color="neutral" variant="outline">
-        Öğe Durumları
-      </DropdownTrigger>
-      <DropdownContent placement="bottom-start" className="w-56">
-        <DropdownItem>1. menü öğesi</DropdownItem>
-        <DropdownItem disabled icon={<CopyIcon />}>
-          2. menü öğesi (devre dışı)
-        </DropdownItem>
-        <DropdownItem disabled>3. menü öğesi (devre dışı)</DropdownItem>
-        <DropdownDivider />
-        <DropdownItem danger icon={<Trash2Icon />}>
-          Tehlikeli öğe
-        </DropdownItem>
-      </DropdownContent>
-    </Dropdown>
   ),
 };
 
@@ -405,6 +328,99 @@ function SkeletonDemo() {
     </div>
   );
 }
+
+export const Placements: Story = {
+  name: "Yerleşimler",
+  ...storyDoc(
+    "`placement` — panelin tetikleyiciye göre hangi yönde açılacağını belirler.",
+    `
+<Dropdown>
+  <DropdownTrigger color="primary" variant="solid">top</DropdownTrigger>
+  <DropdownContent placement="top" className="w-40 p-3">
+    Dropdown İçeriği
+  </DropdownContent>
+</Dropdown>
+{/* placement: "top" | "bottom" | "left" | "right" (+ "-start" / "-end") */}`
+  ),
+  render: () => (
+    <div className="flex flex-wrap items-center gap-24 py-16">
+      {(["top", "bottom", "left", "right"] as const).map((placement) => (
+        <Dropdown key={placement}>
+          <DropdownTrigger color="primary" variant="solid">
+            {placement}
+          </DropdownTrigger>
+          <DropdownContent placement={placement} className="w-40 p-3">
+            Dropdown İçeriği
+          </DropdownContent>
+        </Dropdown>
+      ))}
+    </div>
+  ),
+};
+
+export const Alignments: Story = {
+  name: "Hizalama",
+  ...storyDoc(
+    "`-start` / `-end` — panelin tetikleyicinin sol/sağ (veya üst/alt) kenarıyla hizalanmasını sağlar. Sağ kenardaki bir kebab menü için `bottom-end` doğru seçimdir.",
+    `
+<Dropdown>
+  <DropdownTrigger color="primary" variant="solid" className="w-32">bottom-start</DropdownTrigger>
+  <DropdownContent placement="bottom-start" className="w-56 p-3">
+    Tetikleyiciden geniş bir panel
+  </DropdownContent>
+</Dropdown>`
+  ),
+  render: () => (
+    <div className="flex flex-wrap items-center gap-24 py-8">
+      {(["bottom-start", "bottom", "bottom-end"] as const).map((placement) => (
+        <Dropdown key={placement}>
+          <DropdownTrigger color="primary" variant="solid" className="w-32">
+            {placement}
+          </DropdownTrigger>
+          <DropdownContent placement={placement} className="w-56 p-3">
+            Tetikleyiciden geniş bir panel
+          </DropdownContent>
+        </Dropdown>
+      ))}
+    </div>
+  ),
+};
+
+export const ItemStates: Story = {
+  name: "Öğe Durumları",
+  ...storyDoc(
+    "`DropdownItem` — normal, `disabled` ve `danger` (yıkıcı işlem) durumları; `DropdownDivider` ile gruplanır. Bir öğeye tıklanınca panel kapanır.",
+    `
+<Dropdown>
+  <DropdownTrigger color="neutral" variant="outline">Öğe Durumları</DropdownTrigger>
+  <DropdownContent placement="bottom-start" className="w-56">
+    <DropdownItem>1. menü öğesi</DropdownItem>
+    <DropdownItem disabled icon={<CopyIcon />}>2. menü öğesi (devre dışı)</DropdownItem>
+    <DropdownItem disabled>3. menü öğesi (devre dışı)</DropdownItem>
+    <DropdownDivider />
+    <DropdownItem danger icon={<Trash2Icon />}>Tehlikeli öğe</DropdownItem>
+  </DropdownContent>
+</Dropdown>`
+  ),
+  render: () => (
+    <Dropdown>
+      <DropdownTrigger color="neutral" variant="outline">
+        Öğe Durumları
+      </DropdownTrigger>
+      <DropdownContent placement="bottom-start" className="w-56">
+        <DropdownItem>1. menü öğesi</DropdownItem>
+        <DropdownItem disabled icon={<CopyIcon />}>
+          2. menü öğesi (devre dışı)
+        </DropdownItem>
+        <DropdownItem disabled>3. menü öğesi (devre dışı)</DropdownItem>
+        <DropdownDivider />
+        <DropdownItem danger icon={<Trash2Icon />}>
+          Tehlikeli öğe
+        </DropdownItem>
+      </DropdownContent>
+    </Dropdown>
+  ),
+};
 
 export const Skeleton: Story = {
   name: "İskelet",

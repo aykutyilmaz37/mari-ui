@@ -75,97 +75,6 @@ export const Playground: Story = {
   },
 };
 
-export const AllVariants: Story = {
-  name: "Tüm Renk × Varyant Kombinasyonları",
-  ...storyDoc(
-    "7 renk rolü (`primary`/`accent`/`success`/`error`/`warning`/`info`/`neutral`) × 5 varyant. Renkler tema stüdyosunda çalışma zamanında değişebilir.",
-    `<Button color="primary" variant="solid">Kaydet</Button>
-<Button color="neutral" variant="outline">Vazgeç</Button>
-<Button color="error" variant="soft">Sil</Button>
-<Button color="primary" variant="ghost">Detay</Button>
-<Button color="primary" variant="link">Daha fazla</Button>`
-  ),
-  render: () => {
-    const colors = ["primary", "accent", "success", "error", "warning", "info", "neutral"] as const;
-    const variants = ["solid", "outline", "soft", "ghost", "link"] as const;
-
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
-        {colors.map((color) =>
-          variants.map((variant) => (
-            <Button key={`${color}-${variant}`} color={color} variant={variant}>
-              {color} {variant}
-            </Button>
-          ))
-        )}
-      </div>
-    );
-  },
-};
-
-export const Sizes: Story = {
-  name: "Boyutlar",
-  ...storyDoc(
-    "`xs`–`xl` paylaşılan boyut ölçeğinden (`lib/sizeClasses`) — 20/24/32/40/48px yükseklik. Dokunmatik ekranda birincil eylemler için `lg`/`xl` tercih edin.",
-    `<Button size="xs">xs</Button>
-<Button size="sm">sm</Button>
-<Button size="md">md</Button>
-<Button size="lg">lg</Button>
-<Button size="xl">xl</Button>`
-  ),
-  render: () => (
-    <div className="flex flex-wrap items-center gap-3">
-      {(["xs", "sm", "md", "lg", "xl"] as const).map((size) => (
-        <Button key={size} size={size}>
-          {size}
-        </Button>
-      ))}
-    </div>
-  ),
-};
-
-export const States: Story = {
-  name: "Durumlar",
-  ...storyDoc(
-    "Normal, `disabled`, `loading` ve ikonlu. `loading` durumunda daima bir dönen gösterge çıkar ve buton otomatik olarak devre dışı olur — ayrıca `disabled` vermeye gerek yoktur.",
-    `<Button>Normal</Button>
-<Button disabled>Devre dışı</Button>
-<Button loading>Yükleniyor</Button>
-<Button loading variant="outline">Kaydediliyor</Button>
-<Button icon={<Sparkles className="w-4 h-4" />}>İkonlu</Button>`
-  ),
-  render: () => (
-    <div className="flex flex-wrap items-center gap-3">
-      <Button>Normal</Button>
-      <Button disabled>Devre dışı</Button>
-      <Button loading>Yükleniyor</Button>
-      <Button loading variant="outline">
-        Kaydediliyor
-      </Button>
-      <Button icon={<Sparkles className="w-4 h-4" />}>İkonlu</Button>
-    </div>
-  ),
-};
-
-export const Shapes: Story = {
-  name: "Şekiller",
-  ...storyDoc(
-    "`default` / `pill` / `square` / `circle`. `default` köşesi tema radius preset'ini izler; `circle` ikon-only butonlar içindir ve `aria-label` ister.",
-    `<Button shape="default">Varsayılan</Button>
-<Button shape="pill">Hap</Button>
-<Button shape="square">Kare</Button>
-<Button shape="circle" icon={<Sparkles className="w-4 h-4" />} aria-label="Yıldız" />`
-  ),
-  render: () => (
-    <div className="flex flex-wrap items-center gap-3">
-      <Button shape="default">Varsayılan</Button>
-      <Button shape="pill">Hap</Button>
-      <Button shape="square">Kare</Button>
-      <Button shape="circle" icon={<Sparkles className="w-4 h-4" />} aria-label="Yıldız" />
-    </div>
-  ),
-};
-
 export const AsLink: Story = {
   name: "Link Olarak",
   ...storyDoc("`href` verilince `<a>` render edilir; görünüm aynı kalır, `disabled` iken tekrar `<button>`'a düşer."),
@@ -248,17 +157,6 @@ function SkeletonDemo() {
   );
 }
 
-export const Skeleton: Story = {
-  name: "İskelet",
-  ...storyDoc(
-    "`skeleton` — veri henüz gelmemişken buton yerine aynı boyutta (aynı genişlik, yükseklik, radius) bir yer tutucu. " +
-      "`loading`'den farkı: `loading` bir eylemin sürdüğünü, `skeleton` verinin henüz olmadığını anlatır. Kutuyu işaretleyip kaldırın — satır zıplamaz.",
-    `<Button skeleton={isLoading}>Ara</Button>
-<Button skeleton={isLoading} size="lg">Sepete ekle</Button>`
-  ),
-  render: () => <SkeletonDemo />,
-};
-
 export const LongLabel: Story = {
   name: "Uzun Etiket (dar alan)",
   ...storyDoc(
@@ -274,3 +172,105 @@ export const LongLabel: Story = {
   ),
 };
 
+
+export const AllVariants: Story = {
+  name: "Tüm Renk × Varyant Kombinasyonları",
+  ...storyDoc(
+    "7 renk rolü (`primary`/`accent`/`success`/`error`/`warning`/`info`/`neutral`) × 5 varyant. Renkler tema stüdyosunda çalışma zamanında değişebilir.",
+    `<Button color="primary" variant="solid">Kaydet</Button>
+<Button color="neutral" variant="outline">Vazgeç</Button>
+<Button color="error" variant="soft">Sil</Button>
+<Button color="primary" variant="ghost">Detay</Button>
+<Button color="primary" variant="link">Daha fazla</Button>`
+  ),
+  render: () => {
+    const colors = ["primary", "accent", "success", "error", "warning", "info", "neutral"] as const;
+    const variants = ["solid", "outline", "soft", "ghost", "link"] as const;
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
+        {colors.map((color) =>
+          variants.map((variant) => (
+            <Button key={`${color}-${variant}`} color={color} variant={variant}>
+              {color} {variant}
+            </Button>
+          ))
+        )}
+      </div>
+    );
+  },
+};
+
+export const Sizes: Story = {
+  name: "Boyutlar",
+  ...storyDoc(
+    "`xs`–`xl` paylaşılan boyut ölçeğinden (`lib/sizeClasses`) — 20/24/32/40/48px yükseklik. Dokunmatik ekranda birincil eylemler için `lg`/`xl` tercih edin.",
+    `<Button size="xs">xs</Button>
+<Button size="sm">sm</Button>
+<Button size="md">md</Button>
+<Button size="lg">lg</Button>
+<Button size="xl">xl</Button>`
+  ),
+  render: () => (
+    <div className="flex flex-wrap items-center gap-3">
+      {(["xs", "sm", "md", "lg", "xl"] as const).map((size) => (
+        <Button key={size} size={size}>
+          {size}
+        </Button>
+      ))}
+    </div>
+  ),
+};
+
+export const Shapes: Story = {
+  name: "Şekiller",
+  ...storyDoc(
+    "`default` / `pill` / `square` / `circle`. `default` köşesi tema radius preset'ini izler; `circle` ikon-only butonlar içindir ve `aria-label` ister.",
+    `<Button shape="default">Varsayılan</Button>
+<Button shape="pill">Hap</Button>
+<Button shape="square">Kare</Button>
+<Button shape="circle" icon={<Sparkles className="w-4 h-4" />} aria-label="Yıldız" />`
+  ),
+  render: () => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button shape="default">Varsayılan</Button>
+      <Button shape="pill">Hap</Button>
+      <Button shape="square">Kare</Button>
+      <Button shape="circle" icon={<Sparkles className="w-4 h-4" />} aria-label="Yıldız" />
+    </div>
+  ),
+};
+
+export const States: Story = {
+  name: "Durumlar",
+  ...storyDoc(
+    "Normal, `disabled`, `loading` ve ikonlu. `loading` durumunda daima bir dönen gösterge çıkar ve buton otomatik olarak devre dışı olur — ayrıca `disabled` vermeye gerek yoktur.",
+    `<Button>Normal</Button>
+<Button disabled>Devre dışı</Button>
+<Button loading>Yükleniyor</Button>
+<Button loading variant="outline">Kaydediliyor</Button>
+<Button icon={<Sparkles className="w-4 h-4" />}>İkonlu</Button>`
+  ),
+  render: () => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button>Normal</Button>
+      <Button disabled>Devre dışı</Button>
+      <Button loading>Yükleniyor</Button>
+      <Button loading variant="outline">
+        Kaydediliyor
+      </Button>
+      <Button icon={<Sparkles className="w-4 h-4" />}>İkonlu</Button>
+    </div>
+  ),
+};
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` — veri henüz gelmemişken buton yerine aynı boyutta (aynı genişlik, yükseklik, radius) bir yer tutucu. " +
+      "`loading`'den farkı: `loading` bir eylemin sürdüğünü, `skeleton` verinin henüz olmadığını anlatır. Kutuyu işaretleyip kaldırın — satır zıplamaz.",
+    `<Button skeleton={isLoading}>Ara</Button>
+<Button skeleton={isLoading} size="lg">Sepete ekle</Button>`
+  ),
+  render: () => <SkeletonDemo />,
+};

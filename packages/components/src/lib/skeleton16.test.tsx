@@ -10,6 +10,12 @@ import { Transfer } from "../transfer";
 import { TreeSelect } from "../tree-select";
 import { FloatButton, FloatButtonGroup } from "../float-button";
 import { Tour } from "../tour";
+import { AutoComplete } from "../autocomplete";
+import { Avatar, AvatarGroup } from "../avatar";
+import { Popconfirm } from "../popconfirm";
+import { Slider } from "../slider";
+import { ToastProvider } from "../toast";
+import { Upload } from "../upload";
 
 /**
  * Faz 16 kalite turu — 16.1–16.5'te eklenen bileşenlerin iskeleti: tek
@@ -111,3 +117,58 @@ describe("Faz 16 iskeletleri", () => {
     expect(screen.getByRole("button", { name: "Turu kapat" })).toBeInTheDocument();
   });
 });
+
+describe("İskelet testi eksik olanlar (Faz 15'ten)", () => {
+  it("AvatarGroup: grup iskeleti avatarlara ve +N'e geçer; avatarın kendi değeri kazanır", () => {
+    const { container, rerender } = render(
+      <AvatarGroup max={2} skeleton>
+        <Avatar alt="Ayşe" />
+        <Avatar alt="Can" />
+        <Avatar alt="Ece" />
+      </AvatarGroup>
+    );
+    expect(screen.getByRole("group")).toHaveAttribute("aria-busy", "true");
+    expect(container.querySelectorAll("[data-skeleton]")).toHaveLength(3);
+    expect(screen.queryByText("+1")).toBeNull();
+    rerender(
+      <AvatarGroup skeleton>
+        <Avatar alt="Ayşe" skeleton={false} />
+        <Avatar alt="Can" />
+      </AvatarGroup>
+    );
+    expect(container.querySelectorAll("[data-skeleton]")).toHaveLength(1);
+  });
+
+  it("AutoComplete ve Slider: alan/ray geometrisinde yer tutucu, etkileşim yok", () => {
+    const { container } = render(
+      <>
+        <AutoComplete options={[]} skeleton />
+        <Slider skeleton />
+      </>
+    );
+    expect(container.querySelectorAll("[data-skeleton]").length).toBeGreaterThanOrEqual(3);
+    expect(noInteractive(container)).toBe(0);
+    expect(screen.queryByRole("slider")).toBeNull();
+  });
+
+  it("Upload: düğme, sürükle-bırak ve önizleme biçimlerinde yer tutucu", () => {
+    const { container, rerender } = render(<Upload skeleton />, { wrapper: ToastProvider });
+    expect(container.querySelector("[data-skeleton]")).toBeInTheDocument();
+    expect(noInteractive(container)).toBe(0);
+    rerender(<Upload skeleton inputType="dragDrop" />);
+    expect(container.querySelector("[data-skeleton]")!.className).toContain("w-full");
+    expect(noInteractive(container)).toBe(0);
+  });
+
+  it("Popconfirm: panel içeriği iskelet, onay düğmeleri yer tutucu", async () => {
+    render(
+      <Popconfirm title="Silinsin mi?" description="Geri alınamaz." open skeleton onConfirm={() => undefined}>
+        <button>Sil</button>
+      </Popconfirm>
+    );
+    const dialog = screen.getByRole("alertdialog");
+    expect(dialog).toHaveAttribute("aria-busy", "true");
+    expect(dialog.querySelectorAll("[data-skeleton]").length).toBeGreaterThan(0);
+  });
+});
+

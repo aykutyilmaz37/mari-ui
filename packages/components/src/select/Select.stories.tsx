@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { BanknoteIcon, CreditCardIcon, LandmarkIcon, WalletIcon } from "lucide-react";
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Avatar } from "../avatar";
 import { Field } from "../field";
 import { Select } from "./Select";
@@ -87,6 +88,28 @@ const DISTRICTS: Record<string, string[]> = {
   "Muğla": ["Bodrum", "Fethiye", "Marmaris", "Datça", "Menteşe"],
 };
 const cityOptions: SelectOption[] = Object.keys(DISTRICTS).map((city) => ({ value: city, label: city }));
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    "aria-label": "Şehir",
+    options: cityOptions,
+    placeholder: "İl seçin",
+    showSearch: false,
+    allowClear: true,
+    loading: false,
+    disabled: false,
+    size: "md",
+    variant: "outline",
+    placement: "bottom-start",
+    skeleton: false,
+  },
+  render: (args) => (
+    <div className="max-w-xs">
+      <Select {...args} />
+    </div>
+  ),
+};
 
 export const DependentAddress: Story = {
   name: "Teslimat Adresi (Bağımlı Seçim)",
@@ -273,47 +296,29 @@ export const States: Story = {
   name: "Durumlar",
   ...storyDoc(
     "Doğrulama hatası: `Field`'a `error` verin — Select kırmızı kenarlık + `aria-invalid` alır, hata metni ona bağlanır " +
-      "(Field dışında: `color=\"error\"` + kendi `aria-describedby`niz). Devre dışı ve veri gelene kadar `skeleton`.",
+      "(Field dışında: `color=\"error\"` + kendi `aria-describedby`niz). Devre dışı.",
     `
 <Field label="Kategori" error="Bir kategori seçin">
   <Select options={…} />
 </Field>
-<Select disabled … />
-<Select skeleton … />`
+<Select disabled … />`
   ),
   render: () => (
-    <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
+    <div className="grid max-w-2xl gap-4 sm:grid-cols-2">
       <Field label="Kategori" error="Bir kategori seçin">
         <Select options={smallOptions} />
       </Field>
       <Field label="Durum" hint="Yayındaki içerik değiştirilemez">
         <Select disabled defaultValue="published" options={smallOptions} />
       </Field>
-      <Field label="Yükleniyor">
-        <Select skeleton options={smallOptions} />
-      </Field>
     </div>
   ),
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    "aria-label": "Şehir",
-    options: cityOptions,
-    placeholder: "İl seçin",
-    showSearch: false,
-    allowClear: true,
-    loading: false,
-    disabled: false,
-    size: "md",
-    variant: "outline",
-    placement: "bottom-start",
-    skeleton: false,
-  },
-  render: (args) => (
-    <div className="max-w-xs">
-      <Select {...args} />
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Select options={cities} defaultValue="istanbul" skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Select aria-label="Şehir" options={smallOptions} defaultValue={smallOptions[0]!.value} className="max-w-xs" skeleton={skeleton} />}</SkeletonDemo>,
 };

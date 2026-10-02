@@ -144,6 +144,41 @@ const promoSlides = [
   },
 ] as const;
 
+const testimonials = [
+  { name: "Aykut Y.", rating: "★★★★★", text: "Kargo hızlıydı, teşekkürler!" },
+  {
+    name: "Deniz K.",
+    rating: "★★★★☆",
+    text:
+      "Ürün açıklamada belirtildiği gibi kaliteliydi, kargo paketlemesi de özenliydi. Bir sonraki siparişimde de " +
+      "aynı mağazayı tercih edeceğim, herkese tavsiye ederim.",
+  },
+  { name: "Elif Ş.", rating: "★★★★★", text: "Beklediğimden daha kaliteli çıktı, çok memnun kaldım." },
+];
+
+function makeTestimonialSlides() {
+  return testimonials.map((t) => (
+    <div key={t.name} className="px-1.5">
+      <div className="rounded-lg border border-mari-border bg-mari-surface p-6">
+        <p className="text-mari-warning">{t.rating}</p>
+        <p className="mt-2 text-mari-foreground">{t.text}</p>
+        <p className="mt-3 text-sm font-medium text-mari-muted">{t.name}</p>
+      </div>
+    </div>
+  ));
+}
+
+export const Playground: Story = {
+  name: "Playground",
+  ...storyDoc(
+    "Varsayılan hâl: tek seferde bir slayt, oklar ve noktalar açık, sürüklenebilir, `loop` açık. Odak carousel'in " +
+      "içindeyken ←/→ tuşları önceki/sonraki slayta geçer."
+  ),
+  args: {
+    children: productSlides,
+  },
+};
+
 export const PromoBanner: Story = {
   name: "Kampanya Bannerı",
   ...storyDoc(
@@ -177,17 +212,6 @@ export const PromoBanner: Story = {
       ))}
     </Carousel>
   ),
-};
-
-export const Basic: Story = {
-  name: "Temel",
-  ...storyDoc(
-    "Varsayılan hâl: tek seferde bir slayt, oklar ve noktalar açık, sürüklenebilir, `loop` açık. Odak carousel'in " +
-      "içindeyken ←/→ tuşları önceki/sonraki slayta geçer."
-  ),
-  args: {
-    children: productSlides,
-  },
 };
 
 export const WithArrows: Story = {
@@ -254,87 +278,6 @@ export const SlidesToScroll: Story = {
   },
 };
 
-export const ArrowsPlacements: Story = {
-  name: "Ok Yerleşimleri",
-  ...storyDoc(
-    "`arrowsPlacement`: `sides` (varsayılan) veya dört köşeden biri (`top-left`/`top-right`/`bottom-left`/`bottom-right`) — köşe değerlerinde oklar tek grupta yan yana durur.",
-    `
-<Carousel arrowsPlacement="sides">{slides}</Carousel>
-<Carousel arrowsPlacement="top-right">{slides}</Carousel>
-<Carousel arrowsPlacement="bottom-left">{slides}</Carousel>`
-  ),
-  render: () => (
-    <div className="flex flex-col gap-6">
-      {(["sides", "top-left", "top-right", "bottom-left", "bottom-right"] as const).map((placement) => (
-        <div key={`arrows-${placement}`} className="w-full max-w-[640px]">
-          <p className="mb-2 font-medium">arrowsPlacement: {placement}</p>
-          {/* Aynı sayfadaki carousel'ler ayrı ad taşımalı (axe landmark-unique). */}
-          <Carousel arrows arrowsPlacement={placement} label={`Ürünler (oklar: ${placement})`}>
-            {productSlides}
-          </Carousel>
-        </div>
-      ))}
-    </div>
-  ),
-};
-
-export const DotPositions: Story = {
-  name: "Nokta Konumları",
-  ...storyDoc(
-    "`dotPosition`: `top`/`bottom`/`left`/`right` — bunlar `dotsPlacement=\"overlay\"` (varsayılan) iken carousel'in " +
-      "üzerine biner. `dotsPlacement=\"outside\"` ise `dotPosition`'dan bağımsız, noktaları normal akışa alıp " +
-      "carousel'in ALTINA render eder — 3'lü/4'lü gösterilen galerilerde (slayt içeriğiyle çakışmasın diye) tercih " +
-      "edilen yerleşim budur. Aktif nokta `aria-current` taşır. Oklar burada kapalı — odak noktaları göstermek.",
-    `
-<Carousel dotPosition="top" arrows={false}>{slides}</Carousel>
-<Carousel dotPosition="left" arrows={false}>{slides}</Carousel>
-<Carousel dotsPlacement="outside" arrows={false}>{slides}</Carousel>`
-  ),
-  render: () => (
-    <div className="flex flex-col gap-6">
-      {(["top", "bottom", "left", "right"] as const).map((position) => (
-        <div key={`dots-${position}`} className="w-full max-w-[640px]">
-          <p className="mb-2 font-medium">Noktalar: {position}</p>
-          <Carousel dotPosition={position} arrows={false} label={`Ürünler (noktalar: ${position})`}>
-            {productSlides}
-          </Carousel>
-        </div>
-      ))}
-      <div className="w-full max-w-[640px]">
-        <p className="mb-2 font-medium">Noktalar: outside</p>
-        <Carousel dotsPlacement="outside" arrows={false} label="Ürünler (noktalar: outside)">
-          {productSlides}
-        </Carousel>
-      </div>
-    </div>
-  ),
-};
-
-/** Gerçek yorumlar doğal olarak farklı uzunlukta olur — "değişken yükseklik" için en gerçekçi senaryo. */
-const testimonials = [
-  { name: "Aykut Y.", rating: "★★★★★", text: "Kargo hızlıydı, teşekkürler!" },
-  {
-    name: "Deniz K.",
-    rating: "★★★★☆",
-    text:
-      "Ürün açıklamada belirtildiği gibi kaliteliydi, kargo paketlemesi de özenliydi. Bir sonraki siparişimde de " +
-      "aynı mağazayı tercih edeceğim, herkese tavsiye ederim.",
-  },
-  { name: "Elif Ş.", rating: "★★★★★", text: "Beklediğimden daha kaliteli çıktı, çok memnun kaldım." },
-];
-
-function makeTestimonialSlides() {
-  return testimonials.map((t) => (
-    <div key={t.name} className="px-1.5">
-      <div className="rounded-lg border border-mari-border bg-mari-surface p-6">
-        <p className="text-mari-warning">{t.rating}</p>
-        <p className="mt-2 text-mari-foreground">{t.text}</p>
-        <p className="mt-3 text-sm font-medium text-mari-muted">{t.name}</p>
-      </div>
-    </div>
-  ));
-}
-
 export const AdaptiveHeight: Story = {
   name: "Değişken Yükseklik",
   ...storyDoc(
@@ -394,6 +337,63 @@ export const Responsive: Story = {
   },
 };
 
+export const ArrowsPlacements: Story = {
+  name: "Ok Yerleşimleri",
+  ...storyDoc(
+    "`arrowsPlacement`: `sides` (varsayılan) veya dört köşeden biri (`top-left`/`top-right`/`bottom-left`/`bottom-right`) — köşe değerlerinde oklar tek grupta yan yana durur.",
+    `
+<Carousel arrowsPlacement="sides">{slides}</Carousel>
+<Carousel arrowsPlacement="top-right">{slides}</Carousel>
+<Carousel arrowsPlacement="bottom-left">{slides}</Carousel>`
+  ),
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(["sides", "top-left", "top-right", "bottom-left", "bottom-right"] as const).map((placement) => (
+        <div key={`arrows-${placement}`} className="w-full max-w-[640px]">
+          <p className="mb-2 font-medium">arrowsPlacement: {placement}</p>
+          {/* Aynı sayfadaki carousel'ler ayrı ad taşımalı (axe landmark-unique). */}
+          <Carousel arrows arrowsPlacement={placement} label={`Ürünler (oklar: ${placement})`}>
+            {productSlides}
+          </Carousel>
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+export const DotPositions: Story = {
+  name: "Nokta Konumları",
+  ...storyDoc(
+    "`dotPosition`: `top`/`bottom`/`left`/`right` — bunlar `dotsPlacement=\"overlay\"` (varsayılan) iken carousel'in " +
+      "üzerine biner. `dotsPlacement=\"outside\"` ise `dotPosition`'dan bağımsız, noktaları normal akışa alıp " +
+      "carousel'in ALTINA render eder — 3'lü/4'lü gösterilen galerilerde (slayt içeriğiyle çakışmasın diye) tercih " +
+      "edilen yerleşim budur. Aktif nokta `aria-current` taşır. Oklar burada kapalı — odak noktaları göstermek.",
+    `
+<Carousel dotPosition="top" arrows={false}>{slides}</Carousel>
+<Carousel dotPosition="left" arrows={false}>{slides}</Carousel>
+<Carousel dotsPlacement="outside" arrows={false}>{slides}</Carousel>`
+  ),
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(["top", "bottom", "left", "right"] as const).map((position) => (
+        <div key={`dots-${position}`} className="w-full max-w-[640px]">
+          <p className="mb-2 font-medium">Noktalar: {position}</p>
+          <Carousel dotPosition={position} arrows={false} label={`Ürünler (noktalar: ${position})`}>
+            {productSlides}
+          </Carousel>
+        </div>
+      ))}
+      <div className="w-full max-w-[640px]">
+        <p className="mb-2 font-medium">Noktalar: outside</p>
+        <Carousel dotsPlacement="outside" arrows={false} label="Ürünler (noktalar: outside)">
+          {productSlides}
+        </Carousel>
+      </div>
+    </div>
+  ),
+};
+
+/** Gerçek yorumlar doğal olarak farklı uzunlukta olur — "değişken yükseklik" için en gerçekçi senaryo. */
 export const SkeletonState: Story = {
   name: "İskelet",
   ...storyDoc(

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Alert } from "./Alert";
 import { Button } from "../button";
 
@@ -59,6 +60,24 @@ export default meta;
 type Story = StoryObj<typeof Alert>;
 
 /* ─────────────────────────── 1. Ödeme hatası ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    title: "Senkronizasyon başarısız",
+    description: "Son 2 saatteki değişiklikler eşitlenmedi.",
+    color: "error",
+    icon: true,
+    closable: true,
+    banner: false,
+    skeleton: false,
+  },
+  render: (args) => (
+    <div className="max-w-xl">
+      <Alert {...args} />
+    </div>
+  ),
+};
 
 export const PaymentFailed: Story = {
   name: "Ödeme Hatası (Eylemli)",
@@ -148,8 +167,8 @@ export const SavedClosable: Story = {
 /* ─────────────────────────── 4. Tüm renkler ─────────────────────────── */
 
 export const Colors: Story = {
-  name: "Renkler ve İskelet",
-  ...storyDoc("Dört durum + başlıksız kısa mesaj + `skeleton`.", `<Alert color="info" title="…" description="…" />`),
+  name: "Renkler",
+  ...storyDoc("Dört durum + başlıksız kısa mesaj.", `<Alert color="info" title="…" description="…" />`),
   render: () => (
     <div className="flex max-w-xl flex-col gap-3">
       <Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." />
@@ -157,25 +176,14 @@ export const Colors: Story = {
       <Alert color="warning" title="Depolamanın %90'ı dolu" description="Eski dosyaları silin ya da planınızı yükseltin." />
       <Alert color="error" title="Senkronizasyon başarısız" description="Son 2 saatteki değişiklikler eşitlenmedi." />
       <Alert color="neutral" description="Bu proje arşivlendi; yalnız görüntüleyebilirsiniz." />
-      <Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." skeleton />
     </div>
   ),
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    title: "Senkronizasyon başarısız",
-    description: "Son 2 saatteki değişiklikler eşitlenmedi.",
-    color: "error",
-    icon: true,
-    closable: true,
-    banner: false,
-    skeleton: false,
-  },
-  render: (args) => (
-    <div className="max-w-xl">
-      <Alert {...args} />
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Alert color="info" title="Planlı bakım" description="…" skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." skeleton={skeleton} />}</SkeletonDemo>,
 };

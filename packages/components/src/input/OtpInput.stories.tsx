@@ -103,30 +103,6 @@ export const Verification: Story = {
   render: () => <VerificationDemo />,
 };
 
-export const AllVariants: Story = {
-  name: "Tüm Varyant",
-  ...storyDoc(
-    "4 kenarlık/arka plan stili. OTP'de `ghost` kutucuklar görünmez olacağı için `underlined`'a düşer.",
-    `<OtpInput length={4} variant="outline" />
-<OtpInput length={4} variant="soft" />
-<OtpInput length={4} variant="underlined" />`
-  ),
-  render: () => {
-    const variants = ["outline", "soft", "ghost", "underlined"] as const;
-
-    return (
-      <div className="flex flex-col gap-6">
-        {variants.map((variant) => (
-          <div key={variant} className="space-y-2">
-            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
-            <OtpInput length={4} variant={variant} aria-label={`${variant} kod`} />
-          </div>
-        ))}
-      </div>
-    );
-  },
-};
-
 export const Masked: Story = {
   name: "Gizli (PIN)",
   ...storyDoc("`mask` — girilen karakterleri `•` ile gizler (kart PIN'i gibi gizli kodlar)."),
@@ -164,6 +140,44 @@ function SkeletonDemo() {
   );
 }
 
+export const SingleField: Story = {
+  name: "Tek Alan Görünümü",
+  ...storyDoc(
+    "`layout=\"single\"` — haneler ayrı kutucuklar yerine tek bir alanın içindeki yuvalarda. Aktif yuvada yanıp sönen imleç. " +
+      "Yuva çizgisi `linePosition` ile: `center` (boş yuvada ortada) ya da `bottom` (hanenin altında, dolu olsa da). " +
+      "Arkada TEK bir gerçek `<input>` vardır: yapıştırma ve SMS otomatik doldurma doğal çalışır, ekran okuyucu tek bir adlandırılmış alan duyar. " +
+      "`inputMode=\"numeric\"` iken harf ve boşluklar atılır. Tüm varyant/boyut/renk/`mask`/`separator` seçenekleri geçerli.",
+    `<OtpInput layout="single" length={6} size="lg" aria-label="Doğrulama kodu" onChange={verify} />
+<OtpInput layout="single" linePosition="bottom" length={6} size="lg" aria-label="Doğrulama kodu" />`
+  ),
+  render: () => <SingleLayoutDemo />,
+};
+
+
+export const AllVariants: Story = {
+  name: "Tüm Varyant",
+  ...storyDoc(
+    "4 kenarlık/arka plan stili. OTP'de `ghost` kutucuklar görünmez olacağı için `underlined`'a düşer.",
+    `<OtpInput length={4} variant="outline" />
+<OtpInput length={4} variant="soft" />
+<OtpInput length={4} variant="underlined" />`
+  ),
+  render: () => {
+    const variants = ["outline", "soft", "ghost", "underlined"] as const;
+
+    return (
+      <div className="flex flex-col gap-6">
+        {variants.map((variant) => (
+          <div key={variant} className="space-y-2">
+            <h3 className="text-sm font-semibold text-mari-foreground">{variant}</h3>
+            <OtpInput length={4} variant={variant} aria-label={`${variant} kod`} />
+          </div>
+        ))}
+      </div>
+    );
+  },
+};
+
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton` — kutucuklarla aynı boyutta yer tutucular.", `<OtpInput length={6} size="lg" skeleton={isLoading} />`),
@@ -192,17 +206,3 @@ function SingleLayoutDemo() {
     </div>
   );
 }
-
-export const SingleField: Story = {
-  name: "Tek Alan Görünümü",
-  ...storyDoc(
-    "`layout=\"single\"` — haneler ayrı kutucuklar yerine tek bir alanın içindeki yuvalarda. Aktif yuvada yanıp sönen imleç. " +
-      "Yuva çizgisi `linePosition` ile: `center` (boş yuvada ortada) ya da `bottom` (hanenin altında, dolu olsa da). " +
-      "Arkada TEK bir gerçek `<input>` vardır: yapıştırma ve SMS otomatik doldurma doğal çalışır, ekran okuyucu tek bir adlandırılmış alan duyar. " +
-      "`inputMode=\"numeric\"` iken harf ve boşluklar atılır. Tüm varyant/boyut/renk/`mask`/`separator` seçenekleri geçerli.",
-    `<OtpInput layout="single" length={6} size="lg" aria-label="Doğrulama kodu" onChange={verify} />
-<OtpInput layout="single" linePosition="bottom" length={6} size="lg" aria-label="Doğrulama kodu" />`
-  ),
-  render: () => <SingleLayoutDemo />,
-};
-

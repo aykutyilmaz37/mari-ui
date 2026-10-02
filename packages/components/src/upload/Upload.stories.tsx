@@ -50,8 +50,8 @@ export default meta;
 
 type Story = StoryObj<typeof Upload>;
 
-export const Basic: Story = {
-  name: "Temel",
+export const Playground: Story = {
+  name: "Playground",
   ...storyDoc("Tıklayarak gözat, tek dosya."),
   args: {},
 };
@@ -136,7 +136,7 @@ export const WithOnChange: Story = {
 };
 
 export const Disabled: Story = {
-  name: "Devre Dışı",
+  name: "Durumlar",
   ...storyDoc("`disabled` — seçim butonu, sürükle-bırak alanı ve gizli input kilitlenir.", `<Upload inputType="dragDrop" disabled />`),
   args: { inputType: "dragDrop", disabled: true },
 };

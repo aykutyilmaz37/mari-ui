@@ -100,6 +100,13 @@ const meta: Meta<typeof Steps> = {
 export default meta;
 type Story = StoryObj<typeof Steps>;
 
+const basicSteps: StepItem[] = [
+  { title: "Başvuru", description: "Form gönderildi" },
+  { title: "İnceleme", description: "Ekip değerlendiriyor" },
+  { title: "Mülakat", description: "Takvim bekleniyor" },
+  { title: "Teklif" },
+];
+
 /* ─────────────────────────── Story yardımcıları ─────────────────────────── */
 
 /** Görünür etiketli form alanı — placeholder-only etiket kullanmıyoruz. */
@@ -160,6 +167,21 @@ const shippingOptions = [
     ),
   },
 ];
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    data: basicSteps,
+    currentStep: 2,
+    status: "process",
+    variant: "filled",
+    size: "md",
+    color: "primary",
+    labelPlacement: "horizontal",
+    vertical: false,
+    dot: false,
+  },
+};
 
 export const Checkout: Story = {
   name: "Ödeme Akışı",
@@ -658,44 +680,6 @@ export const DeployPipeline: Story = {
   },
 };
 
-/* ─────────────────────────── Görünüm seçenekleri ─────────────────────────── */
-
-const basicSteps: StepItem[] = [
-  { title: "Başvuru", description: "Form gönderildi" },
-  { title: "İnceleme", description: "Ekip değerlendiriyor" },
-  { title: "Mülakat", description: "Takvim bekleniyor" },
-  { title: "Teklif" },
-];
-
-export const Variants: Story = {
-  name: "Görünüm: filled / outlined",
-  ...storyDoc(
-    "`filled` (varsayılan): tamamlanan tonlu, geçerli dolu, bekleyen nötr. `outlined`: hepsi çerçeveli, daha hafif.",
-    `
-<Steps data={steps} currentStep={2} />
-<Steps data={steps} currentStep={2} variant="outlined" />`
-  ),
-  render: () => (
-    <div className="flex flex-col gap-10">
-      <Steps data={basicSteps} currentStep={2} />
-      <Steps data={basicSteps} currentStep={2} variant="outlined" />
-    </div>
-  ),
-};
-
-export const Sizes: Story = {
-  name: "Boyut: md / sm",
-  ...storyDoc("`md` (32px, varsayılan) ve `sm` (24px) — kartlar ve yoğun tablolar için.", `
-<Steps data={steps} currentStep={3} />
-<Steps data={steps} currentStep={3} size="sm" />`),
-  render: () => (
-    <div className="flex flex-col gap-10">
-      <Steps data={basicSteps} currentStep={3} />
-      <Steps data={basicSteps} currentStep={3} size="sm" />
-    </div>
-  ),
-};
-
 export const LabelBelow: Story = {
   name: "Başlık Altta",
   ...storyDoc("`labelPlacement=\"vertical\"` — başlık göstergenin altında ortalı; çizgi göstergeden göstergeye uzanır.", `
@@ -774,6 +758,38 @@ export const Responsive: Story = {
   ),
 };
 
+/* ─────────────────────────── Görünüm seçenekleri ─────────────────────────── */
+
+
+export const Variants: Story = {
+  name: "Görünüm: filled / outlined",
+  ...storyDoc(
+    "`filled` (varsayılan): tamamlanan tonlu, geçerli dolu, bekleyen nötr. `outlined`: hepsi çerçeveli, daha hafif.",
+    `
+<Steps data={steps} currentStep={2} />
+<Steps data={steps} currentStep={2} variant="outlined" />`
+  ),
+  render: () => (
+    <div className="flex flex-col gap-10">
+      <Steps data={basicSteps} currentStep={2} />
+      <Steps data={basicSteps} currentStep={2} variant="outlined" />
+    </div>
+  ),
+};
+
+export const Sizes: Story = {
+  name: "Boyut: md / sm",
+  ...storyDoc("`md` (32px, varsayılan) ve `sm` (24px) — kartlar ve yoğun tablolar için.", `
+<Steps data={steps} currentStep={3} />
+<Steps data={steps} currentStep={3} size="sm" />`),
+  render: () => (
+    <div className="flex flex-col gap-10">
+      <Steps data={basicSteps} currentStep={3} />
+      <Steps data={basicSteps} currentStep={3} size="sm" />
+    </div>
+  ),
+};
+
 export const Colors: Story = {
   name: "Renkler",
   ...storyDoc("`color` — aktif/tamamlanan adımların rolü. Hata her zaman `error` rengindedir.", `
@@ -808,20 +824,5 @@ export const Skeleton: Story = {
         <Steps data={trackingSteps} currentStep={3} vertical skeleton={loading} />
       </div>
     );
-  },
-};
-
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    data: basicSteps,
-    currentStep: 2,
-    status: "process",
-    variant: "filled",
-    size: "md",
-    color: "primary",
-    labelPlacement: "horizontal",
-    vertical: false,
-    dot: false,
   },
 };

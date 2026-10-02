@@ -72,6 +72,16 @@ const products = [
   { name: "Aynasız Fotoğraf Makinesi", price: "32.499 ₺", Icon: CameraIcon },
 ];
 
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { active: true, avatar: true, title: true, round: false, paragraph: { rows: 3 } },
+  render: (args) => (
+    <div className="max-w-md">
+      <Skeleton {...args} />
+    </div>
+  ),
+};
+
 export const ProductGrid: Story = {
   name: "Ürün Izgarası",
   ...storyDoc(
@@ -266,16 +276,6 @@ export const ControlShapes: Story = {
           </div>
         </React.Fragment>
       ))}
-    </div>
-  ),
-};
-
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { active: true, avatar: true, title: true, round: false, paragraph: { rows: 3 } },
-  render: (args) => (
-    <div className="max-w-md">
-      <Skeleton {...args} />
     </div>
   ),
 };

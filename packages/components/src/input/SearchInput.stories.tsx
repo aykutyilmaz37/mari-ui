@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { SearchInput } from "./SearchInput";
 
 const meta: Meta<typeof SearchInput> = {
@@ -54,6 +55,22 @@ export const Playground: Story = {
     skeleton: false,
   },
   decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
+};
+
+export const WithSearch: Story = {
+  name: "Ürün Arama (Enter + yükleniyor)",
+  ...storyDoc(
+    "`onSearch` Enter'a basınca VE ara butonuna tıklayınca çağrılır. Sonuç beklenirken `loading` ara ikonunu dönen göstergeye çevirir. " +
+      "Mobil klavyede Enter tuşu \"Ara\" olarak görünür (`enterKeyHint=\"search\"`).",
+    `<SearchInput
+  aria-label="Ürün ara"
+  placeholder="Ürün ara"
+  allowClear
+  loading={isSearching}
+  onSearch={(value) => runSearch(value)}
+/>`
+  ),
+  render: () => <ProductSearchDemo />,
 };
 
 export const AllVariants: Story = {
@@ -113,18 +130,10 @@ function ProductSearchDemo() {
   );
 }
 
-export const WithSearch: Story = {
-  name: "Ürün Arama (Enter + yükleniyor)",
-  ...storyDoc(
-    "`onSearch` Enter'a basınca VE ara butonuna tıklayınca çağrılır. Sonuç beklenirken `loading` ara ikonunu dönen göstergeye çevirir. " +
-      "Mobil klavyede Enter tuşu \"Ara\" olarak görünür (`enterKeyHint=\"search\"`).",
-    `<SearchInput
-  aria-label="Ürün ara"
-  placeholder="Ürün ara"
-  allowClear
-  loading={isSearching}
-  onSearch={(value) => runSearch(value)}
-/>`
-  ),
-  render: () => <ProductSearchDemo />,
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<SearchInput placeholder="Ürün ara" skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <SearchInput aria-label="Ürün ara" placeholder="Ürün ara" className="max-w-sm" skeleton={skeleton} />}</SkeletonDemo>,
 };

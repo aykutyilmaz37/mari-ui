@@ -171,43 +171,6 @@ export const TeamMembers: Story = {
   ),
 };
 
-/* ─────────────────────────── 2. Boyutlar ─────────────────────────── */
-
-const settings = ["İki adımlı doğrulama", "Oturum açma bildirimleri", "Haftalık özet e-postası"];
-
-export const Sizes: Story = {
-  name: "Boyutlar ve Çerçeve",
-  ...storyDoc(
-    "`size` satır dolgusunu değiştirir (sm 8 / md 12 / lg 16px); `bordered` dış çerçeve ekler ve satırları yatayda içeri " +
-      "çeker. Çerçevesiz liste bir kartın/panelin içine gömülür.",
-    `
-<List size="sm" bordered header="Güvenlik" dataSource={settings} renderItem={(s) => <ListItem extra={<Switch aria-label={s} />}>{s}</ListItem>} />
-<List size="md" bordered … />
-<List size="lg" bordered … />
-<List split={false} … />  // ayırıcısız, çerçevesiz`
-  ),
-  render: () => (
-    <div className="grid max-w-5xl gap-6 md:grid-cols-2">
-      {(["sm", "md", "lg"] as const).map((size) => (
-        <List
-          key={size}
-          size={size}
-          bordered
-          header={`Güvenlik (${size})`}
-          dataSource={settings}
-          renderItem={(s) => <ListItem extra={<Switch size="sm" aria-label={`${s} (${size})`} defaultChecked={s !== settings[2]} />}>{s}</ListItem>}
-        />
-      ))}
-      <List
-        split={false}
-        header="Ayırıcısız, çerçevesiz"
-        dataSource={settings}
-        renderItem={(s) => <ListItem extra={<Switch size="sm" aria-label={`${s} (ayırıcısız)`} />}>{s}</ListItem>}
-      />
-    </div>
-  ),
-};
-
 /* ─────────────────────────── 3. Bildirimler ─────────────────────────── */
 
 const allNotifications = [
@@ -596,10 +559,47 @@ export const EmptyState: Story = {
   ),
 };
 
+/* ─────────────────────────── 2. Boyutlar ─────────────────────────── */
+
+const settings = ["İki adımlı doğrulama", "Oturum açma bildirimleri", "Haftalık özet e-postası"];
+
+export const Sizes: Story = {
+  name: "Boyutlar ve Çerçeve",
+  ...storyDoc(
+    "`size` satır dolgusunu değiştirir (sm 8 / md 12 / lg 16px); `bordered` dış çerçeve ekler ve satırları yatayda içeri " +
+      "çeker. Çerçevesiz liste bir kartın/panelin içine gömülür.",
+    `
+<List size="sm" bordered header="Güvenlik" dataSource={settings} renderItem={(s) => <ListItem extra={<Switch aria-label={s} />}>{s}</ListItem>} />
+<List size="md" bordered … />
+<List size="lg" bordered … />
+<List split={false} … />  // ayırıcısız, çerçevesiz`
+  ),
+  render: () => (
+    <div className="grid max-w-5xl gap-6 md:grid-cols-2">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <List
+          key={size}
+          size={size}
+          bordered
+          header={`Güvenlik (${size})`}
+          dataSource={settings}
+          renderItem={(s) => <ListItem extra={<Switch size="sm" aria-label={`${s} (${size})`} defaultChecked={s !== settings[2]} />}>{s}</ListItem>}
+        />
+      ))}
+      <List
+        split={false}
+        header="Ayırıcısız, çerçevesiz"
+        dataSource={settings}
+        renderItem={(s) => <ListItem extra={<Switch size="sm" aria-label={`${s} (ayırıcısız)`} />}>{s}</ListItem>}
+      />
+    </div>
+  ),
+};
+
 /* ─────────────────────────── 8. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {
-  name: "İskelet (skeleton)",
+  name: "İskelet",
   ...storyDoc(
     "`skeleton`: veri varsa (yenileme) satırlar kendi şeklinde, yoksa (ilk yükleme) sayfa boyu kadar genel satır çizilir; " +
       "başlık, alt bilgi ve sayfalama da iskelete döner. Bir EYLEM sürerken (sayfa değişimi) `loading` kullanın.",

@@ -108,33 +108,6 @@ export const Bordered: Story = {
   args: { bordered: true },
 };
 
-export const AllColors: Story = {
-  name: "Tüm Renkler",
-  ...storyDoc(
-    "7 renk rolü (`primary`/`accent`/`success`/`error`/`warning`/`info`/`neutral`). Renkler tema stüdyosunda çalışma zamanında değişebilir.",
-    `<Tag color="primary">Yeni</Tag>
-<Tag color="success" icon={<CheckCircle size={14} />}>Onaylandı</Tag>
-<Tag color="error">Reddedildi</Tag>
-<Tag color="neutral">Arşiv</Tag>`
-  ),
-  render: () => (
-    <div className="flex flex-wrap gap-2">
-      {(["primary", "accent", "success", "error", "warning", "info", "neutral"] as const).map((color) => (
-        <Tag key={color} color={color} icon={color === "success" ? <CheckCircle size={14} /> : undefined}>
-          {color}
-        </Tag>
-      ))}
-    </div>
-  ),
-};
-
-const orders = [
-  { id: "#4821", customer: "Aykut Yılmaz", status: "Teslim Edildi", color: "success" },
-  { id: "#4822", customer: "Deniz Kaya", status: "Kargoda", color: "info" },
-  { id: "#4823", customer: "Elif Şahin", status: "Hazırlanıyor", color: "warning" },
-  { id: "#4824", customer: "Mert Demir", status: "İptal Edildi", color: "error" },
-] as const;
-
 export const OrderList: Story = {
   name: "Sipariş Listesi",
   ...storyDoc(
@@ -161,6 +134,51 @@ export const OrderList: Story = {
     </div>
   ),
 };
+
+export const LongText: Story = {
+  name: "Uzun Metin",
+  ...storyDoc(
+    "Tag tek satırda kalır; kapsayıcıdan genişse `…` ile kısalır. Tam metni göstermek için bir `Tooltip` ile sarın.",
+    `<div className="w-40">
+  <Tag color="info">Uluslararası kargo ile gönderildi</Tag>
+</div>`
+  ),
+  render: () => (
+    <div className="w-40 rounded-lg border border-dashed border-mari-border p-2">
+      <Tag color="info" onClose={() => {}}>
+        Uluslararası kargo ile gönderildi
+      </Tag>
+    </div>
+  ),
+};
+
+
+export const AllColors: Story = {
+  name: "Tüm Renkler",
+  ...storyDoc(
+    "7 renk rolü (`primary`/`accent`/`success`/`error`/`warning`/`info`/`neutral`). Renkler tema stüdyosunda çalışma zamanında değişebilir.",
+    `<Tag color="primary">Yeni</Tag>
+<Tag color="success" icon={<CheckCircle size={14} />}>Onaylandı</Tag>
+<Tag color="error">Reddedildi</Tag>
+<Tag color="neutral">Arşiv</Tag>`
+  ),
+  render: () => (
+    <div className="flex flex-wrap gap-2">
+      {(["primary", "accent", "success", "error", "warning", "info", "neutral"] as const).map((color) => (
+        <Tag key={color} color={color} icon={color === "success" ? <CheckCircle size={14} /> : undefined}>
+          {color}
+        </Tag>
+      ))}
+    </div>
+  ),
+};
+
+const orders = [
+  { id: "#4821", customer: "Aykut Yılmaz", status: "Teslim Edildi", color: "success" },
+  { id: "#4822", customer: "Deniz Kaya", status: "Kargoda", color: "info" },
+  { id: "#4823", customer: "Elif Şahin", status: "Hazırlanıyor", color: "warning" },
+  { id: "#4824", customer: "Mert Demir", status: "İptal Edildi", color: "error" },
+] as const;
 
 export const AllVariants: Story = {
   name: "Tüm Varyantlar",
@@ -208,21 +226,3 @@ export const Skeleton: Story = {
   ),
   render: () => <SkeletonDemo />,
 };
-
-export const LongText: Story = {
-  name: "Uzun Metin",
-  ...storyDoc(
-    "Tag tek satırda kalır; kapsayıcıdan genişse `…` ile kısalır. Tam metni göstermek için bir `Tooltip` ile sarın.",
-    `<div className="w-40">
-  <Tag color="info">Uluslararası kargo ile gönderildi</Tag>
-</div>`
-  ),
-  render: () => (
-    <div className="w-40 rounded-lg border border-dashed border-mari-border p-2">
-      <Tag color="info" onClose={() => {}}>
-        Uluslararası kargo ile gönderildi
-      </Tag>
-    </div>
-  ),
-};
-

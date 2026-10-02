@@ -8,6 +8,7 @@ import React, { useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { BellIcon, FilterIcon, PlusIcon, SparklesIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Button } from "../button";
 import { Input } from "../input";
 import { Tour } from "./Tour";
@@ -52,6 +53,29 @@ const meta: Meta<typeof Tour> = {
 
 export default meta;
 type Story = StoryObj<typeof Tour>;
+
+export const Playground: Story = {
+  ...storyDoc("İki adımlı örnek tur; kontrollerden karartma (`mask`), ok (`arrow`) ve diğerleri."),
+  args: { mask: true, arrow: true },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLButtonElement>(null);
+    return (
+      <div className="flex gap-3">
+        <Button onClick={() => setOpen(true)}>Turu başlat</Button>
+        <Button ref={ref} variant="outline" color="neutral">
+          Hedef düğme
+        </Button>
+        <Tour
+          {...args}
+          open={open}
+          onOpenChange={setOpen}
+          steps={[{ title: "Hoş geldiniz", description: "Ortada açılan karşılama adımı." }, { title: "Hedef", description: "Bu adım bir öğeyi vurgular.", target: () => ref.current }]}
+        />
+      </div>
+    );
+  },
+};
 
 /* ─────────────────────────── 1. Yeni kullanıcı turu ─────────────────────────── */
 
@@ -162,4 +186,22 @@ export const FeatureHint: Story = {
       </div>
     );
   },
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Turu başlat</Button>
+      <Tour open={open} onOpenChange={setOpen} skeleton={skeleton} steps={[{ title: "Raporlar", description: "Aylık özetler burada." }, { title: "Paylaşım", description: "Raporu ekibinizle paylaşın." }]} />
+    </>
+  );
+}
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Tour open steps={steps} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <SkeletonOverlayDemo skeleton={skeleton} />}</SkeletonDemo>,
 };

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { InputNumber } from "./InputNumber";
 import { Field } from "../field";
 
@@ -68,6 +69,32 @@ type Story = StoryObj<typeof InputNumber>;
 const tl = (n: number) => n.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
 
 /* ─────────────────────────── 1. Sepet ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    "aria-label": "Değer",
+    defaultValue: 1234.5,
+    min: 0,
+    max: 100000,
+    step: 1,
+    precision: 2,
+    grouping: true,
+    locale: "tr-TR",
+    prefix: "₺",
+    controls: true,
+    disabled: false,
+    readOnly: false,
+    size: "md",
+    variant: "outline",
+    skeleton: false,
+  },
+  render: (args) => (
+    <div className="max-w-xs">
+      <InputNumber {...args} />
+    </div>
+  ),
+};
 
 export const CartQuantity: Story = {
   name: "Sepette Adet",
@@ -132,7 +159,7 @@ export const Appearance: Story = {
   name: "Boyut, Görünüm ve Durumlar",
   ...storyDoc(
     "Boyut/varyant/şekil Input'la aynı ölçek. `controls={false}` düğmesiz (ok tuşları yine çalışır); `color=\"error\"` " +
-      "doğrulama; `readOnly`, `disabled`, `skeleton`.",
+      "doğrulama; `readOnly`, `disabled`.",
     `<InputNumber size="sm" variant="soft" controls={false} … />`
   ),
   render: () => (
@@ -146,33 +173,14 @@ export const Appearance: Story = {
       <InputNumber color="error" aria-label="Adet (hatalı)" defaultValue={0} min={1} />
       <InputNumber readOnly aria-label="Adet (salt okunur)" defaultValue={12} />
       <InputNumber disabled aria-label="Adet (devre dışı)" defaultValue={12} />
-      <InputNumber skeleton aria-label="Adet (iskelet)" />
-    </div>
+          </div>
   ),
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    "aria-label": "Değer",
-    defaultValue: 1234.5,
-    min: 0,
-    max: 100000,
-    step: 1,
-    precision: 2,
-    grouping: true,
-    locale: "tr-TR",
-    prefix: "₺",
-    controls: true,
-    disabled: false,
-    readOnly: false,
-    size: "md",
-    variant: "outline",
-    skeleton: false,
-  },
-  render: (args) => (
-    <div className="max-w-xs">
-      <InputNumber {...args} />
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<InputNumber aria-label="Adet" defaultValue={3} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <InputNumber aria-label="Adet" defaultValue={3} min={1} max={10} skeleton={skeleton} />}</SkeletonDemo>,
 };

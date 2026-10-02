@@ -47,6 +47,12 @@ const meta: Meta<typeof Textarea> = {
 export default meta;
 type Story = StoryObj<typeof Textarea>;
 
+export const Playground: Story = {
+  ...storyDoc("Textarea + `mentions`; kontrollerden satır sayısı ve yer tutucu. `@` yazın."),
+  args: { rows: 3, placeholder: "Yorum yazın, @ ile birini etiketleyin", "aria-label": "Yorum" },
+  render: (args) => <Textarea {...args} mentions={{ options: TEAM }} />,
+};
+
 const TEAM: MentionOption[] = [
   ["ayse.demir", "Ayşe Demir", "Ürün tasarımcısı"],
   ["mehmet.kaya", "Mehmet Kaya", "Arka uç geliştirici"],

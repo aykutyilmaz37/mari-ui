@@ -125,38 +125,6 @@ export const CommentList: StoryObj = {
   ),
 };
 
-export const AllShapesAndSizes: StoryObj = {
-  name: "Şekil ve Boyutlar",
-  ...storyDoc(
-    "İki geometri (`circle`/`square`) × üç boyut (`sm`/`md`/`lg` = 24/32/40px). Kare avatarın köşesi tema radius preset'ini izler. Daha büyük boyut için sayı verin (`size={64}`, px).",
-    `<Avatar shape="circle" size="sm" alt="Ada" src={url} />
-<Avatar shape="square" size="lg" alt="Ada" src={url} />
-<Avatar size={64} alt="Ada" src={url} />`
-  ),
-  render: () => {
-    const shapes = ["circle", "square"] as const;
-    const sizes = ["sm", "md", "lg"] as const;
-
-    return (
-      <div className="flex flex-col gap-6 p-6">
-        {shapes.map((shape) => (
-          <div key={shape} className="space-y-2">
-            <h3 className="font-semibold capitalize">{shape === "circle" ? "Daire" : "Kare"}</h3>
-            <div className="flex gap-4 items-center">
-              {sizes.map((size) => (
-                <Avatar key={`${shape}-${size}`} shape={shape} size={size} alt={`Avatar ${shape} ${size}`} src={AVATAR_URL} />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  },
-};
-
-const team = ["Aykut Yılmaz", "Deniz Kaya", "Elif Şahin", "Mert Demir", "Zeynep Arslan", "Can Öztürk", "İlker Aydın"];
-const teamColors = ["primary", "accent", "success", "warning", "info", "error", "neutral"] as const;
-
 export const Group: StoryObj = {
   name: "Grup (ekip)",
   ...storyDoc(
@@ -205,6 +173,38 @@ function SkeletonDemo() {
     </div>
   );
 }
+
+export const AllShapesAndSizes: StoryObj = {
+  name: "Şekil ve Boyutlar",
+  ...storyDoc(
+    "İki geometri (`circle`/`square`) × üç boyut (`sm`/`md`/`lg` = 24/32/40px). Kare avatarın köşesi tema radius preset'ini izler. Daha büyük boyut için sayı verin (`size={64}`, px).",
+    `<Avatar shape="circle" size="sm" alt="Ada" src={url} />
+<Avatar shape="square" size="lg" alt="Ada" src={url} />
+<Avatar size={64} alt="Ada" src={url} />`
+  ),
+  render: () => {
+    const shapes = ["circle", "square"] as const;
+    const sizes = ["sm", "md", "lg"] as const;
+
+    return (
+      <div className="flex flex-col gap-6 p-6">
+        {shapes.map((shape) => (
+          <div key={shape} className="space-y-2">
+            <h3 className="font-semibold capitalize">{shape === "circle" ? "Daire" : "Kare"}</h3>
+            <div className="flex gap-4 items-center">
+              {sizes.map((size) => (
+                <Avatar key={`${shape}-${size}`} shape={shape} size={size} alt={`Avatar ${shape} ${size}`} src={AVATAR_URL} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  },
+};
+
+const team = ["Aykut Yılmaz", "Deniz Kaya", "Elif Şahin", "Mert Demir", "Zeynep Arslan", "Can Öztürk", "İlker Aydın"];
+const teamColors = ["primary", "accent", "success", "warning", "info", "error", "neutral"] as const;
 
 export const Skeleton: StoryObj = {
   name: "İskelet",

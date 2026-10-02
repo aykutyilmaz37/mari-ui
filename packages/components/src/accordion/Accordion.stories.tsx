@@ -304,7 +304,7 @@ export const Variants: Story = {
 /* ─────────────────────────── 6. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {
-  name: "İskelet (skeleton)",
+  name: "İskelet",
   ...storyDoc(
     "`skeleton`: başlıklar kendi metin genişliğinde, açık bölümün içeriği kendi şeklinde yer tutucuya döner; " +
       "başlıklar tıklanamaz. Yüklenince yükseklik değişmez.",

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Radio } from "./index";
 import type { RadioProps } from "./index";
 
@@ -56,6 +57,18 @@ export const Playground: StoryObj<RadioProps> = {
   },
 };
 
+export const Controlled: StoryObj = {
+  name: "Controlled Örneği",
+  ...storyDoc(
+    "Tek tek `Radio` ile elle kurulan bir grup — aynı `name` ve bir `role=\"radiogroup\"` sarmalayıcı şart (ok tuşlarıyla gezinme bunlara bağlı). Genelde `RadioGroup` daha kolaydır.",
+    `<div role="radiogroup" aria-label="Ödeme">
+  <Radio name="odeme" value="kart" label="Kredi kartı" checked={v === "kart"} onChange={() => setV("kart")} />
+  <Radio name="odeme" value="havale" label="Havale / EFT" checked={v === "havale"} onChange={() => setV("havale")} />
+</div>`
+  ),
+  render: () => <ControlledExample />,
+};
+
 export const AllVariants: StoryObj = {
   name: "Tüm Renk × Varyant × Boyut",
   ...storyDoc(
@@ -99,14 +112,11 @@ const ControlledExample = () => {
     </div>
   );
 };
-export const Controlled: StoryObj = {
-  name: "Controlled Örneği",
-  ...storyDoc(
-    "Tek tek `Radio` ile elle kurulan bir grup — aynı `name` ve bir `role=\"radiogroup\"` sarmalayıcı şart (ok tuşlarıyla gezinme bunlara bağlı). Genelde `RadioGroup` daha kolaydır.",
-    `<div role="radiogroup" aria-label="Ödeme">
-  <Radio name="odeme" value="kart" label="Kredi kartı" checked={v === "kart"} onChange={() => setV("kart")} />
-  <Radio name="odeme" value="havale" label="Havale / EFT" checked={v === "havale"} onChange={() => setV("havale")} />
-</div>`
-  ),
-  render: () => <ControlledExample />,
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: StoryObj = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Radio label="Kapıda ödeme" skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Radio name="odeme-iskelet" label="Kapıda ödeme" description="Teslimatta nakit ya da kartla." skeleton={skeleton} />}</SkeletonDemo>,
 };

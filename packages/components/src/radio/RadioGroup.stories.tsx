@@ -59,6 +59,24 @@ export const Playground: StoryObj<RadioGroupProps> = {
   },
 };
 
+export const Controlled: StoryObj = {
+  name: "Teslimat Seçimi (dikey, açıklamalı)",
+  ...storyDoc(
+    "`value`+`onChange` ile dışarıdan yönetilir; `orientation=\"vertical\"` ve seçenek `description`'ı ile ödeme/teslimat adımı. Bir seçeneğe odaklanıp Ok tuşlarını deneyin.",
+    `<RadioGroup
+  aria-labelledby="kargo-baslik"
+  orientation="vertical"
+  value={value}
+  onChange={setValue}
+  options={[
+    { value: "standart", label: "Standart kargo", description: "3–5 iş günü · Ücretsiz" },
+    { value: "hizli", label: "Hızlı kargo", description: "Yarın kapında · 49,90 ₺" },
+  ]}
+/>`
+  ),
+  render: () => <ControlledExample />,
+};
+
 export const AllVariants: StoryObj = {
   name: "Tüm Renk × Varyant",
   ...storyDoc(
@@ -116,24 +134,6 @@ const ControlledExample = () => {
       </span>
     </div>
   );
-};
-
-export const Controlled: StoryObj = {
-  name: "Teslimat Seçimi (dikey, açıklamalı)",
-  ...storyDoc(
-    "`value`+`onChange` ile dışarıdan yönetilir; `orientation=\"vertical\"` ve seçenek `description`'ı ile ödeme/teslimat adımı. Bir seçeneğe odaklanıp Ok tuşlarını deneyin.",
-    `<RadioGroup
-  aria-labelledby="kargo-baslik"
-  orientation="vertical"
-  value={value}
-  onChange={setValue}
-  options={[
-    { value: "standart", label: "Standart kargo", description: "3–5 iş günü · Ücretsiz" },
-    { value: "hizli", label: "Hızlı kargo", description: "Yarın kapında · 49,90 ₺" },
-  ]}
-/>`
-  ),
-  render: () => <ControlledExample />,
 };
 
 export const Skeleton: StoryObj = {

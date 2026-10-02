@@ -59,15 +59,17 @@ export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, col
 // ikinci harfini bir sonraki avatarın altında bırakıyordu ("DK" → "D").
 const GROUP_OVERLAP_CLASS = { sm: "-space-x-0.5", md: "-space-x-1", lg: "-space-x-1.5" } as const;
 
-export function AvatarGroup({ children, max, size = "md", shape = "circle", className }: AvatarGroupProps) {
+export function AvatarGroup({ children, max, size = "md", shape = "circle", className, skeleton }: AvatarGroupProps) {
   const items = Children.toArray(children).filter(isValidElement) as React.ReactElement<AvatarProps>[];
   const visible = max !== undefined && items.length > max ? items.slice(0, max) : items;
   const rest = items.length - visible.length;
 
   return (
-    <div role="group" className={cn("flex items-center [&>*]:ring-2 [&>*]:ring-mari-surface", GROUP_OVERLAP_CLASS[typeof size === "number" ? "md" : size], className)}>
-      {visible.map((item) => cloneElement(item, { size: item.props.size ?? size, shape: item.props.shape ?? shape }))}
-      {rest > 0 && (
+    <div role="group" aria-busy={skeleton || undefined} className={cn("flex items-center [&>*]:ring-2 [&>*]:ring-mari-surface", GROUP_OVERLAP_CLASS[typeof size === "number" ? "md" : size], className)}>
+      {/* Grubun iskeleti avatarlara geçer (tek prop); avatarın kendi `skeleton`u verildiyse o kazanır. */}
+      {visible.map((item) => cloneElement(item, { size: item.props.size ?? size, shape: item.props.shape ?? shape, skeleton: item.props.skeleton ?? skeleton }))}
+      {rest > 0 && skeleton && <div {...skeletonBoxProps(getShapeClasses(shape, size))} style={getSizeStyle(size)} />}
+      {rest > 0 && !skeleton && (
         <div
           role="img"
           aria-label={`${rest} kişi daha`}

@@ -126,6 +126,19 @@ function SettingRow({ title, description, children }: { title: string; descripti
 
 /* ─────────────────────────── 1. Hesap ayarları ─────────────────────────── */
 
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { variant: "line", size: "md", color: "primary", orientation: "horizontal", fill: false, align: "start", defaultActiveTab: "week" },
+  render: (args) => (
+    <Tabs {...args}>
+      {simpleTabs}
+      <TabsContent value="day">Bugünün raporu</TabsContent>
+      <TabsContent value="week">Bu haftanın raporu</TabsContent>
+      <TabsContent value="month">Bu ayın raporu</TabsContent>
+    </Tabs>
+  ),
+};
+
 export const AccountSettings: Story = {
   name: "Hesap Ayarları",
   ...storyDoc(
@@ -625,6 +638,26 @@ export const Overflow: Story = {
   ),
 };
 
+export const FillAndCenter: Story = {
+  name: "Tam Genişlik ve Ortalı",
+  ...storyDoc("`fill` — sekmeler genişliğe eşit dağılır (mobil segmented kontrol). `align=\"center\"` — ortalı.", `
+<Tabs variant="pills" fill defaultActiveTab="week">…</Tabs>
+<Tabs align="center" defaultActiveTab="week">…</Tabs>`),
+  render: () => (
+    <div className="flex max-w-md flex-col gap-8">
+      <Tabs variant="pills" fill defaultActiveTab="week">
+        {simpleTabs}
+      </Tabs>
+      <Tabs fill defaultActiveTab="week">
+        {simpleTabs}
+      </Tabs>
+      <Tabs align="center" defaultActiveTab="week">
+        {simpleTabs}
+      </Tabs>
+    </div>
+  ),
+};
+
 /* ─────────────────────────── Görünüm seçenekleri ─────────────────────────── */
 
 const simpleTabs = (
@@ -670,26 +703,6 @@ export const Sizes: Story = {
           </Tabs>
         </div>
       ))}
-    </div>
-  ),
-};
-
-export const FillAndCenter: Story = {
-  name: "Tam Genişlik ve Ortalı",
-  ...storyDoc("`fill` — sekmeler genişliğe eşit dağılır (mobil segmented kontrol). `align=\"center\"` — ortalı.", `
-<Tabs variant="pills" fill defaultActiveTab="week">…</Tabs>
-<Tabs align="center" defaultActiveTab="week">…</Tabs>`),
-  render: () => (
-    <div className="flex max-w-md flex-col gap-8">
-      <Tabs variant="pills" fill defaultActiveTab="week">
-        {simpleTabs}
-      </Tabs>
-      <Tabs fill defaultActiveTab="week">
-        {simpleTabs}
-      </Tabs>
-      <Tabs align="center" defaultActiveTab="week">
-        {simpleTabs}
-      </Tabs>
     </div>
   ),
 };
@@ -753,17 +766,4 @@ export const Skeleton: Story = {
 </Tabs>`
   ),
   render: () => <SkeletonDemo />,
-};
-
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { variant: "line", size: "md", color: "primary", orientation: "horizontal", fill: false, align: "start", defaultActiveTab: "week" },
-  render: (args) => (
-    <Tabs {...args}>
-      {simpleTabs}
-      <TabsContent value="day">Bugünün raporu</TabsContent>
-      <TabsContent value="week">Bu haftanın raporu</TabsContent>
-      <TabsContent value="month">Bu ayın raporu</TabsContent>
-    </Tabs>
-  ),
 };

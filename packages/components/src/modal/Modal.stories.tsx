@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { MailPlusIcon, ReceiptIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Modal } from "./Modal";
 import { Field } from "../field";
 import { Button } from "../button";
@@ -83,6 +84,33 @@ type Story = StoryObj<typeof Modal>;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /* ─────────────────────────── 1. Yıkıcı onay ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    title: "Değişiklikleri kaydet?",
+    description: "Kaydetmezseniz son düzenlemeleriniz kaybolur.",
+    color: "warning",
+    size: "md",
+    cancelButtonText: "Kaydetme",
+    confirmButtonText: "Kaydet",
+    footerButtonPosition: "right",
+    closeButtonPosition: "right",
+    showCloseButton: true,
+    maskClosable: true,
+    keyboard: true,
+    skeleton: false,
+  },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Modalı aç</Button>
+        <Modal {...args} open={open} onClose={() => setOpen(false)} onCancel={() => setOpen(false)} onConfirm={() => wait(800).then(() => setOpen(false))} />
+      </>
+    );
+  },
+};
 
 export const DeleteConfirm: Story = {
   name: "Silme Onayı (Yıkıcı)",
@@ -619,29 +647,22 @@ export const Sizes: Story = {
   },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    title: "Değişiklikleri kaydet?",
-    description: "Kaydetmezseniz son düzenlemeleriniz kaybolur.",
-    color: "warning",
-    size: "md",
-    cancelButtonText: "Kaydetme",
-    confirmButtonText: "Kaydet",
-    footerButtonPosition: "right",
-    closeButtonPosition: "right",
-    showCloseButton: true,
-    maskClosable: true,
-    keyboard: true,
-    skeleton: false,
-  },
-  render: (args) => {
-    const [open, setOpen] = useState(false);
-    return (
-      <>
-        <Button onClick={() => setOpen(true)}>Modalı aç</Button>
-        <Modal {...args} open={open} onClose={() => setOpen(false)} onCancel={() => setOpen(false)} onConfirm={() => wait(800).then(() => setOpen(false))} />
-      </>
-    );
-  },
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Pencereyi aç</Button>
+      <Modal open={open} onClose={() => setOpen(false)} title="Sipariş #48213" description="3 ürün · ₺1.240" skeleton={skeleton}>
+        <p className="text-sm">Kargo yarın teslim edilecek.</p>
+      </Modal>
+    </>
+  );
+}
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Modal open title="Sipariş #48213" skeleton>…</Modal>`),
+  render: () => <SkeletonDemo>{(skeleton) => <SkeletonOverlayDemo skeleton={skeleton} />}</SkeletonDemo>,
 };

@@ -55,46 +55,6 @@ export const AllowHalf: Story = {
   args: { allowHalf: true, defaultValue: 2.5 },
 };
 
-export const AllColors: Story = {
-  name: "Renkler",
-  ...storyDoc(
-    "`color` verilmezse (önerilen) yıldız puan token'ıyla (`--mari-color-rating`, parlak sarı) çizilir; boş yıldızlar gri konturla ayrışır. Puan değeri ekran okuyucuya metin olarak da verilir. Bir rol verilirse düz o renk.",
-    `<Rate defaultValue={3} aria-label="Puan" />            {/* varsayılan: puan sarısı */}
-<Rate color="primary" defaultValue={3} aria-label="Puan" />`
-  ),
-  render: () => (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <Rate defaultValue={3.5} allowHalf aria-label="Varsayılan puan" />
-        <span className="text-xs text-mari-muted">varsayılan (puan sarısı)</span>
-      </div>
-      {(["primary", "accent", "success", "error", "info", "neutral"] as const).map((color) => (
-        <div key={color} className="flex items-center gap-3">
-          <Rate color={color} defaultValue={3} aria-label={`${color} puan`} />
-          <span className="text-xs text-mari-muted">{color}</span>
-        </div>
-      ))}
-    </div>
-  ),
-};
-
-export const Disabled: Story = {
-  name: "Devre Dışı",
-  ...storyDoc("`disabled` — ne fare ne klavye ile değişir; imleç \"izin yok\". Salt puan GÖSTERMEK için `disabled` değil `readOnly` kullanın."),
-  args: {
-    defaultValue: 4.5,
-    allowHalf: true,
-    characterSize: "2rem",
-    disabled: true,
-  },
-};
-
-const PRODUCTS = [
-  { name: "Kablosuz kulaklık", rating: 4.3, reviews: 1284, price: "1.899 ₺" },
-  { name: "Mekanik klavye", rating: 4.8, reviews: 312, price: "2.450 ₺" },
-  { name: "USB-C hub", rating: 3.6, reviews: 58, price: "649 ₺" },
-];
-
 export const ReadOnly: Story = {
   name: "Salt Gösterim (ürün kartı)",
   ...storyDoc(
@@ -151,6 +111,46 @@ export const ReviewForm: Story = {
   ),
   render: () => <ReviewDemo />,
 };
+
+export const AllColors: Story = {
+  name: "Renkler",
+  ...storyDoc(
+    "`color` verilmezse (önerilen) yıldız puan token'ıyla (`--mari-color-rating`, parlak sarı) çizilir; boş yıldızlar gri konturla ayrışır. Puan değeri ekran okuyucuya metin olarak da verilir. Bir rol verilirse düz o renk.",
+    `<Rate defaultValue={3} aria-label="Puan" />            {/* varsayılan: puan sarısı */}
+<Rate color="primary" defaultValue={3} aria-label="Puan" />`
+  ),
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <Rate defaultValue={3.5} allowHalf aria-label="Varsayılan puan" />
+        <span className="text-xs text-mari-muted">varsayılan (puan sarısı)</span>
+      </div>
+      {(["primary", "accent", "success", "error", "info", "neutral"] as const).map((color) => (
+        <div key={color} className="flex items-center gap-3">
+          <Rate color={color} defaultValue={3} aria-label={`${color} puan`} />
+          <span className="text-xs text-mari-muted">{color}</span>
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+export const Disabled: Story = {
+  name: "Durumlar",
+  ...storyDoc("`disabled` — ne fare ne klavye ile değişir; imleç \"izin yok\". Salt puan GÖSTERMEK için `disabled` değil `readOnly` kullanın."),
+  args: {
+    defaultValue: 4.5,
+    allowHalf: true,
+    characterSize: "2rem",
+    disabled: true,
+  },
+};
+
+const PRODUCTS = [
+  { name: "Kablosuz kulaklık", rating: 4.3, reviews: 1284, price: "1.899 ₺" },
+  { name: "Mekanik klavye", rating: 4.8, reviews: 312, price: "2.450 ₺" },
+  { name: "USB-C hub", rating: 3.6, reviews: 58, price: "649 ₺" },
+];
 
 export const Skeleton: Story = {
   name: "İskelet",

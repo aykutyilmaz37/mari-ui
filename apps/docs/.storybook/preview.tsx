@@ -31,17 +31,26 @@ const preview: Preview = {
       },
     },
     options: {
-      storySort: {
-        order: [
-          "Genel Bakış",
-          "Foundations",
-          ["Yumuşak İris", "Marka", "Renkler", "Tipografi", "Spacing", "Elevation"],
-          "Genel",
-          "Navigasyon",
-          "Veri Girişi",
-          "Veri Gösterimi",
-          "Geri Bildirim",
-        ],
+      /**
+       * Kenar çubuğu düzeni: kategoriler sabit sırada; kategori içinde bileşenler
+       * Türkçe alfabetik (eskiden dosya yoluna göreydi — `menu/` altındakiler
+       * araya giriyordu); bileşen içinde önce doküman, sonra dosyadaki sıra
+       * (Playground → senaryolar → görünüm → Durumlar → İskelet).
+       * Storybook bu fonksiyonu serileştirir: dış değişkene başvurmamalı.
+       */
+      // Storybook bu fonksiyonu KAYNAK METİN olarak alıp çalıştırır: içinde TypeScript tipi olamaz.
+      // @ts-expect-error -- parametreler bilinçli olarak tipsiz (tip açıklaması dizinlemeyi bozar)
+      storySort: (a, b) => {
+        const categories = ["Genel Bakış", "Foundations", "Genel", "Navigasyon", "Veri Girişi", "Veri Gösterimi", "Geri Bildirim"];
+        const foundations = ["Yumuşak İris", "Marka", "Renkler", "Tipografi", "Spacing", "Elevation"];
+        const pa = a.title.split("/");
+        const pb = b.title.split("/");
+        // Listede olmayan öğe sona: `[...liste, v].indexOf(v)` = yoksa liste uzunluğu.
+        if (pa[0] !== pb[0]) return [...categories, pa[0]].indexOf(pa[0]) - [...categories, pb[0]].indexOf(pb[0]);
+        if (pa[1] !== pb[1] && pa[0] === "Foundations") return [...foundations, pa[1]].indexOf(pa[1]) - [...foundations, pb[1]].indexOf(pb[1]);
+        if (pa[1] !== pb[1]) return String(pa[1]).localeCompare(String(pb[1]), "tr");
+        if (a.type !== b.type) return a.type === "docs" ? -1 : 1;
+        return 0;
       },
     },
   },

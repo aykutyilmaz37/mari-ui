@@ -77,6 +77,34 @@ const ColorsStory = () => (
     ))}
   </div>
 );
+export const SettingsList: Story = {
+  name: "Ayarlar Listesi",
+  ...storyDoc(
+    "En yaygın kullanım: başlık + açıklama solda, switch sağda. Görünür etiket satırdaki başlık olduğu için switch'e `aria-label` verilir.",
+    `<li className="flex items-center justify-between gap-4">
+  <div>
+    <p>Sipariş güncellemeleri</p>
+    <p className="text-xs text-mari-muted">Kargo ve teslimat bildirimleri</p>
+  </div>
+  <Switch defaultChecked aria-label="Sipariş güncellemeleri" />
+</li>`
+  ),
+  render: () => <SettingsDemo />,
+};
+
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="flex flex-col gap-4">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Veri yüklendi
+      </label>
+      <SettingsDemo skeleton={!loaded} />
+    </div>
+  );
+}
+
 export const Colors: Story = {
   name: "Renkler",
   ...storyDoc(
@@ -145,7 +173,7 @@ const DisabledStory = () => (
   </div>
 );
 export const Disabled: Story = {
-  name: "Devre Dışı",
+  name: "Durumlar",
   ...storyDoc(
     "`disabled` — tıklanamaz; mevcut durum ve rengi KORUNUR, sadece soluklaşır (%50). Böylece kullanıcı ayarın açık mı kapalı mı olduğunu yine görür.",
     `<Switch defaultChecked disabled label="Otomatik yedekleme" />`
@@ -176,34 +204,6 @@ function SettingsDemo({ skeleton = false }: { skeleton?: boolean }) {
         </li>
       ))}
     </ul>
-  );
-}
-
-export const SettingsList: Story = {
-  name: "Ayarlar Listesi",
-  ...storyDoc(
-    "En yaygın kullanım: başlık + açıklama solda, switch sağda. Görünür etiket satırdaki başlık olduğu için switch'e `aria-label` verilir.",
-    `<li className="flex items-center justify-between gap-4">
-  <div>
-    <p>Sipariş güncellemeleri</p>
-    <p className="text-xs text-mari-muted">Kargo ve teslimat bildirimleri</p>
-  </div>
-  <Switch defaultChecked aria-label="Sipariş güncellemeleri" />
-</li>`
-  ),
-  render: () => <SettingsDemo />,
-};
-
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <SettingsDemo skeleton={!loaded} />
-    </div>
   );
 }
 

@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { baseSizeArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Drawer } from "./Drawer";
 import { Button } from "../button";
 import { Checkbox } from "../checkbox";
@@ -103,6 +104,33 @@ const tl = (n: number) => n.toLocaleString("tr-TR", { minimumFractionDigits: 2, 
 /* ─────────────────────────── 1. Sepet ─────────────────────────── */
 
 const FREE_SHIPPING = 750;
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    position: "right",
+    size: "md",
+    title: "Çekmece başlığı",
+    description: "Kısa açıklama",
+    showCloseButton: true,
+    closeButtonPosition: "right",
+    skeleton: false,
+    mask: true,
+    maskClosable: true,
+    keyboard: true,
+  },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Çekmeceyi aç</Button>
+        <Drawer {...args} open={open} onClose={() => setOpen(false)} footer={<Button onClick={() => setOpen(false)}>Kapat</Button>}>
+          <p className="text-sm">Çekmece içeriği.</p>
+        </Drawer>
+      </>
+    );
+  },
+};
 
 export const Cart: Story = {
   name: "Alışveriş Sepeti",
@@ -678,29 +706,22 @@ export const Positions: Story = {
   },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    position: "right",
-    size: "md",
-    title: "Çekmece başlığı",
-    description: "Kısa açıklama",
-    showCloseButton: true,
-    closeButtonPosition: "right",
-    skeleton: false,
-    mask: true,
-    maskClosable: true,
-    keyboard: true,
-  },
-  render: (args) => {
-    const [open, setOpen] = useState(false);
-    return (
-      <>
-        <Button onClick={() => setOpen(true)}>Çekmeceyi aç</Button>
-        <Drawer {...args} open={open} onClose={() => setOpen(false)} footer={<Button onClick={() => setOpen(false)}>Kapat</Button>}>
-          <p className="text-sm">Çekmece içeriği.</p>
-        </Drawer>
-      </>
-    );
-  },
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Çekmeceyi aç</Button>
+      <Drawer open={open} onClose={() => setOpen(false)} title="Siparişi düzenle" skeleton={skeleton}>
+        <p className="text-sm">Teslimat adresi, not ve kargo seçenekleri burada düzenlenir.</p>
+      </Drawer>
+    </>
+  );
+}
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Drawer open title="Siparişi düzenle" skeleton>…</Drawer>`),
+  render: () => <SkeletonDemo>{(skeleton) => <SkeletonOverlayDemo skeleton={skeleton} />}</SkeletonDemo>,
 };

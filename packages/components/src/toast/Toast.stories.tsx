@@ -58,6 +58,21 @@ const meta: Meta<typeof Toast> = {
 export default meta;
 type Story = StoryObj<typeof Toast>;
 
+function PlaygroundToast(props: { type: "info" | "success" | "warning" | "error"; title: string; description: string; duration: number; position: ToastPosition }) {
+  const { showToast } = useToast();
+  return <Button onClick={() => showToast(props)}>Bildirim göster</Button>;
+}
+
+export const Playground: StoryObj<React.ComponentProps<typeof PlaygroundToast>> = {
+  ...storyDoc("`showToast` seçenekleri: tip, başlık, açıklama, süre (0 = kapatılana kadar), konum.", `showToast({ type: "success", title: "Kaydedildi" })`),
+  args: { type: "success", title: "Değişiklikler kaydedildi", description: "Ekip güncel sürümü görüyor.", duration: 5000, position: "topRight" },
+  argTypes: {
+    type: { control: "inline-radio", options: ["info", "success", "warning", "error"] },
+    position: { control: "select", options: ["top", "topLeft", "topRight", "bottom", "bottomLeft", "bottomRight"] },
+  },
+  render: (args) => <PlaygroundToast {...args} />,
+};
+
 /* ─────────────────────────── Senaryolar ─────────────────────────── */
 
 export const Scenarios: Story = {
@@ -157,10 +172,27 @@ export const Positions: Story = {
   },
 };
 
+/* ─────────────────────────── Statik kart ─────────────────────────── */
+
+export const Types: Story = {
+  name: "Tipler (Statik)",
+  ...storyDoc("`Toast` kartı tek başına — dört durum tipi ve `none`.", `<Toast type="success" title="Kaydedildi" />`),
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <Toast type="success" title="Değişiklikler kaydedildi" description="Tüm ekip üyeleri güncel sürümü görüyor." />
+      <Toast type="info" title="Dışa aktarma hazır" description="rapor-eylul.csv · 1,2 MB" action={{ label: "İndir", onClick: () => {} }} />
+      <Toast type="warning" title="Bağlantı koptu" description="Değişiklikleriniz çevrimiçi olunca eşitlenecek." />
+      <Toast type="error" title="Ödeme reddedildi" description="Başka bir kart deneyin." />
+      <Toast title="3 dosya çöp kutusuna taşındı" action={{ label: "Geri al", onClick: () => {} }} />
+      <Toast skeleton type="info" title="Dışa aktarma hazır" description="rapor-eylul.csv · 1,2 MB" action={{ label: "İndir", onClick: () => {} }} />
+    </div>
+  ),
+};
+
 /* ─────────────────────────── İskelet → içerik ─────────────────────────── */
 
 export const SkeletonUpdate: Story = {
-  name: "Hazırlanıyor → Hazır (skeleton + update)",
+  name: "İskelet",
   ...storyDoc(
     "Sonucu henüz belli olmayan bir arka plan işi: toast `skeleton` ile açılır (içeriğin kendi şeklinde iskelet, " +
       "Kapat çalışır, sayaç işlemez, ekran okuyucuya duyurulmaz), iş bitince `update(id, { skeleton: false, … })` " +
@@ -197,21 +229,4 @@ update(id, { skeleton: false, description: \`\${file.name} · \${file.size}\` })
       </Button>
     );
   },
-};
-
-/* ─────────────────────────── Statik kart ─────────────────────────── */
-
-export const Types: Story = {
-  name: "Tipler (Statik)",
-  ...storyDoc("`Toast` kartı tek başına — dört durum tipi ve `none`.", `<Toast type="success" title="Kaydedildi" />`),
-  render: () => (
-    <div className="flex flex-col gap-3">
-      <Toast type="success" title="Değişiklikler kaydedildi" description="Tüm ekip üyeleri güncel sürümü görüyor." />
-      <Toast type="info" title="Dışa aktarma hazır" description="rapor-eylul.csv · 1,2 MB" action={{ label: "İndir", onClick: () => {} }} />
-      <Toast type="warning" title="Bağlantı koptu" description="Değişiklikleriniz çevrimiçi olunca eşitlenecek." />
-      <Toast type="error" title="Ödeme reddedildi" description="Başka bir kart deneyin." />
-      <Toast title="3 dosya çöp kutusuna taşındı" action={{ label: "Geri al", onClick: () => {} }} />
-      <Toast skeleton type="info" title="Dışa aktarma hazır" description="rapor-eylul.csv · 1,2 MB" action={{ label: "İndir", onClick: () => {} }} />
-    </div>
-  ),
 };

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Button } from "../button";
 import { Field } from "../field";
 import { Input } from "../input";
@@ -207,8 +208,7 @@ export const Sizes: Story = {
       <div className="flex items-center gap-2">
         <ColorPicker aria-label="Devre dışı" defaultValue="#2f66a3" showText disabled />
         <ColorPicker aria-label="Hatalı" defaultValue="#2f66a3" color="error" />
-        <ColorPicker skeleton showText />
-      </div>
+              </div>
     </div>
   ),
 };
@@ -246,4 +246,12 @@ export const Formats: Story = {
       </div>
     );
   },
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<ColorPicker defaultValue="#2f66a3" showText skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <ColorPicker aria-label="Marka rengi" defaultValue="#2f66a3" showText skeleton={skeleton} />}</SkeletonDemo>,
 };

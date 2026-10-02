@@ -243,7 +243,7 @@ export const EndMode: Story = {
 /* ─────────────────────────── 7. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {
-  name: "İskelet (skeleton)",
+  name: "İskelet",
   ...storyDoc(
     "`skeleton`: noktalar ve her olayın metni kendi şeklinde yer tutucuya döner; ray görünür kalır, yüklenince " +
       "yükseklik değişmez.",

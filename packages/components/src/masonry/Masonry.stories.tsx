@@ -227,7 +227,7 @@ export const InfiniteBoard: Story = {
 /* ─────────────────────────── 3. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {
-  name: "İskelet (skeleton)",
+  name: "İskelet",
   ...storyDoc(
     "`skeleton`: öğeler varsa her biri kendi şeklinde; yoksa (ilk yükleme) farklı yükseklikte yer tutucular aynı " +
       "sütun düzeninde çizilir.",
