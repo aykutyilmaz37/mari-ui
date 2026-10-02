@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Rate } from "./Rate";
 
 const meta: Meta<typeof Rate> = {
@@ -155,5 +156,6 @@ const PRODUCTS = [
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton` — puan gelene kadar yıldız boyutunda yer tutucular.", `<Rate readOnly skeleton={isLoading} value={product.rating} />`),
-  args: { skeleton: true, characterSize: "1rem" },
+  args: { characterSize: "1rem" },
+  render: (args) => <SkeletonDemo>{(skeleton) => <Rate {...args} skeleton={skeleton} />}</SkeletonDemo>,
 };

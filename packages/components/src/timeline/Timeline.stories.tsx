@@ -5,14 +5,13 @@
  * "Show code" her story'de `storyDoc`'un 2. argümanıyla verilen kod.
  * Story seviyesinde `parameters` YAZMAYIN — `...storyDoc`'u ezer.
  */
-/* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from "react";
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { CircleCheckIcon, KeyRoundIcon, LogInIcon, PackageIcon, ShieldAlertIcon, TruckIcon, WarehouseIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Timeline } from ".";
 import type { TimelineItem } from ".";
-import { Switch } from "../switch";
 import { Tag } from "../tag";
 
 const meta: Meta<typeof Timeline> = {
@@ -249,13 +248,9 @@ export const SkeletonState: Story = {
       "yükseklik değişmez.",
     `<Timeline skeleton={loading} aria-label="Kargo takibi" items={shipment} />`
   ),
-  render: () => {
-    const [on, setOn] = useState(true);
-    return (
-      <div className="flex max-w-md flex-col gap-4">
-        <Switch checked={on} onChange={setOn} label="İskelet" />
-        <Timeline skeleton={on} aria-label="Kargo takibi" pending="Dağıtıma çıkacak" items={shipment} />
-      </div>
-    );
-  },
+  render: () => (
+    <SkeletonDemo className="w-full max-w-md">
+      {(skeleton) => <Timeline skeleton={skeleton} aria-label="Kargo takibi" pending="Dağıtıma çıkacak" items={shipment} />}
+    </SkeletonDemo>
+  ),
 };

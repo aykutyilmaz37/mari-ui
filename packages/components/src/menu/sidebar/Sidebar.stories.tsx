@@ -5,6 +5,7 @@ import { BarChart3Icon, LayoutDashboardIcon, LifeBuoyIcon, MenuIcon, PackageIcon
 import { Sidebar } from "./Sidebar";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
+import { SkeletonDemo } from "../../lib/SkeletonDemo";
 import { Button } from "../../button";
 
 /**
@@ -352,16 +353,12 @@ const [open, setOpen] = useState(false);
   },
 };
 
-function SkeletonDemo(args: React.ComponentProps<typeof Sidebar>) {
-  const [loading, setLoading] = useState(true);
+function SidebarSkeleton(args: React.ComponentProps<typeof Sidebar>) {
+  // Sidebar sabit konumlu (sol kenar); geçiş altında kalmasın diye sağ üstte.
   return (
-    <>
-      <Sidebar {...args} skeleton={loading} />
-      <label className="absolute top-4 right-4 flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-        Yükleniyor
-      </label>
-    </>
+    <div className="flex justify-end p-4">
+      <SkeletonDemo>{(skeleton) => <Sidebar {...args} skeleton={skeleton} />}</SkeletonDemo>
+    </div>
   );
 }
 
@@ -372,6 +369,6 @@ export const Skeleton: Story = {
       "sunucudan geliyorsa); gruplar yüklü hâldeki gibi açık kalır, yüklenince satırlar zıplamaz. `nav` `aria-busy` taşır.",
     `<Sidebar variant="hover" data={menu ?? placeholderRows} logo={<MariLogo />} logoHref="/" skeleton={!menu} />`
   ),
-  render: (args) => <SkeletonDemo {...args} />,
+  render: (args) => <SidebarSkeleton {...args} />,
   args: { variant: "hover", logo: brandLogo, currentPath: "/products" },
 };

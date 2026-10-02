@@ -1,8 +1,8 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { User2Icon } from "lucide-react";
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Avatar, AvatarGroup } from "./Avatar";
 import type { AvatarProps } from "./types";
 
@@ -154,23 +154,22 @@ export const Group: StoryObj = {
   ),
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function AvatarSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <ul className="flex max-w-md flex-col gap-4">
-        {comments.map((c) => (
-          <li key={c.name} className="flex items-center gap-3">
-            <Avatar skeleton={!loaded} alt={c.name} src={c.src} />
-            <span className="text-sm text-mari-foreground">{c.name}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-4">
+          <ul className="flex max-w-md flex-col gap-4">
+            {comments.map((c) => (
+              <li key={c.name} className="flex items-center gap-3">
+                <Avatar skeleton={skeleton} alt={c.name} src={c.src} />
+                <span className="text-sm text-mari-foreground">{c.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -212,6 +211,6 @@ export const Skeleton: StoryObj = {
     "`skeleton` — kullanıcı verisi gelene kadar aynı boyut ve şekilde yer tutucu (ekran okuyucudan gizli).",
     `<Avatar skeleton={isLoading} alt={user.name} src={user.photo} />`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <AvatarSkeleton />,
 };
 

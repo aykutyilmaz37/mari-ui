@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ChevronDownIcon, CopyIcon, DownloadIcon, LogOutIcon, MoreVerticalIcon, PencilIcon, SettingsIcon, Share2Icon, Trash2Icon, UserIcon } from "lucide-react";
 import { Dropdown } from "./Dropdown";
@@ -7,6 +7,7 @@ import { DropdownContent } from "./_components/DropdownContent";
 import { DropdownDivider, DropdownItem, DropdownLabel } from "./_components/DropdownItem";
 import { Avatar } from "../avatar";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 
 /**
  * Not: bu story dosyası eskiden gerçek API ile uyuşmuyordu (`trigger`/
@@ -304,28 +305,25 @@ export const KeyboardAndShortcuts: Story = {
   ),
 };
 
-function SkeletonDemo() {
-  const [loading, setLoading] = useState(true);
+function DropdownSkeleton() {
   return (
-    <div className="flex flex-col items-start gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-        Yükleniyor
-      </label>
-      <Dropdown skeleton={loading}>
-        <DropdownTrigger className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-mari-surface-alt">
-          <Avatar size="sm" icon={<UserIcon size={16} />} />
-          <span className="text-sm font-medium">Aykut Yılmaz</span>
-          <ChevronDownIcon size={16} className="text-mari-muted" />
-        </DropdownTrigger>
-        <DropdownContent placement="bottom-start" className="w-56">
-          <DropdownItem icon={<UserIcon />}>Profilim</DropdownItem>
-          <DropdownItem icon={<LogOutIcon />} danger>
-            Çıkış Yap
-          </DropdownItem>
-        </DropdownContent>
-      </Dropdown>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <Dropdown skeleton={skeleton}>
+          <DropdownTrigger className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-mari-surface-alt">
+            <Avatar size="sm" icon={<UserIcon size={16} />} />
+            <span className="text-sm font-medium">Aykut Yılmaz</span>
+            <ChevronDownIcon size={16} className="text-mari-muted" />
+          </DropdownTrigger>
+          <DropdownContent placement="bottom-start" className="w-56">
+            <DropdownItem icon={<UserIcon />}>Profilim</DropdownItem>
+            <DropdownItem icon={<LogOutIcon />} danger>
+              Çıkış Yap
+            </DropdownItem>
+          </DropdownContent>
+        </Dropdown>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -436,5 +434,5 @@ export const Skeleton: Story = {
   <DropdownContent>…</DropdownContent>
 </Dropdown>`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <DropdownSkeleton />,
 };

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { MariLogo } from "../../logo";
 import { ActivityIcon, BookOpenIcon, BriefcaseIcon, CodeIcon, HeadphonesIcon, HomeIcon, InfoIcon, LaptopIcon, LayersIcon, MailIcon, NewspaperIcon, PaletteIcon, PhoneIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon } from "lucide-react";
 import { BasicMenu } from "./BasicMenu";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
+import { SkeletonDemo } from "../../lib/SkeletonDemo";
 import { Button } from "../../button";
 
 const icon = (Icon: typeof HomeIcon) => <Icon size={16} />;
@@ -300,17 +301,8 @@ const data: MenuItemType[] = [
   args: { data: linkTargetData, logo: <MariLogo size={36} />, logoHref: "/" },
 };
 
-function SkeletonDemo(args: React.ComponentProps<typeof BasicMenu>) {
-  const [loading, setLoading] = useState(true);
-  return (
-    <div>
-      <BasicMenu {...args} skeleton={loading} />
-      <label className="m-4 flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-        Yükleniyor
-      </label>
-    </div>
-  );
+function BasicMenuSkeleton(args: React.ComponentProps<typeof BasicMenu>) {
+  return <SkeletonDemo>{(skeleton) => <BasicMenu {...args} skeleton={skeleton} />}</SkeletonDemo>;
 }
 
 export const Skeleton: Story = {
@@ -321,7 +313,7 @@ export const Skeleton: Story = {
       "çubuk `aria-busy` taşır.",
     `<BasicMenu data={data} logo={<MariLogo size={36} />} logoHref="/" actions={actions} skeleton={!ready} />`
   ),
-  render: (args) => <SkeletonDemo {...args} />,
+  render: (args) => <BasicMenuSkeleton {...args} />,
   args: { ...RealWorldEcommerce.args },
 };
 

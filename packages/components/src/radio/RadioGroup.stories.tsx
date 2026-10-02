@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { RadioGroup } from "./index";
 import type { RadioGroupProps } from "./index";
 
@@ -139,6 +140,6 @@ const ControlledExample = () => {
 export const Skeleton: StoryObj = {
   name: "İskelet",
   ...storyDoc("`skeleton` — seçenekler gelene kadar radyo + etiket genişliğinde yer tutucular; grup `aria-busy`.", `<RadioGroup aria-label="Beden" options={sizes} skeleton={isLoading} />`),
-  render: () => <RadioGroup aria-label="Beden" skeleton options={["S", "M", "L", "XL"]} />,
+  render: () => <SkeletonDemo>{(skeleton) => <RadioGroup aria-label="Beden" skeleton={skeleton} options={["S", "M", "L", "XL"]} />}</SkeletonDemo>,
 };
 

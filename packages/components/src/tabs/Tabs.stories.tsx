@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Tabs } from "./Tabs";
 import { TabsList } from "./_components/TabsList";
 import { TabsTrigger } from "./_components/TabsTrigger";
@@ -721,31 +722,30 @@ export const Colors: Story = {
   ),
 };
 
-function SkeletonDemo() {
-  const [loading, setLoading] = useState(true);
+function TabsSkeleton() {
   return (
-    <div className="flex flex-col gap-6">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-        Yükleniyor
-      </label>
-      {(["line", "card", "pills"] as const).map((variant) => (
-        <Tabs key={variant} variant={variant} defaultActiveTab="orders" skeleton={loading}>
-          <TabsList aria-label="Hesap">
-            <TabsTrigger value="orders" count={3}>
-              Siparişlerim
-            </TabsTrigger>
-            <TabsTrigger value="addresses">Adreslerim</TabsTrigger>
-            <TabsTrigger value="payment">Ödeme Yöntemleri</TabsTrigger>
-          </TabsList>
-          <TabsContent value="orders">
-            <p className="text-sm text-mari-muted">3 aktif siparişiniz var. En yakın teslimat yarın 14:00–18:00 arasında.</p>
-          </TabsContent>
-          <TabsContent value="addresses">Kayıtlı adresler</TabsContent>
-          <TabsContent value="payment">Kayıtlı kartlar</TabsContent>
-        </Tabs>
-      ))}
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-6">
+          {(["line", "card", "pills"] as const).map((variant) => (
+            <Tabs key={variant} variant={variant} defaultActiveTab="orders" skeleton={skeleton}>
+              <TabsList aria-label="Hesap">
+                <TabsTrigger value="orders" count={3}>
+                  Siparişlerim
+                </TabsTrigger>
+                <TabsTrigger value="addresses">Adreslerim</TabsTrigger>
+                <TabsTrigger value="payment">Ödeme Yöntemleri</TabsTrigger>
+              </TabsList>
+              <TabsContent value="orders">
+                <p className="text-sm text-mari-muted">3 aktif siparişiniz var. En yakın teslimat yarın 14:00–18:00 arasında.</p>
+              </TabsContent>
+              <TabsContent value="addresses">Kayıtlı adresler</TabsContent>
+              <TabsContent value="payment">Kayıtlı kartlar</TabsContent>
+            </Tabs>
+          ))}
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -765,5 +765,5 @@ export const Skeleton: Story = {
   <TabsContent value="addresses">…</TabsContent>
 </Tabs>`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <TabsSkeleton />,
 };

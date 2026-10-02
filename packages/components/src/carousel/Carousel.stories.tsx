@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import type { Meta, StoryObj } from "@storybook/react";
 import { Camera, Gamepad2, Headphones, Sparkles, Truck, Wallet, Watch, ShoppingBag } from "lucide-react";
-import React, { useState } from "react";
-import { Switch } from "../switch";
+import React from "react";
 import { Button } from "../button";
 import { Carousel } from "./Carousel";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 
 const meta: Meta<typeof Carousel> = {
   title: "Veri Gösterimi/Carousel",
@@ -406,11 +405,9 @@ export const SkeletonState: Story = {
   {products.map((p) => <ProductCard key={p.id} product={p} />)}
 </Carousel>`
   ),
-  render: () => {
-    const [skeleton, setSkeleton] = useState(true);
-    return (
-      <div className="space-y-4">
-        <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
+  render: () => (
+    <SkeletonDemo>
+      {(skeleton) => (
         <Carousel
           skeleton={skeleton}
           slidesToShow={3}
@@ -420,7 +417,7 @@ export const SkeletonState: Story = {
         >
           {makeProductSlides(6, { gutter: false })}
         </Carousel>
-      </div>
-    );
-  },
+      )}
+    </SkeletonDemo>
+  ),
 };

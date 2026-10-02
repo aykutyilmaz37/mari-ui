@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Download, Search, Sparkles, Trash2 } from "lucide-react";
 import { colorArgType, disabledArgType, sizeArgType, variantArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Button } from "./Button";
 import type { ButtonProps } from "./types";
 
@@ -139,21 +140,20 @@ export const DelayedLoading: Story = {
   render: () => <DelayedLoadingDemo />,
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function ButtonSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <div className="flex flex-wrap items-center gap-3">
-        <Button skeleton={!loaded} icon={<Search className="w-4 h-4" />}>Ara</Button>
-        <Button skeleton={!loaded} variant="outline" color="neutral">Filtreleri temizle</Button>
-        <Button skeleton={!loaded} size="lg">Sepete ekle</Button>
-        <Button skeleton={!loaded} shape="circle" icon={<Sparkles className="w-4 h-4" />} aria-label="Öne çıkar" />
-      </div>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button skeleton={skeleton} icon={<Search className="w-4 h-4" />}>Ara</Button>
+            <Button skeleton={skeleton} variant="outline" color="neutral">Filtreleri temizle</Button>
+            <Button skeleton={skeleton} size="lg">Sepete ekle</Button>
+            <Button skeleton={skeleton} shape="circle" icon={<Sparkles className="w-4 h-4" />} aria-label="Öne çıkar" />
+          </div>
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -272,5 +272,5 @@ export const Skeleton: Story = {
     `<Button skeleton={isLoading}>Ara</Button>
 <Button skeleton={isLoading} size="lg">Sepete ekle</Button>`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <ButtonSkeleton />,
 };

@@ -23,6 +23,7 @@ import {
   WatchIcon,
 } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { List, ListItem, ListItemMeta } from ".";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
@@ -609,21 +610,21 @@ export const SkeletonState: Story = {
 <List loading dataSource={members} renderItem={…} />`
   ),
   render: () => {
-    const [on, setOn] = useState(true);
     const row = (m: Member) => (
       <ListItem actions={[<Button key="e" size="sm" variant="link">Düzenle</Button>]}>
         <ListItemMeta avatar={<Avatar alt={m.name} color={m.color} />} title={m.name} description={m.email} />
       </ListItem>
     );
     return (
-      <div className="flex max-w-5xl flex-col gap-4">
-        <Switch checked={on} onChange={setOn} label="İskelet" />
-        <div className="grid gap-6 md:grid-cols-2">
-          <List skeleton={on} bordered header="Yenileme (veri var)" footer="4 üye" dataSource={members} renderItem={row} />
-          <List skeleton={on} bordered header="İlk yükleme (veri yok)" dataSource={on ? [] : members} renderItem={row} />
-          <List loading={on} bordered header="loading (eylem sürüyor)" dataSource={members} renderItem={row} />
-        </div>
-      </div>
+      <SkeletonDemo className="w-full max-w-5xl">
+        {(skeleton) => (
+          <div className="grid gap-6 md:grid-cols-2">
+            <List skeleton={skeleton} bordered header="Yenileme (veri var)" footer="4 üye" dataSource={members} renderItem={row} />
+            <List skeleton={skeleton} bordered header="İlk yükleme (veri yok)" dataSource={skeleton ? [] : members} renderItem={row} />
+            <List loading={skeleton} bordered header="loading (eylem sürüyor)" dataSource={members} renderItem={row} />
+          </div>
+        )}
+      </SkeletonDemo>
     );
   },
 };

@@ -9,12 +9,12 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { CoffeeIcon, FlowerIcon, MountainIcon, PaletteIcon, SailboatIcon, SunIcon, TentIcon, TreePineIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Masonry } from ".";
 import type { MasonryItem } from ".";
 import { Avatar } from "../avatar";
 import { Card } from "../card";
 import { Rate } from "../rate";
-import { Switch } from "../switch";
 
 const meta: Meta<typeof Masonry> = {
   title: "Veri Gösterimi/Masonry",
@@ -235,14 +235,14 @@ export const SkeletonState: Story = {
 <Masonry skeleton={loading} aria-label="İlham panosu" items={pins} />
 <Masonry skeleton aria-label="İlham panosu" items={[]} />  // ilk yükleme`
   ),
-  render: () => {
-    const [on, setOn] = useState(true);
-    return (
-      <div className="flex flex-col gap-4">
-        <Switch checked={on} onChange={setOn} label="İskelet" />
-        <Masonry skeleton={on} aria-label="İlham panosu" columns={{ base: 2, lg: 4 }} items={boardItems} />
-        <Masonry skeleton={on} aria-label="İlham panosu (ilk yükleme)" columns={{ base: 2, lg: 3 }} items={on ? [] : boardItems.slice(0, 6)} />
-      </div>
-    );
-  },
+  render: () => (
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-4">
+          <Masonry skeleton={skeleton} aria-label="İlham panosu" columns={{ base: 2, lg: 4 }} items={boardItems} />
+          <Masonry skeleton={skeleton} aria-label="İlham panosu (ilk yükleme)" columns={{ base: 2, lg: 3 }} items={skeleton ? [] : boardItems.slice(0, 6)} />
+        </div>
+      )}
+    </SkeletonDemo>
+  ),
 };

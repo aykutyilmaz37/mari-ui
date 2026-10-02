@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { OtpInput } from "./OtpInput";
 
 type Story = StoryObj<typeof OtpInput>;
@@ -127,16 +128,15 @@ export const WithSeparators: Story = {
   },
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function OtpInputSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Hazır
-      </label>
-      <OtpInput length={6} size="lg" skeleton={!loaded} />
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-4">
+          <OtpInput length={6} size="lg" skeleton={skeleton} />
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -181,7 +181,7 @@ export const AllVariants: Story = {
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton` — kutucuklarla aynı boyutta yer tutucular.", `<OtpInput length={6} size="lg" skeleton={isLoading} />`),
-  render: () => <SkeletonDemo />,
+  render: () => <OtpInputSkeleton />,
 };
 
 function SingleLayoutDemo() {

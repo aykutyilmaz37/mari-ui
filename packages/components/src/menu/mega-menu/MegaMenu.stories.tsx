@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { MariLogo } from "../../logo";
 import { HeadphonesIcon, HomeIcon, LaptopIcon, ShirtIcon, ShoppingCartIcon, SmartphoneIcon, SofaIcon, TagIcon, UserIcon } from "lucide-react";
 import { MegaMenu } from "./MegaMenu";
 import type { MenuItemType } from "../types";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
+import { SkeletonDemo } from "../../lib/SkeletonDemo";
 import { Button } from "../../button";
 
 const icon = (Icon: typeof HomeIcon) => <Icon size={16} />;
@@ -243,17 +244,8 @@ export const ActiveFromCurrentPath: Story = {
   args: { ...RealWorldEcommerce.args, currentPath: ACTIVE_PATH },
 };
 
-function SkeletonDemo(args: React.ComponentProps<typeof MegaMenu>) {
-  const [loading, setLoading] = useState(true);
-  return (
-    <div>
-      <MegaMenu {...args} skeleton={loading} />
-      <label className="m-4 flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-        Yükleniyor
-      </label>
-    </div>
-  );
+function MegaMenuSkeleton(args: React.ComponentProps<typeof MegaMenu>) {
+  return <SkeletonDemo>{(skeleton) => <MegaMenu {...args} skeleton={skeleton} />}</SkeletonDemo>;
 }
 
 export const Skeleton: Story = {
@@ -263,7 +255,7 @@ export const Skeleton: Story = {
       "geliyorsa); yüklenince çubuk zıplamaz, iskeletteyken panel açılmaz.",
     `<MegaMenu data={categories ?? []} logo={<MariLogo size={36} />} logoHref="/" actions={actions} skeleton={!categories} />`
   ),
-  render: (args) => <SkeletonDemo {...args} />,
+  render: (args) => <MegaMenuSkeleton {...args} />,
   args: { ...RealWorldEcommerce.args },
 };
 

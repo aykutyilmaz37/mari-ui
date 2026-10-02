@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { baseSizeArgType, classNameArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Card, CardMeta } from "./Card";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
@@ -611,11 +612,9 @@ export const SkeletonState: Story = {
   …
 </Card>`
   ),
-  render: () => {
-    const [skeleton, setSkeleton] = useState(true);
-    return (
-      <div className="mx-auto max-w-sm space-y-4" aria-busy={skeleton}>
-        <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
+  render: () => (
+    <SkeletonDemo className="w-full max-w-sm">
+      {(skeleton) => (
         <Card
           skeleton={skeleton}
           cover={<ArtCover Icon={LaptopIcon} ratio="aspect-[16/9]" />}
@@ -630,7 +629,7 @@ export const SkeletonState: Story = {
           <p className="text-sm text-mari-foreground">iOS ve Android için yeniden yazılan uygulamanın üçüncü sürümü.</p>
           <p className="mt-2 text-sm text-mari-muted">Teslim: 12 Eki</p>
         </Card>
-      </div>
-    );
-  },
+      )}
+    </SkeletonDemo>
+  ),
 };

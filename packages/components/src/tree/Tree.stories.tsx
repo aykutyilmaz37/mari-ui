@@ -10,10 +10,10 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { FileCodeIcon, FileJsonIcon, FileTextIcon, FolderIcon, FolderOpenIcon, ImageIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Tree, buildIndex, conductCheck } from ".";
 import type { TreeNode } from ".";
 import { Input } from "../input";
-import { Switch } from "../switch";
 import { Tag } from "../tag";
 
 const meta: Meta<typeof Tree> = {
@@ -432,16 +432,14 @@ export const SkeletonState: Story = {
 <Tree skeleton={loading} aria-label="Kategoriler" treeData={categories} />
 <Tree skeleton aria-label="Kategoriler" treeData={[]} />  // ilk yükleme`
   ),
-  render: () => {
-    const [on, setOn] = useState(true);
-    return (
-      <div className="flex max-w-2xl flex-col gap-4">
-        <Switch checked={on} onChange={setOn} label="İskelet" />
+  render: () => (
+    <SkeletonDemo className="w-full max-w-2xl">
+      {(skeleton) => (
         <div className="grid gap-8 md:grid-cols-2">
-          <Tree skeleton={on} aria-label="Kategoriler" checkable defaultExpandedKeys={["elektronik", "bilgisayar"]} treeData={categories} />
-          <Tree skeleton={on} aria-label="Kategoriler (ilk yükleme)" treeData={on ? [] : categories} />
+          <Tree skeleton={skeleton} aria-label="Kategoriler" checkable defaultExpandedKeys={["elektronik", "bilgisayar"]} treeData={categories} />
+          <Tree skeleton={skeleton} aria-label="Kategoriler (ilk yükleme)" treeData={skeleton ? [] : categories} />
         </div>
-      </div>
-    );
-  },
+      )}
+    </SkeletonDemo>
+  ),
 };

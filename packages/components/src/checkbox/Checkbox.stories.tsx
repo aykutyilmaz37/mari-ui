@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Checkbox } from "./index";
 import type { CheckboxProps } from "./index";
 
@@ -93,18 +94,17 @@ export const WithDescription: StoryObj = {
   ),
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function CheckboxSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      {["Siparişler", "Kampanyalar", "Stok bildirimleri"].map((l, i) => (
-        <Checkbox key={l} skeleton={!loaded} label={l} defaultChecked={i === 0} />
-      ))}
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-4">
+          {["Siparişler", "Kampanyalar", "Stok bildirimleri"].map((l, i) => (
+            <Checkbox key={l} skeleton={skeleton} label={l} defaultChecked={i === 0} />
+          ))}
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -169,6 +169,6 @@ const IndeterminateExample = () => {
 export const Skeleton: StoryObj = {
   name: "İskelet",
   ...storyDoc("`skeleton` — kayıtlı tercihler gelene kadar kutu ve etiket genişliğinde yer tutucu.", `<Checkbox skeleton={isLoading} label="Siparişler" checked={prefs.orders} />`),
-  render: () => <SkeletonDemo />,
+  render: () => <CheckboxSkeleton />,
 };
 

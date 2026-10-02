@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Textarea } from "./index";
 import type { TextareaProps } from "./index";
 
@@ -93,16 +94,15 @@ export const ControlledAndDefault: StoryObj = {
   render: () => <ReviewDemo />,
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function TextareaSkeleton() {
   return (
-    <div className="flex max-w-md flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <Textarea aria-label="Ürün açıklaması" skeleton={!loaded} rows={4} defaultValue="Kablosuz, gürültü önleyici kulak üstü kulaklık. 30 saat pil ömrü." />
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex max-w-md flex-col gap-4">
+          <Textarea aria-label="Ürün açıklaması" skeleton={skeleton} rows={4} defaultValue="Kablosuz, gürültü önleyici kulak üstü kulaklık. 30 saat pil ömrü." />
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -139,5 +139,5 @@ export const AllVariants: StoryObj = {
 export const Skeleton: StoryObj = {
   name: "İskelet",
   ...storyDoc("`skeleton` — `rows` kadar gerçek yükseklikte yer tutucu; yüklenince blok zıplamaz.", `<Textarea skeleton={isLoading} rows={4} defaultValue={product.description} />`),
-  render: () => <SkeletonDemo />,
+  render: () => <TextareaSkeleton />,
 };

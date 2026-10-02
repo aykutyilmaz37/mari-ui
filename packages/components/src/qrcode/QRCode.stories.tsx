@@ -10,9 +10,9 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DownloadIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { QRCode } from ".";
 import { Button } from "../button";
-import { Switch } from "../switch";
 
 const meta: Meta<typeof QRCode> = {
   title: "Veri Gösterimi/QRCode",
@@ -234,13 +234,5 @@ export const Styles: Story = {
 export const SkeletonState: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton`: değer (ör. sunucudan gelen token) hazır değilken aynı boyutta yer tutucu.", `<QRCode skeleton={!token} value={url} />`),
-  render: () => {
-    const [on, setOn] = useState(true);
-    return (
-      <div className="flex flex-col items-start gap-4">
-        <Switch checked={on} onChange={setOn} label="İskelet" />
-        <QRCode skeleton={on} value="https://mari-ui.dev" />
-      </div>
-    );
-  },
+  render: () => <SkeletonDemo>{(skeleton) => <QRCode skeleton={skeleton} value="https://mari-ui.dev" />}</SkeletonDemo>,
 };

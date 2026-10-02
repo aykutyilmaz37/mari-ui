@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bold, Info, Italic, Underline } from "lucide-react";
 import { Button } from "../button";
 import { colorArgType, placementArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Tooltip } from "./Tooltip";
 
 const meta: Meta<typeof Tooltip> = {
@@ -137,18 +138,12 @@ export const IconToolbar: Story = {
   ),
 };
 
-function UserPreview() {
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    if (loaded) return;
-    const t = setTimeout(() => setLoaded(true), 1500);
-    return () => clearTimeout(t);
-  }, [loaded]);
+function UserPreview({ skeleton }: { skeleton: boolean }) {
   return (
     <div className="pt-20">
       <Tooltip
         placement="top-start"
-        skeleton={!loaded}
+        skeleton={skeleton}
         alwaysVisible
         content={
           <span className="flex flex-col">
@@ -158,12 +153,11 @@ function UserPreview() {
           </span>
         }
         trigger={
-          <button type="button" className="font-medium text-mari-primary underline" onClick={() => setLoaded(false)}>
+          <button type="button" className="font-medium text-mari-primary underline">
             @aykut
           </button>
         }
       />
-      <p className="mt-3 text-xs text-mari-muted">Bağlantıya tıklayınca yükleme baştan başlar.</p>
     </div>
   );
 }
@@ -209,5 +203,5 @@ export const Skeleton: Story = {
     "`skeleton` — balon içeriği sunucudan geliyorsa (kullanıcı önizlemesi gibi) önce yer tutucu çizgiler, sonra içerik. Balon `aria-busy`.",
     `<Tooltip skeleton={!user} content={<UserCard user={user} />} trigger={<a href="/u/aykut">@aykut</a>} />`
   ),
-  render: () => <UserPreview />,
+  render: () => <SkeletonDemo>{(skeleton) => <UserPreview skeleton={skeleton} />}</SkeletonDemo>,
 };
