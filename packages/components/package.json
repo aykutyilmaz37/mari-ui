@@ -183,6 +183,10 @@
       "types": "./dist/masonry.d.ts",
       "import": "./dist/masonry.js"
     },
+    "./theme-customizer": {
+      "types": "./dist/theme-customizer.d.ts",
+      "import": "./dist/theme-customizer.js"
+    },
     "./list": {
       "types": "./dist/list.d.ts",
       "import": "./dist/list.js"

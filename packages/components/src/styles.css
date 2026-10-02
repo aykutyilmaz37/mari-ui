@@ -77,4 +77,15 @@
   code, pre, kbd, samp { font-family: var(--mari-font-mono); }
   [data-theme="light"] { color-scheme: light; }
   [data-theme="dark"] { color-scheme: dark; }
+
+  /*
+   * Faz 16.8 — boşluk yoğunluğu (`applyTheme` / ThemeCustomizer). Değerler
+   * `@mari-ui/tokens` `spacingDensityBase` ile aynı. Sıkı mod dokunmatikte
+   * uygulanmaz: kontroller 44px dokunma hedefinin altına inerdi.
+   */
+  [data-density="compact"] { --spacing: 0.2rem; }
+  [data-density="comfortable"] { --spacing: 0.3rem; }
+  @media (pointer: coarse) {
+    [data-density="compact"] { --spacing: 0.25rem; }
+  }
 }
