@@ -236,11 +236,12 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && pnpm build:css && pnpm build:manifest",
+    "build": "tsup && pnpm build:types && pnpm build:css && pnpm build:manifest",
+    "build:types": "tsc -p tsconfig.build.json && tsx scripts/write-dts-entries.ts",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
     "build:css:watch": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "build:manifest": "tsx scripts/build-manifest.ts",
-    "dev": "concurrently -n tsup,css -c blue,magenta \"NODE_OPTIONS=--max-old-space-size=8192 tsup --watch\" \"pnpm build:css:watch\"",
+    "dev": "concurrently -n tsup,css -c blue,magenta \"tsup --watch\" \"pnpm build:css:watch\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
