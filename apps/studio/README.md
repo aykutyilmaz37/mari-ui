@@ -17,6 +17,19 @@ pnpm --filter @mari-ui/studio dev
 3. Sonuç `themeToCssVariables()` ile düz bir `--mari-color-*` haritasına çevrilip önizleme kapsayıcısına **inline `style`** olarak uygulanır. `@mari-ui/components`in derlenmiş Tailwind class'ları zaten bu CSS değişkenlerini okuduğu için (`bg-mari-primary-solid` → `var(--mari-color-primary-solid)`) hiçbir yeniden derleme gerekmeden GERÇEK component'ler anında güncellenir.
 4. "mari-ui.config.json indir" butonu, şu an düzenlenen `MariUiThemeConfig`i (`@mari-ui/tokens`) bir dosya olarak indirir. Bu dosyanın şeması `@mari-ui/tokens`'ın `dist/schema.json`'ıyla (Faz 1'de bu fazı öngörerek önceden üretilmişti) birebir örtüşür.
 
+## ThemeCustomizer ile ilişkisi (Faz 16.8)
+
+İki ayrı katman, aynı token çekirdeği (`@mari-ui/tokens`):
+
+| | Tema Stüdyosu (bu uygulama) | `ThemeCustomizer` (`@mari-ui/components/theme-customizer`) |
+|---|---|---|
+| Kim | Geliştirici / tasarımcı | Tüketici uygulamanın son kullanıcısı |
+| Ne zaman | Derleme zamanı → `mari-ui.config.json` → `npx mari-ui theme` | Çalışma zamanı → `applyTheme` |
+| Ne | primary + accent, fontlar, radius | mod, vurgu rengi (primary'nin yerine), boşluk yoğunluğu |
+| Kontrast | Tablo gösterir, karar geliştiricide | Otomatik düzeltir (`buildAccentRole`: dolgu zemine ≥3:1) |
+
+Önizlemedeki **Sıkı / Normal / Rahat** geçişi, son kullanıcının seçebileceği yoğunluğu (`data-density` → Tailwind `--spacing`) bu temayla görmek içindir; config'e yazılmaz.
+
 ## Bilinen sınırlamalar (dürüstçe kayıtlı, gizlenmedi)
 
 - **Radius yoğunluğu** (Faz 15): `density.radius` (`none`/`sm`/`md`/`lg`) `Theme.radius` skalasını orantılı ölçekler; web'de `--mari-radius-*` değişkenleri (Tailwind `rounded-sm/md/lg/xl` bunlara bağlı) değiştiği için önizlemede canlı yansır.

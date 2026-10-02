@@ -12,10 +12,13 @@ import {
   type MariUiThemeConfig,
   radiusDensities,
   type RadiusDensity,
+  spacingDensities,
+  type SpacingDensity,
 } from "@mari-ui/tokens";
 import { PreviewPanel } from "./PreviewPanel";
 
 const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+const SPACING_LABELS: Record<SpacingDensity, string> = { compact: "Sıkı", normal: "Normal", comfortable: "Rahat" };
 
 function ContrastRow({ label, bg, fg, threshold = 4.5 }: { label: string; bg: HexColor; fg: HexColor; threshold?: number }) {
   const ratio = contrastRatio(bg, fg);
@@ -67,6 +70,7 @@ export function StudioApp() {
   const [fontFamilyHeading, setFontFamilyHeading] = useState(lightTheme.fontFamily.heading ?? lightTheme.fontFamily.sans);
   const [radiusDensity, setRadiusDensity] = useState<RadiusDensity>("md");
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
+  const [previewSpacing, setPreviewSpacing] = useState<SpacingDensity>("normal");
 
   const config: MariUiThemeConfig = useMemo(
     () => ({
@@ -164,16 +168,26 @@ export function StudioApp() {
       </aside>
 
       <main className="studio-main">
-        <div className="studio-mode-toggle">
-          <button data-active={previewMode === "light"} onClick={() => setPreviewMode("light")}>
-            Açık
-          </button>
-          <button data-active={previewMode === "dark"} onClick={() => setPreviewMode("dark")}>
-            Koyu
-          </button>
+        <div className="studio-toggle-row">
+          <div className="studio-mode-toggle" role="group" aria-label="Önizleme modu">
+            <button data-active={previewMode === "light"} onClick={() => setPreviewMode("light")}>
+              Açık
+            </button>
+            <button data-active={previewMode === "dark"} onClick={() => setPreviewMode("dark")}>
+              Koyu
+            </button>
+          </div>
+          {/* Son kullanıcının ThemeCustomizer'da seçebileceği yoğunluk — config'e yazılmaz, yalnız önizleme. */}
+          <div className="studio-mode-toggle" role="group" aria-label="Yoğunluk önizlemesi (son kullanıcı)">
+            {spacingDensities.map((option) => (
+              <button key={option} data-active={previewSpacing === option} onClick={() => setPreviewSpacing(option)}>
+                {SPACING_LABELS[option]}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <PreviewPanel mode={previewMode} cssVars={cssVars} fontFamilySans={fontFamilySans} />
+        <PreviewPanel mode={previewMode} spacing={previewSpacing} cssVars={cssVars} fontFamilySans={fontFamilySans} />
 
         <div className="studio-section" style={{ marginTop: "2rem" }}>
           <h2 className="studio-section-title">WCAG Kontrast Kontrolü</h2>

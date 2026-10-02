@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { ColorRole } from "@mari-ui/core";
+import type { SpacingDensity } from "@mari-ui/tokens";
 import { Button } from "@mari-ui/components/button";
 import { Input } from "@mari-ui/components/input";
 import { Card } from "@mari-ui/components/card";
@@ -9,6 +10,8 @@ import { Checkbox } from "@mari-ui/components/checkbox";
 
 export interface PreviewPanelProps {
   mode: "light" | "dark";
+  /** Son kullanıcı yoğunluğu (ThemeCustomizer) — `data-density`, `normal`de öznitelik yok. */
+  spacing?: SpacingDensity;
   cssVars: Record<string, string>;
   fontFamilySans: string;
 }
@@ -23,11 +26,11 @@ const PREVIEW_COLORS: ColorRole[] = ["primary", "accent"];
  *
  * Font token'ları CSS değişkenlerinden, gövde ailesi miras yoluyla uygulanır.
  */
-export function PreviewPanel({ mode, cssVars, fontFamilySans }: PreviewPanelProps) {
+export function PreviewPanel({ mode, spacing = "normal", cssVars, fontFamilySans }: PreviewPanelProps) {
   const style: CSSProperties = { ...(cssVars as CSSProperties), fontFamily: fontFamilySans };
 
   return (
-    <div className="studio-preview-surface" data-theme={mode} style={style}>
+    <div className="studio-preview-surface" data-theme={mode} data-density={spacing === "normal" ? undefined : spacing} style={style}>
       <div className="studio-row">
         {PREVIEW_COLORS.map((color) => (
           <div key={color} className="studio-row">
