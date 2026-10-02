@@ -10,3 +10,10 @@
 export { loadScriptOnce, type LoadScriptOptions } from "./scriptLoader";
 export { initDataLayer, pushToDataLayer, getDataLayer, type DataLayerEvent } from "./datalayer";
 export { loadRecaptcha, executeRecaptcha, loadHCaptcha, executeHCaptcha } from "./captcha";
+export {
+  createAssetResolver,
+  isAbsoluteUrl,
+  type AssetResolver,
+  type AssetResolverConfig,
+  type ResolveAssetOptions,
+} from "./asset";

@@ -1,7 +1,7 @@
 {
   "name": "@mari-ui/utils",
   "version": "0.1.0",
-  "description": "mari-ui'ın UI'dan bağımsız cross-cutting özellik modülleri — datalayer/analytics, captcha wrapper'ları. @mari-ui/core'dan farkı: core headless UI mantığı taşır, bu paket üçüncü parti servis entegrasyonlarını sarmalar.",
+  "description": "mari-ui'ın UI'dan bağımsız cross-cutting özellik modülleri — datalayer/analytics, captcha wrapper'ları, varlık (CDN) adres üretici. @mari-ui/core'dan farkı: core headless UI mantığı taşır, bu paket üçüncü parti servis entegrasyonlarını sarmalar.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -19,6 +19,10 @@
     "./captcha": {
       "types": "./dist/captcha.d.ts",
       "import": "./dist/captcha.js"
+    },
+    "./asset": {
+      "types": "./dist/asset.d.ts",
+      "import": "./dist/asset.js"
     },
     "./package.json": "./package.json"
   },

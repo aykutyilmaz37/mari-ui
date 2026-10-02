@@ -28,6 +28,30 @@ const token = await executeRecaptcha("SITE_KEY", "login");
 // token'ı backend'e gönderip Google'ın doğrulama endpoint'ine karşı kontrol edin.
 ```
 
+### `@mari-ui/utils/asset`
+
+Public varlık adresi (görsel, video, font, indirme linki) üretici. **Ortam değişkeni okumaz, framework'e bağlı değildir** — env değerlerini uygulama bir kez bağlar:
+
+```ts
+import { createAssetResolver } from "@mari-ui/utils/asset";
+
+export const asset = createAssetResolver({
+  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX, // örn. /bo-web-assets
+  cdnUrl: process.env.NEXT_PUBLIC_CDN_ZONE === "true" ? process.env.NEXT_PUBLIC_CDN_URL : undefined,
+  absoluteBase: process.env.NEXT_PUBLIC_IMAGE_PRELINK,
+});
+
+asset("/banner.png");                // → https://cdn…/bo-web-assets/banner.png
+asset("p/1.jpg", { absolute: true }); // → absoluteBase + /p/1.jpg
+```
+
+Tam adresler (`http(s):`, protokolsüz `//`, `data:`, `blob:`) olduğu gibi döner — bulanık ön izleme `data:` URL'leri ve yerel `blob:` ön izlemeleri bozulmaz. `@mari-ui/components`'in `Image`'ı ile `loader` üzerinden birleşir:
+
+```tsx
+const cdnLoader = ({ src, width }) => `${asset(src)}?w=${width}`; // CDN'inizin boyutlandırma sözdizimi
+export const AppImage = (props) => <Image loader={cdnLoader} {...props} />;
+```
+
 ### `loadScriptOnce` (kök export)
 
 Yukarıdaki iki captcha wrapper'ının da üzerine kurulduğu genel script-enjeksiyon yardımcısı — aynı `src` için tekrar tekrar çağrılırsa script'i İKİNCİ KEZ eklemez, devam eden bir yükleme varsa aynı promise'i döner.

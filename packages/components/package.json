@@ -175,6 +175,10 @@
       "types": "./dist/qrcode.d.ts",
       "import": "./dist/qrcode.js"
     },
+    "./image": {
+      "types": "./dist/image.d.ts",
+      "import": "./dist/image.js"
+    },
     "./masonry": {
       "types": "./dist/masonry.d.ts",
       "import": "./dist/masonry.js"
