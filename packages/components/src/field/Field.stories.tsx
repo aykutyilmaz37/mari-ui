@@ -8,6 +8,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Field } from "./Field";
 import { Button } from "../button";
 import { Input, OtpInput, Textarea } from "../input";
@@ -77,6 +78,18 @@ function emailError(email: string): string | undefined {
   const valid = at > 0 && email.indexOf(".", at) > at + 1 && !email.endsWith(".") && !/\s/.test(email);
   return valid ? undefined : "Geçerli bir e-posta girin";
 }
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { label: "E-posta", hint: "İş adresiniz", error: "", required: true, disabled: false, layout: "vertical" },
+  render: (args) => (
+    <div className="max-w-md">
+      <Field {...args}>
+        <Input type="email" placeholder="ad@sirket.com" />
+      </Field>
+    </div>
+  ),
+};
 
 export const SignupForm: Story = {
   name: "Kayıt Formu (Gönderimde Doğrulama)",
@@ -219,14 +232,21 @@ export const AllControls: Story = {
   ),
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { label: "E-posta", hint: "İş adresiniz", error: "", required: true, disabled: false, layout: "vertical" },
-  render: (args) => (
-    <div className="max-w-md">
-      <Field {...args}>
-        <Input type="email" placeholder="ad@sirket.com" />
-      </Field>
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Field label="Ad soyad" hint="…" skeleton>
+  <Input />
+</Field>`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <div className="flex max-w-sm flex-col gap-4">
+          <Field label="Ad soyad" hint="Faturada görünecek ad." skeleton={skeleton}>
+            <Input defaultValue="Ayşe Demir" />
+          </Field>
+          <Field label="Bildirim sıklığı" skeleton={skeleton}>
+            <Segmented options={["Anında", "Günlük", "Haftalık"]} />
+          </Field>
+        </div>
+      )}</SkeletonDemo>,
 };

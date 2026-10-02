@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { AutoComplete } from "./AutoComplete";
 import type { Option } from "./types";
 
@@ -142,4 +143,12 @@ export const Sizes: Story = {
       ))}
     </div>
   ),
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<AutoComplete options={cities} placeholder="İl ara" skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <AutoComplete options={cityOptions} placeholder="İl ara" aria-label="İl" className="max-w-sm" skeleton={skeleton} />}</SkeletonDemo>,
 };

@@ -8,6 +8,7 @@
 import React, { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Clock, Countdown, Statistic, Stopwatch } from "./Statistic";
 
 const meta: Meta<typeof Statistic> = {
@@ -59,6 +60,16 @@ type Story = StoryObj<typeof Statistic>;
 const card = "rounded-xl border border-mari-border bg-mari-surface p-4";
 
 /* ─────────────────────────── 1. Pano ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { title: "Aylık gelir", value: 1284500, prefix: "₺", trend: { value: 12.4, goodWhen: "up" }, description: "geçen aya göre", size: "md", skeleton: false },
+  render: (args) => (
+    <div className={`${card} max-w-xs`}>
+      <Statistic {...args} />
+    </div>
+  ),
+};
 
 export const Dashboard: Story = {
   name: "Pano KPI Satırı",
@@ -189,12 +200,10 @@ export const PlankStopwatch: Story = {
   },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { title: "Aylık gelir", value: 1284500, prefix: "₺", trend: { value: 12.4, goodWhen: "up" }, description: "geçen aya göre", size: "md", skeleton: false },
-  render: (args) => (
-    <div className={`${card} max-w-xs`}>
-      <Statistic {...args} />
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Statistic title="Aylık gelir" value={1284500} prefix="₺" skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Statistic title="Aylık gelir" value={1284500} prefix="₺" trend={{ value: 12.4, goodWhen: "up" }} description="geçen aya göre" skeleton={skeleton} />}</SkeletonDemo>,
 };

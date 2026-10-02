@@ -124,6 +124,21 @@ const products = [
   { name: "Aynasız Fotoğraf Makinesi", price: 32499, rating: 4.9, reviews: 57, Icon: CameraIcon, tone: "info" as const },
 ];
 
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: {
+    title: "Kart başlığı",
+    children: "Kart içeriği. Kart bir iskelettir; içeriği kullanım belirler.",
+    footer: "Son güncelleme: bugün",
+    className: "max-w-sm",
+    size: "md",
+    bordered: true,
+    hoverable: false,
+    skeleton: false,
+    inset: false,
+  },
+};
+
 export const ProductGrid: Story = {
   name: "Ürün Kartları",
   ...storyDoc(
@@ -617,20 +632,5 @@ export const SkeletonState: Story = {
         </Card>
       </div>
     );
-  },
-};
-
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: {
-    title: "Kart başlığı",
-    children: "Kart içeriği. Kart bir iskelettir; içeriği kullanım belirler.",
-    footer: "Son güncelleme: bugün",
-    className: "max-w-sm",
-    size: "md",
-    bordered: true,
-    hoverable: false,
-    skeleton: false,
-    inset: false,
   },
 };

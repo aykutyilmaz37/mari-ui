@@ -70,6 +70,19 @@ const meta: Meta<typeof Table<DataType>> = {
 export default meta;
 type Story = StoryObj<typeof Table<DataType>>;
 
+export const Playground: Story = {
+  ...storyDoc("Sütunlar `columns` (başlık, alan adı, hizalama), satırlar `data`. Kontrollerden `label` ve diğer seçenekleri deneyin."),
+  args: {
+    label: "Kullanıcılar",
+    data: initialData,
+    columns: [
+      { header: "İsim", columnName: "name" },
+      { header: "Yaş", columnName: "age", align: "end" },
+      { header: "Şehir", columnName: "city" },
+    ],
+  },
+};
+
 export const Default: Story = {
   name: "Varsayılan",
   ...storyDoc(
@@ -195,44 +208,6 @@ const columns: ColumnDef<User>[] = [
   render: () => <WithActionsStory />,
 };
 
-export const SkeletonState: Story = {
-  name: "İskelet",
-  ...storyDoc(
-    "`skeleton` başlıkları, hücreleri, işlemler sütununu ve sayfalamayı iskelete çevirir. Veri varken (yenileme) " +
-      "gerçek hücreler görünmez olarak yerinde kalır → satır yükseklikleri korunur, zıplama olmaz. Veri henüz yokken " +
-      "(ilk yükleme) sayfa boyu kadar (en çok 10, varsayılan 5) tek satırlık sahte satır çizilir. Tablo `aria-busy` alır.",
-    `
-<Table label="Kullanıcılar" skeleton={isLoading} data={data ?? []} columns={columns} pagination={pagination} />`
-  ),
-  render: () => {
-    const [skeleton, setSkeleton] = useState(true);
-    const [firstLoad, setFirstLoad] = useState(true);
-    const [page, setPage] = useState(1);
-    return (
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-6">
-          <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
-          <Switch checked={firstLoad} onChange={setFirstLoad} label="İlk yükleme (veri yok)" size="sm" />
-        </div>
-        <Table<UserRow>
-          label="Kullanıcılar"
-          skeleton={skeleton}
-          data={skeleton && firstLoad ? [] : users}
-          columns={userColumns({ deleteRow: () => {} })}
-          pagination={{ page, pageSize: 4, total: users.length, onPageChange: setPage }}
-        />
-      </div>
-    );
-  },
-};
-
-const responsiveColumns: ColumnDef<DataType>[] = [
-  { header: "İsim", columnName: "name" },
-  { header: "Yaş", columnName: "age", align: "end" },
-  { header: "Şehir", columnName: "city" },
-  { header: "Durum", columnName: "status" },
-];
-
 export const Accordion: Story = {
   name: "Duyarlı — Accordion",
   ...storyDoc(
@@ -312,3 +287,41 @@ export const PaginationServer: Story = {
   ),
   render: () => <PaginationServerStory />,
 };
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(
+    "`skeleton` başlıkları, hücreleri, işlemler sütununu ve sayfalamayı iskelete çevirir. Veri varken (yenileme) " +
+      "gerçek hücreler görünmez olarak yerinde kalır → satır yükseklikleri korunur, zıplama olmaz. Veri henüz yokken " +
+      "(ilk yükleme) sayfa boyu kadar (en çok 10, varsayılan 5) tek satırlık sahte satır çizilir. Tablo `aria-busy` alır.",
+    `
+<Table label="Kullanıcılar" skeleton={isLoading} data={data ?? []} columns={columns} pagination={pagination} />`
+  ),
+  render: () => {
+    const [skeleton, setSkeleton] = useState(true);
+    const [firstLoad, setFirstLoad] = useState(true);
+    const [page, setPage] = useState(1);
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-6">
+          <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
+          <Switch checked={firstLoad} onChange={setFirstLoad} label="İlk yükleme (veri yok)" size="sm" />
+        </div>
+        <Table<UserRow>
+          label="Kullanıcılar"
+          skeleton={skeleton}
+          data={skeleton && firstLoad ? [] : users}
+          columns={userColumns({ deleteRow: () => {} })}
+          pagination={{ page, pageSize: 4, total: users.length, onPageChange: setPage }}
+        />
+      </div>
+    );
+  },
+};
+
+const responsiveColumns: ColumnDef<DataType>[] = [
+  { header: "İsim", columnName: "name" },
+  { header: "Yaş", columnName: "age", align: "end" },
+  { header: "Şehir", columnName: "city" },
+  { header: "Durum", columnName: "status" },
+];

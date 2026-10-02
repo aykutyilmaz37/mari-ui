@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Field } from "../field";
 import { Segmented } from "../segmented";
 import type { TreeNode } from "../tree/types";
@@ -245,11 +246,10 @@ export const LazyLoading: Story = {
 export const SizesAndStates: Story = {
   name: "Boyutlar ve Durumlar",
   ...storyDoc(
-    "Yükseklik Input/Select ile aynı (sm 24 / md 32 / lg 40px). Devre dışı, hata rengi ve iskelet.",
+    "Yükseklik Input/Select ile aynı (sm 24 / md 32 / lg 40px). Devre dışı ve hata rengi.",
     `<TreeSelect size="sm" … />
 <TreeSelect color="error" … />
-<TreeSelect disabled … />
-<TreeSelect skeleton … />`
+<TreeSelect disabled … />`
   ),
   render: () => (
     <div className="flex max-w-xs flex-col gap-3">
@@ -258,7 +258,14 @@ export const SizesAndStates: Story = {
       ))}
       <TreeSelect aria-label="Hatalı" color="error" treeData={REGIONS} placeholder="Bölge seçin" />
       <TreeSelect aria-label="Devre dışı" disabled treeData={REGIONS} defaultValue="eskisehir" />
-      <TreeSelect treeData={REGIONS} skeleton />
     </div>
   ),
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<TreeSelect treeData={regions} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <TreeSelect aria-label="Bölge" treeData={REGIONS} defaultValue="izmir" skeleton={skeleton} className="max-w-xs" />}</SkeletonDemo>,
 };

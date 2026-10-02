@@ -8,6 +8,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
 import { Field } from "../field";
@@ -223,16 +224,22 @@ export const ReportColumns: Story = {
 export const States: Story = {
   name: "Durumlar",
   ...storyDoc(
-    "Boş kaynak (`notFoundContent`), devre dışı ve veri gelene kadar iskelet (`skeleton`, aynı yükseklik).",
+    "Boş kaynak (`notFoundContent`) ve devre dışı.",
     `<Transfer dataSource={[]} notFoundContent="Henüz ürün yok" />
-<Transfer dataSource={items} defaultTargetKeys={["İzmir"]} disabled />
-<Transfer dataSource={[]} skeleton />`
+<Transfer dataSource={items} defaultTargetKeys={["İzmir"]} disabled />`
   ),
   render: () => (
     <div className="flex max-w-3xl flex-col gap-6">
       <Transfer aria-label="Boş" dataSource={[]} notFoundContent="Henüz ürün yok" listHeight="8rem" />
       <Transfer aria-label="Devre dışı" dataSource={CITIES.slice(0, 5)} defaultTargetKeys={["Bursa"]} disabled listHeight="8rem" />
-      <Transfer dataSource={[]} skeleton listHeight="8rem" />
     </div>
   ),
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Transfer dataSource={permissions} showSearch skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Transfer aria-label="Yetkiler" dataSource={PERMISSIONS} defaultTargetKeys={["orders.read"]} showSearch listHeight="12rem" skeleton={skeleton} />}</SkeletonDemo>,
 };

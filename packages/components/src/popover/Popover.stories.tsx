@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { CheckIcon, CopyIcon, FilterIcon, Share2Icon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Popover } from "./Popover";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
@@ -93,6 +94,18 @@ function ShareContent() {
     </div>
   );
 }
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { title: "Başlık", trigger: "click", placement: "top", arrow: true, skeleton: false },
+  render: (args) => (
+    <div className="flex min-h-64 items-center justify-center">
+      <Popover {...args} content={<p className="w-56 text-mari-muted">Popover içeriği — düğme, form ya da bağlantı olabilir.</p>}>
+        <Button>Aç</Button>
+      </Popover>
+    </div>
+  ),
+};
 
 export const Share: Story = {
   name: "Bağlantı Paylaş (tıkla)",
@@ -227,14 +240,14 @@ export const ColumnFilter: Story = {
   },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { title: "Başlık", trigger: "click", placement: "top", arrow: true, skeleton: false },
-  render: (args) => (
-    <div className="flex min-h-64 items-center justify-center">
-      <Popover {...args} content={<p className="w-56 text-mari-muted">Popover içeriği — düğme, form ya da bağlantı olabilir.</p>}>
-        <Button>Aç</Button>
-      </Popover>
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Popover title="…" content={…} skeleton>…</Popover>`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <Popover title="Deniz Kaya" content={<p>Ürün tasarımcısı · İstanbul</p>} skeleton={skeleton}>
+          <Button variant="outline" color="neutral">Profili göster</Button>
+        </Popover>
+      )}</SkeletonDemo>,
 };

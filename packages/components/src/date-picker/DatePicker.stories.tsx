@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { addDays, addMonths, compareDay, formatDate, startOfDay, startOfMonth } from "../lib/date";
 import { Field } from "../field";
 import { DatePicker } from "./DatePicker";
@@ -197,7 +198,7 @@ export const ReportPeriod: Story = {
 
 export const SizesAndStates: Story = {
   name: "Boyutlar ve Durumlar",
-  ...storyDoc("Yükseklik Input/Select ile aynı. Devre dışı, hata, iskelet; filtre çubuğunda hazır aralık.", `<DatePicker size="sm" range presets={[{ label: "Son 7 gün", value: lastDays(7) }]} />`),
+  ...storyDoc("Yükseklik Input/Select ile aynı. Devre dışı ve hata; filtre çubuğunda hazır aralık.", `<DatePicker size="sm" range presets={[{ label: "Son 7 gün", value: lastDays(7) }]} />`),
   render: () => (
     <div className="flex max-w-md flex-col gap-3">
       {(["sm", "md", "lg"] as const).map((size) => (
@@ -206,7 +207,20 @@ export const SizesAndStates: Story = {
       <DatePicker range size="sm" aria-label="Filtre" presets={[{ label: "Son 7 gün", value: lastDays(7) }, { label: "Son 30 gün", value: lastDays(30) }]} />
       <DatePicker aria-label="Hatalı" color="error" />
       <DatePicker aria-label="Devre dışı" disabled defaultValue={today} />
-      <DatePicker skeleton />
     </div>
   ),
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<DatePicker skeleton />
+<DatePicker range skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <div className="flex max-w-md flex-col gap-3">
+          <DatePicker aria-label="Tarih" defaultValue={today} skeleton={skeleton} />
+          <DatePicker range aria-label="Aralık" defaultValue={[today, addDays(today, 3)]} skeleton={skeleton} />
+        </div>
+      )}</SkeletonDemo>,
 };

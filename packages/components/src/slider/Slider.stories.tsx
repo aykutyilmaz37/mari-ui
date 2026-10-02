@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { MinusIcon, PlusIcon, ThermometerIcon, Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Slider } from "./Slider";
 import { Button } from "../button";
 
@@ -68,6 +69,11 @@ type Story = StoryObj<typeof Slider>;
 const tl = (v: number) => `${v.toLocaleString("tr-TR")} ₺`;
 
 /* ─────────────────────────── 1. Fiyat aralığı ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { defaultValue: 40, min: 0, max: 100, step: 1, size: "md", color: "primary", "aria-label": "Değer" },
+};
 
 export const PriceRange: Story = {
   name: "Fiyat Aralığı (Filtre)",
@@ -259,6 +265,21 @@ export const Equalizer: Story = {
   },
 };
 
+export const IconMarks: Story = {
+  name: "İkonlu İşaretler",
+  ...storyDoc("`iconList` — geçilen noktalar rol renginde, ilerideki noktalar soluk.", `
+<Slider defaultValue={60} aria-label="Ses" iconList={[{ icon: <VolumeXIcon />, value: 0 }, …]} />`),
+  args: {
+    defaultValue: 60,
+    "aria-label": "Ses düzeyi",
+    iconList: [
+      { icon: <VolumeXIcon size={16} />, value: 0 },
+      { icon: <Volume1Icon size={16} />, value: 50 },
+      { icon: <Volume2Icon size={16} />, value: 100 },
+    ],
+  },
+};
+
 /* ─────────────────────────── Temel seçenekler ─────────────────────────── */
 
 export const Sizes: Story = {
@@ -276,21 +297,6 @@ export const Sizes: Story = {
   ),
 };
 
-export const IconMarks: Story = {
-  name: "İkonlu İşaretler",
-  ...storyDoc("`iconList` — geçilen noktalar rol renginde, ilerideki noktalar soluk.", `
-<Slider defaultValue={60} aria-label="Ses" iconList={[{ icon: <VolumeXIcon />, value: 0 }, …]} />`),
-  args: {
-    defaultValue: 60,
-    "aria-label": "Ses düzeyi",
-    iconList: [
-      { icon: <VolumeXIcon size={16} />, value: 0 },
-      { icon: <Volume1Icon size={16} />, value: 50 },
-      { icon: <Volume2Icon size={16} />, value: 100 },
-    ],
-  },
-};
-
 export const Colors: Story = {
   name: "Renkler",
   ...storyDoc("`color` — dolu kısım ve tutamaç halkası.", `<Slider color="success" defaultValue={60} aria-label="Değer" />`),
@@ -304,12 +310,15 @@ export const Colors: Story = {
 };
 
 export const Disabled: Story = {
-  name: "Devre Dışı",
+  name: "Durumlar",
   ...storyDoc("`disabled` — sürüklenemez, Tab sırasında değil, soluk.", `<Slider disabled defaultValue={[20, 60]} aria-label="Fiyat" />`),
   args: { defaultValue: [20, 60], "aria-label": "Fiyat", disabled: true },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { defaultValue: 40, min: 0, max: 100, step: 1, size: "md", color: "primary", "aria-label": "Değer" },
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Slider defaultValue={40} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <div className="max-w-sm pt-10"><Slider aria-label="Ses" defaultValue={40} skeleton={skeleton} /></div>}</SkeletonDemo>,
 };

@@ -26,4 +26,6 @@ export interface AvatarGroupProps {
   size?: AvatarSize;
   shape?: AvatarShape;
   className?: string;
+  /** Gruptaki tüm avatarlar (ve "+N") iskelet çizer. */
+  skeleton?: boolean;
 }

@@ -244,7 +244,7 @@ export const Variants: Story = {
 };
 
 export const Disabled: Story = {
-  name: "Devre Dışı",
+  name: "Durumlar",
   ...storyDoc("`disabled` — tüm kontroller etkileşimsiz.", `<Pagination disabled totalItems={100} showSizeChanger />`),
   render: () => <Pagination disabled defaultPage={3} totalItems={100} showSizeChanger />,
 };

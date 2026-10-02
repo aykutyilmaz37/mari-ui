@@ -9,6 +9,7 @@ import React, { useRef } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { FilePlusIcon, HeadsetIcon, MessageCircleIcon, MessageSquareTextIcon, PlusIcon, SquareCheckIcon, UploadIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { BackTop } from "./BackTop";
 import { FloatButton } from "./FloatButton";
 import { FloatButtonGroup } from "./FloatButtonGroup";
@@ -145,4 +146,19 @@ export const BackToTop: Story = {
       </Frame>
     );
   },
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<FloatButtonGroup shape="square" skeleton>…</FloatButtonGroup>`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <Frame>
+          <FloatButtonGroup shape="square" skeleton={skeleton}>
+            <FloatButton icon={<HeadsetIcon />} description="Destek" />
+            <FloatButton icon={<MessageSquareTextIcon />} description="Görüş" />
+          </FloatButtonGroup>
+        </Frame>
+      )}</SkeletonDemo>,
 };

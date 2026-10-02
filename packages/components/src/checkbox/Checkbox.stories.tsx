@@ -66,6 +66,48 @@ export const Playground: StoryObj<CheckboxProps> = {
   },
 };
 
+export const IndeterminateCheckbox: StoryObj = {
+  name: "Belirsiz (Indeterminate) Örneği",
+  ...storyDoc(
+    "Klasik \"Tümünü seç\" deseni — bazı alt öğeler seçiliyken üst kutucuk `indeterminate` gösterir: dolu kutu + yatay çizgi.",
+    `const all = checked.length === options.length;
+const some = checked.length > 0 && !all;
+
+<Checkbox label="Tümünü seç" indeterminate={some} checked={all} onChange={(e) => setChecked(e.target.checked ? options : [])} />`
+  ),
+  render: () => <IndeterminateExample />,
+};
+
+export const WithDescription: StoryObj = {
+  name: "Açıklamalı (izinler)",
+  ...storyDoc(
+    "`description` etiketin altında soluk yardımcı metindir ve `aria-describedby` ile kutuya bağlıdır — ekran okuyucu etiketten sonra okur.",
+    `<Checkbox label="Pazarlama e-postaları" description="Kampanya ve indirimlerden haberdar olun. İstediğiniz zaman vazgeçebilirsiniz." />`
+  ),
+  render: () => (
+    <div className="flex max-w-md flex-col gap-4">
+      <Checkbox label="Kullanım koşullarını okudum ve kabul ediyorum" defaultChecked />
+      <Checkbox label="Pazarlama e-postaları" description="Kampanya ve indirimlerden haberdar olun. İstediğiniz zaman vazgeçebilirsiniz." />
+      <Checkbox label="KVKK aydınlatma metni" description="Onay vermeden devam edemezsiniz." color="error" />
+    </div>
+  ),
+};
+
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="flex flex-col gap-4">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Veri yüklendi
+      </label>
+      {["Siparişler", "Kampanyalar", "Stok bildirimleri"].map((l, i) => (
+        <Checkbox key={l} skeleton={!loaded} label={l} defaultChecked={i === 0} />
+      ))}
+    </div>
+  );
+}
+
 export const AllVariants: StoryObj = {
   name: "Tüm Renk × Varyant × Boyut",
   ...storyDoc(
@@ -123,48 +165,6 @@ const IndeterminateExample = () => {
     </fieldset>
   );
 };
-
-export const IndeterminateCheckbox: StoryObj = {
-  name: "Belirsiz (Indeterminate) Örneği",
-  ...storyDoc(
-    "Klasik \"Tümünü seç\" deseni — bazı alt öğeler seçiliyken üst kutucuk `indeterminate` gösterir: dolu kutu + yatay çizgi.",
-    `const all = checked.length === options.length;
-const some = checked.length > 0 && !all;
-
-<Checkbox label="Tümünü seç" indeterminate={some} checked={all} onChange={(e) => setChecked(e.target.checked ? options : [])} />`
-  ),
-  render: () => <IndeterminateExample />,
-};
-
-export const WithDescription: StoryObj = {
-  name: "Açıklamalı (izinler)",
-  ...storyDoc(
-    "`description` etiketin altında soluk yardımcı metindir ve `aria-describedby` ile kutuya bağlıdır — ekran okuyucu etiketten sonra okur.",
-    `<Checkbox label="Pazarlama e-postaları" description="Kampanya ve indirimlerden haberdar olun. İstediğiniz zaman vazgeçebilirsiniz." />`
-  ),
-  render: () => (
-    <div className="flex max-w-md flex-col gap-4">
-      <Checkbox label="Kullanım koşullarını okudum ve kabul ediyorum" defaultChecked />
-      <Checkbox label="Pazarlama e-postaları" description="Kampanya ve indirimlerden haberdar olun. İstediğiniz zaman vazgeçebilirsiniz." />
-      <Checkbox label="KVKK aydınlatma metni" description="Onay vermeden devam edemezsiniz." color="error" />
-    </div>
-  ),
-};
-
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      {["Siparişler", "Kampanyalar", "Stok bildirimleri"].map((l, i) => (
-        <Checkbox key={l} skeleton={!loaded} label={l} defaultChecked={i === 0} />
-      ))}
-    </div>
-  );
-}
 
 export const Skeleton: StoryObj = {
   name: "İskelet",

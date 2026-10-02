@@ -40,6 +40,13 @@ const meta: Meta = {
 
 export default meta;
 
+export const Playground: StoryObj<React.ComponentProps<typeof Title>> = {
+  ...storyDoc("Başlık seviyesi, rol rengi ve kısaltma (`ellipsis`); `Text` ve `Paragraph` aynı renk/kısaltma eksenlerini paylaşır."),
+  args: { level: 2, children: "Ekim ayı satış özeti" },
+  argTypes: { level: { control: "inline-radio", options: [1, 2, 3, 4, 5] }, color: { control: "select", options: [undefined, "primary", "accent", "success", "warning", "error", "info", "neutral"] } },
+  render: (args) => <Title {...args} />,
+};
+
 export const TitleLevels: StoryObj = {
   name: "Başlık Seviyeleri",
   ...storyDoc(
@@ -91,44 +98,6 @@ export const Article: StoryObj = {
   ),
 };
 
-export const Colors: StoryObj = {
-  name: "Renkler",
-  ...storyDoc(
-    "`color` bir renk rolüdür; verilmezse `--mari-color-foreground`. Durum mesajlarında metni renklendirmek için — tek başına renge güvenmeyin, anlamı metin de taşısın.",
-    `<Text color="success" weight="medium">Ödeme alındı</Text>
-<Text color="warning" weight="medium">Stokta son 2 ürün</Text>
-<Text color="error" weight="medium">Kart reddedildi</Text>`
-  ),
-  render: () => (
-    <div className="flex flex-col gap-1">
-      <Title level={4} color="primary">
-        Hesap Ayarları
-      </Title>
-      <Text color="success" weight="medium">
-        Ödeme alındı
-      </Text>
-      <Text color="warning" weight="medium">
-        Stokta son 2 ürün
-      </Text>
-      <Text color="error" weight="medium">
-        Kart reddedildi
-      </Text>
-      <Text muted>Son güncelleme: 5 dakika önce</Text>
-    </div>
-  ),
-};
-
-const products = [
-  {
-    name: "Apple MacBook Air 13 inç M3 Çip 8 Çekirdekli CPU 10 Çekirdekli GPU 16GB 512GB SSD Gece Yarısı",
-    desc: "Gün boyu süren pil, fansız sessiz tasarım ve Liquid Retina ekranla her yerde çalışın. Wi-Fi 6E ve iki harici ekran desteği.",
-  },
-  {
-    name: "Logitech MX Master 3S Kablosuz Mouse",
-    desc: "8K DPI sensör, sessiz tıklama ve cam dahil her yüzeyde iz sürme. USB-C ile hızlı şarj: 1 dakika şarj 3 saat kullanım.",
-  },
-];
-
 export const Ellipsis: StoryObj = {
   name: "Kısaltma (ellipsis)",
   ...storyDoc(
@@ -179,6 +148,44 @@ function SkeletonDemo() {
     </div>
   );
 }
+
+export const Colors: StoryObj = {
+  name: "Renkler",
+  ...storyDoc(
+    "`color` bir renk rolüdür; verilmezse `--mari-color-foreground`. Durum mesajlarında metni renklendirmek için — tek başına renge güvenmeyin, anlamı metin de taşısın.",
+    `<Text color="success" weight="medium">Ödeme alındı</Text>
+<Text color="warning" weight="medium">Stokta son 2 ürün</Text>
+<Text color="error" weight="medium">Kart reddedildi</Text>`
+  ),
+  render: () => (
+    <div className="flex flex-col gap-1">
+      <Title level={4} color="primary">
+        Hesap Ayarları
+      </Title>
+      <Text color="success" weight="medium">
+        Ödeme alındı
+      </Text>
+      <Text color="warning" weight="medium">
+        Stokta son 2 ürün
+      </Text>
+      <Text color="error" weight="medium">
+        Kart reddedildi
+      </Text>
+      <Text muted>Son güncelleme: 5 dakika önce</Text>
+    </div>
+  ),
+};
+
+const products = [
+  {
+    name: "Apple MacBook Air 13 inç M3 Çip 8 Çekirdekli CPU 10 Çekirdekli GPU 16GB 512GB SSD Gece Yarısı",
+    desc: "Gün boyu süren pil, fansız sessiz tasarım ve Liquid Retina ekranla her yerde çalışın. Wi-Fi 6E ve iki harici ekran desteği.",
+  },
+  {
+    name: "Logitech MX Master 3S Kablosuz Mouse",
+    desc: "8K DPI sensör, sessiz tıklama ve cam dahil her yüzeyde iz sürme. USB-C ile hızlı şarj: 1 dakika şarj 3 saat kullanım.",
+  },
+];
 
 export const Skeleton: StoryObj = {
   name: "İskelet",

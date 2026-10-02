@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { FileTextIcon, ImageIcon, VideoIcon } from "lucide-react";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Progress } from "./Progress";
 import { Field } from "../field";
 import { Input } from "../input";
@@ -58,6 +59,16 @@ export default meta;
 type Story = StoryObj<typeof Progress>;
 
 /* ─────────────────────────── 1. Dosya yükleme ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { "aria-label": "İlerleme", percent: 45, type: "line", showInfo: true, size: "md", skeleton: false },
+  render: (args) => (
+    <div className="max-w-md">
+      <Progress {...args} />
+    </div>
+  ),
+};
 
 export const Uploads: Story = {
   name: "Dosya Yükleme Listesi",
@@ -206,12 +217,15 @@ export const Onboarding: Story = {
   },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { "aria-label": "İlerleme", percent: 45, type: "line", showInfo: true, size: "md", skeleton: false },
-  render: (args) => (
-    <div className="max-w-md">
-      <Progress {...args} />
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Progress percent={60} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <div className="flex max-w-sm flex-col gap-4">
+          <Progress aria-label="Yükleme" percent={60} skeleton={skeleton} />
+          <Progress aria-label="Depolama" type="circle" percent={72} skeleton={skeleton} />
+        </div>
+      )}</SkeletonDemo>,
 };

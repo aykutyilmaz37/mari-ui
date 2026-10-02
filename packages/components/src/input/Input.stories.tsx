@@ -163,6 +163,68 @@ export const SignUpForm: StoryObj = {
   render: () => <SignUpFormDemo />,
 };
 
+export const PressEnterAction: StoryObj = {
+  name: "Enter ile Tetikleme",
+  ...storyDoc(
+    "`onPressEnter` — Enter'a bağlı eylemler (listeye ekleme, gönderme). Mobil klavyede tuş etiketi için `enterKeyHint`.",
+    `<Input
+  aria-label="Listeye ekle"
+  enterKeyHint="done"
+  value={draft}
+  onChange={(e) => setDraft(e.target.value)}
+  onPressEnter={() => { addItem(draft); setDraft(""); }}
+/>`
+  ),
+  render: () => <PressEnterDemo />,
+};
+
+export const CustomCountFormatter: StoryObj<InputProps> = {
+  name: "Özel Karakter Sayacı",
+  ...storyDoc("`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir."),
+  args: {
+    "aria-label": "Ürün başlığı",
+    placeholder: "Ürün başlığı",
+    maxLength: 50,
+    showCount: true,
+    count: {
+      formatter: ({ count, maxLength }) => `${maxLength! - count} karakter kaldı`,
+    },
+  },
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
+};
+
+export const MaskedInput: StoryObj<InputProps> = {
+  name: "Maskeli",
+  ...storyDoc("`mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası). Mobilde sayısal klavye için `inputMode=\"tel\"`."),
+  args: {
+    "aria-label": "Cep telefonu",
+    placeholder: "0(5__) ___ __ __",
+    mask: "0(5__) ___ __ __",
+    inputMode: "tel",
+    icon: <PhoneIcon size={16} />,
+    allowClear: true,
+  },
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
+};
+
+function SkeletonDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="flex max-w-sm flex-col gap-4">
+      <label className="flex items-center gap-2 text-sm text-mari-foreground">
+        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
+        Veri yüklendi
+      </label>
+      <Field id="sk-name" label="Firma adı">
+        <Input id="sk-name" skeleton={!loaded} defaultValue="Mari Yazılım A.Ş." />
+      </Field>
+      <Field id="sk-tax" label="Vergi no">
+        <Input id="sk-tax" skeleton={!loaded} size="lg" defaultValue="1234567890" />
+      </Field>
+    </div>
+  );
+}
+
 export const AllVariants: StoryObj = {
   name: "Tüm Varyant × Boyut",
   ...storyDoc(
@@ -239,68 +301,6 @@ function PressEnterDemo() {
           <li key={`${item}-${i}`}>{item}</li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-export const PressEnterAction: StoryObj = {
-  name: "Enter ile Tetikleme",
-  ...storyDoc(
-    "`onPressEnter` — Enter'a bağlı eylemler (listeye ekleme, gönderme). Mobil klavyede tuş etiketi için `enterKeyHint`.",
-    `<Input
-  aria-label="Listeye ekle"
-  enterKeyHint="done"
-  value={draft}
-  onChange={(e) => setDraft(e.target.value)}
-  onPressEnter={() => { addItem(draft); setDraft(""); }}
-/>`
-  ),
-  render: () => <PressEnterDemo />,
-};
-
-export const CustomCountFormatter: StoryObj<InputProps> = {
-  name: "Özel Karakter Sayacı",
-  ...storyDoc("`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir."),
-  args: {
-    "aria-label": "Ürün başlığı",
-    placeholder: "Ürün başlığı",
-    maxLength: 50,
-    showCount: true,
-    count: {
-      formatter: ({ count, maxLength }) => `${maxLength! - count} karakter kaldı`,
-    },
-  },
-  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
-};
-
-export const MaskedInput: StoryObj<InputProps> = {
-  name: "Maskeli",
-  ...storyDoc("`mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası). Mobilde sayısal klavye için `inputMode=\"tel\"`."),
-  args: {
-    "aria-label": "Cep telefonu",
-    placeholder: "0(5__) ___ __ __",
-    mask: "0(5__) ___ __ __",
-    inputMode: "tel",
-    icon: <PhoneIcon size={16} />,
-    allowClear: true,
-  },
-  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
-};
-
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <div className="flex max-w-sm flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <Field id="sk-name" label="Firma adı">
-        <Input id="sk-name" skeleton={!loaded} defaultValue="Mari Yazılım A.Ş." />
-      </Field>
-      <Field id="sk-tax" label="Vergi no">
-        <Input id="sk-tax" skeleton={!loaded} size="lg" defaultValue="1234567890" />
-      </Field>
     </div>
   );
 }

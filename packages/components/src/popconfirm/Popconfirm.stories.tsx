@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { SendIcon, Trash2Icon } from "lucide-react";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Popconfirm } from "./Popconfirm";
 import { Button } from "../button";
 import { StatusBadge } from "../badge";
@@ -65,6 +66,20 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const STATUS_COLOR = { Tamamlandı: "success", Beklemede: "warning", "Devam ediyor": "info" } as const;
 
 /* ─────────────────────────── 1. Satır silme ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { title: "Bu bağlantı iptal edilsin mi?", description: "Bağlantıyı kullanan herkes erişimini kaybeder.", okText: "İptal et", cancelText: "Vazgeç", color: "warning", placement: "top", disabled: false, skeleton: false },
+  render: (args) => (
+    <div className="flex min-h-56 items-center justify-center">
+      <Popconfirm {...args}>
+        <Button variant="outline" color="neutral">
+          Bağlantıyı iptal et
+        </Button>
+      </Popconfirm>
+    </div>
+  ),
+};
 
 export const DeleteRow: Story = {
   name: "Görev Silme (async, yıkıcı)",
@@ -160,16 +175,14 @@ export const Publish: Story = {
   },
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { title: "Bu bağlantı iptal edilsin mi?", description: "Bağlantıyı kullanan herkes erişimini kaybeder.", okText: "İptal et", cancelText: "Vazgeç", color: "warning", placement: "top", disabled: false, skeleton: false },
-  render: (args) => (
-    <div className="flex min-h-56 items-center justify-center">
-      <Popconfirm {...args}>
-        <Button variant="outline" color="neutral">
-          Bağlantıyı iptal et
-        </Button>
-      </Popconfirm>
-    </div>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Popconfirm title="…" description="…" skeleton>…</Popconfirm>`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <Popconfirm title="Bu bağlantı iptal edilsin mi?" description="Bağlantıyı kullanan herkes erişimini kaybeder." okText="İptal et" color="warning" skeleton={skeleton} onConfirm={() => undefined}>
+          <Button variant="outline" color="warning">Bağlantıyı iptal et</Button>
+        </Popconfirm>
+      )}</SkeletonDemo>,
 };

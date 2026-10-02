@@ -10,6 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { BellIcon, InboxIcon, MessageSquareIcon, SettingsIcon, ShoppingCartIcon } from "lucide-react";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Badge, StatusBadge } from "./Badge";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
@@ -60,6 +61,16 @@ export default meta;
 type Story = StoryObj<typeof Badge>;
 
 /* ─────────────────────────── 1. Üst çubuk ─────────────────────────── */
+
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin."),
+  args: { count: 5, overflowCount: 99, showZero: false, dot: false, color: "error", size: "md", skeleton: false },
+  render: (args) => (
+    <Badge {...args}>
+      <Avatar alt="Deniz Kaya" size="lg" />
+    </Badge>
+  ),
+};
 
 export const AppBar: Story = {
   name: "Üst Çubuk: Bildirim ve Sepet",
@@ -202,8 +213,8 @@ export const InMenu: Story = {
 };
 
 export const Appearance: Story = {
-  name: "Boyut, Renk ve İskelet",
-  ...storyDoc("sm / md, rol renkleri, `dot`, `skeleton`.", `<Badge count={5} size="sm" color="primary" />`),
+  name: "Boyut ve Renkler",
+  ...storyDoc("sm / md, rol renkleri, `dot`.", `<Badge count={5} size="sm" color="primary" />`),
   render: () => (
     <div className="flex flex-col items-start gap-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -216,19 +227,23 @@ export const Appearance: Story = {
         <Badge count={5} />
         <Badge dot size="sm" />
         <Badge dot />
-        <Badge count={5} skeleton />
-        <StatusBadge skeleton>Yükleniyor</StatusBadge>
       </div>
     </div>
   ),
 };
 
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { count: 5, overflowCount: 99, showZero: false, dot: false, color: "error", size: "md", skeleton: false },
-  render: (args) => (
-    <Badge {...args}>
-      <Avatar alt="Deniz Kaya" size="lg" />
-    </Badge>
-  ),
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Badge count={5} skeleton>…</Badge>
+<StatusBadge skeleton>Hazırlanıyor</StatusBadge>`),
+  render: () => <SkeletonDemo>{(skeleton) => (
+        <div className="flex items-center gap-6">
+          <Badge count={5} skeleton={skeleton}>
+            <span className="block size-10 rounded-md bg-mari-surface-alt" />
+          </Badge>
+          <StatusBadge color="success" skeleton={skeleton}>Teslim edildi</StatusBadge>
+        </div>
+      )}</SkeletonDemo>,
 };

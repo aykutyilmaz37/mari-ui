@@ -72,6 +72,11 @@ const series = [
 ];
 const days = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
 
+export const Playground: Story = {
+  ...storyDoc("Tüm props'ları canlı deneyin (tam ekranı açarsanız kapatmak için `spinning`'i kapatın)."),
+  args: { spinning: true, size: "md", tip: "Yükleniyor…", delay: 0, color: "primary", fullscreen: false },
+};
+
 export const RefreshCard: Story = {
   name: "Kart Yenileme (Sarmalama)",
   ...storyDoc(
@@ -354,9 +359,4 @@ export const SizesAndColors: Story = {
       </div>
     </div>
   ),
-};
-
-export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin (tam ekranı açarsanız kapatmak için `spinning`'i kapatın)."),
-  args: { spinning: true, size: "md", tip: "Yükleniyor…", delay: 0, color: "primary", fullscreen: false },
 };

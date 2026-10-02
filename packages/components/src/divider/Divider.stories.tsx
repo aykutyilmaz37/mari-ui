@@ -121,36 +121,6 @@ export const LabeledSections: StoryObj = {
   ),
 };
 
-export const LineStyles: StoryObj = {
-  name: "Çizgi Stilleri",
-  ...storyDoc(
-    "`solid` kalıcı/net ayrımlar için (varsayılan); `dashed` geçici veya taslak bir sınır için; `dotted` en hafif, " +
-      "yalnızca hafif bir ipucu gereken yerde.",
-    `<Divider lineStyle="solid" />
-<Divider lineStyle="dashed" />
-<Divider lineStyle="dotted" />`
-  ),
-  render: () => (
-    <div className="w-full max-w-2xl flex flex-col gap-8 text-mari-foreground">
-      <div>
-        <p>Kayıtlı adresler</p>
-        <Divider lineStyle="solid" />
-        <p className="text-mari-neutral">Ev · İş · Fatura</p>
-      </div>
-      <div>
-        <p>Yeni adres (kaydedilmedi)</p>
-        <Divider lineStyle="dashed" />
-        <p className="text-mari-neutral">Taslak — henüz onaylanmadı</p>
-      </div>
-      <div>
-        <p>Önerilenler</p>
-        <Divider lineStyle="dotted" />
-        <p className="text-mari-neutral">Konumunuza göre otomatik doldurma</p>
-      </div>
-    </div>
-  ),
-};
-
 export const VerticalInline: StoryObj = {
   name: "Dikey (satır içi)",
   ...storyDoc(
@@ -200,6 +170,36 @@ export const LongLabel: StoryObj = {
   render: () => (
     <div className="w-full max-w-xs rounded-lg border border-dashed border-mari-border px-3">
       <Divider>Siparişinizle birlikte sıkça satın alınan diğer ürünler</Divider>
+    </div>
+  ),
+};
+
+export const LineStyles: StoryObj = {
+  name: "Çizgi Stilleri",
+  ...storyDoc(
+    "`solid` kalıcı/net ayrımlar için (varsayılan); `dashed` geçici veya taslak bir sınır için; `dotted` en hafif, " +
+      "yalnızca hafif bir ipucu gereken yerde.",
+    `<Divider lineStyle="solid" />
+<Divider lineStyle="dashed" />
+<Divider lineStyle="dotted" />`
+  ),
+  render: () => (
+    <div className="w-full max-w-2xl flex flex-col gap-8 text-mari-foreground">
+      <div>
+        <p>Kayıtlı adresler</p>
+        <Divider lineStyle="solid" />
+        <p className="text-mari-neutral">Ev · İş · Fatura</p>
+      </div>
+      <div>
+        <p>Yeni adres (kaydedilmedi)</p>
+        <Divider lineStyle="dashed" />
+        <p className="text-mari-neutral">Taslak — henüz onaylanmadı</p>
+      </div>
+      <div>
+        <p>Önerilenler</p>
+        <Divider lineStyle="dotted" />
+        <p className="text-mari-neutral">Konumunuza göre otomatik doldurma</p>
+      </div>
     </div>
   ),
 };

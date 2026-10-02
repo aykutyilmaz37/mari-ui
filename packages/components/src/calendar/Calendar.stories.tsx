@@ -7,6 +7,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { addDays, formatDate, isSameDay, startOfDay } from "../lib/date";
 import { Field } from "../field";
 import { Input } from "../input";
@@ -292,4 +293,12 @@ export const AddEvent: Story = {
       </>
     );
   },
+};
+
+/* ─────────────────────────── İskelet ─────────────────────────── */
+
+export const SkeletonState: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<Calendar fullscreen={false} skeleton />`),
+  render: () => <SkeletonDemo>{(skeleton) => <Calendar fullscreen={false} skeleton={skeleton} />}</SkeletonDemo>,
 };

@@ -74,21 +74,6 @@ const PLACEMENTS = [
   ["bottom-start", "bottom", "bottom-end"],
 ] as const;
 
-export const AllPlacements: Story = {
-  name: "Tüm Konumlar (12)",
-  ...storyDoc(
-    "12 yerleşim: ana yön + hiza (`-start`/`-end` balonu tetikleyicinin o kenarına yaslar). Ok her zaman tetikleyicinin ortasını gösterir. Tab ile gezinin.",
-    `<Tooltip placement="bottom-start" content="Dışa aktar" trigger={<Button>…</Button>} />`
-  ),
-  render: () => (
-    <div className="grid w-fit grid-cols-3 gap-x-10 gap-y-12 px-24 py-16">
-      {PLACEMENTS.flat().map((placement) => (
-        <Tooltip key={placement} placement={placement} content={placement} trigger={<Button size="sm" variant="outline" color="neutral">{placement}</Button>} />
-      ))}
-    </div>
-  ),
-};
-
 export const EdgeOfScreen: Story = {
   name: "Uzun İçerik (solda, sağa açılır)",
   ...storyDoc(
@@ -131,26 +116,6 @@ export const ClickToToggle: Story = {
         />
       </span>
       <input aria-label="CVV" className="h-8 w-24 rounded-md border border-mari-input bg-mari-surface px-3 text-sm" inputMode="numeric" maxLength={3} />
-    </div>
-  ),
-};
-
-export const AllVariants: Story = {
-  name: "Tüm Varyantlar",
-  ...storyDoc(
-    "`solid` (varsayılan, dolu koyu balon) ve `soft` (tonlanmış, daha az göze batan) — her renk rolüyle kullanılabilir.",
-    `<Tooltip variant="soft" color="info" content="Bilgi" trigger={<InfoButton />} />`
-  ),
-  render: () => (
-    <div className="flex flex-wrap gap-x-24 gap-y-6 p-4">
-      {(["solid", "soft"] as const).map((variant) => (
-        <div key={variant} className="flex flex-col gap-4">
-          <span className="text-sm font-medium text-mari-muted">{variant}</span>
-          {(["primary", "accent", "success", "warning", "error", "info", "neutral"] as const).map((color) => (
-            <Tooltip key={color} content={color} color={color} variant={variant} alwaysVisible placement="right" trigger={<InfoButton label={`${variant} ${color}`} />} />
-          ))}
-        </div>
-      ))}
     </div>
   ),
 };
@@ -203,8 +168,43 @@ function UserPreview() {
   );
 }
 
+export const AllPlacements: Story = {
+  name: "Tüm Konumlar (12)",
+  ...storyDoc(
+    "12 yerleşim: ana yön + hiza (`-start`/`-end` balonu tetikleyicinin o kenarına yaslar). Ok her zaman tetikleyicinin ortasını gösterir. Tab ile gezinin.",
+    `<Tooltip placement="bottom-start" content="Dışa aktar" trigger={<Button>…</Button>} />`
+  ),
+  render: () => (
+    <div className="grid w-fit grid-cols-3 gap-x-10 gap-y-12 px-24 py-16">
+      {PLACEMENTS.flat().map((placement) => (
+        <Tooltip key={placement} placement={placement} content={placement} trigger={<Button size="sm" variant="outline" color="neutral">{placement}</Button>} />
+      ))}
+    </div>
+  ),
+};
+
+export const AllVariants: Story = {
+  name: "Tüm Varyantlar",
+  ...storyDoc(
+    "`solid` (varsayılan, dolu koyu balon) ve `soft` (tonlanmış, daha az göze batan) — her renk rolüyle kullanılabilir.",
+    `<Tooltip variant="soft" color="info" content="Bilgi" trigger={<InfoButton />} />`
+  ),
+  render: () => (
+    <div className="flex flex-wrap gap-x-24 gap-y-6 p-4">
+      {(["solid", "soft"] as const).map((variant) => (
+        <div key={variant} className="flex flex-col gap-4">
+          <span className="text-sm font-medium text-mari-muted">{variant}</span>
+          {(["primary", "accent", "success", "warning", "error", "info", "neutral"] as const).map((color) => (
+            <Tooltip key={color} content={color} color={color} variant={variant} alwaysVisible placement="right" trigger={<InfoButton label={`${variant} ${color}`} />} />
+          ))}
+        </div>
+      ))}
+    </div>
+  ),
+};
+
 export const Skeleton: Story = {
-  name: "İskelet (yüklenen içerik)",
+  name: "İskelet",
   ...storyDoc(
     "`skeleton` — balon içeriği sunucudan geliyorsa (kullanıcı önizlemesi gibi) önce yer tutucu çizgiler, sonra içerik. Balon `aria-busy`.",
     `<Tooltip skeleton={!user} content={<UserCard user={user} />} trigger={<a href="/u/aykut">@aykut</a>} />`

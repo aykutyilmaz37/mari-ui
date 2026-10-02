@@ -424,7 +424,7 @@ export const CheckStrictly: Story = {
 /* ─────────────────────────── 6. İskelet ─────────────────────────── */
 
 export const SkeletonState: Story = {
-  name: "İskelet (skeleton)",
+  name: "İskelet",
   ...storyDoc(
     "`skeleton`: veri varsa her düğüm kendi başlık genişliğinde yer tutucu olur (girinti ve açma yerleri korunur); " +
       "veri yokken genel bir ağaç şekli çizilir.",
