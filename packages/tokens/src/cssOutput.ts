@@ -112,7 +112,9 @@ function buildThemeInlineBlock(theme: Theme): string {
   // üretilsin diye. Bugün `z-50`, `z-40`, `z-[999]`, `z-[9999]` rastgele
   // dağılmıştı (Modal/Drawer/Toast/Tooltip/Dropdown hepsi kendi katmanını
   // seçiyordu) — artık hepsi bu tek skaladan okur.
-  const zIndexLines = Object.keys(theme.zIndex).map((key) => `  --z-mari-${key}: var(--mari-z-${key});`);
+  // Tailwind v4'ün `z-*` utility'si `--z-index-*` namespace'ini okur; `--z-mari-*`
+  // hiçbir utility üretmiyordu (tüm katmanlar `z-index: auto` kalıyordu).
+  const zIndexLines = Object.keys(theme.zIndex).map((key) => `  --z-index-mari-${key}: var(--mari-z-${key});`);
   // Elevation skalası namespace'lenir: `shadow-mari-md` gibi utility'ler için.
   // Bugün component'ler `shadow-lg`/`shadow-2xl` gibi Tailwind built-in'lerini
   // rastgele kullanıyordu (Faz 13 audit) — hepsi bu tek skaladan okuyacak.
