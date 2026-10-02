@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig((options) => ({
-  entry: { index: "src/index.ts", datalayer: "src/datalayer/index.ts", captcha: "src/captcha/index.ts" },
+  entry: { index: "src/index.ts", datalayer: "src/datalayer/index.ts", captcha: "src/captcha/index.ts", asset: "src/asset/index.ts" },
   format: ["esm"],
   dts: true,
   sourcemap: true,
