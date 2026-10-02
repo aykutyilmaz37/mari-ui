@@ -7,6 +7,7 @@ import { Tag } from "../tag";
 import { Table } from "./Table";
 import type { ColumnDef, TablePaginationConfig } from "./types";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 
 interface DataType {
   id: string;
@@ -298,23 +299,23 @@ export const SkeletonState: Story = {
 <Table label="Kullanıcılar" skeleton={isLoading} data={data ?? []} columns={columns} pagination={pagination} />`
   ),
   render: () => {
-    const [skeleton, setSkeleton] = useState(true);
     const [firstLoad, setFirstLoad] = useState(true);
     const [page, setPage] = useState(1);
     return (
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-6">
-          <Switch checked={skeleton} onChange={setSkeleton} label="İskelet" size="sm" />
-          <Switch checked={firstLoad} onChange={setFirstLoad} label="İlk yükleme (veri yok)" size="sm" />
-        </div>
-        <Table<UserRow>
-          label="Kullanıcılar"
-          skeleton={skeleton}
-          data={skeleton && firstLoad ? [] : users}
-          columns={userColumns({ deleteRow: () => {} })}
-          pagination={{ page, pageSize: 4, total: users.length, onPageChange: setPage }}
-        />
-      </div>
+      <SkeletonDemo>
+        {(skeleton) => (
+          <div className="space-y-4">
+            <Switch checked={firstLoad} onChange={setFirstLoad} label="İlk yükleme (veri yok)" size="sm" />
+            <Table<UserRow>
+              label="Kullanıcılar"
+              skeleton={skeleton}
+              data={skeleton && firstLoad ? [] : users}
+              columns={userColumns({ deleteRow: () => {} })}
+              pagination={{ page, pageSize: 4, total: users.length, onPageChange: setPage }}
+            />
+          </div>
+        )}
+      </SkeletonDemo>
     );
   },
 };

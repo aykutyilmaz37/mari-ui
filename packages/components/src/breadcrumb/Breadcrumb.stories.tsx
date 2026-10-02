@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ChevronRightIcon, HomeIcon, UserIcon } from "lucide-react";
 import { classNameArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Breadcrumb } from "./Breadcrumb";
 import type { BreadcrumbProps } from "./Breadcrumb";
 
@@ -229,18 +230,15 @@ export const WithItemRender: Story = {
   },
 };
 
-function SkeletonDemo() {
-  const [loading, setLoading] = useState(true);
+function BreadcrumbSkeleton() {
   return (
-    <div className="flex flex-col items-start gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-        Yükleniyor
-      </label>
-      <div aria-busy={loading}>
-        <Breadcrumb skeleton={loading} items={productPath.slice(0, 4)} />
-      </div>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div aria-busy={skeleton}>
+          <Breadcrumb skeleton={skeleton} items={productPath.slice(0, 4)} />
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -254,5 +252,5 @@ export const Skeleton: Story = {
   <Breadcrumb skeleton={loading} items={items} />
 </div>`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <BreadcrumbSkeleton />,
 };

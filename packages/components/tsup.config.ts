@@ -14,23 +14,21 @@ import { discoverEntries } from "./scripts/discoverEntries";
  * build dışında tutmak için) kaldırıldı; yeni bir component eklendiğinde
  * bu dosyaya dokunmaya gerek yok.
  *
- * `package.json`'daki HEM `build` HEM `dev` script'i `NODE_OPTIONS=
- * --max-old-space-size=8192` taşıyor: tsup'ın `dts:true` çıktısı 29 ayrı
- * entry'yi tek bir worker thread'de derliyor ve bu worker'ın varsayılan V8
- * heap limiti daha yeni Node sürümlerinde (fiilen Node 25'te doğrulandı) bu
- * iş yükü için yetersiz kalıp `ERR_WORKER_OUT_OF_MEMORY` ile patlıyor —
- * `tsup.config.ts` içinden bu worker'a doğrudan `resourceLimits` geçme yolu
- * yok, bu yüzden çözüm `NODE_OPTIONS` üzerinden. `dev`de (`tsup --watch`)
- * de aynı worker aynı şekilde çalıştığı için aynı bayrağa ihtiyaç var —
- * eksik olduğunda `tsup --watch` ilk DTS build'inde sessizce process'i
- * `exit code 1`le öldürüyor (fiilen bu turda yaşandı).
+ * Tip bildirimleri burada üretilmez (`dts: false`). tsup'ın `dts`i her
+ * entry'yi tek bir worker'da ayrı ayrı derliyordu; ~90 entry'de
+ * `NODE_OPTIONS=--max-old-space-size=8192` ile bile `ERR_WORKER_OUT_OF_MEMORY`
+ * (Faz 16.8) — yarıda kalan build `dist/`i temizlemiş, `styles.css` de
+ * üretilmemiş oluyordu → `pnpm storybook` açılmıyordu. Artık `build:types`:
+ * tek bir `tsc -p tsconfig.build.json` (→ `dist/types/`) + `dist/<entry>.d.ts`
+ * yönlendirmeleri (`scripts/write-dts-entries.ts`).
  */
 const SRC_DIR = join(__dirname, "src");
 
 export default defineConfig((options) => ({
   entry: discoverEntries(SRC_DIR),
   format: ["esm"],
-  dts: true,
+  // Tip bildirimleri tsup'ta DEĞİL: `build:types` (tek `tsc` + scripts/write-dts-entries.ts).
+  dts: false,
   sourcemap: true,
   // `dist/` sadece tsup'ın kendi çıktılarından (JS/d.ts) ibaret değil —
   // `build:css` (Tailwind) ve `build:manifest` (ts-morph) de AYNI dizine

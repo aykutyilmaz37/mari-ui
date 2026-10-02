@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { CheckCircle, Info, XCircle } from "lucide-react";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Tag } from "./Tag";
 
 const meta: Meta<typeof Tag> = {
@@ -199,22 +200,21 @@ export const AllVariants: Story = {
   ),
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function TagSkeleton() {
   return (
-    <div className="flex flex-col gap-3">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <div className="flex flex-wrap gap-2">
-        {orders.map((o) => (
-          <Tag key={o.id} skeleton={!loaded} color={o.color}>
-            {o.status}
-          </Tag>
-        ))}
-      </div>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap gap-2">
+            {orders.map((o) => (
+              <Tag key={o.id} skeleton={skeleton} color={o.color}>
+                {o.status}
+              </Tag>
+            ))}
+          </div>
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -224,5 +224,5 @@ export const Skeleton: Story = {
     "`skeleton` — durum henüz gelmemişken aynı boyutta yer tutucu. Metin verilirse şeffaf olarak yerinde kalır, iskelet tam o genişlikte olur.",
     `<Tag skeleton={isLoading} color="success">Teslim Edildi</Tag>`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <TagSkeleton />,
 };

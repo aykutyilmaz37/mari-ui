@@ -11,6 +11,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Pagination } from "./Pagination";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { baseSizeArgType, classNameArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 
 const meta: Meta<typeof Pagination> = {
@@ -268,16 +269,13 @@ export const Skeleton: Story = {
 />`
   ),
   render: () => {
-    const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(6);
     return (
-      <div className="flex flex-col gap-4">
-        <label className="flex items-center gap-2 text-sm text-mari-foreground">
-          <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-          Yükleniyor
-        </label>
-        <Pagination skeleton={loading} currentPage={page} pageSize={10} totalItems={195} onPageChange={setPage} onPageSizeChange={() => {}} showTotal showQuickJumper />
-      </div>
+      <SkeletonDemo>
+        {(skeleton) => (
+          <Pagination skeleton={skeleton} currentPage={page} pageSize={10} totalItems={195} onPageChange={setPage} onPageSizeChange={() => {}} showTotal showQuickJumper />
+        )}
+      </SkeletonDemo>
     );
   },
 };

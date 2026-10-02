@@ -3,6 +3,7 @@ import { Bell, Heart, RefreshCcw, SearchX, WifiOff } from "lucide-react";
 import { Empty } from "./Empty";
 import { Button } from "../button";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { SearchInput } from "../input";
 
 const meta: Meta<typeof Empty> = {
@@ -121,5 +122,5 @@ export const Varyantlar: Story = {
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton` — ikon dairesi ve başlık/açıklama çizgileri.", `<Empty skeleton={isLoading} title="…" description="…" />`),
-  args: { skeleton: true },
+  render: (args) => <SkeletonDemo>{(skeleton) => <Empty {...args} skeleton={skeleton} />}</SkeletonDemo>,
 };

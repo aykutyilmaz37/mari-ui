@@ -3,6 +3,7 @@ import { AtSign, Lock, PhoneIcon, Search } from "lucide-react";
 import { useState } from "react";
 import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Input } from "./index";
 import type { InputProps } from "./index";
 
@@ -207,21 +208,20 @@ export const MaskedInput: StoryObj<InputProps> = {
   decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function InputSkeleton() {
   return (
-    <div className="flex max-w-sm flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <Field id="sk-name" label="Firma adı">
-        <Input id="sk-name" skeleton={!loaded} defaultValue="Mari Yazılım A.Ş." />
-      </Field>
-      <Field id="sk-tax" label="Vergi no">
-        <Input id="sk-tax" skeleton={!loaded} size="lg" defaultValue="1234567890" />
-      </Field>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex max-w-sm flex-col gap-4">
+          <Field id="sk-name" label="Firma adı">
+            <Input id="sk-name" skeleton={skeleton} defaultValue="Mari Yazılım A.Ş." />
+          </Field>
+          <Field id="sk-tax" label="Vergi no">
+            <Input id="sk-tax" skeleton={skeleton} size="lg" defaultValue="1234567890" />
+          </Field>
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -312,5 +312,5 @@ export const Skeleton: StoryObj = {
     `<label htmlFor="company">Firma adı</label>
 <Input id="company" skeleton={isLoading} defaultValue={company.name} />`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <InputSkeleton />,
 };

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseSizeArgType, classNameArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Divider } from "./Divider";
 import type { DividerProps } from "./types";
 
@@ -208,10 +209,14 @@ export const Skeleton: StoryObj = {
   name: "İskelet",
   ...storyDoc("`skeleton` — çizgi parıldayan ince bir çubuk olur, etiket kendi genişliğinde yer tutucu.", `<Divider skeleton={isLoading}>Tercihler</Divider>`),
   render: () => (
-    <div className="w-full max-w-2xl">
-      <Divider skeleton>Tercihler</Divider>
-      <Divider skeleton />
-    </div>
+    <SkeletonDemo className="w-full max-w-2xl">
+      {(skeleton) => (
+        <>
+          <Divider skeleton={skeleton}>Tercihler</Divider>
+          <Divider skeleton={skeleton} />
+        </>
+      )}
+    </SkeletonDemo>
   ),
 };
 

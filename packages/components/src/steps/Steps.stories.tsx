@@ -43,6 +43,7 @@ import { RadioGroup } from "../radio";
 import { Tag } from "../tag";
 import { colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 
 const meta: Meta<typeof Steps> = {
   title: "Navigasyon/Steps",
@@ -812,17 +813,16 @@ export const Skeleton: Story = {
     `<Steps data={steps} currentStep={2} onChange={setStep} skeleton={!order} />`
   ),
   render: () => {
-    const [loading, setLoading] = useState(true);
     const [step, setStep] = useState(2);
     return (
-      <div className="flex flex-col gap-6">
-        <label className="flex items-center gap-2 text-sm text-mari-foreground">
-          <input type="checkbox" checked={loading} onChange={(e) => setLoading(e.target.checked)} />
-          Yükleniyor
-        </label>
-        <Steps data={basicSteps} currentStep={step} onChange={setStep} skeleton={loading} />
-        <Steps data={trackingSteps} currentStep={3} vertical skeleton={loading} />
-      </div>
+      <SkeletonDemo>
+        {(skeleton) => (
+          <div className="flex flex-col gap-6">
+            <Steps data={basicSteps} currentStep={step} onChange={setStep} skeleton={skeleton} />
+            <Steps data={trackingSteps} currentStep={3} vertical skeleton={skeleton} />
+          </div>
+        )}
+      </SkeletonDemo>
     );
   },
 };

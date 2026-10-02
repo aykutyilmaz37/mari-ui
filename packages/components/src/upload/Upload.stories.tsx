@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Upload } from "./Upload";
 import { ToastProvider } from "../toast";
 
@@ -144,6 +145,7 @@ export const Disabled: Story = {
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton` — form yüklenirken seçim alanının boyutunda yer tutucu.", `<Upload inputType="dragDrop" skeleton={isLoading} />`),
-  args: { inputType: "dragDrop", skeleton: true },
+  args: { inputType: "dragDrop" },
+  render: (args) => <SkeletonDemo>{(skeleton) => <Upload {...args} skeleton={skeleton} />}</SkeletonDemo>,
 };
 

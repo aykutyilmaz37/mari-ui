@@ -1,6 +1,6 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Paragraph, Text, Title } from "./Typography";
 
 /**
@@ -125,27 +125,26 @@ export const Ellipsis: StoryObj = {
   ),
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function TypographySkeleton() {
   return (
-    <div className="flex max-w-prose flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <article className="flex flex-col gap-3">
-        <Title level={2} skeleton={!loaded}>
-          Kargo süreleri bayram döneminde uzayabilir
-        </Title>
-        <Text muted skeleton={!loaded}>
-          12 Nisan 2026 · 3 dk okuma
-        </Text>
-        <Paragraph skeleton={!loaded} skeletonRows={3}>
-          Bayram tatili boyunca kargo firmalarının dağıtım merkezleri kapalı olacak. Tatilden önceki son gün saat 14.00&apos;e kadar
-          verilen siparişler aynı gün kargoya teslim edilir; sonrasındaki siparişler tatil bitiminde sırayla gönderilir.
-        </Paragraph>
-      </article>
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex max-w-prose flex-col gap-4">
+          <article className="flex flex-col gap-3">
+            <Title level={2} skeleton={skeleton}>
+              Kargo süreleri bayram döneminde uzayabilir
+            </Title>
+            <Text muted skeleton={skeleton}>
+              12 Nisan 2026 · 3 dk okuma
+            </Text>
+            <Paragraph skeleton={skeleton} skeletonRows={3}>
+              Bayram tatili boyunca kargo firmalarının dağıtım merkezleri kapalı olacak. Tatilden önceki son gün saat 14.00&apos;e kadar
+              verilen siparişler aynı gün kargoya teslim edilir; sonrasındaki siparişler tatil bitiminde sırayla gönderilir.
+            </Paragraph>
+          </article>
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -196,5 +195,5 @@ export const Skeleton: StoryObj = {
 <Text muted skeleton={isLoading}>{post.meta}</Text>
 <Paragraph skeleton={isLoading} skeletonRows={3}>{post.body}</Paragraph>`
   ),
-  render: () => <SkeletonDemo />,
+  render: () => <TypographySkeleton />,
 };

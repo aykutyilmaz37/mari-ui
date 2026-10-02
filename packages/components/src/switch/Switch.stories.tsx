@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { baseSizeArgType, colorArgType, disabledArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Switch } from "./Switch";
 
 const meta: Meta<typeof Switch> = {
@@ -92,16 +93,15 @@ export const SettingsList: Story = {
   render: () => <SettingsDemo />,
 };
 
-function SkeletonDemo() {
-  const [loaded, setLoaded] = useState(false);
+function SwitchSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <label className="flex items-center gap-2 text-sm text-mari-foreground">
-        <input type="checkbox" checked={loaded} onChange={(e) => setLoaded(e.target.checked)} />
-        Veri yüklendi
-      </label>
-      <SettingsDemo skeleton={!loaded} />
-    </div>
+    <SkeletonDemo>
+      {(skeleton) => (
+        <div className="flex flex-col gap-4">
+          <SettingsDemo skeleton={skeleton} />
+        </div>
+      )}
+    </SkeletonDemo>
   );
 }
 
@@ -210,6 +210,6 @@ function SettingsDemo({ skeleton = false }: { skeleton?: boolean }) {
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc("`skeleton` — kayıtlı ayar gelene kadar track boyutunda yer tutucu (hangi durumda olduğu bilinmeden açık/kapalı göstermemek için).", `<Switch skeleton={isLoading} defaultChecked={prefs.orders} aria-label="Sipariş güncellemeleri" />`),
-  render: () => <SkeletonDemo />,
+  render: () => <SwitchSkeleton />,
 };
 
