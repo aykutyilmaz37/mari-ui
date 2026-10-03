@@ -33,7 +33,7 @@ function buildThemeTsContent(resolved: ReturnType<typeof resolveThemeConfig>): s
     "// ÜRETİLMİŞ DOSYA — elle düzenlemeyin. \"npx mari-ui theme\" ile mari-ui.config.json'dan üretildi.",
     "// @mari-ui/native (veya token değerlerine doğrudan erişmek isteyen başka bir platform) için.",
     `export const mariTheme = ${JSON.stringify(
-      { light: resolved.light, dark: resolved.dark, themes: resolved.themes, radiusDensity: resolved.radiusDensity },
+      { light: resolved.light, dark: resolved.dark, themes: resolved.themes, radiusDensity: resolved.radiusDensity, spacingDensity: resolved.spacingDensity },
       null,
       2
     )} as const;`,
@@ -58,7 +58,7 @@ export function runThemeCommand(options: ThemeCommandOptions): ThemeCommandResul
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
 
-  const cssContent = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER });
+  const cssContent = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER, spacingDensity: resolved.spacingDensity });
   const themeTsContent = buildThemeTsContent(resolved);
 
   const cssPath = join(outDir, THEME_CSS_FILE_NAME);

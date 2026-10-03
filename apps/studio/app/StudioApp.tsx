@@ -69,6 +69,7 @@ export function StudioApp() {
   const [fontFamilyMono, setFontFamilyMono] = useState<string>(lightTheme.fontFamily.mono);
   const [fontFamilyHeading, setFontFamilyHeading] = useState(lightTheme.fontFamily.heading ?? lightTheme.fontFamily.sans);
   const [radiusDensity, setRadiusDensity] = useState<RadiusDensity>("md");
+  const [spacingDensity, setSpacingDensity] = useState<SpacingDensity>("normal");
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
   const [previewSpacing, setPreviewSpacing] = useState<SpacingDensity>("normal");
 
@@ -76,9 +77,9 @@ export function StudioApp() {
     () => ({
       color: { primary: primaryHex as HexColor, accent: accentHex as HexColor },
       typography: { fontFamilySans, fontFamilyMono, fontFamilyHeading },
-      density: { radius: radiusDensity },
+      density: { radius: radiusDensity, spacing: spacingDensity },
     }),
-    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity]
+    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity]
   );
 
   const resolved = useMemo(() => resolveThemeConfig(config), [config]);
@@ -160,6 +161,28 @@ export function StudioApp() {
               Tüm radius skalasını orantılı ölçekler: `none` tamamen keskin, `md` varsayılan. Avatar/switch gibi geometrik olarak yuvarlak öğeler etkilenmez.
             </p>
           </div>
+          <div className="studio-field">
+            <label htmlFor="spacing-density">Varsayılan boşluk yoğunluğu</label>
+            <select
+              id="spacing-density"
+              className="studio-select"
+              value={spacingDensity}
+              onChange={(e) => {
+                const next = e.target.value as SpacingDensity;
+                setSpacingDensity(next);
+                setPreviewSpacing(next);
+              }}
+            >
+              {spacingDensities.map((option) => (
+                <option key={option} value={option}>
+                  {SPACING_LABELS[option]}
+                </option>
+              ))}
+            </select>
+            <p className="studio-field-hint">
+              Tüm yükseklik, iç boşluk ve aralıkları orantılı ölçekler; yazı boyutu değişmez. Son kullanıcı ThemeCustomizer ile kendi tercihini seçebilir — bu, seçim yokken geçerli olan değer.
+            </p>
+          </div>
         </div>
 
         <button className="studio-download-btn" onClick={() => downloadJson("mari-ui.config.json", config)}>
@@ -177,7 +200,7 @@ export function StudioApp() {
               Koyu
             </button>
           </div>
-          {/* Son kullanıcının ThemeCustomizer'da seçebileceği yoğunluk — config'e yazılmaz, yalnız önizleme. */}
+          {/* Son kullanıcının ThemeCustomizer'da seçebileceği yoğunluk — config'e yazılmaz, yalnız önizleme (varsayılanı soldaki config seçimi). */}
           <div className="studio-mode-toggle" role="group" aria-label="Yoğunluk önizlemesi (son kullanıcı)">
             {spacingDensities.map((option) => (
               <button key={option} data-active={previewSpacing === option} onClick={() => setPreviewSpacing(option)}>

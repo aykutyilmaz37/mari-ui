@@ -83,6 +83,7 @@
    * `@mari-ui/tokens` `spacingDensityBase` ile aynı. Sıkı mod dokunmatikte
    * uygulanmaz: kontroller 44px dokunma hedefinin altına inerdi.
    */
+  [data-density="normal"] { --spacing: 0.25rem; }
   [data-density="compact"] { --spacing: 0.2rem; }
   [data-density="comfortable"] { --spacing: 0.3rem; }
   @media (pointer: coarse) {

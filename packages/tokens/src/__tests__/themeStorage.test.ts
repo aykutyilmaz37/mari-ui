@@ -79,11 +79,15 @@ describe("getThemeScript", () => {
     expect(style).toEqual(buildThemeVars({ primary: "#eab308" }, "dark"));
   });
 
-  it("normal yoğunlukta data-density yazılmaz", () => {
+  it("normal yoğunluk da açıkça yazılır; yoğunluk yoksa yazılmaz", () => {
     const { attrs } = fakeDocument();
     saveTheme({ mode: "light", spacing: "normal" });
     runBootScript();
-    expect(attrs).toEqual({ "data-theme": "light" });
+    expect(attrs).toEqual({ "data-theme": "light", "data-density": "normal" });
+    const second = fakeDocument();
+    saveTheme({ mode: "light" });
+    runBootScript();
+    expect(second.attrs).toEqual({ "data-theme": "light" });
   });
 
   it("system modu o anki işletim sistemi tercihine çözülür", () => {

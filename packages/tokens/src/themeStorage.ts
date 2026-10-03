@@ -74,5 +74,5 @@ export interface ThemeScriptOptions {
 export function getThemeScript({ storageKey = DEFAULT_THEME_STORAGE_KEY }: ThemeScriptOptions = {}): string {
   // `</script>` kaçışı: anahtar tüketiciden gelir, script bloğunu kapatamamalı.
   const key = JSON.stringify(storageKey).replace(/</g, "\\u003c");
-  return `(function(){try{var d=JSON.parse(localStorage.getItem(${key})||"null");if(!d||d.v!==1||!d.settings)return;var s=d.settings,e=document.documentElement,m=s.mode==="dark"||s.mode==="light"?s.mode:window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";e.setAttribute("data-theme",m);if(s.spacing&&s.spacing!=="normal")e.setAttribute("data-density",s.spacing);var v=d.vars&&d.vars[m];if(v)for(var k in v)e.style.setProperty(k,v[k])}catch(_){}})();`;
+  return `(function(){try{var d=JSON.parse(localStorage.getItem(${key})||"null");if(!d||d.v!==1||!d.settings)return;var s=d.settings,e=document.documentElement,m=s.mode==="dark"||s.mode==="light"?s.mode:window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";e.setAttribute("data-theme",m);if(s.spacing)e.setAttribute("data-density",s.spacing);var v=d.vars&&d.vars[m];if(v)for(var k in v)e.style.setProperty(k,v[k])}catch(_){}})();`;
 }

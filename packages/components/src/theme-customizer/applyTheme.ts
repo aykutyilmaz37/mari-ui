@@ -48,7 +48,8 @@ function clearVars(el: HTMLElement, state: AppliedState) {
 export function applyTheme(settings: Partial<ThemeSettings> = {}, target?: HTMLElement): () => void {
   if (typeof document === "undefined") return () => {};
   const el = target ?? document.documentElement;
-  const { mode, primary, spacing } = { ...defaultThemeSettings, ...settings };
+  const { mode, primary } = { ...defaultThemeSettings, ...settings };
+  const { spacing } = settings;
 
   const previous = appliedStates.get(el);
   if (previous) {
@@ -76,8 +77,11 @@ export function applyTheme(settings: Partial<ThemeSettings> = {}, target?: HTMLE
   };
   paint();
 
-  if (spacing === "normal") el.removeAttribute("data-density");
-  else el.setAttribute("data-density", spacing);
+  // Yalnız açıkça verilen yoğunluk yazılır — "normal" da (config'teki varsayılan
+  // `:root:not([data-density])` farklıysa kullanıcının "Normal" seçimi onu ezebilmeli).
+  // Verilmediyse config varsayılanı geçerli kalsın: öznitelik ilk haline döner.
+  if (spacing) el.setAttribute("data-density", spacing);
+  else restoreAttribute(el, "data-density", state.original.density);
 
   if (mode === "system" && typeof window.matchMedia === "function") {
     const query = window.matchMedia(DARK_QUERY);

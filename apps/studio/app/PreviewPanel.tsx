@@ -10,7 +10,7 @@ import { Checkbox } from "@mari-ui/components/checkbox";
 
 export interface PreviewPanelProps {
   mode: "light" | "dark";
-  /** Son kullanıcı yoğunluğu (ThemeCustomizer) — `data-density`, `normal`de öznitelik yok. */
+  /** Yoğunluk — `data-density` (ThemeCustomizer ile aynı; `normal` de açıkça yazılır). */
   spacing?: SpacingDensity;
   cssVars: Record<string, string>;
   fontFamilySans: string;
@@ -30,7 +30,7 @@ export function PreviewPanel({ mode, spacing = "normal", cssVars, fontFamilySans
   const style: CSSProperties = { ...(cssVars as CSSProperties), fontFamily: fontFamilySans };
 
   return (
-    <div className="studio-preview-surface" data-theme={mode} data-density={spacing === "normal" ? undefined : spacing} style={style}>
+    <div className="studio-preview-surface" data-theme={mode} data-density={spacing} style={style}>
       <div className="studio-row">
         {PREVIEW_COLORS.map((color) => (
           <div key={color} className="studio-row">

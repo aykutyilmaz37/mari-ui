@@ -13,7 +13,11 @@ export interface ThemeAccentOption {
 export interface ThemeCustomizerProps extends SkeletonableProps {
   /** Kontrollü değer. Kalıcılık (localStorage, API…) tüketicide. */
   value?: ThemeSettings;
-  /** Varsayılan: `{ mode: "system", spacing: "normal" }` (vurgu rengi paketin kendi rengi). */
+  /**
+   * Varsayılan: `{ mode: "system", spacing: "normal" }` (vurgu rengi paketin kendi rengi).
+   * Config'te `density.spacing` farklıysa onu verin, yoksa panel "Normal"i uygular:
+   * `defaultValue={{ spacing: mariTheme.spacingDensity, ...loadTheme() }}`.
+   */
   defaultValue?: Partial<ThemeSettings>;
   onChange?: (value: ThemeSettings) => void;
   /**

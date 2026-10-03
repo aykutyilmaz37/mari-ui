@@ -45,9 +45,17 @@ describe("applyTheme", () => {
     }
   });
 
-  it("normal yoğunluk özniteliği kaldırır", () => {
+  it("normal yoğunluk açıkça yazılır (config varsayılanını ezebilsin)", () => {
     applyTheme({ spacing: "comfortable" });
     applyTheme({ spacing: "normal" });
+    expect(document.documentElement).toHaveAttribute("data-density", "normal");
+  });
+
+  it("yoğunluk verilmezse dokunulmaz — config varsayılanı geçerli kalır", () => {
+    applyTheme({ mode: "dark" });
+    expect(document.documentElement).not.toHaveAttribute("data-density");
+    applyTheme({ spacing: "compact" });
+    applyTheme({ mode: "light" });
     expect(document.documentElement).not.toHaveAttribute("data-density");
   });
 
