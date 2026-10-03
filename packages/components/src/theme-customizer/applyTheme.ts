@@ -25,6 +25,10 @@ function restoreAttribute(el: HTMLElement, name: string, value: string | null) {
   else el.setAttribute(name, value);
 }
 
+/** Vurgu renginin yazabileceği tüm değişken adları (hangi renk olursa olsun aynı set). */
+let ownedVarNames: string[] | undefined;
+const getOwnedVarNames = () => (ownedVarNames ??= Object.keys(buildThemeVars({ primary: "#000000" }, "light")));
+
 function clearVars(el: HTMLElement, state: AppliedState) {
   for (const name of state.vars) el.style.removeProperty(name);
   state.vars = [];
@@ -44,12 +48,17 @@ function clearVars(el: HTMLElement, state: AppliedState) {
 export function applyTheme(settings: Partial<ThemeSettings> = {}, target?: HTMLElement): () => void {
   if (typeof document === "undefined") return () => {};
   const el = target ?? document.documentElement;
-  const { mode, primary, spacing } = { ...defaultThemeSettings, ...settings };
+  const { mode, primary } = { ...defaultThemeSettings, ...settings };
+  const { spacing } = settings;
 
   const previous = appliedStates.get(el);
   if (previous) {
     previous.stopListening?.();
     clearVars(el, previous);
+  } else {
+    // Açılış script'i (`getThemeScript`) değişkenleri önceden yazmış olabilir;
+    // yeni ayarda vurgu rengi yoksa eskisi takılı kalmasın.
+    for (const name of getOwnedVarNames()) el.style.removeProperty(name);
   }
   const state: AppliedState = {
     original: previous?.original ?? { theme: el.getAttribute("data-theme"), density: el.getAttribute("data-density") },
@@ -68,8 +77,11 @@ export function applyTheme(settings: Partial<ThemeSettings> = {}, target?: HTMLE
   };
   paint();
 
-  if (spacing === "normal") el.removeAttribute("data-density");
-  else el.setAttribute("data-density", spacing);
+  // Yalnız açıkça verilen yoğunluk yazılır — "normal" da (config'teki varsayılan
+  // `:root:not([data-density])` farklıysa kullanıcının "Normal" seçimi onu ezebilmeli).
+  // Verilmediyse config varsayılanı geçerli kalsın: öznitelik ilk haline döner.
+  if (spacing) el.setAttribute("data-density", spacing);
+  else restoreAttribute(el, "data-density", state.original.density);
 
   if (mode === "system" && typeof window.matchMedia === "function") {
     const query = window.matchMedia(DARK_QUERY);

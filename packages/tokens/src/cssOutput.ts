@@ -1,5 +1,6 @@
 import type { Theme } from "./theme";
 import { themeToCssVariables } from "./cssVariables";
+import { spacingDensityBase, type SpacingDensity } from "./runtimeTheme";
 
 /**
  * `scripts/build-css.ts` (paketin KENDİ varsayılan teması için, build
@@ -30,6 +31,12 @@ function scopedThemeVars(theme: Theme): Record<string, string> {
 export interface CssOutputOptions {
   /** Dosyanın başına eklenecek yorum bloğu. Varsayılan: genel bir "üretilmiş dosya" notu. */
   header?: string;
+  /**
+   * Faz 16.8.1 — `mari-ui.config.json` `density.spacing`. `"normal"` dışındaysa
+   * `:root:not([data-density])`e `--spacing` yazılır: son kullanıcının
+   * `data-density` seçimi (ThemeCustomizer) her zaman öncelikli kalır.
+   */
+  spacingDensity?: SpacingDensity;
 }
 
 const DEFAULT_HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.", " * Kaynak: @mari-ui/tokens (theme.ts + cssOutput.ts)", " */", ""].join(
@@ -50,6 +57,27 @@ export interface CssThemeSet {
 }
 
 /**
+ * Varsayılan yoğunluk yalnız `<html>`de hiç `data-density` yokken geçerli.
+ * Sıkı mod dokunmatikte normale döner (44px dokunma hedefi) —
+ * `@mari-ui/components/styles.css`teki `[data-density="compact"]` kuralıyla aynı.
+ */
+function spacingDensityLines(density: SpacingDensity = "normal"): string[] {
+  if (density === "normal") return [];
+  const lines = [`:root:not([data-density]) {`, `  --spacing: ${spacingDensityBase[density]};`, "}", ""];
+  if (density === "compact") {
+    lines.push(
+      "@media (pointer: coarse) {",
+      "  :root:not([data-density]) {",
+      `    --spacing: ${spacingDensityBase.normal};`,
+      "  }",
+      "}",
+      ""
+    );
+  }
+  return lines;
+}
+
+/**
  * SADECE `--mari-*` CSS değişkenleri. Hiçbir şeye bağımlı değildir —
  * Tailwind kurulu olmayan bir tüketicide de çalışır ("Tailwind zorunlu
  * değil" kararının somut karşılığı, bkz. proje planı).
@@ -66,6 +94,8 @@ export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOpti
   // kavramı — N-adet özel temaya genellenemez. Sadece `named.dark` VARSA
   // sistem tercihi fallback'i eklenir; başka özel temalar (`brand`, ...)
   // sadece açıkça `data-theme` ile seçildiklerinde devreye girer.
+  lines.push(...spacingDensityLines(options.spacingDensity));
+
   const darkTheme = themeSet.named?.dark;
   if (darkTheme) {
     lines.push(

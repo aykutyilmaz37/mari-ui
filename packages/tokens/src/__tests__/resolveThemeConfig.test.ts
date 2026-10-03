@@ -40,6 +40,11 @@ describe("resolveThemeConfig", () => {
     expect(resolveThemeConfig({ density: { radius: "lg" } }).radiusDensity).toBe("lg");
   });
 
+  it("density.spacing verilmezse 'normal', verilirse aynen taşınır", () => {
+    expect(resolveThemeConfig().spacingDensity).toBe("normal");
+    expect(resolveThemeConfig({ density: { spacing: "compact" } }).spacingDensity).toBe("compact");
+  });
+
   it("light ve dark aynı config'den ayrı ayrı, kendi mode'larına uygun üretilir", () => {
     const resolved = resolveThemeConfig({ color: { accent: "#0ea5e9" } });
     expect(resolved.light.mode).toBe("light");

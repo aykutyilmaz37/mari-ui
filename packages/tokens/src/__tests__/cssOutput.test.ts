@@ -3,6 +3,21 @@ import { lightTheme, darkTheme, resolveThemeConfig, createNamedTheme } from "../
 import { buildPlainThemeCss, buildTailwindThemeCss } from "../cssOutput";
 
 describe("buildPlainThemeCss", () => {
+  it("spacingDensity: normal'de kural yok; diğerlerinde yalnız data-density yokken geçerli kök --spacing", () => {
+    const themeSet = { default: lightTheme, named: { dark: darkTheme } };
+    expect(buildPlainThemeCss(themeSet)).not.toContain("data-density");
+    expect(buildPlainThemeCss(themeSet, { spacingDensity: "normal" })).not.toContain("data-density");
+
+    const comfortable = buildPlainThemeCss(themeSet, { spacingDensity: "comfortable" });
+    expect(comfortable).toContain(":root:not([data-density]) {\n  --spacing: 0.3rem;");
+    expect(comfortable).not.toContain("pointer: coarse");
+
+    // Sıkı dokunmatikte normale döner (44px dokunma hedefi), components styles.css ile aynı.
+    const compact = buildPlainThemeCss(themeSet, { spacingDensity: "compact" });
+    expect(compact).toContain(":root:not([data-density]) {\n  --spacing: 0.2rem;");
+    expect(compact).toContain("(pointer: coarse) {\n  :root:not([data-density]) {\n    --spacing: 0.25rem;");
+  });
+
   it(":root ve [data-theme=dark] bloklarının hepsini içerir", () => {
     const css = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
     expect(css).toContain(":root {");

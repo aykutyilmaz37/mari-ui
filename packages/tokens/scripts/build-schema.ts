@@ -11,6 +11,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { accentRamp, primaryRamp } from "../src/primitives/ramps";
 import { radiusDensities, fontFamily } from "../src/primitives/scale";
+import { spacingDensities } from "../src/runtimeTheme";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_FILE = resolve(__dirname, "../dist/schema.json");
@@ -60,6 +61,14 @@ const schema = {
         description: "Köşe yuvarlaklığı preset'i — tüm radius skalasını orantılı ölçekler (none = keskin).",
         options: [...radiusDensities],
         default: "md",
+      },
+      spacing: {
+        type: "select",
+        description:
+          "Uygulamanın varsayılan boşluk yoğunluğu (`--spacing` tabanı: Sıkı 0.2rem / Normal 0.25rem / Rahat 0.3rem; yazı boyutu değişmez). " +
+          "Son kullanıcı ThemeCustomizer ile kendi tercihini seçebilir; bu yalnız hiç seçim yokken geçerli.",
+        options: [...spacingDensities],
+        default: "normal",
       },
     },
     themes: {

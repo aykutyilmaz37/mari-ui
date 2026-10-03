@@ -25,8 +25,10 @@ pnpm --filter @mari-ui/studio dev
 |---|---|---|
 | Kim | Geliştirici / tasarımcı | Tüketici uygulamanın son kullanıcısı |
 | Ne zaman | Derleme zamanı → `mari-ui.config.json` → `npx mari-ui theme` | Çalışma zamanı → `applyTheme` |
-| Ne | primary + accent, fontlar, radius | mod, vurgu rengi (primary'nin yerine), boşluk yoğunluğu |
+| Ne | primary + accent, fontlar, radius, varsayılan boşluk yoğunluğu | mod, vurgu rengi (primary'nin yerine), boşluk yoğunluğu |
 | Kontrast | Tablo gösterir, karar geliştiricide | Otomatik düzeltir (`buildAccentRole`: dolgu zemine ≥3:1) |
+
+Soldaki **Varsayılan boşluk yoğunluğu** config'e `density.spacing` olarak yazılır; `npx mari-ui theme` onu `:root:not([data-density])` kuralı olarak üretir (Sıkı, dokunmatikte normale döner). Son kullanıcının ThemeCustomizer seçimi (`data-density`, "Normal" dahil) her zaman önceliklidir. ThemeCustomizer'ın varsayılan seçimi config'le aynı olsun diye: `defaultValue={{ spacing: mariTheme.spacingDensity, ...loadTheme() }}` (`mariTheme` → üretilen `mari-ui-theme.ts`).
 
 Önizlemedeki **Sıkı / Normal / Rahat** geçişi, son kullanıcının seçebileceği yoğunluğu (`data-density` → Tailwind `--spacing`) bu temayla görmek içindir; config'e yazılmaz.
 

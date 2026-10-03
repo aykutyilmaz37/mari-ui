@@ -46,6 +46,13 @@ describe("runThemeCommand", () => {
     }
   });
 
+  it("density.spacing CSS'e kök varsayılan, TS'e spacingDensity olarak yazılır", () => {
+    writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ density: { spacing: "comfortable" } }), "utf8");
+    const result = runThemeCommand({ targetDir: dir });
+    expect(result.cssContent).toContain(":root:not([data-density])");
+    expect(result.themeTsContent).toContain('"spacingDensity": "comfortable"');
+  });
+
   it("Faz 10 — config.themes'teki ek isimli temalar da CSS'e [data-theme=\"...\"] olarak yazılır", () => {
     writeFileSync(
       join(dir, "mari-ui.config.json"),

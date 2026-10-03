@@ -3,6 +3,7 @@ import type { ColorRamp } from "./primitives/ramps";
 import type { HexColor } from "./contrast";
 import { buildSemanticColors, type ColorRole, type SemanticColorTokens } from "./semantic/colors";
 import type { ThemeMode } from "./semantic/deriveColorRole";
+import type { SpacingDensity } from "./runtimeTheme";
 
 /** `sans`/`mono` burada bilinçli olarak `string` — Faz 6'nın tema stüdyosu tüketicinin kendi font ailesi string'ini geçirebilmeli, sabit iki literalle sınırlı kalamaz. */
 export interface ThemeFontFamily {
@@ -107,6 +108,12 @@ export interface MariUiThemeConfig {
   density?: {
     /** Faz 15 — tüm `--mari-radius-*` skalasını orantılı ölçekler (`none` = keskin). */
     radius?: primitives.RadiusDensity;
+    /**
+     * Faz 16.8.1 — uygulamanın varsayılan boşluk yoğunluğu (`--spacing` tabanı).
+     * Son kullanıcı ThemeCustomizer ile `data-density` üzerinden yine değiştirebilir;
+     * bu yalnız hiç seçim yapılmamışken geçerli olan değer.
+     */
+    spacing?: SpacingDensity;
   };
   themes?: Record<string, NamedThemeInput>;
 }
@@ -115,7 +122,7 @@ export interface MariUiThemeConfig {
 export const defaultThemeConfig = {
   color: { primary: primitives.primaryRamp[600], accent: primitives.accentRamp[600] },
   typography: { fontFamilySans: primitives.fontFamily.sans, fontFamilyMono: primitives.fontFamily.mono, fontFamilyHeading: primitives.fontFamily.heading },
-  density: { radius: "md" },
+  density: { radius: "md", spacing: "normal" },
 } satisfies Required<Omit<MariUiThemeConfig, "themes">>;
 
 export interface NamedThemeInput {
@@ -128,6 +135,8 @@ export interface ResolvedMariUiTheme {
   light: Theme;
   dark: Theme;
   radiusDensity: primitives.RadiusDensity;
+  /** `density.spacing` (varsayılan `"normal"`) — `buildPlainThemeCss`e ve ThemeCustomizer `defaultValue`suna verilir. */
+  spacingDensity: SpacingDensity;
   /** `config.themes`teki her girdinin ADI → çözümlenmiş `Theme`si. Girdi yoksa boş obje. */
   themes: Record<string, Theme>;
 }
@@ -175,6 +184,7 @@ export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMari
     light: buildTheme("light", { ...baseOptions, name: "light" }),
     dark: buildTheme("dark", { ...baseOptions, name: "dark" }),
     radiusDensity,
+    spacingDensity: config.density?.spacing ?? "normal",
     themes: namedThemes,
   };
 }
