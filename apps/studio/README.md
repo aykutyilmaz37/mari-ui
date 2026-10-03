@@ -30,6 +30,8 @@ pnpm --filter @mari-ui/studio dev
 
 Soldaki **Varsayılan boşluk yoğunluğu** config'e `density.spacing` olarak yazılır; `npx mari-ui theme` onu `:root:not([data-density])` kuralı olarak üretir (Sıkı, dokunmatikte normale döner). Son kullanıcının ThemeCustomizer seçimi (`data-density`, "Normal" dahil) her zaman önceliklidir. ThemeCustomizer'ın varsayılan seçimi config'le aynı olsun diye: `defaultValue={{ spacing: mariTheme.spacingDensity, ...loadTheme() }}` (`mariTheme` → üretilen `mari-ui-theme.ts`).
 
+**Büyük ekran** (`scale.fluid`, varsayılan kapalı): açıkken `npx mari-ui theme` `html { font-size: clamp(100%, …vw + …rem, max) }` üretir — kök yazı boyutu 1920px'e kadar tarayıcı varsayılanı, 3840px'te `scale.max` px (varsayılan 22). Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür (22px'te 32px'lik düğme 44px olur). İşletim sistemi ölçeklemesi kapalı 4K ekranlar içindir; medya sorgusu kırılımları etkilenmez. Panel genişliğine bağlı olduğu için önizlemede görünmez.
+
 Önizlemedeki **Sıkı / Normal / Rahat** geçişi, son kullanıcının seçebileceği yoğunluğu (`data-density` → Tailwind `--spacing`) bu temayla görmek içindir; config'e yazılmaz.
 
 ## Bilinen sınırlamalar (dürüstçe kayıtlı, gizlenmedi)

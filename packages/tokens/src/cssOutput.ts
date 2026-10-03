@@ -37,6 +37,8 @@ export interface CssOutputOptions {
    * `data-density` seçimi (ThemeCustomizer) her zaman öncelikli kalır.
    */
   spacingDensity?: SpacingDensity;
+  /** Faz 16.8.2 — `mari-ui.config.json` `scale` açıksa 4K'deki kök yazı boyutu (px); bkz. `fluidRootFontSize`. */
+  fluidRootMax?: number | null;
 }
 
 const DEFAULT_HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.", " * Kaynak: @mari-ui/tokens (theme.ts + cssOutput.ts)", " */", ""].join(
@@ -54,6 +56,25 @@ export interface CssThemeSet {
   default: Theme;
   /** Anahtarı `[data-theme="<anahtar>"]` seçicisi olur. `"dark"` burada sıradan bir isim — özel davranışı SADECE `@media (prefers-color-scheme: dark)` fallback'i tetiklemesi (aşağıda). */
   named?: Record<string, Theme>;
+}
+
+const FLUID_START_PX = 1920;
+const FLUID_END_PX = 3840;
+const BASE_ROOT_PX = 16;
+
+const round = (n: number) => Number(n.toFixed(4));
+
+/**
+ * Akışkan kök yazı boyutu: 1920px'e kadar tarayıcı varsayılanı (100%),
+ * 3840px'te `maxPx`, arası doğrusal. Alt sınır `100%`/rem — kullanıcının
+ * tarayıcı yazı boyutu tercihi korunur; medya sorgusu kırılımları (rem,
+ * başlangıç değerine göre) etkilenmez. `maxPx` 16–32'ye sıkıştırılır.
+ */
+export function fluidRootFontSize(maxPx: number): string {
+  const max = Math.min(Math.max(maxPx, BASE_ROOT_PX), BASE_ROOT_PX * 2);
+  const slope = (max - BASE_ROOT_PX) / (FLUID_END_PX - FLUID_START_PX);
+  const interceptRem = round((BASE_ROOT_PX - slope * FLUID_START_PX) / BASE_ROOT_PX);
+  return `clamp(100%, ${round(slope * 100)}vw + ${interceptRem}rem, ${round(max / BASE_ROOT_PX)}rem)`;
 }
 
 /**
@@ -95,6 +116,7 @@ export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOpti
   // sistem tercihi fallback'i eklenir; başka özel temalar (`brand`, ...)
   // sadece açıkça `data-theme` ile seçildiklerinde devreye girer.
   lines.push(...spacingDensityLines(options.spacingDensity));
+  if (options.fluidRootMax) lines.push(`html {`, `  font-size: ${fluidRootFontSize(options.fluidRootMax)};`, "}", "");
 
   const darkTheme = themeSet.named?.dark;
   if (darkTheme) {
