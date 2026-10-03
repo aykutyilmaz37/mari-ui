@@ -12,6 +12,7 @@ import { SettingsIcon } from "lucide-react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { ThemeCustomizer } from "./ThemeCustomizer";
+import { loadTheme, saveTheme } from "@mari-ui/tokens";
 import type { ThemeSettings } from "@mari-ui/tokens";
 import { Button } from "../button";
 import { Drawer } from "../drawer";
@@ -31,8 +32,8 @@ const meta: Meta<typeof ThemeCustomizer> = {
           summary:
             "Son kullanıcının uygulamanın görünümünü kişiselleştirdiği panel: mod (Açık/Koyu/Sistem), vurgu rengi ve boşluk yoğunluğu. " +
             "Seçim `applyTheme` ile anında uygulanır — provider yok. Seçilen renk zeminde görünür olacak kadar otomatik koyulaştırılır " +
-            "(koyu temada açılır); kullanıcı okunmaz bir tema üretemez. Kalıcılık tüketicide: `onChange`te kaydedin, uygulama açılışında " +
-            "`applyTheme(saved)` çağırın. Geliştiricinin derleme zamanı teması (`mari-ui.config.json`, Tema Stüdyosu) ayrı bir şey.",
+            "(koyu temada açılır); kullanıcı okunmaz bir tema üretemez. Kalıcılık için `saveTheme`/`loadTheme`, açılışta tema yanıp sönmesini " +
+            "(FOUC) önlemek için `<head>`e `getThemeScript()` — framework'ten bağımsız. Geliştiricinin derleme zamanı teması (`mari-ui.config.json`, Tema Stüdyosu) ayrı bir şey.",
           whenToUse: [
             "Ayarlar sayfası, profil menüsü ya da ayarlar çekmecesinde kullanıcıya görünüm tercihi sunmak.",
             "Yalnız koyu mod anahtarı gerekiyorsa da: `sections={[\"mode\"]}`.",
@@ -147,45 +148,30 @@ const [open, setOpen] = useState(false);
 
 const STORAGE_KEY = "mari-story-theme";
 
-function readSaved(): Partial<ThemeSettings> | undefined {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Partial<ThemeSettings>) : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 export const Persistence: Story = {
   name: "Kalıcılık (localStorage)",
   ...storyDoc(
-    "Seçim `onChange`te kaydedilir; sayfa yenilenince aynı tema gelir. Uygulama açılışında, panel hiç açılmadan `applyTheme` " +
-      "kayıtlı ayarı uygular — bunu ilk boyamadan önce yapın (ör. kök layout'ta küçük bir istemci bileşeni).",
+    "Seçim `onChange`te `saveTheme` ile kaydedilir; sayfa yenilenince aynı tema gelir. Yenilemede eski temanın bir an " +
+      "görünmemesi (FOUC) için `getThemeScript()` çıktısını `<head>`e satır içi script olarak koyun — sayfa çizilmeden önce " +
+      "çalışır, framework'ten bağımsızdır.",
     `
-// Uygulama açılışı (bir kez):
-const saved = JSON.parse(localStorage.getItem("theme") ?? "{}");
-applyTheme(saved);
+// <head> içinde, stylesheet'ten sonra — framework fark etmez:
+//   React (SSR/SPA): <script dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
+//   Düz HTML/Vite  : getThemeScript() çıktısını build ya da sunucu şablonunda <script> içine yazın
+
+// Uygulama açılışı (bir kez, istemcide):
+applyTheme(loadTheme());
 
 // Ayarlar ekranı:
-<ThemeCustomizer defaultValue={saved} onChange={(next) => localStorage.setItem("theme", JSON.stringify(next))} />`
+<ThemeCustomizer defaultValue={loadTheme()} onChange={(next) => saveTheme(next)} />`
   ),
   render: () => {
     const ref = useRef<HTMLDivElement>(null);
-    const [saved] = useState(readSaved);
+    const [saved] = useState(() => loadTheme(STORAGE_KEY));
     return (
       <div className="grid max-w-4xl gap-6 md:grid-cols-2">
         <div className="flex flex-col gap-3">
-          <ThemeCustomizer
-            defaultValue={saved}
-            target={ref}
-            onChange={(next) => {
-              try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-              } catch {
-                // Gizli pencere / engelli depolama: tema yine uygulanır, yalnız kaydedilmez.
-              }
-            }}
-          />
+          <ThemeCustomizer defaultValue={saved} target={ref} onChange={(next) => saveTheme(next, STORAGE_KEY)} />
           <p className="text-xs text-mari-muted">Bir seçim yapıp sayfayı yenileyin.</p>
         </div>
         <PreviewSurface ref={ref} />

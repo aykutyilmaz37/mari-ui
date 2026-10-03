@@ -25,6 +25,10 @@ function restoreAttribute(el: HTMLElement, name: string, value: string | null) {
   else el.setAttribute(name, value);
 }
 
+/** Vurgu renginin yazabileceği tüm değişken adları (hangi renk olursa olsun aynı set). */
+let ownedVarNames: string[] | undefined;
+const getOwnedVarNames = () => (ownedVarNames ??= Object.keys(buildThemeVars({ primary: "#000000" }, "light")));
+
 function clearVars(el: HTMLElement, state: AppliedState) {
   for (const name of state.vars) el.style.removeProperty(name);
   state.vars = [];
@@ -50,6 +54,10 @@ export function applyTheme(settings: Partial<ThemeSettings> = {}, target?: HTMLE
   if (previous) {
     previous.stopListening?.();
     clearVars(el, previous);
+  } else {
+    // Açılış script'i (`getThemeScript`) değişkenleri önceden yazmış olabilir;
+    // yeni ayarda vurgu rengi yoksa eskisi takılı kalmasın.
+    for (const name of getOwnedVarNames()) el.style.removeProperty(name);
   }
   const state: AppliedState = {
     original: previous?.original ?? { theme: el.getAttribute("data-theme"), density: el.getAttribute("data-density") },

@@ -5,3 +5,4 @@ export * from "./theme";
 export * from "./cssVariables";
 export * from "./cssOutput";
 export * from "./runtimeTheme";
+export * from "./themeStorage";
