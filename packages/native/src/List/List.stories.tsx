@@ -6,7 +6,7 @@ import { Bell, PackageCheck, Truck } from "lucide-react-native";
 import { Button } from "../Button";
 import { List, ListItem, ListItemMeta } from "./List";
 import { NativeConfigProvider } from "../nativeConfig";
-import { componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
 import { useTheme } from "../theme/useTheme";
 
 interface Contact {
@@ -40,6 +40,15 @@ const meta: Meta<typeof List> = {
       },
     },
   },
+  argTypes: {
+    size: { control: "select", options: ["sm", "md", "lg"] },
+    itemLayout: { control: "select", options: ["horizontal", "vertical"] },
+    bordered: { control: "boolean" },
+    split: { control: "boolean" },
+    skeleton: { control: "boolean" },
+    skeletonRows: { control: { type: "number", min: 1, max: 10 } },
+  },
+  args: { size: "md", itemLayout: "horizontal", bordered: true, split: true, skeleton: false, skeletonRows: 3 },
 };
 
 export default meta;
@@ -70,6 +79,18 @@ function ContactList() {
     />
   );
 }
+
+export const Playground: Story = {
+  ...storyDoc("Native ölçekte yoğunluk, düzen, kenarlık, ayırıcı ve iskeleti deneyin."),
+  render: (args) => (
+    <List
+      {...args}
+      data={CONTACTS}
+      keyExtractor={(contact) => contact.id}
+      renderItem={(contact) => <ListItem><ListItemMeta avatar={<AvatarBadge contact={contact} />} title={contact.name} description={contact.role} /></ListItem>}
+    />
+  ),
+};
 
 export const Contacts: Story = {
   name: "Ekip Rehberi",
@@ -231,36 +252,6 @@ export const PullToRefresh: Story = {
   render: () => <RefreshableOrders />,
 };
 
-export const Empty: Story = {
-  name: "Boş Durum",
-  ...storyDoc("Özel `ListEmptyComponent` ile henüz içerik yokken sonraki adımı açıklayın."),
-  render: () => <EmptyAddresses />,
-};
-
-function EmptyAddresses() {
-  const [added, setAdded] = useState(false);
-  const theme = useTheme();
-  return (
-    <List
-      data={[]}
-      renderItem={() => null}
-      ListEmptyComponent={
-        <View style={{ alignItems: "center", padding: 24, gap: 12 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600", color: theme.color.canvas.foreground }}>{added ? "Adres ekleme başlatıldı" : "Kaydedilmiş adres yok"}</Text>
-          <Text style={{ color: theme.color.canvas.muted, textAlign: "center" }}>{added ? "Teslimat adresinizi bir sonraki adımda girebilirsiniz." : "İlk adresinizi eklediğinizde teslimat sırasında burada seçebilirsiniz."}</Text>
-          <Button size="sm" onPress={() => setAdded(true)}>{added ? "Devam et" : "Adres ekle"}</Button>
-        </View>
-      }
-    />
-  );
-}
-
-export const Skeleton: Story = {
-  name: "İlk Yükleme",
-  ...storyDoc("`skeleton` veri henüz yokken native config'teki satır ölçülerine uyan yer tutucular gösterir; ekran okuyucudan gizlenir."),
-  render: () => <List data={[]} renderItem={() => null} skeleton bordered ListHeaderComponent={<Text style={{ padding: 16, fontWeight: "600" }}>Ekibiniz</Text>} />,
-};
-
 export const LoadMore: Story = {
   name: "Sayfalı Bildirimler",
   ...storyDoc("`ListFooterComponent` bir devam eylemi sunar; düğmenin boyutu native kontrol ölçeğini kullanır."),
@@ -299,3 +290,48 @@ function LoadMoreDemo() {
     />
   );
 }
+export const Empty: Story = {
+  name: "Boş Durum",
+  ...storyDoc("Özel `ListEmptyComponent` ile henüz içerik yokken sonraki adımı açıklayın."),
+  render: () => <EmptyAddresses />,
+};
+
+function EmptyAddresses() {
+  const [added, setAdded] = useState(false);
+  const theme = useTheme();
+  return (
+    <List
+      data={[]}
+      renderItem={() => null}
+      ListEmptyComponent={
+        <View style={{ alignItems: "center", padding: 24, gap: 12 }}>
+          <Text style={{ fontSize: 16, fontWeight: "600", color: theme.color.canvas.foreground }}>{added ? "Adres ekleme başlatıldı" : "Kaydedilmiş adres yok"}</Text>
+          <Text style={{ color: theme.color.canvas.muted, textAlign: "center" }}>{added ? "Teslimat adresinizi bir sonraki adımda girebilirsiniz." : "İlk adresinizi eklediğinizde teslimat sırasında burada seçebilirsiniz."}</Text>
+          <Button size="sm" onPress={() => setAdded(true)}>{added ? "Devam et" : "Adres ekle"}</Button>
+        </View>
+      }
+    />
+  );
+}
+
+
+export const Skeleton: Story = {
+  name: "İskelet",
+  ...storyDoc(SKELETON_STORY_DOC, `<List data={team} skeleton={isLoading} skeletonRows={3} keyExtractor={(p) => p.id} renderItem={(p) => (
+  <ListItem><ListItemMeta avatar={<Avatar />} title={p.name} description={p.role} /></ListItem>
+)} />`),
+  render: () => (
+    <SkeletonDemo>
+      {(skeleton) => (
+        <List
+          bordered
+          skeleton={skeleton}
+          skeletonRows={CONTACTS.length}
+          data={CONTACTS}
+          keyExtractor={(contact) => contact.id}
+          renderItem={(contact) => <ListItem><ListItemMeta avatar={<AvatarBadge contact={contact} />} title={contact.name} description={contact.role} /></ListItem>}
+        />
+      )}
+    </SkeletonDemo>
+  ),
+};
