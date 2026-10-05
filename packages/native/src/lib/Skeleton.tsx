@@ -65,7 +65,7 @@ export function SkeletonBox({ style, children, animated = true }: { style?: Styl
   const opacity = usePulse(animated);
   return (
     <Animated.View
-      accessibilityElementsHidden
+      accessibilityElementsHidden aria-hidden
       importantForAccessibility="no-hide-descendants"
       pointerEvents="none"
       style={[style, { backgroundColor: skeletonColor(theme), borderColor: "transparent", opacity }]}

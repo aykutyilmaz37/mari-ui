@@ -66,7 +66,7 @@ export const Card: ForwardRefExoticComponent<CardProps & RefAttributes<Component
     testID,
     accessibilityLabel,
     accessibilityHint,
-    accessibilityElementsHidden: skeleton,
+    accessibilityElementsHidden: skeleton, "aria-hidden": skeleton,
     importantForAccessibility: skeleton ? "no-hide-descendants" as const : "auto" as const,
   };
   const containerStyle = [styles.container, interactive && { minHeight: 44 }, disabled && { opacity: 0.5 }, style];

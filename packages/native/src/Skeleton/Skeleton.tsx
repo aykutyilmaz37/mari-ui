@@ -87,7 +87,7 @@ export function Skeleton({ active = true, label, avatar = false, loading, paragr
 
   const a11y = label
     ? { accessible: true, accessibilityLabel: label, accessibilityState: { busy: true }, "aria-busy": true }
-    : { accessibilityElementsHidden: true, importantForAccessibility: "no-hide-descendants" as const };
+    : { accessibilityElementsHidden: true, "aria-hidden": true, importantForAccessibility: "no-hide-descendants" as const };
 
   return (
     <View {...a11y} style={[{ flexDirection: "row", gap: 16, alignSelf: "stretch" }, style]}>

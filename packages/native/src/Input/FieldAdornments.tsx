@@ -17,7 +17,7 @@ export function ClearButton({ visible, label, icon, size, color, onClear }: { vi
       disabled={!visible}
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityElementsHidden={!visible}
+      accessibilityElementsHidden={!visible} aria-hidden={!visible}
       importantForAccessibility={visible ? "auto" : "no-hide-descendants"}
       hitSlop={12}
       style={{ width: size + 4, height: size + 4, alignItems: "center", justifyContent: "center", borderRadius: 4, opacity: visible ? 1 : 0 }}

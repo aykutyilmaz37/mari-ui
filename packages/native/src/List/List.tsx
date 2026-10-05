@@ -51,7 +51,7 @@ function SkeletonRows({ count, separator }: { count: number; separator?: React.C
     </View>
   );
   return (
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">
       {Array.from({ length: count }, (_, index) => (
         <React.Fragment key={index}>
           {index > 0 ? renderListSlot(separator) : null}

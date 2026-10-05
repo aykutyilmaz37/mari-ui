@@ -95,7 +95,7 @@ export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, col
       accessible={Boolean(alt)}
       accessibilityRole={alt ? "image" : undefined}
       accessibilityLabel={alt || undefined}
-      accessibilityElementsHidden={!alt}
+      accessibilityElementsHidden={!alt} aria-hidden={!alt}
       importantForAccessibility={alt ? "yes" : "no-hide-descendants"}
       style={[shapeStyle, !source && { backgroundColor: tone.backgroundColor }, style]}
     >

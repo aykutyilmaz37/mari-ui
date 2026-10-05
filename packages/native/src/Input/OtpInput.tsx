@@ -112,7 +112,7 @@ export function OtpInput({
   if (field.skeleton) {
     if (single) return <SkeletonBox style={[base.container, { alignSelf: "flex-start", width: slotWidth * length + 12 * (length - 1) + 32 }, style]} />;
     return (
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ flexDirection: "row", alignItems: "center", gap: GAP }, style]}>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[{ flexDirection: "row", alignItems: "center", gap: GAP }, style]}>
         {Array.from({ length }, (_, i) => [<SkeletonBox key={i} style={[base.container, { width: cellWidth, minWidth: 32, flexShrink: 1, paddingHorizontal: 0 }]} />, sep(i)])}
       </View>
     );
@@ -147,7 +147,7 @@ export function OtpInput({
   return (
     <Hug style={style}>
     <Pressable onPress={() => inputRef.current?.focus()} disabled={field.disabled} accessible={false} style={{ maxWidth: "100%" }}>
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">{cells}</View>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">{cells}</View>
       {/* Tek gerçek alan, kutuların üstünde görünmez: dokunma, yapıştırma, SMS otomatik doldurma. */}
       <TextInput
         ref={inputRef}
