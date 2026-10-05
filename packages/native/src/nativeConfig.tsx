@@ -34,11 +34,20 @@ export interface NativeListSize {
   readonly descriptionLineHeight: number;
 }
 
+/** Tipografi satırı (pt). Başlık seviyeleri `h1`–`h6`, gövde `body`. */
+export interface NativeTextSize {
+  readonly fontSize: number;
+  readonly lineHeight: number;
+}
+
+export type NativeTextStyle = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body";
+
 /** Native ölçüleri web ölçeğinden bağımsızdır; değerler dp/pt cinsindendir. */
 export interface NativeConfig {
   readonly sizes: Readonly<Record<ExtendedSize, NativeControlSize>>;
   readonly card: Readonly<Record<Size, NativeCardSize>>;
   readonly list: Readonly<Record<Size, NativeListSize>>;
+  readonly typography: Readonly<Record<NativeTextStyle, NativeTextSize>>;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -60,6 +69,16 @@ export const defaultNativeConfig: NativeConfig = {
     md: { rowMinHeight: 48, rowPaddingVertical: 12, rowPaddingHorizontal: 16, contentGap: 16, metaGap: 12, actionGap: 8, titleFontSize: 16, titleLineHeight: 22, descriptionFontSize: 14, descriptionLineHeight: 20 },
     lg: { rowMinHeight: 48, rowPaddingVertical: 16, rowPaddingHorizontal: 20, contentGap: 20, metaGap: 16, actionGap: 12, titleFontSize: 17, titleLineHeight: 24, descriptionFontSize: 16, descriptionLineHeight: 22 },
   },
+  // Apple HIG metin stilleri (Large Title, Title 1–3, Headline, Subheadline; gövde Body 17/22).
+  typography: {
+    h1: { fontSize: 34, lineHeight: 41 },
+    h2: { fontSize: 28, lineHeight: 34 },
+    h3: { fontSize: 22, lineHeight: 28 },
+    h4: { fontSize: 20, lineHeight: 25 },
+    h5: { fontSize: 17, lineHeight: 22 },
+    h6: { fontSize: 15, lineHeight: 20 },
+    body: { fontSize: 17, lineHeight: 22 },
+  },
 };
 
 export interface NativeConfigOverrides {
@@ -67,6 +86,7 @@ export interface NativeConfigOverrides {
   sizes?: Partial<Record<ExtendedSize, Partial<NativeControlSize>>>;
   card?: Partial<Record<Size, Partial<NativeCardSize>>>;
   list?: Partial<Record<Size, Partial<NativeListSize>>>;
+  typography?: Partial<Record<NativeTextStyle, Partial<NativeTextSize>>>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -81,6 +101,7 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     sizes: mergeScale(base.sizes, overrides.sizes),
     card: mergeScale(base.card, overrides.card),
     list: mergeScale(base.list, overrides.list),
+    typography: mergeScale(base.typography, overrides.typography),
   };
 }
 
