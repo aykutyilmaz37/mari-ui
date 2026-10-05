@@ -9,10 +9,11 @@
  * story'yi `render(args)` ile kendisi çağırır.
  */
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import { darkTheme, lightTheme } from "@mari-ui/tokens";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import { useTheme } from "../theme/useTheme";
+import { Segmented } from "../Segmented";
 
 interface ComponentDocInput {
   summary: string;
@@ -77,68 +78,17 @@ export function SkeletonDemo({ children }: { children: (skeleton: boolean) => Re
   // Web ile aynı düzen: geçiş ile component arası 16 (`gap-4`).
   return (
     <View style={{ gap: 16, alignSelf: "stretch", alignItems: "flex-start" }}>
-      <SegmentedStub
-        label="Yükleme durumu"
-        options={["İskelet", "Yüklendi"]}
-        value={skeleton ? 0 : 1}
-        onChange={(index) => setSkeleton(index === 0)}
+      <Segmented
+        size="sm"
+        accessibilityLabel="Yükleme durumu"
+        options={[
+          { value: "skeleton", label: "İskelet" },
+          { value: "loaded", label: "Yüklendi" },
+        ]}
+        value={skeleton ? "skeleton" : "loaded"}
+        onChange={(v) => setSkeleton(v === "skeleton")}
       />
       <View style={{ alignSelf: "stretch" }}>{children(skeleton)}</View>
-    </View>
-  );
-}
-
-/**
- * YALNIZ STORY'LER — web `Segmented size="sm"` görünümü (tonlu iz, seçili
- * öğe yüzey rengi + hafif gölge). Native `Segmented` Dalga 1c'de gelince
- * bunun yerini alır.
- */
-function SegmentedStub({ label, options, value, onChange }: { label: string; options: string[]; value: number; onChange: (index: number) => void }) {
-  const theme = useTheme();
-  const c = theme.color.canvas;
-  return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: "row", padding: 2, borderRadius: 8, backgroundColor: c.surfaceAlt }}>
-      {options.map((option, index) => {
-        const selected = index === value;
-        return (
-          <Pressable
-            key={option}
-            accessibilityRole="radio"
-            accessibilityState={{ checked: selected }}
-            onPress={() => onChange(index)}
-            hitSlop={{ top: 8, bottom: 8 }}
-            style={{
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-              borderRadius: 6,
-              backgroundColor: selected ? c.surface : "transparent",
-              ...(selected ? { shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 1 } : null),
-            }}
-          >
-            <Text style={{ fontSize: 13, lineHeight: 18, fontWeight: "500", color: selected ? c.foreground : c.muted }}>{option}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-/**
- * YALNIZ STORY'LER — web `Field`ın görünümü (etiket 14/500, alana 6px; ipucu /
- * hata 12px, üstten 6px). Native `Field` Dalga 1'de gelince bunun yerini alır.
- */
-export function FieldStub({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: React.ReactNode }) {
-  const theme = useTheme();
-  const c = theme.color;
-  const text = (size: number, color: string, weight: "400" | "500" = "400") => ({ fontSize: size, lineHeight: size === 14 ? 20 : 16, color, fontWeight: weight });
-  return (
-    <View style={{ gap: 6, alignSelf: "stretch" }}>
-      <Text style={text(14, c.canvas.foreground, "500")}>{label}</Text>
-      <View>
-        {children}
-        {hint ? <Text style={[text(12, c.canvas.muted), { marginTop: 6 }]}>{hint}</Text> : null}
-        {error ? <Text style={[text(12, c.error.text), { marginTop: 6 }]}>{error}</Text> : null}
-      </View>
     </View>
   );
 }

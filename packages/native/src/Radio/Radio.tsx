@@ -6,6 +6,7 @@ import { useTheme } from "../theme/useTheme";
 import { SelectionRow } from "../lib/SelectionRow";
 import { radioColors, type SelectionVariant } from "../lib/selectionColors";
 import { useControllable } from "../lib/useControllable";
+import { useFieldControl } from "../lib/fieldContext";
 import type { SkeletonableProps } from "../lib/Skeleton";
 
 export type RadioValue = string | number;
@@ -111,7 +112,8 @@ export function Radio({ value, checked, defaultChecked = false, disabled = false
 
 const toOption = (option: RadioValue | RadioOption): RadioOption => (typeof option === "object" ? option : { label: String(option), value: option });
 
-export function RadioGroup({ value, defaultValue, onChange, options, children, disabled = false, variant, color, size, orientation = "vertical", skeleton = false, accessibilityLabel, style }: RadioGroupProps) {
+export function RadioGroup({ value, defaultValue, onChange, options, children, disabled: ownDisabled, variant, color, size, orientation = "vertical", skeleton: ownSkeleton, accessibilityLabel: ownLabel, style }: RadioGroupProps) {
+  const { disabled, skeleton, accessibilityLabel } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel });
   const [selected, setSelected] = useControllable<RadioValue | undefined>(value, defaultValue);
   const select = (next: RadioValue) => {
     if (next === selected) return;

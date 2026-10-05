@@ -14,8 +14,14 @@
 export { Button } from "./Button";
 export type { ButtonProps, ButtonShape, ButtonIconPosition } from "./Button";
 
-export { Input } from "./Input";
-export type { InputProps, InputVariant, InputShape } from "./Input";
+export { Input, Textarea, SearchInput, OtpInput } from "./Input";
+export type { InputProps, InputVariant, InputShape, TextareaProps, TextareaAutoSize, SearchInputProps, OtpInputProps } from "./Input";
+
+export { Field } from "./Field";
+export type { FieldProps } from "./Field";
+
+export { Segmented } from "./Segmented";
+export type { SegmentedProps, SegmentedOption, SegmentedValue } from "./Segmented";
 
 export { Card, CardMeta } from "./Card";
 export type { CardProps, CardMetaProps, CardSlot, CardSlotStyles } from "./Card";
@@ -51,7 +57,7 @@ export { Switch } from "./Switch";
 export type { SwitchProps } from "./Switch";
 
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";

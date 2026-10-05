@@ -60,3 +60,13 @@ export function MinusIcon({ size = 16, color = "currentColor", strokeWidth = 3 }
     </Svg>
   );
 }
+
+export function SearchIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="m21 21-4.34-4.34" {...s} />
+      <Circle cx={11} cy={11} r={8} {...s} />
+    </Svg>
+  );
+}

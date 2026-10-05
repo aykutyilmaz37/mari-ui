@@ -7,6 +7,7 @@ import { CheckIcon, MinusIcon } from "../lib/icons";
 import { SelectionRow } from "../lib/SelectionRow";
 import { checkboxColors, type SelectionVariant } from "../lib/selectionColors";
 import { useControllable } from "../lib/useControllable";
+import { useFieldControl } from "../lib/fieldContext";
 import type { SkeletonableProps } from "../lib/Skeleton";
 
 export type CheckboxShape = "default" | "pill" | "square";
@@ -34,7 +35,8 @@ export interface CheckboxProps extends SkeletonableProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function Checkbox({ checked, defaultChecked = false, indeterminate = false, disabled = false, onChange, label, description, size = "md", shape = "default", variant = "outline", color, skeleton = false, accessibilityLabel, style }: CheckboxProps) {
+export function Checkbox({ checked, defaultChecked = false, indeterminate = false, disabled: ownDisabled, onChange, label, description, size = "md", shape = "default", variant = "outline", color, skeleton: ownSkeleton, accessibilityLabel, style }: CheckboxProps) {
+  const { disabled, skeleton } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton });
   const theme = useTheme();
   const m = useNativeConfig().selection[size];
   const [value, setValue] = useControllable(checked, defaultChecked);

@@ -6,6 +6,7 @@ import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
 import { switchTrackColor } from "../lib/selectionColors";
 import { useControllable } from "../lib/useControllable";
+import { useFieldControl } from "../lib/fieldContext";
 import { Hug } from "../lib/Hug";
 import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
 
@@ -104,7 +105,8 @@ function SwitchTrack({ on, m, color, disabled, loading, trueLabel, falseLabel }:
   );
 }
 
-export function Switch({ checked, defaultChecked = false, onChange, disabled = false, label, switchTrueLabel, switchFalseLabel, size = "md", color = "primary", loading = false, skeleton = false, accessibilityLabel, style }: SwitchProps) {
+export function Switch({ checked, defaultChecked = false, onChange, disabled: ownDisabled, label, switchTrueLabel, switchFalseLabel, size = "md", color = "primary", loading = false, skeleton: ownSkeleton, accessibilityLabel: ownLabel, style }: SwitchProps) {
+  const { disabled, skeleton, accessibilityLabel } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel });
   const theme = useTheme();
   const config = useNativeConfig();
   const m = config.switch[size];

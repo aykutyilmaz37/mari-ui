@@ -78,6 +78,13 @@ export interface NativeSwitchSize {
   readonly fontSize: number;
 }
 
+export interface NativeSegmentedSize {
+  readonly height: number;
+  readonly fontSize: number;
+  readonly paddingHorizontal: number;
+  readonly radius: number;
+}
+
 export interface NativeTagSize {
   readonly fontSize: number;
   readonly lineHeight: number;
@@ -99,6 +106,7 @@ export interface NativeConfig {
   readonly tag: NativeTagSize;
   readonly selection: Readonly<Record<Size, NativeSelectionSize>>;
   readonly switch: Readonly<Record<Size, NativeSwitchSize>>;
+  readonly segmented: Readonly<Record<Size, NativeSegmentedSize>>;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -155,6 +163,12 @@ export const defaultNativeConfig: NativeConfig = {
     md: { width: 51, labelWidth: 80, height: 31, knob: 27, fontSize: 12 },
     lg: { width: 60, labelWidth: 96, height: 36, knob: 32, fontSize: 13 },
   },
+  // Segmented: md = iOS UISegmentedControl 32pt, 13 orta kalın; dokunma alanı hitSlop ile 44.
+  segmented: {
+    sm: { height: 28, fontSize: 13, paddingHorizontal: 10, radius: 7 },
+    md: { height: 32, fontSize: 13, paddingHorizontal: 12, radius: 8 },
+    lg: { height: 40, fontSize: 15, paddingHorizontal: 16, radius: 10 },
+  },
 };
 
 export interface NativeConfigOverrides {
@@ -168,6 +182,7 @@ export interface NativeConfigOverrides {
   tag?: Partial<NativeTagSize>;
   selection?: Partial<Record<Size, Partial<NativeSelectionSize>>>;
   switch?: Partial<Record<Size, Partial<NativeSwitchSize>>>;
+  segmented?: Partial<Record<Size, Partial<NativeSegmentedSize>>>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -188,6 +203,7 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     tag: { ...base.tag, ...overrides.tag },
     selection: mergeScale(base.selection, overrides.selection),
     switch: mergeScale(base.switch, overrides.switch),
+    segmented: mergeScale(base.segmented, overrides.segmented),
   };
 }
 

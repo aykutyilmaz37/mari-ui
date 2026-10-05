@@ -3,6 +3,7 @@ import { Pressable, TextInput, type TextInputProps } from "react-native";
 import { useControllableState } from "@mari-ui/core";
 import { useStyles } from "../styles/useStyles";
 import { SkeletonBox } from "../lib/Skeleton";
+import { useFieldControl } from "../lib/fieldContext";
 import { formatMask } from "./mask";
 import { ClearButton, CountText, PasswordToggle } from "./FieldAdornments";
 import type { InputProps, InputType } from "./types";
@@ -50,13 +51,13 @@ export function Input({
   onPressEnter,
   placeholder,
   type = "text",
-  disabled = false,
+  disabled: ownDisabled,
   readOnly = false,
   size = "md",
   shape = "default",
   variant = "outline",
   color,
-  status,
+  status: ownStatus,
   icon,
   iconPosition = "start",
   allowClear = false,
@@ -79,10 +80,12 @@ export function Input({
   style,
   inputStyle,
   testID,
-  accessibilityLabel,
-  accessibilityHint,
-  skeleton = false,
+  accessibilityLabel: ownLabel,
+  accessibilityHint: ownHint,
+  skeleton: ownSkeleton,
 }: InputProps) {
+  // Field içindeyse etiket, ipucu/hata, devre dışı, hata rengi ve iskelet oradan gelir.
+  const { disabled, skeleton, accessibilityLabel, accessibilityHint, status } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel, accessibilityHint: ownHint, status: ownStatus });
   const [current, setCurrent] = useControllableState({ value, defaultValue, onChange: onChangeText });
   const [focused, setFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
