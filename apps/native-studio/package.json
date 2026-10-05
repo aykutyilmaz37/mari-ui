@@ -1,0 +1,29 @@
+{
+  "name": "@mari-ui/native-studio",
+  "version": "0.0.0",
+  "private": true,
+  "description": "@mari-ui/native'i gerçek bir Expo uygulamasında (Expo Go / web) denemek için vitrin.",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mari-ui/native": "workspace:*",
+    "@mari-ui/tokens": "workspace:*",
+    "expo": "~57.0.26",
+    "expo-font": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-web": "^0.21.3"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  }
+}

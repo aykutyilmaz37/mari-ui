@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useControllableState } from "@mari-ui/core";
 import { useStyles } from "../styles/useStyles";
+import { useTheme } from "../theme/useTheme";
 import type { InputProps } from "./types";
 
 export type { InputProps };
@@ -39,6 +40,7 @@ export function Input({
   const [internalValue, setInternalValue] = useControllableState({ value, defaultValue, onChange: onChangeText });
   const [focused, setFocused] = useState(false);
   const styles = useStyles("input", { color, variant, size, shape, disabled, focused });
+  const theme = useTheme();
 
   return (
     <View style={[styles.container, style]}>
@@ -47,7 +49,9 @@ export function Input({
         value={internalValue}
         onChangeText={setInternalValue}
         placeholder={placeholder}
-        placeholderTextColor={styles.input.color}
+        // Yer tutucu soluk (web'deki `input::placeholder` ile aynı `muted`); eskiden metin rengiydi →
+        // boş alan doldurulmuş gibi görünüyordu (Expo'da gerçek render'da fark edildi).
+        placeholderTextColor={theme.color.canvas.muted}
         editable={!disabled}
         maxLength={maxLength}
         secureTextEntry={secureTextEntry}
