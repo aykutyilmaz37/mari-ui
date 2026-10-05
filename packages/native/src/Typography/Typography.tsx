@@ -4,7 +4,8 @@ import type { ColorRole } from "@mari-ui/core";
 import { useNativeConfig, type NativeTextSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
-import { SkeletonBox } from "../lib/Skeleton";
+import { Hug } from "../lib/Hug";
+import { SkeletonBox, SkeletonLine } from "../lib/Skeleton";
 import type { ParagraphProps, TextProps, TextWeight, TitleProps, TypographyEllipsis } from "./types";
 
 export type { ParagraphProps, TextProps, TextWeight, TitleProps, TitleLevel, TypographyEllipsis } from "./types";
@@ -29,15 +30,6 @@ function useTextColor(color: ColorRole | undefined, muted: boolean | undefined):
   return color ? theme.color[color].text : theme.color.canvas.foreground;
 }
 
-/** Tam bir satır yüksekliğinde kutu, ortasında yazı gövdesi kalınlığında çubuk — yüklenince zıplamaz. */
-function SkeletonLine({ metrics, width }: { metrics: NativeTextSize; width: `${number}%` }) {
-  return (
-    <View style={{ height: metrics.lineHeight, justifyContent: "center" }}>
-      <SkeletonBox style={{ width, height: Math.round(metrics.fontSize * 0.7), borderRadius: 4 }} />
-    </View>
-  );
-}
-
 /**
  * Metin zaten varsa görünmez olarak yerinde çizilir; satır sayısı onun gerçek
  * yüksekliğinden çıkar → hangi genişlikte olursa olsun yüklenince kayma yok.
@@ -46,7 +38,7 @@ function SkeletonLine({ metrics, width }: { metrics: NativeTextSize; width: `${n
 function ParagraphSkeleton({ metrics, rows, ellipsis, style, children }: { metrics: NativeTextSize; rows: number; ellipsis?: TypographyEllipsis; style?: StyleProp<TextStyle>; children?: React.ReactNode }) {
   const [measured, setMeasured] = useState<number>();
   const count = Math.max(1, measured ?? Math.floor(rows));
-  const lines = Array.from({ length: count }, (_, i) => <SkeletonLine key={i} metrics={metrics} width={i === count - 1 && count > 1 ? "60%" : "100%"} />);
+  const lines = Array.from({ length: count }, (_, i) => <SkeletonLine key={i} fontSize={metrics.fontSize} lineHeight={metrics.lineHeight} width={i === count - 1 && count > 1 ? "60%" : "100%"} />);
   if (children == null) {
     return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>{lines}</View>;
   }
@@ -77,10 +69,12 @@ export function Text({ children, color, weight, muted, ellipsis, skeleton = fals
     // Metin varsa görünmez kalır → çubuk tam o genişlikte; yoksa makul bir kelime grubu genişliği.
     const bar = Math.round(metrics.fontSize * 0.7);
     return (
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "flex-start", maxWidth: "100%", minWidth: children == null ? 120 : undefined, height: metrics.lineHeight }}>
+      <Hug>
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ maxWidth: "100%", minWidth: children == null ? 120 : undefined, height: metrics.lineHeight }}>
         <RNText numberOfLines={1} style={[textStyle, style, { opacity: 0 }]}>{children ?? " "}</RNText>
         <SkeletonBox style={{ position: "absolute", left: 0, right: 0, top: (metrics.lineHeight - bar) / 2, height: bar, borderRadius: 4 }} />
-      </View>
+        </View>
+      </Hug>
     );
   }
 
@@ -121,7 +115,7 @@ export function Title({ level = 1, children, color, ellipsis, skeleton = false, 
   if (skeleton) {
     return (
       <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>
-        <SkeletonLine metrics={metrics} width="40%" />
+        <SkeletonLine fontSize={metrics.fontSize} lineHeight={metrics.lineHeight} width="40%" />
       </View>
     );
   }

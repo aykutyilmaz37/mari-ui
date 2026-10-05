@@ -26,8 +26,23 @@ export type { ListProps, ListItemProps, ListItemMetaProps, ListItemLayout, Infin
 export { Title, Text, Paragraph } from "./Typography";
 export type { TitleProps, TextProps, ParagraphProps, TitleLevel, TextWeight, TypographyEllipsis } from "./Typography";
 
+export { Divider } from "./Divider";
+export type { DividerProps, DividerLineStyle, DividerOrientation, DividerLabelAlign } from "./Divider";
+
+export { Skeleton, SkeletonBlock } from "./Skeleton";
+export type { SkeletonProps, SkeletonBlockProps, SkeletonAvatarProps, SkeletonAvatarShape, SkeletonTitleProps, SkeletonParagraphProps } from "./Skeleton";
+
+export { Tag } from "./Tag";
+export type { TagProps } from "./Tag";
+
+export { Badge, StatusBadge } from "./Badge";
+export type { BadgeProps, StatusBadgeProps } from "./Badge";
+
+export { Avatar, AvatarGroup } from "./Avatar";
+export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape } from "./Avatar";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";

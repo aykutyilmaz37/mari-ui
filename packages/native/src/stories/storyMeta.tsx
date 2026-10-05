@@ -9,11 +9,10 @@
  * story'yi `render(args)` ile kendisi çağırır.
  */
 import React from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { darkTheme, lightTheme } from "@mari-ui/tokens";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import { useTheme } from "../theme/useTheme";
-import { Button } from "../Button/Button";
 
 interface ComponentDocInput {
   summary: string;
@@ -75,18 +74,52 @@ export const SKELETON_STORY_DOC =
  */
 export function SkeletonDemo({ children }: { children: (skeleton: boolean) => React.ReactNode }) {
   const [skeleton, setSkeleton] = React.useState(true);
+  // Web ile aynı düzen: geçiş ile component arası 16 (`gap-4`).
   return (
-    <Stack>
-      <Row>
-        <Button size="sm" variant={skeleton ? "solid" : "outline"} color="neutral" onPress={() => setSkeleton(true)}>
-          İskelet
-        </Button>
-        <Button size="sm" variant={skeleton ? "outline" : "solid"} color="neutral" onPress={() => setSkeleton(false)}>
-          Yüklendi
-        </Button>
-      </Row>
-      {children(skeleton)}
-    </Stack>
+    <View style={{ gap: 16, alignSelf: "stretch", alignItems: "flex-start" }}>
+      <SegmentedStub
+        label="Yükleme durumu"
+        options={["İskelet", "Yüklendi"]}
+        value={skeleton ? 0 : 1}
+        onChange={(index) => setSkeleton(index === 0)}
+      />
+      <View style={{ alignSelf: "stretch" }}>{children(skeleton)}</View>
+    </View>
+  );
+}
+
+/**
+ * YALNIZ STORY'LER — web `Segmented size="sm"` görünümü (tonlu iz, seçili
+ * öğe yüzey rengi + hafif gölge). Native `Segmented` Dalga 1c'de gelince
+ * bunun yerini alır.
+ */
+function SegmentedStub({ label, options, value, onChange }: { label: string; options: string[]; value: number; onChange: (index: number) => void }) {
+  const theme = useTheme();
+  const c = theme.color.canvas;
+  return (
+    <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: "row", padding: 2, borderRadius: 8, backgroundColor: c.surfaceAlt }}>
+      {options.map((option, index) => {
+        const selected = index === value;
+        return (
+          <Pressable
+            key={option}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: selected }}
+            onPress={() => onChange(index)}
+            hitSlop={{ top: 8, bottom: 8 }}
+            style={{
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: 6,
+              backgroundColor: selected ? c.surface : "transparent",
+              ...(selected ? { shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 1 } : null),
+            }}
+          >
+            <Text style={{ fontSize: 13, lineHeight: 18, fontWeight: "500", color: selected ? c.foreground : c.muted }}>{option}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 

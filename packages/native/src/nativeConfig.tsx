@@ -42,12 +42,41 @@ export interface NativeTextSize {
 
 export type NativeTextStyle = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body";
 
+export interface NativeAvatarSize {
+  readonly size: number;
+  readonly fontSize: number;
+  /** `shape="square"` köşesi (tema radius anahtarı). */
+  readonly radius: keyof Theme["radius"];
+  /** AvatarGroup içinde üst üste binme payı. */
+  readonly overlap: number;
+}
+
+export interface NativeBadgeSize {
+  readonly height: number;
+  readonly fontSize: number;
+  readonly paddingHorizontal: number;
+  readonly dot: number;
+}
+
+export interface NativeTagSize {
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly paddingHorizontal: number;
+  readonly paddingVertical: number;
+  readonly gap: number;
+  readonly iconSize: number;
+  readonly radius: keyof Theme["radius"];
+}
+
 /** Native ölçüleri web ölçeğinden bağımsızdır; değerler dp/pt cinsindendir. */
 export interface NativeConfig {
   readonly sizes: Readonly<Record<ExtendedSize, NativeControlSize>>;
   readonly card: Readonly<Record<Size, NativeCardSize>>;
   readonly list: Readonly<Record<Size, NativeListSize>>;
   readonly typography: Readonly<Record<NativeTextStyle, NativeTextSize>>;
+  readonly avatar: Readonly<Record<Size, NativeAvatarSize>>;
+  readonly badge: Readonly<Record<"sm" | "md", NativeBadgeSize>>;
+  readonly tag: NativeTagSize;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -79,6 +108,19 @@ export const defaultNativeConfig: NativeConfig = {
     h6: { fontSize: 15, lineHeight: 20 },
     body: { fontSize: 17, lineHeight: 22 },
   },
+  // Avatar: 40 = iOS liste satırı / M3 avatar; 32 kompakt, 56 profil başlığı.
+  avatar: {
+    sm: { size: 32, fontSize: 13, radius: "md", overlap: 6 },
+    md: { size: 40, fontSize: 16, radius: "lg", overlap: 8 },
+    lg: { size: 56, fontSize: 22, radius: "xl", overlap: 12 },
+  },
+  // Badge: iOS bildirim rozeti ~20pt, 12 yarı kalın.
+  badge: {
+    sm: { height: 16, fontSize: 11, paddingHorizontal: 4, dot: 6 },
+    md: { height: 20, fontSize: 12, paddingHorizontal: 6, dot: 8 },
+  },
+  // Tag: HIG Footnote 13/18 → 24pt yükseklik (statik etiket; kapatma düğmesi hitSlop ile 44).
+  tag: { fontSize: 13, lineHeight: 18, paddingHorizontal: 8, paddingVertical: 3, gap: 4, iconSize: 14, radius: "sm" },
 };
 
 export interface NativeConfigOverrides {
@@ -87,6 +129,9 @@ export interface NativeConfigOverrides {
   card?: Partial<Record<Size, Partial<NativeCardSize>>>;
   list?: Partial<Record<Size, Partial<NativeListSize>>>;
   typography?: Partial<Record<NativeTextStyle, Partial<NativeTextSize>>>;
+  avatar?: Partial<Record<Size, Partial<NativeAvatarSize>>>;
+  badge?: Partial<Record<"sm" | "md", Partial<NativeBadgeSize>>>;
+  tag?: Partial<NativeTagSize>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -102,6 +147,9 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     card: mergeScale(base.card, overrides.card),
     list: mergeScale(base.list, overrides.list),
     typography: mergeScale(base.typography, overrides.typography),
+    avatar: mergeScale(base.avatar, overrides.avatar),
+    badge: mergeScale(base.badge, overrides.badge),
+    tag: { ...base.tag, ...overrides.tag },
   };
 }
 
