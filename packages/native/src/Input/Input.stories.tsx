@@ -21,7 +21,7 @@ const meta: Meta<typeof Input> = {
       description: {
         component: componentDoc({
           summary:
-            "Tek satır metin girişi — web `Input` ile birebir görünüm ve özellikler: `variant`, `size`, `shape`, doğrulama rengi " +
+            "Tek satır metin girişi — web `Input` ile aynı renkler, varyantlar ve özellikler (boyutlar native ölçekte: 36/44/50): `variant`, `size`, `shape`, doğrulama rengi " +
             "(`color` / `status`), `icon`, `allowClear`, `type=\"password\"` göster/gizle, `showCount` / `count`, `mask`, `onPressEnter`, `skeleton`.",
           whenToUse: ["Kısa serbest metin: ad, e-posta, arama, telefon.", "Biçimli giriş (`mask`): telefon, IBAN."],
           whenNotToUse: ["Çok satırlı metin — Textarea (Dalga 1).", "Sabit seçenekler — Select / Segmented."],

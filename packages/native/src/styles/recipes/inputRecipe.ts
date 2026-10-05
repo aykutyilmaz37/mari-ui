@@ -1,8 +1,8 @@
 import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
-import { componentSize, type ColorRole, type Size } from "@mari-ui/core";
+import type { ColorRole, Size } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
-import { resolveComponentSize } from "../../theme/sizeToRNStyle";
+import { nativeSize } from "../../theme/nativeSize";
 import { withAlpha } from "../../theme/skeletonColor";
 import { lineHeightFor } from "../lineHeight";
 import type { InputShape, InputVariant } from "../../Input/types";
@@ -23,6 +23,8 @@ export interface InputRecipeResult {
   mutedColor: string;
   /** Karakter sayacı yazısı (web `text-xs tabular-nums text-mari-muted`). */
   count: TextStyle;
+  /** Süs / göz ikonu boyutu (native ölçek); temizle X'i bundan 2px küçük. */
+  iconSize: number;
   /** Görünümü değiştirmeden dokunma alanını 44px'e tamamlayan pay. */
   hitSlop: { top: number; bottom: number; left: number; right: number };
 }
@@ -35,7 +37,8 @@ function ring(color: string, alpha: number): ViewStyle {
 }
 
 /**
- * Web `Input` ile birebir (getComputedStyle ölçümüyle doğrulandı):
+ * Renk / kenarlık / odak web `Input` ile aynı (getComputedStyle ölçümüyle
+ * doğrulandı); boyut native ölçekte (theme/nativeSize):
  * - Köşe her boyutta 8px (web `rounded-md` boyutun köşesini ezer); `pill`
  *   tam yuvarlak + 16px yan boşluk; `square` ve `underlined` köşesiz.
  * - Dinlenme kenarlığı: renk verilmediyse `canvas.input` (nötr gri), verildiyse
@@ -46,12 +49,14 @@ function ring(color: string, alpha: number): ViewStyle {
  */
 export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRecipeResult {
   const { color, variant, size, shape, disabled, focused } = options;
-  const sizeStyle = resolveComponentSize(componentSize[size]);
+  const sz = nativeSize(theme, size);
   const accent = theme.color[color ?? "primary"].text;
   const restBorder = color ? theme.color[color].text : theme.color.canvas.input;
   const borderColor = focused ? accent : restBorder;
 
-  let radius = theme.radius.md ? Number.parseFloat(theme.radius.md) * 16 : 8;
+  // Köşe: buton ile aynı boyut ölçeği (native) — web'de alan köşesi her boyutta md'ydi,
+  // native'de boyutla büyür ki aynı satırdaki buton ve alan uyumlu görünsün.
+  let radius = sz.borderRadius;
   if (shape === "pill") radius = 9999;
   if (shape === "square" || variant === "underlined") radius = 0;
 
@@ -62,15 +67,15 @@ export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRec
     underlined: { borderWidth: 0, borderBottomWidth: 1, borderColor, backgroundColor: "transparent" },
   };
 
-  const height = Number(sizeStyle.container.height) || 0;
+  const height = sz.height;
   const vertical = Math.max(0, Math.ceil((MIN_TOUCH - height) / 2));
 
   const container: ViewStyle = {
     flexDirection: "row",
     alignItems: "center",
     height,
-    paddingHorizontal: shape === "pill" && variant !== "underlined" ? 16 : sizeStyle.container.paddingHorizontal,
-    gap: sizeStyle.container.gap,
+    paddingHorizontal: shape === "pill" && variant !== "underlined" ? sz.paddingHorizontal + 4 : sz.paddingHorizontal,
+    gap: sz.gap,
     borderRadius: radius,
     ...variantStyle[variant],
     ...(disabled && { opacity: 0.5 }),
@@ -83,7 +88,7 @@ export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRec
     // Tek satırlı TextInput'ta dikey ortalama: iç boşluk ve platform satır payı sıfırlanır.
     paddingVertical: 0,
     paddingHorizontal: 0,
-    fontSize: sizeStyle.label.fontSize,
+    fontSize: sz.fontSize,
     color: theme.color.canvas.foreground,
   };
 
@@ -95,5 +100,5 @@ export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRec
     color: theme.color.canvas.muted,
   };
 
-  return { container, input, mutedColor: theme.color.canvas.muted, count, hitSlop: { top: vertical, bottom: vertical, left: 0, right: 0 } };
+  return { container, input, mutedColor: theme.color.canvas.muted, count, iconSize: sz.iconSize, hitSlop: { top: vertical, bottom: vertical, left: 0, right: 0 } };
 }

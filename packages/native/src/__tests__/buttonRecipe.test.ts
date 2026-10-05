@@ -50,10 +50,11 @@ describe("buttonRecipe", () => {
     expect(label.textDecorationLine).toBe("none");
   });
 
-  it("satır yüksekliği web'in Tailwind ölçeği: sm 12/16, md 14/20, lg 16/24", () => {
-    expect(buttonRecipe(lightTheme, { ...base, size: "sm" }).label.lineHeight).toBe(16);
-    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).label.lineHeight).toBe(20);
-    expect(buttonRecipe(lightTheme, { ...base, size: "lg" }).label.lineHeight).toBe(24);
+  it("native ölçek: yükseklik 32/36/44/50/56, yazı 13/14/16/17/18, satır yüksekliği açık", () => {
+    const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
+    expect(sizes.map((size) => buttonRecipe(lightTheme, { ...base, size }).container.height)).toEqual([32, 36, 44, 50, 56]);
+    expect(sizes.map((size) => buttonRecipe(lightTheme, { ...base, size }).label.fontSize)).toEqual([13, 14, 16, 17, 18]);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).label.lineHeight).toBe(22);
   });
 
   it("basılma = web hover + active: outline/ghost rolün yumuşak zemini, hepsi %98", () => {
@@ -64,14 +65,18 @@ describe("buttonRecipe", () => {
     expect(solid.backgroundColor).toBe(lightTheme.color.primary.solidHover);
   });
 
-  it("ikon boyutu web iconSizeClass ile aynı; dokunma alanı 44'e tamamlanır", () => {
-    expect(buttonRecipe(lightTheme, { ...base, size: "xs" }).iconSize).toBe(12);
-    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).iconSize).toBe(20);
-    const md = buttonRecipe(lightTheme, { ...base, size: "md" }).hitSlop;
-    expect(md).toEqual({ top: 6, bottom: 6, left: 0, right: 0 });
-    const circle = buttonRecipe(lightTheme, { ...base, size: "sm", shape: "circle" }).hitSlop;
-    expect(circle).toEqual({ top: 10, bottom: 10, left: 10, right: 10 });
-    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).hitSlop.top).toBe(0);
+  it("ikon 14–22; dokunma alanı 44'e tamamlanır (md ve üstü zaten 44+)", () => {
+    expect(buttonRecipe(lightTheme, { ...base, size: "xs" }).iconSize).toBe(14);
+    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).iconSize).toBe(22);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).hitSlop).toEqual({ top: 0, bottom: 0, left: 0, right: 0 });
+    expect(buttonRecipe(lightTheme, { ...base, size: "xs" }).hitSlop).toEqual({ top: 6, bottom: 6, left: 0, right: 0 });
+    expect(buttonRecipe(lightTheme, { ...base, size: "sm", shape: "circle" }).hitSlop).toEqual({ top: 4, bottom: 4, left: 4, right: 4 });
+  });
+
+  it("köşe temanın radius anahtarından (xs/sm md · md/lg lg · xl xl)", () => {
+    expect(buttonRecipe(lightTheme, { ...base, size: "sm" }).container.borderRadius).toBe(8);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).container.borderRadius).toBe(12);
+    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).container.borderRadius).toBe(16);
   });
 
   it("boyut arttıkça height ve fontSize artar (sm < md < lg)", () => {

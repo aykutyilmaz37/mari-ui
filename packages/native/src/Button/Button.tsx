@@ -42,10 +42,11 @@ function sizedIcon(icon: ReactNode, size: number, color: unknown): ReactNode {
 }
 
 /**
- * Web `Button` ile aynı eksenler ve görünüm (web ↔ native ölçümüyle
- * doğrulandı: yükseklik, iç boşluk, köşe, renkler, yazı boyutu/kalınlığı/satır
- * yüksekliği). Native farkları: `onClick` → `onPress`; `href`/`target` yok;
- * hover yok → basılınca web'in hover + active hali birlikte.
+ * Web `Button` ile aynı eksenler, renkler ve davranış (web ↔ native ölçümüyle
+ * doğrulandı: renkler, kenarlık, kalınlık, varyantlar). Boyutlar native
+ * ölçekte (theme/nativeSize — Apple HIG + Material 3; md 44). Native
+ * farkları: `onClick` → `onPress`; `href`/`target` yok; hover yok → basılınca
+ * web'in hover + active hali birlikte.
  */
 export function Button({
   color = "primary",

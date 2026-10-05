@@ -23,7 +23,7 @@ export interface ButtonProps extends SkeletonableProps {
   color?: ColorRole;
   /** Dolgu stili. Varsayılan: `solid`. Web ile aynı sözlük; `link` web'deki gibi alt çizgisiz, dolgusuz. */
   variant?: Variant;
-  /** xs 20 · sm 24 · md 32 · lg 40 · xl 48 (yükseklik, web ile aynı). Varsayılan: `md`. */
+  /** Native ölçek: xs 32 · sm 36 · md 44 · lg 50 · xl 56 (web 20–48). Varsayılan: `md`. */
   size?: ExtendedSize;
   shape?: ButtonShape;
   /** Tam genişlik. */

@@ -24,7 +24,7 @@ const meta: Meta<typeof Button> = {
       description: {
         component: componentDoc({
           summary:
-            "Aksiyon tetikleyen temel öğe — web `Button` ile birebir aynı görünüm ve eksenler: `color`, `variant`, `size`, `shape`, " +
+            "Aksiyon tetikleyen temel öğe — web `Button` ile aynı renkler, varyantlar ve eksenler (boyutlar native ölçekte): `color`, `variant`, `size`, `shape`, " +
             "`loading` (gecikmeli dahil), `icon`, `block`, `skeleton`.",
           whenToUse: ["Bir eylemi başlatmak: kaydet, gönder, devam et.", "Formun ana eylemi (`block` ile tam genişlik)."],
           whenNotToUse: ["Sayfa geçişi — router'ınızın bağlantısı (expo-router `Link`)."],
@@ -161,7 +161,7 @@ export const AllVariants: Story = {
 export const Sizes: Story = {
   name: "Boyutlar",
   ...storyDoc(
-    "`xs`–`xl` — 20/24/32/40/48px yükseklik (web ile aynı). Dokunmatik ekranda birincil eylemler için `lg`/`xl` tercih edin; küçükler yine 44px dokunma alanı alır.",
+    "`xs`–`xl` — native ölçek 32/36/44/50/56 (Apple HIG + Material 3; web 20–48). Varsayılan `md` 44: Apple'ın önerdiği kontrol yüksekliği. `xs`/`sm` görünüm değişmeden 44px dokunma alanı alır.",
     `<Button size="xs">xs</Button>
 <Button size="sm">sm</Button>
 <Button size="md">md</Button>

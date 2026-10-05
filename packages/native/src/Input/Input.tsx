@@ -29,14 +29,15 @@ function keyboardFor(type: InputType, masked: boolean): Partial<TextInputProps> 
   }
 }
 
-/** Süs ikonu: boyut / renk verilmemişse 16px ve soluk renk (web adornment `text-mari-muted`). */
-function adornment(icon: ReactNode, color: string): ReactNode {
+/** Süs ikonu: boyut / renk verilmemişse alan boyutunun ikon ölçüsü ve soluk renk (web adornment `text-mari-muted`). */
+function adornment(icon: ReactNode, size: number, color: string): ReactNode {
   if (!isValidElement<{ size?: number; color?: string }>(icon)) return icon;
-  return cloneElement(icon, { size: icon.props.size ?? 16, color: icon.props.color ?? color });
+  return cloneElement(icon, { size: icon.props.size ?? size, color: icon.props.color ?? color });
 }
 
 /**
- * Web `Input` ile birebir görünüm (ölçümle doğrulandı) ve aynı özellikler:
+ * Web `Input` ile aynı renk / kenarlık / odak davranışı (ölçümle doğrulandı),
+ * boyutlar native ölçekte (theme/nativeSize), ve aynı özellikler:
  * varyant / boyut / şekil, doğrulama rengi (`color` / `status`), ikon,
  * temizle, şifre göster/gizle, karakter sayacı, maske, Enter eylemi, iskelet.
  * Alanın herhangi bir yerine dokununca yazma alanı odaklanır (web: wrapper
@@ -114,7 +115,7 @@ export function Input({
       style={[styles.container, style]}
       testID={testID}
     >
-      {icon && iconPosition === "start" && adornment(icon, styles.mutedColor)}
+      {icon && iconPosition === "start" && adornment(icon, styles.iconSize, styles.mutedColor)}
       <TextInput
         ref={inputRef}
         value={current}
@@ -148,10 +149,10 @@ export function Input({
         // Hata rengi = geçersiz (web: otomatik aria-invalid).
         aria-invalid={resolvedColor === "error" || undefined}
       />
-      {clearable && <ClearButton visible={showClear} label={clearLabel} icon={clearIcon} color={styles.mutedColor} onClear={handleClear} />}
+      {clearable && <ClearButton visible={showClear} label={clearLabel} icon={clearIcon} size={styles.iconSize} color={styles.mutedColor} onClear={handleClear} />}
       {(showCount || count?.formatter) && <CountText value={current} maxLength={maxLength} formatter={count?.formatter} style={styles.count} />}
-      {icon && iconPosition === "end" && adornment(icon, styles.mutedColor)}
-      {showToggle && <PasswordToggle visible={passwordVisible} disabled={disabled} color={styles.mutedColor} onToggle={() => setPasswordVisible((v) => !v)} iconRender={visibilityIconRender} />}
+      {icon && iconPosition === "end" && adornment(icon, styles.iconSize, styles.mutedColor)}
+      {showToggle && <PasswordToggle visible={passwordVisible} disabled={disabled} size={styles.iconSize} color={styles.mutedColor} onToggle={() => setPasswordVisible((v) => !v)} iconRender={visibilityIconRender} />}
     </Pressable>
   );
 }

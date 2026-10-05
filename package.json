@@ -14,6 +14,7 @@
     "test": "turbo run test",
     "storybook": "turbo run storybook --filter=@mari-ui/docs",
     "native": "pnpm --filter @mari-ui/native-studio start",
+    "native:web": "pnpm --filter @mari-ui/native-studio web",
     "clean": "turbo run clean && rm -rf node_modules",
     "audit": "pnpm audit --audit-level critical"
   },
