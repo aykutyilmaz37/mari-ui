@@ -1,5 +1,6 @@
 import type { ExtendedSize } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
+import { defaultNativeConfig, type NativeConfig, type NativeControlSize } from "../nativeConfig";
 import { toPx } from "./toPx";
 
 /**
@@ -18,30 +19,17 @@ import { toPx } from "./toPx";
  *
  * Köşe sabit sayı değil, temanın radius anahtarı — `density.radius` native'de de geçerli.
  */
-interface NativeSizeSpec {
-  height: number;
-  fontSize: number;
-  lineHeight: number;
-  paddingHorizontal: number;
-  gap: number;
-  iconSize: number;
-  radius: keyof Theme["radius"];
-}
+export const NATIVE_SIZE = defaultNativeConfig.sizes;
 
-export const NATIVE_SIZE: Record<ExtendedSize, NativeSizeSpec> = {
-  xs: { height: 32, fontSize: 13, lineHeight: 18, paddingHorizontal: 12, gap: 6, iconSize: 14, radius: "md" },
-  sm: { height: 36, fontSize: 14, lineHeight: 20, paddingHorizontal: 14, gap: 6, iconSize: 16, radius: "md" },
-  md: { height: 44, fontSize: 16, lineHeight: 22, paddingHorizontal: 16, gap: 8, iconSize: 18, radius: "lg" },
-  lg: { height: 50, fontSize: 17, lineHeight: 22, paddingHorizontal: 20, gap: 8, iconSize: 20, radius: "lg" },
-  xl: { height: 56, fontSize: 18, lineHeight: 24, paddingHorizontal: 24, gap: 10, iconSize: 22, radius: "xl" },
-};
-
-export interface ResolvedNativeSize extends Omit<NativeSizeSpec, "radius"> {
+export interface ResolvedNativeSize extends Omit<NativeControlSize, "radius"> {
   borderRadius: number;
 }
 
 /** Ölçek + temanın köşe değeri (rem → px). */
-export function nativeSize(theme: Theme, size: ExtendedSize): ResolvedNativeSize {
-  const { radius, ...rest } = NATIVE_SIZE[size];
+export function nativeSize(theme: Theme, size: ExtendedSize, config: NativeConfig = defaultNativeConfig): ResolvedNativeSize {
+  const { radius, ...rest } = config.sizes[size];
   return { ...rest, borderRadius: toPx(theme.radius[radius]) };
 }
+
+/** Kart yerleşimi de ayrı native config'ten gelir; kontrol yüksekliği kart yüksekliği değildir. */
+export const NATIVE_CARD_SIZE = defaultNativeConfig.card;

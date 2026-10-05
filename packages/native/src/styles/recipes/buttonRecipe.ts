@@ -4,6 +4,7 @@ import { resolveColorVariant, type ColorRole, type ExtendedSize, type Variant } 
 import type { Theme } from "@mari-ui/tokens";
 import { resolveColorVariantStyle } from "../../theme/colorVariantStyle";
 import { nativeSize } from "../../theme/nativeSize";
+import { defaultNativeConfig, type NativeConfig } from "../../nativeConfig";
 import type { ButtonShape } from "../../Button/types";
 
 export interface ButtonRecipeOptions {
@@ -46,10 +47,10 @@ const SHAPE_RADIUS: Partial<Record<ButtonShape, number>> = {
  * create` ÇAĞIRMAZ (bu, çağıran `useStyles` hook'unun işi); bu sayede vitest
  * altında gerçek RN paketini hiç yüklemeden test edilebilir.
  */
-export function buttonRecipe(theme: Theme, options: ButtonRecipeOptions): ButtonRecipeResult {
+export function buttonRecipe(theme: Theme, options: ButtonRecipeOptions, config: NativeConfig = defaultNativeConfig): ButtonRecipeResult {
   const { color, variant, size, shape, block, disabled } = options;
   const colorStyle = resolveColorVariantStyle(theme, resolveColorVariant(color, variant));
-  const sz = nativeSize(theme, size);
+  const sz = nativeSize(theme, size, config);
   const isCircle = shape === "circle";
 
   const container: ViewStyle = {

@@ -3,6 +3,7 @@ import type { ViewStyle, TextStyle } from "react-native";
 import type { ColorRole, Size } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
 import { nativeSize } from "../../theme/nativeSize";
+import { defaultNativeConfig, type NativeConfig } from "../../nativeConfig";
 import { withAlpha } from "../../theme/skeletonColor";
 import { lineHeightFor } from "../lineHeight";
 import type { InputShape, InputVariant } from "../../Input/types";
@@ -47,9 +48,9 @@ function ring(color: string, alpha: number): ViewStyle {
  *   Underlined: yalnız alt çizgi, hale yok.
  * - Zemin: outline `surface`, soft `surfaceAlt`, ghost / underlined saydam.
  */
-export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRecipeResult {
+export function inputRecipe(theme: Theme, options: InputRecipeOptions, config: NativeConfig = defaultNativeConfig): InputRecipeResult {
   const { color, variant, size, shape, disabled, focused } = options;
-  const sz = nativeSize(theme, size);
+  const sz = nativeSize(theme, size, config);
   const accent = theme.color[color ?? "primary"].text;
   const restBorder = color ? theme.color[color].text : theme.color.canvas.input;
   const borderColor = focused ? accent : restBorder;

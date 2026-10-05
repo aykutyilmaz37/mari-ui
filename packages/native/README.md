@@ -4,9 +4,33 @@ mari-ui'ın React Native katmanı. `StyleSheet` + `@mari-ui/tokens`'ın platform
 
 ## Kapsam (Faz 5 — pilot)
 
-Sadece üç component: **Button, Input, Card**. Prop API'si web (`@mari-ui/components`) ile aynı beş eksende (`color`/`variant`/`size`/`shape`/`disabled`) konuşur; web'e özgü DOM kavramları (`href`, `target`, mouse event'leri) native'de yoktur ve uydurulmadı. Kalan 26 component (Faz 3'te web'de tamamlanan) için native karşılıkları henüz yazılmadı — bkz. proje planının "Sonraki fazlar" bölümündeki RN dalgaları (1: form, 2: overlay/geri bildirim, 3: gezinme/veri).
+Paket, Faz 5 pilotundaki **Button, Input, Card** bileşenlerini ve Faz 16.3'te eklenen **List**'i içerir. Web'deki özellikler uygunsa aynı prop adı ve davranışla taşınır; web'e özgü DOM kavramları (`href`, `target`, `onClick`) native'e kopyalanmaz. Native'de karşılıkları (`onPress`, `onLongPress`, `accessibilityRole`) kullanılır. Boyut ve tipografi web değerlerine bağlı değildir: native kontroller ve veri gösterimi kendi native ölçeklerini kullanır. Kalan web component'leri native dalgalarında ele alınacak.
 
-**List (Faz 16.3 notu):** web `List` yazıldı, native karşılığı bilinçli olarak sonraya bırakıldı (kullanıcı kararı). Prop sözleşmesi FlatList'e birebir taşınacak şekilde seçildi: `dataSource`→`data`, `renderItem(item, index)`, `rowKey`→`keyExtractor`, `header`/`footer`→`ListHeaderComponent`/`ListFooterComponent`, `empty`→`ListEmptyComponent`, `split`→`ItemSeparatorComponent`, `loadMore`→`onEndReached`. `ListItem`/`ListItemMeta` aynı adlarla `View` tabanlı yazılmalı.
+**List (Faz 16.3):** Native `List`, `ListItem` ve `ListItemMeta`, React Native `FlatList` üzerine kuruludur. `data`, `keyExtractor`, `ListHeaderComponent`, `ListFooterComponent`, `ListEmptyComponent`, `ItemSeparatorComponent`, `onEndReached`, `refreshing` ve `onRefresh` native adları korunur; `renderItem(item, index)` web'deki kullanım biçimini sürdürür. `infinite={{ hasMore, loading, onLoadMore, endMessage }}` web'deki sonsuz akış davranışını native `onEndReached` ile sağlar; kayıtları `onLoadMore` içinde `data`ya ekleyin. Alt bölüm yükleme göstergesi, erişilebilir bir “Daha fazla yükle” düğmesi ve isteğe bağlı bitiş mesajı sunar. Eşiği `onEndReachedThreshold` belirler (sonsuz akışta varsayılan `0.5`). `split` ayırıcıyı açıp kapatır, `skeleton` ilk yükleme yer tutucularını gösterir. Büyük listelerde sanallaştırma ve kaydırma davranışı `FlatList`'ten gelir.
+
+## Native ölçü ölçeği
+
+Web ile ortak kalan şey özellik ve renk/tema sözleşmesidir. Ölçüler platforma göre seçilir: buton ile alanlarda native kontrol yüksekliği ve dokunma hedefi, Card'da okunabilir yazı ve içerik yoğunluğu esas alınır. Örneğin Card `sm/md/lg` iç boşluğu 12/16/20dp; gövde `fontSize` değerleri native ölçeğinden 14/16/17'dir (React Native metin ölçeği kullanıcı erişilebilirlik ayarını izler). Bu değerler web Card'ının 12/24/32 dolgu ölçeğinden bağımsızdır. Varsayılan native ölçekler `src/nativeConfig.tsx` içindedir ve `NativeConfigProvider` ile uygulama düzeyinde özelleştirilebilir.
+
+```tsx
+import { NativeConfigProvider } from "@mari-ui/native";
+
+<NativeConfigProvider config={{
+  sizes: { md: { height: 48, fontSize: 17 } },
+  card: { md: { padding: 18 } },
+  list: { md: { rowPaddingVertical: 14, rowMinHeight: 52 } },
+}}>
+  <App />
+</NativeConfigProvider>
+```
+
+Yalnızca verilen alanlar ezilir; diğer varsayılan ölçüler korunur. `<ThemeProvider>` ve native config birbirinden bağımsızdır.
+
+Card'ın web'deki `cover`/`title`/`extra`/`footer`/`actions`, `bordered`/`inset`/`size`, `skeleton` özellikleri, `CardMeta`, `slotStyles`, `onPress`/`onLongPress`, devre dışı ve erişilebilirlik adları vardır. Kartın içindeki `actions` kendi düğmeleridir; kartın tamamı basılacaksa `onPress` kullanın, ikisini tek etkileşimde iç içe geçirmeyin. `hoverable` native'de basılma görünümünü açıp kapatır. `loading` geriye uyumlu eski addır.
+
+## Storybook ve kategori düzeni
+
+Native component story'leri web Storybook kenar çubuğunda `Native/Genel`, `Native/Veri Girişi`, `Native/Veri Gösterimi` gibi gruplara ayrılır. `native-studio` aynı dosyalardan kategorili bir component listesi üretir. Yeni story dosyaları component'in yanında kalır; kategori story başlığındaki `Native/<Kategori>/<Component>` yolundan gelir. Böylece web ve Expo önizlemesi aynı örnekleri ve grupları gösterir.
 
 ## Kurulum (tüketici tarafında)
 

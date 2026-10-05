@@ -15,7 +15,7 @@ const COLORS = ["primary", "accent", "success", "error", "warning", "info", "neu
 const VARIANTS = ["solid", "outline", "soft", "ghost", "link"] as const;
 
 const meta: Meta<typeof Button> = {
-  title: "Native/Button",
+  title: "Native/Genel/Button",
   component: Button,
   tags: ["autodocs"],
   decorators: [withNativeTheme],

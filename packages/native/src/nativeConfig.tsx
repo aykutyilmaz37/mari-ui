@@ -1,0 +1,98 @@
+import { createContext, useContext, useMemo, type ReactNode } from "react";
+import type { ExtendedSize, Size } from "@mari-ui/core";
+import type { Theme } from "@mari-ui/tokens";
+
+export interface NativeControlSize {
+  readonly height: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly paddingHorizontal: number;
+  readonly gap: number;
+  readonly iconSize: number;
+  readonly radius: keyof Theme["radius"];
+}
+
+export interface NativeCardSize {
+  readonly padding: number;
+  readonly headerMinHeight: number;
+  readonly headerPaddingVertical: number;
+  readonly footerPaddingVertical: number;
+  readonly actionPaddingVertical: number;
+  readonly radius: keyof Theme["radius"];
+}
+
+export interface NativeListSize {
+  readonly rowMinHeight: number;
+  readonly rowPaddingVertical: number;
+  readonly rowPaddingHorizontal: number;
+  readonly contentGap: number;
+  readonly metaGap: number;
+  readonly actionGap: number;
+  readonly titleFontSize: number;
+  readonly titleLineHeight: number;
+  readonly descriptionFontSize: number;
+  readonly descriptionLineHeight: number;
+}
+
+/** Native ölçüleri web ölçeğinden bağımsızdır; değerler dp/pt cinsindendir. */
+export interface NativeConfig {
+  readonly sizes: Readonly<Record<ExtendedSize, NativeControlSize>>;
+  readonly card: Readonly<Record<Size, NativeCardSize>>;
+  readonly list: Readonly<Record<Size, NativeListSize>>;
+}
+
+/** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
+export const defaultNativeConfig: NativeConfig = {
+  sizes: {
+    xs: { height: 32, fontSize: 13, lineHeight: 18, paddingHorizontal: 12, gap: 6, iconSize: 14, radius: "md" },
+    sm: { height: 36, fontSize: 14, lineHeight: 20, paddingHorizontal: 14, gap: 6, iconSize: 16, radius: "md" },
+    md: { height: 44, fontSize: 16, lineHeight: 22, paddingHorizontal: 16, gap: 8, iconSize: 18, radius: "lg" },
+    lg: { height: 50, fontSize: 17, lineHeight: 22, paddingHorizontal: 20, gap: 8, iconSize: 20, radius: "lg" },
+    xl: { height: 56, fontSize: 18, lineHeight: 24, paddingHorizontal: 24, gap: 10, iconSize: 22, radius: "xl" },
+  },
+  card: {
+    sm: { padding: 12, headerMinHeight: 44, headerPaddingVertical: 8, footerPaddingVertical: 10, actionPaddingVertical: 6, radius: "lg" },
+    md: { padding: 16, headerMinHeight: 48, headerPaddingVertical: 12, footerPaddingVertical: 12, actionPaddingVertical: 8, radius: "xl" },
+    lg: { padding: 20, headerMinHeight: 56, headerPaddingVertical: 16, footerPaddingVertical: 16, actionPaddingVertical: 10, radius: "xl" },
+  },
+  list: {
+    sm: { rowMinHeight: 48, rowPaddingVertical: 8, rowPaddingHorizontal: 12, contentGap: 12, metaGap: 12, actionGap: 8, titleFontSize: 14, titleLineHeight: 20, descriptionFontSize: 13, descriptionLineHeight: 18 },
+    md: { rowMinHeight: 48, rowPaddingVertical: 12, rowPaddingHorizontal: 16, contentGap: 16, metaGap: 12, actionGap: 8, titleFontSize: 16, titleLineHeight: 22, descriptionFontSize: 14, descriptionLineHeight: 20 },
+    lg: { rowMinHeight: 48, rowPaddingVertical: 16, rowPaddingHorizontal: 20, contentGap: 20, metaGap: 16, actionGap: 12, titleFontSize: 17, titleLineHeight: 24, descriptionFontSize: 16, descriptionLineHeight: 22 },
+  },
+};
+
+export interface NativeConfigOverrides {
+  /** Örn. `{ md: { height: 48, fontSize: 17 } }`. */
+  sizes?: Partial<Record<ExtendedSize, Partial<NativeControlSize>>>;
+  card?: Partial<Record<Size, Partial<NativeCardSize>>>;
+  list?: Partial<Record<Size, Partial<NativeListSize>>>;
+}
+
+function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
+  const result = {} as Record<K, T>;
+  for (const key of Object.keys(defaults) as K[]) result[key] = { ...defaults[key], ...overrides?.[key] };
+  return result;
+}
+
+export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOverrides): NativeConfig {
+  if (!overrides) return base;
+  return {
+    sizes: mergeScale(base.sizes, overrides.sizes),
+    card: mergeScale(base.card, overrides.card),
+    list: mergeScale(base.list, overrides.list),
+  };
+}
+
+const NativeConfigContext = createContext<NativeConfig>(defaultNativeConfig);
+
+/** Native ölçü ve tipografisini bağımsız olarak özelleştirir; iç içe kullanıldığında üst ayarları korur. */
+export function NativeConfigProvider({ config, children }: { config?: NativeConfigOverrides; children: ReactNode }) {
+  const parent = useContext(NativeConfigContext);
+  const value = useMemo(() => mergeNativeConfig(parent, config), [parent, config]);
+  return <NativeConfigContext.Provider value={value}>{children}</NativeConfigContext.Provider>;
+}
+
+export function useNativeConfig(): NativeConfig {
+  return useContext(NativeConfigContext);
+}

@@ -1,28 +1,49 @@
-import type { SkeletonableProps } from "../lib/Skeleton";
 import type { ReactNode } from "react";
-import type { StyleProp, ViewStyle } from "react-native";
+import type { PressableProps, StyleProp, ViewStyle } from "react-native";
 import type { Size } from "@mari-ui/core";
+import type { SkeletonableProps } from "../lib/Skeleton";
+
+export type CardSlot = "header" | "body" | "footer" | "cover" | "actions";
+export type CardSlotStyles = Partial<Record<CardSlot, StyleProp<ViewStyle>>>;
 
 export interface CardProps extends SkeletonableProps {
-  children: ReactNode;
+  children?: ReactNode;
+  /** Uzun metin tek satırda kesilir. */
   title?: ReactNode;
+  /** Başlığın sağındaki ek bilgi veya düğme. */
   extra?: ReactNode;
+  /** Kenardan kenara kapak; görselin yüksekliğini veya aspectRatio'sunu verin. */
   cover?: ReactNode;
   footer?: ReactNode;
-  /** Varsayılan: `true`. Web'deki `CardProps.bordered` ile aynı anlam. */
+  /** Eşit bölünmüş alt çubuk; her öğe kendi onPress'ini taşıyan bir düğme olmalı. */
+  actions?: ReactNode[];
+  /** Varsayılan: true. */
   bordered?: boolean;
-  /**
-   * Web'de `:hover` ile gölge/kenarlık değişimi tetikler. Native'de fare
-   * imleci yok — `onPress` verilmişse bu, kartı bir `Pressable` olarak
-   * render eder ve `pressed` durumunda aynı görsel değişimi uygular.
-   */
+  /** Basılma geri bildirimi. onPress/onLongPress varsa varsayılan açık; etkileşimi kapatmaz. */
   hoverable?: boolean;
-  /** @deprecated `skeleton` kullanın (web ile aynı — Faz 15); bir sonraki major'da kaldırılacak. */
+  /** @deprecated skeleton kullanın. Açıkça verilen skeleton bu değeri geçersiz kılar. */
   loading?: boolean;
+  /** Native yazı ölçeği; dolgu sm: 12, md: 16, lg: 20. Varsayılan: md. */
   size?: Size;
-  /** İç içe/gömülü kart görünümü — her zaman `surfaceAlt` arka plan + kenarlık. */
+  /** Tonlu zemin ve kenarlık. */
   inset?: boolean;
+  /** Kartın tamamını devre dışı bırakır (içindeki eylemler dahil). */
+  disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => void;
+  /** Web classNames karşılığı: header/body/footer/cover/actions bölümlerinin stilleri. */
+  slotStyles?: CardSlotStyles;
+  /** Tüm kart dokunulabilir olur. İçinde başka düğmeler varsa bu prop'u kullanmayın. */
+  onPress?: PressableProps["onPress"];
+  onLongPress?: PressableProps["onLongPress"];
   testID?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+}
+
+export interface CardMetaProps {
+  /** Solda avatar veya ikon. */
+  avatar?: ReactNode;
+  title?: ReactNode;
+  description?: ReactNode;
+  style?: StyleProp<ViewStyle>;
 }

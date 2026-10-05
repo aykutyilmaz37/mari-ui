@@ -1,7 +1,9 @@
-import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
 import type { Size } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
+import { nativeFontFamily } from "../../theme/fontFamily";
+import { nativeSize } from "../../theme/nativeSize";
+import { defaultNativeConfig, type NativeConfig } from "../../nativeConfig";
 import { toPx } from "../../theme/toPx";
 
 export interface CardRecipeOptions {
@@ -15,79 +17,46 @@ export interface CardRecipeResult {
   pressedContainer: ViewStyle;
   header: ViewStyle;
   titleText: TextStyle;
+  extraText: TextStyle;
   divider: ViewStyle;
   body: ViewStyle;
   bodyText: TextStyle;
   footer: ViewStyle;
+  actions: ViewStyle;
+  action: ViewStyle;
+  actionDivider: ViewStyle;
 }
 
-/**
- * Web'in `fontSizeClass` sözlüğüyle (bkz. `components/src/lib/sizeClasses.
- * ts`) BİLİNÇLİ OLARAK aynı eşleme: Card'ın `size`'ı layout'u değil sadece
- * gövde yazı tipi boyutunu etkiler (web'de de `getBaseClassname` sadece
- * `fontSizeClass[size]` uyguluyor, `sizeClass`ı değil).
- */
-const CARD_FONT_SIZE: Record<Size, keyof Theme["fontSize"]> = {
-  sm: "xs",
-  md: "sm",
-  lg: "md",
-};
-
-/** Web'in `p-4` sabiti — Card'ın header/body/footer padding'i boyuttan bağımsızdır. */
-const CARD_PADDING = "1rem";
-
-export function cardRecipe(theme: Theme, options: CardRecipeOptions): CardRecipeResult {
-  const { size = "md", bordered, inset } = options;
-  const padding = toPx(CARD_PADDING);
-  const backgroundColor = inset ? theme.color.canvas.surfaceAlt : theme.color.canvas.surface;
-  const showBorder = bordered || inset;
-
-  const container: ViewStyle = {
-    borderRadius: toPx(theme.radius.lg),
-    backgroundColor,
-    overflow: "hidden",
-    ...(showBorder && { borderWidth: 1, borderColor: theme.color.canvas.border }),
-  };
-
-  // Web'in `hoverable && "hover:shadow-md"`ının native karşılığı: `pressed`
-  // durumunda beliren bir gölge. Sadece `onPress` + `hoverable` birlikteyken
-  // component tarafından uygulanır.
-  const pressedContainer: ViewStyle = {
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  };
-
-  const header: ViewStyle = {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding,
-  };
-
-  const titleText: TextStyle = {
-    fontFamily: nativeFontFamily(theme.fontFamily.heading ?? theme.fontFamily.sans),
-    fontWeight: "600",
-    fontSize: toPx(theme.fontSize[CARD_FONT_SIZE[size]]),
-    color: theme.color.canvas.foreground,
-  };
-
-  const divider: ViewStyle = {
-    height: 1,
-    backgroundColor: theme.color.canvas.border,
-  };
-
-  const body: ViewStyle = { padding };
-
+export function cardRecipe(theme: Theme, { size = "md", bordered, inset }: CardRecipeOptions, config: NativeConfig = defaultNativeConfig): CardRecipeResult {
+  const sz = nativeSize(theme, size, config);
+  const layout = config.card[size];
+  const padding = layout.padding;
   const bodyText: TextStyle = {
     fontFamily: nativeFontFamily(theme.fontFamily.sans),
-    fontSize: toPx(theme.fontSize[CARD_FONT_SIZE[size]]),
+    fontSize: sz.fontSize,
+    lineHeight: sz.lineHeight,
     color: theme.color.canvas.foreground,
   };
-
-  const footer: ViewStyle = { padding };
-
-  return { container, pressedContainer, header, titleText, divider, body, bodyText, footer };
+  return {
+    container: {
+      minWidth: 0,
+      borderRadius: toPx(theme.radius[layout.radius]),
+      backgroundColor: inset ? theme.color.canvas.surfaceAlt : theme.color.canvas.surface,
+      overflow: "hidden",
+      ...(bordered || inset ? { borderWidth: 1, borderColor: theme.color.canvas.border } : {}),
+    },
+    // Hareket yok: azaltılmış hareket tercihinde de güvenli dokunma geri bildirimi.
+    pressedContainer: { backgroundColor: theme.color.canvas.surfaceAlt, borderColor: theme.color.canvas.ring },
+    header: { flexDirection: "row", alignItems: "center", gap: toPx(theme.spacing[3]), minHeight: layout.headerMinHeight, paddingHorizontal: padding, paddingVertical: layout.headerPaddingVertical },
+    titleText: { ...bodyText, fontFamily: nativeFontFamily(theme.fontFamily.heading ?? theme.fontFamily.sans), fontWeight: "600" },
+    extraText: { ...bodyText, color: theme.color.canvas.muted },
+    divider: { height: 1, backgroundColor: theme.color.canvas.border },
+    // flexGrow, flex:1'in sıfır tabanı yerine içeriğin gerçek yüksekliğini korur.
+    body: { flexGrow: 1, padding },
+    bodyText,
+    footer: { paddingHorizontal: padding, paddingVertical: layout.footerPaddingVertical },
+    actions: { flexDirection: "row", borderTopWidth: 1, borderColor: theme.color.canvas.border },
+    action: { flex: 1, minWidth: 0, minHeight: 44, alignItems: "center", justifyContent: "center", paddingVertical: layout.actionPaddingVertical },
+    actionDivider: { borderStartWidth: 1, borderColor: theme.color.canvas.border },
+  };
 }
