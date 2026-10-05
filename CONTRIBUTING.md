@@ -90,4 +90,4 @@ pnpm --filter @mari-ui/components exec vitest run src/<ad>
 
 - AI kural rehberi (`packages/cli/src/skillGuide.ts`): yeni component bir sayfa kalıbının parçasıysa rehbere bir satır; adı geçen her component gerçek manifest'te var olmalı (test denetler).
 - Token ekleme/değiştirme: `packages/tokens` → CSS değişkeni (`cssVariables.ts`) + Tailwind teması (`cssOutput.ts`) + gerekiyorsa şema.
-- Storybook "Genel Bakış" sayfası (`packages/components/src/Overview.mdx`): yeni component için bir kart.
+- Storybook "Genel Bakış" sayfası (`packages/components/src/Overview.mdx`): `SECTIONS` listesine yeni component için bir satır. Doküman sayfası adresleri `--doküman` ile biter (doküman sekmesinin adı Türkçe), `--docs` değil.
