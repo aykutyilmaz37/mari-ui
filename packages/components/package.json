@@ -211,6 +211,10 @@
       "types": "./dist/progress.d.ts",
       "import": "./dist/progress.js"
     },
+    "./typewriter": {
+      "types": "./dist/typewriter.d.ts",
+      "import": "./dist/typewriter.js"
+    },
     "./statistic": {
       "types": "./dist/statistic.d.ts",
       "import": "./dist/statistic.js"
