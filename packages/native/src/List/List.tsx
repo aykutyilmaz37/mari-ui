@@ -40,20 +40,29 @@ function DefaultEmpty() {
   );
 }
 
-function SkeletonRows({ count }: { count: number }) {
+/** Rows mirror `ListItem` + `ListItemMeta` geometry (line boxes, 2px gap, separators) so loading → loaded doesn't shift. */
+function SkeletonRows({ count, separator }: { count: number; separator?: React.ComponentType | React.ReactElement | null }) {
   const config = useNativeConfig();
   const { size } = useContext(ListContext);
   const metrics = config.list[size];
+  const line = (lineHeight: number, width: `${number}%`) => (
+    <View style={{ height: lineHeight, justifyContent: "center" }}>
+      <SkeletonBox style={{ width, height: Math.round(lineHeight * 0.65), borderRadius: 4 }} />
+    </View>
+  );
   return (
     <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       {Array.from({ length: count }, (_, index) => (
-        <View key={index} style={{ flexDirection: "row", alignItems: "center", gap: metrics.metaGap, paddingHorizontal: metrics.rowPaddingHorizontal, paddingVertical: metrics.rowPaddingVertical }}>
-          <SkeletonBox style={{ width: 40, height: 40, borderRadius: 20 }} />
-          <View style={{ flex: 1, gap: 6 }}>
-            <SkeletonBox style={{ width: "44%", height: metrics.titleLineHeight * 0.65, borderRadius: 4 }} />
-            <SkeletonBox style={{ width: "72%", height: metrics.descriptionLineHeight * 0.65, borderRadius: 4 }} />
+        <React.Fragment key={index}>
+          {index > 0 ? renderListSlot(separator) : null}
+          <View style={{ flexDirection: "row", alignItems: "center", minHeight: metrics.rowMinHeight, gap: metrics.metaGap, paddingHorizontal: metrics.rowPaddingHorizontal, paddingVertical: metrics.rowPaddingVertical }}>
+            <SkeletonBox style={{ width: 40, height: 40, borderRadius: 20 }} />
+            <View style={{ flex: 1 }}>
+              {line(metrics.titleLineHeight, "44%")}
+              <View style={{ marginTop: 2 }}>{line(metrics.descriptionLineHeight, "72%")}</View>
+            </View>
           </View>
-        </View>
+        </React.Fragment>
       ))}
     </View>
   );
@@ -144,11 +153,11 @@ function ListInner<ItemT>(
   };
 
   const safeSkeletonRows = Number.isFinite(skeletonRows) ? Math.max(1, Math.min(10, Math.floor(skeletonRows))) : 3;
-  let emptyComponent = ListEmptyComponent;
-  if (skeleton) emptyComponent = () => <SkeletonRows count={safeSkeletonRows} />;
-  else if (emptyComponent === undefined) emptyComponent = DefaultEmpty;
   let separator = ItemSeparatorComponent;
   if (separator === undefined && split) separator = DefaultSeparator;
+  let emptyComponent = ListEmptyComponent;
+  if (skeleton) emptyComponent = () => <SkeletonRows count={safeSkeletonRows} separator={separator} />;
+  else if (emptyComponent === undefined) emptyComponent = DefaultEmpty;
   const footerComponent = infinite && !skeleton && itemCount > 0
     ? () => <>{renderListSlot(ListFooterComponent)}<InfiniteFooter options={infinite} onLoadMore={requestMore} /></>
     : ListFooterComponent;
