@@ -8,6 +8,13 @@ export function formatValue(value: number | string, precision: number | undefine
   return new Intl.NumberFormat(locale, { minimumFractionDigits: precision ?? 0, maximumFractionDigits: precision ?? 20 }).format(value);
 }
 
+/** Sayının ondalık basamak sayısı (`1284500.5` → 1, `12` → 0); sayma animasyonunda ara değer biçimi için. */
+export function decimalPlaces(value: number): number {
+  if (!Number.isFinite(value) || Number.isInteger(value)) return 0;
+  const [, fraction = ""] = String(value).split(".");
+  return Math.min(fraction.length, 6);
+}
+
 export interface DurationParts {
   days: number;
   hours: number;

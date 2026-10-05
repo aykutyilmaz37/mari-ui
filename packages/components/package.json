@@ -187,6 +187,10 @@
       "types": "./dist/theme-customizer.d.ts",
       "import": "./dist/theme-customizer.js"
     },
+    "./chart": {
+      "types": "./dist/chart.d.ts",
+      "import": "./dist/chart.js"
+    },
     "./list": {
       "types": "./dist/list.d.ts",
       "import": "./dist/list.js"

@@ -154,6 +154,7 @@ const THEME_TOKEN_KEYS = [
   "disabled",
   "rating",
   "rating-stroke",
+  ...Array.from({ length: 8 }, (_, i) => `chart-${i + 1}`),
 ];
 
 function buildThemeInlineBlock(theme: Theme): string {

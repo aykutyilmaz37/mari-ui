@@ -32,6 +32,18 @@ export interface StatisticProps extends StatisticBaseProps {
   trend?: StatisticTrend;
   /** Varsayılan: `"tr-TR"`. */
   locale?: string;
+  /**
+   * Giriş animasyonu: ilk görünüşte (iskeletten yüklü hale geçerken de) ve
+   * değer değişince değer + trend canlanır, trend oku yönünde kayarak gelir.
+   * Varsayılan açık; hareket azaltma tercihinde çalışmaz.
+   */
+  animated?: boolean;
+  /**
+   * Değerin nasıl canlanacağı: `"count"` sayar (önceki değerden, ilkinde 0'dan),
+   * `"typewriter"` karakter karakter yazar. Metin değerde `count` animasyonsuzdur.
+   * Varsayılan: `"count"`.
+   */
+  valueAnimation?: "count" | "typewriter";
 }
 
 export interface CountdownProps extends StatisticBaseProps {

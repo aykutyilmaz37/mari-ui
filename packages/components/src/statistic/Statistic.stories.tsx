@@ -9,6 +9,7 @@ import React, { useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
+import { AnimationDemo } from "../lib/AnimationDemo";
 import { Clock, Countdown, Statistic, Stopwatch } from "./Statistic";
 
 const meta: Meta<typeof Statistic> = {
@@ -50,6 +51,8 @@ const meta: Meta<typeof Statistic> = {
     description: { control: "text" },
     trend: { control: "object" },
     size: { control: "inline-radio", options: ["sm", "md", "lg"] },
+    animated: { control: "boolean" },
+    valueAnimation: { control: "inline-radio", options: ["count", "typewriter"] },
     skeleton: { control: "boolean" },
   },
 };
@@ -63,7 +66,7 @@ const card = "rounded-xl border border-mari-border bg-mari-surface p-4";
 
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
-  args: { title: "Aylık gelir", value: 1284500, prefix: "₺", trend: { value: 12.4, goodWhen: "up" }, description: "geçen aya göre", size: "md", skeleton: false },
+  args: { title: "Aylık gelir", value: 1284500, prefix: "₺", trend: { value: 12.4, goodWhen: "up" }, description: "geçen aya göre", size: "md", skeleton: false, animated: true, valueAnimation: "count" },
   render: (args) => (
     <div className={`${card} max-w-xs`}>
       <Statistic {...args} />
@@ -104,6 +107,31 @@ export const Dashboard: Story = {
       </div>
     );
   },
+};
+
+export const ValueAnimation: Story = {
+  name: "Animasyon",
+  ...storyDoc(
+    "`animated` (varsayılan açık): değer ve trend canlanır, trend oku yönünde kayarak gelir. `valueAnimation`: `\"count\"` sayar " +
+      "(önceki değerden, ilkinde 0'dan), `\"typewriter\"` karakter karakter yazar. Animasyon sırasında genişlik zıplamaz; ekran " +
+      "okuyucu yalnız son değeri okur. Hareket azaltma tercihinde çalışmaz; `animated={false}` ile kapatılır.",
+    `
+<Statistic title="Aylık gelir" value={1284500} prefix="₺" trend={{ value: 12.4 }} />
+<Statistic title="Aktif kullanıcı" value={48213} valueAnimation="typewriter" trend={{ value: -2.3 }} />`
+  ),
+  render: () => (
+    <AnimationDemo className="grid max-w-3xl gap-3 sm:grid-cols-3">
+      <div className={card}>
+        <Statistic title="Aylık gelir" value={1284500} prefix="₺" trend={{ value: 12.4 }} description="sayar" />
+      </div>
+      <div className={card}>
+        <Statistic title="Aktif kullanıcı" value={48213} valueAnimation="typewriter" trend={{ value: -2.3 }} description="yazar" />
+      </div>
+      <div className={card}>
+        <Statistic title="İade oranı" value={3.8} precision={1} suffix="%" trend={{ value: 0 }} description="değişmedi" />
+      </div>
+    </AnimationDemo>
+  ),
 };
 
 /* ─────────────────────────── 2. Geri sayım ─────────────────────────── */
