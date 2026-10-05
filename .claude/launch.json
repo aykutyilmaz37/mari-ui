@@ -8,6 +8,18 @@
       "port": 6006
     },
     {
+      "name": "storybook-alt",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@mari-ui/docs", "exec", "storybook", "dev", "-p", "6007", "--no-open"],
+      "port": 6007
+    },
+    {
+      "name": "native-studio-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@mari-ui/native-studio", "exec", "expo", "start", "--web", "--clear", "--port", "8083"],
+      "port": 8083
+    },
+    {
       "name": "studio",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@mari-ui/studio", "dev"],
