@@ -1,0 +1,126 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Başlarken/Kurulum" />
+
+# Kurulum
+
+mari-ui; React 18+ kullanan her web projesinde çalışır (Next.js, Vite, Remix…). Component'ler sunucu bileşeni (RSC) uyumludur: hook ya da tarayıcı API'si kullananlar kendi `"use client"` işaretini taşır.
+
+## 1. Paketler
+
+```bash
+pnpm add @mari-ui/components @mari-ui/core @mari-ui/tokens
+```
+
+İsterseniz CLI bunu sizin için yapar ve `mari-ui.config.json` ile AI ajan kurallarını da oluşturur (bkz. **Başlarken / AI Kuralları**):
+
+```bash
+npx mari-ui init
+```
+
+## 2. Stil ve fontlar
+
+Global CSS giriş noktanızda **bir kez** import edin:
+
+```tsx
+import "@mari-ui/tokens/fonts.css"; // isteğe bağlı — Geist, Manrope, Geist Mono yerel dosyaları
+import "@mari-ui/components/styles.css";
+```
+
+- Projenizde **Tailwind gerekmez**: `styles.css` derlenmiş haldedir.
+- `fonts.css` ağ isteği yapmaz; yüklemezseniz sistem fontu kullanılır.
+- Kendi temanızı ürettiyseniz (`npx mari-ui theme` → `mari-ui-theme.css`), onu `styles.css`ten **sonra** import edin.
+
+## 3. Kullanım
+
+Her component kendi yolundan içe aktarılır; kullanmadıklarınız paketinize girmez.
+
+```tsx
+import { Button } from "@mari-ui/components/button";
+import { Input } from "@mari-ui/components/input";
+import { Card } from "@mari-ui/components/card";
+
+export function Giris() {
+  return (
+    <Card title="Giriş yap">
+      <Input placeholder="E-posta" type="email" />
+      <Button color="primary" block>Devam et</Button>
+    </Card>
+  );
+}
+```
+
+Bildirim (`useToast`) kullanacaksanız uygulamanın kökünü `ToastProvider` ile sarın:
+
+```tsx
+import { ToastProvider } from "@mari-ui/components/toast";
+
+<ToastProvider>{children}</ToastProvider>
+```
+
+## Next.js (App Router)
+
+Kayıtlı tema (açık/koyu, vurgu rengi, yoğunluk) sayfa çizilmeden önce uygulansın diye `getThemeScript()` `<head>`e konur — yoksa koyu tema seçen kullanıcı açılışta bir an açık tema görür.
+
+```tsx
+// app/layout.tsx
+import "@mari-ui/tokens/fonts.css";
+import "@mari-ui/components/styles.css";
+import { getThemeScript } from "@mari-ui/tokens";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    // Script <html>'e data-theme yazar; React'in uyuşmazlık uyarısını bu öğe için susturur.
+    <html lang="tr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Bağlantılar düz `<a href>`dir (router'a bağlı bir Link component'i yok). Menülerde (BasicMenu, MegaMenu, Sidebar) sayfa yenilemeden geçiş için router'ınızı `onNavigate` ile verirsiniz; dış adresler ve `target="_blank"` router'ı otomatik atlar:
+
+```tsx
+"use client";
+import { useRouter } from "next/navigation";
+import { Sidebar } from "@mari-ui/components/menu";
+
+export function AppSidebar() {
+  const router = useRouter();
+  return <Sidebar data={menu} onNavigate={(route) => router.push(route)} />;
+}
+```
+
+## Vite
+
+```tsx
+// main.tsx
+import "@mari-ui/tokens/fonts.css";
+import "@mari-ui/components/styles.css";
+```
+
+Tema script'ini `index.html`e build sırasında eklemek için:
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { getThemeScript } from "@mari-ui/tokens";
+
+export default defineConfig({
+  plugins: [
+    {
+      name: "mari-ui-theme-script",
+      transformIndexHtml: () => [{ tag: "script", children: getThemeScript(), injectTo: "head-prepend" }],
+    },
+  ],
+});
+```
+
+## Sonraki adımlar
+
+- **Başlarken / Tema** — marka rengi, font, koyu tema, son kullanıcı tema ayarları.
+- **Foundations** — renkler, tipografi, boşluk, köşe, yükselti.
+- Component sayfaları — her birinde "Ne Zaman Kullanılır", Playground ve gerçek senaryolar; "Show code" kopyalanabilir kodu verir.

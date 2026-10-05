@@ -1,0 +1,30 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Başlarken/React Native" />
+
+# React Native
+
+`@mari-ui/native`, web ile **aynı token'ları ve prop sözleşmesini** konuşan React Native component'leri sunar. `StyleSheet` ve `@mari-ui/tokens`ın JS objesiyle çalışır — NativeWind, babel ya da metro eklentisi gerekmez.
+
+> **Durum: pilot.** Bugün yalnız `Button`, `Input` ve `Card` var. Henüz gerçek bir cihazda / simülatörde (Expo ya da bare RN) denenmedi; yalnız tip kontrolü ve birim testleriyle doğrulandı.
+
+```bash
+pnpm add @mari-ui/native react-native
+```
+
+```tsx
+import { Button } from "@mari-ui/native";
+
+<Button color="primary" onPress={() => {}}>Kaydet</Button>;
+```
+
+`ThemeProvider` isteğe bağlıdır: verilmezse işletim sisteminin açık/koyu tercihine göre `lightTheme` / `darkTheme` seçilir. Projenizin kendi temasını kullanmak için `npx mari-ui theme`ın ürettiği `mari-ui-theme.ts`:
+
+```tsx
+import { ThemeProvider } from "@mari-ui/native";
+import { mariTheme } from "./mari-ui-theme";
+
+<ThemeProvider theme={mariTheme.dark}>{children}</ThemeProvider>;
+```
+
+Prop'lar web ile aynı eksenlerdedir (`color`, `variant`, `size`, `shape`, `disabled`); web'e özgü kavramlar (`href`, `target`, fare olayları) native'de yoktur.
