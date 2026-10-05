@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from "react-native";
+import { Animated, Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import { STORY_CATEGORIES, STORY_ENTRIES, renderStory, type StoryContext, type StoryEntry } from "./src/stories";
+import { MariLogo } from "./src/MariLogo";
+import { useStackTransition } from "./src/useStackTransition";
 
 /**
  * native-studio — @mari-ui/native story tarayıcısı ("storybook gibi, yalnız
@@ -27,7 +29,8 @@ export default function App() {
   const system = useColorScheme();
   const [theme, setTheme] = useState<StoryContext["globals"]["theme"]>(system === "dark" ? "dark" : "light");
   const [brandFonts, setBrandFonts] = useState(false);
-  const [selected, setSelected] = useState<StoryEntry | null>(null);
+  const stack = useStackTransition<StoryEntry>();
+  const selected = stack.item;
   const [fontsLoaded, fontError] = useFonts(FONTS);
   if (!fontsLoaded && !fontError) return null;
 
@@ -39,11 +42,11 @@ export default function App() {
       <StatusBar style={theme === "dark" ? "light" : "dark"} />
       <View style={[styles.toolbar, { borderColor: c.border }]}>
         {selected ? (
-          <Pressable onPress={() => setSelected(null)} accessibilityRole="button" accessibilityLabel="Listeye dön" hitSlop={10}>
+          <Pressable onPress={stack.pop} accessibilityRole="button" accessibilityLabel="Listeye dön" hitSlop={10}>
             <Text style={[styles.back, { color: c.accent }]}>‹ Component'ler</Text>
           </Pressable>
         ) : (
-          <Text style={[styles.brand, { color: c.text }]}>mari-ui native</Text>
+          <MariLogo dark={theme === "dark"} />
         )}
         <View style={styles.toggles}>
           <Toggle label="Koyu" value={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} color={c.muted} />
@@ -51,40 +54,50 @@ export default function App() {
         </View>
       </View>
 
-      {selected ? (
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={[styles.title, { color: c.text }]}>{selected.title}</Text>
-          {selected.stories.map(({ id, name, description, story }) => (
-            <View key={id} style={styles.story}>
-              <Text style={[styles.storyName, { color: c.text }]}>{name}</Text>
-              {description ? <Text style={[styles.description, { color: c.muted }]}>{stripMarkdown(description)}</Text> : null}
-              <View style={[styles.frame, { borderColor: c.border }]}>{renderStory(selected, story, globals)}</View>
-            </View>
-          ))}
-        </ScrollView>
-      ) : (
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={[styles.description, { color: c.muted }]}>
-            {STORY_ENTRIES.length} component · story'ler web Storybook'taki "Native" bölümüyle aynı dosyalardan.
-          </Text>
-          {STORY_CATEGORIES.map((category) => (
-            <View key={category} style={styles.category}>
-              <Text accessibilityRole="header" style={[styles.categoryTitle, { color: c.muted }]}>{category}</Text>
-              {STORY_ENTRIES.filter((entry) => entry.category === category).map((entry) => (
-                <Pressable
-                  key={entry.title}
-                  onPress={() => setSelected(entry)}
-                  accessibilityRole="button"
-                  style={({ pressed }) => [styles.row, { backgroundColor: c.card, borderColor: c.border, opacity: pressed ? 0.7 : 1 }]}
-                >
-                  <Text style={[styles.rowTitle, { color: c.text }]}>{entry.title}</Text>
-                  <Text style={{ color: c.muted }}>{entry.stories.length} story ›</Text>
-                </Pressable>
-              ))}
-            </View>
-          ))}
-        </ScrollView>
-      )}
+      <View style={styles.stage}>
+        {/* Liste her zaman altta; detay üstüne kayar (iOS yığın geçişi). */}
+        <Animated.View style={[StyleSheet.absoluteFill, stack.underStyle]} importantForAccessibility={selected ? "no-hide-descendants" : "auto"} accessibilityElementsHidden={Boolean(selected)}>
+          <ScrollView contentContainerStyle={styles.content}>
+            <Text style={[styles.description, { color: c.muted }]}>
+              {STORY_ENTRIES.length} component · story'ler web Storybook'taki "Native" bölümüyle aynı dosyalardan.
+            </Text>
+            {STORY_CATEGORIES.map((category) => (
+              <View key={category} style={styles.category}>
+                <Text accessibilityRole="header" style={[styles.categoryTitle, { color: c.muted }]}>{category}</Text>
+                {STORY_ENTRIES.filter((entry) => entry.category === category).map((entry) => (
+                  <Pressable
+                    key={entry.title}
+                    onPress={() => stack.push(entry)}
+                    accessibilityRole="button"
+                    style={({ pressed }) => [styles.row, { backgroundColor: c.card, borderColor: c.border, opacity: pressed ? 0.7 : 1 }]}
+                  >
+                    <Text style={[styles.rowTitle, { color: c.text }]}>{entry.title}</Text>
+                    <Text style={{ color: c.muted }}>{entry.stories.length} story ›</Text>
+                  </Pressable>
+                ))}
+              </View>
+            ))}
+          </ScrollView>
+        </Animated.View>
+
+        {selected ? (
+          <>
+            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#000", opacity: stack.scrimOpacity }]} />
+            <Animated.View {...stack.panHandlers} style={[StyleSheet.absoluteFill, styles.top, { backgroundColor: c.bg }, stack.topStyle]}>
+              <ScrollView contentContainerStyle={styles.content}>
+                <Text style={[styles.title, { color: c.text }]}>{selected.title}</Text>
+                {selected.stories.map(({ id, name, description, story }) => (
+                  <View key={id} style={styles.story}>
+                    <Text style={[styles.storyName, { color: c.text }]}>{name}</Text>
+                    {description ? <Text style={[styles.description, { color: c.muted }]}>{stripMarkdown(description)}</Text> : null}
+                    <View style={[styles.frame, { borderColor: c.border }]}>{renderStory(selected, story, globals)}</View>
+                  </View>
+                ))}
+              </ScrollView>
+            </Animated.View>
+          </>
+        ) : null}
+      </View>
     </SafeAreaView>
   );
 }
@@ -104,7 +117,8 @@ const stripMarkdown = (text: string) => text.replace(/`/g, "").replace(/\*\*/g, 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   toolbar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth },
-  brand: { fontSize: 18, fontWeight: "600" },
+  stage: { flex: 1, overflow: "hidden" },
+  top: { shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 12, shadowOffset: { width: -4, height: 0 }, elevation: 8 },
   back: { fontSize: 16, fontWeight: "500" },
   toggles: { flexDirection: "row", gap: 12 },
   toggle: { alignItems: "center", gap: 2 },
