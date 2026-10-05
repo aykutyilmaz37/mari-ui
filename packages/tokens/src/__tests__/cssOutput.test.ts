@@ -1,8 +1,35 @@
 import { describe, expect, it } from "vitest";
 import { lightTheme, darkTheme, resolveThemeConfig, createNamedTheme } from "../theme";
-import { buildPlainThemeCss, buildTailwindThemeCss } from "../cssOutput";
+import { buildPlainThemeCss, buildTailwindThemeCss, fluidRootFontSize } from "../cssOutput";
+
+describe("fluidRootFontSize", () => {
+  /** clamp'in orta terimini verilen genişlikte px'e çevirir (16px kök varsayımıyla). */
+  const middleAt = (css: string, widthPx: number) => {
+    const [, vw, rem] = /clamp\(100%, ([\d.]+)vw \+ ([\d.]+)rem, ([\d.]+)rem\)/.exec(css) ?? [];
+    return (Number(vw) / 100) * widthPx + Number(rem) * 16;
+  };
+
+  it("1920px'te 16px, 3840px'te max px", () => {
+    const css = fluidRootFontSize(22);
+    expect(css).toBe("clamp(100%, 0.3125vw + 0.625rem, 1.375rem)");
+    expect(middleAt(css, 1920)).toBeCloseTo(16);
+    expect(middleAt(css, 3840)).toBeCloseTo(22);
+  });
+
+  it("max 16–32 aralığına sıkıştırılır", () => {
+    expect(fluidRootFontSize(40)).toContain(", 2rem)");
+    expect(fluidRootFontSize(10)).toBe(fluidRootFontSize(16));
+  });
+});
 
 describe("buildPlainThemeCss", () => {
+  it("fluidRootMax verilirse html font-size yazılır, verilmezse yazılmaz", () => {
+    const themeSet = { default: lightTheme, named: { dark: darkTheme } };
+    expect(buildPlainThemeCss(themeSet)).not.toContain("html {");
+    expect(buildPlainThemeCss(themeSet, { fluidRootMax: null })).not.toContain("html {");
+    expect(buildPlainThemeCss(themeSet, { fluidRootMax: 22 })).toContain(`html {\n  font-size: ${fluidRootFontSize(22)};\n}`);
+  });
+
   it("spacingDensity: normal'de kural yok; diğerlerinde yalnız data-density yokken geçerli kök --spacing", () => {
     const themeSet = { default: lightTheme, named: { dark: darkTheme } };
     expect(buildPlainThemeCss(themeSet)).not.toContain("data-density");

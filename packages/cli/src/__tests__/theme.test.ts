@@ -53,6 +53,17 @@ describe("runThemeCommand", () => {
     expect(result.themeTsContent).toContain('"spacingDensity": "comfortable"');
   });
 
+  it("scale.fluid açıkken CSS'e akışkan kök yazı boyutu yazılır", () => {
+    writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ scale: { fluid: true, max: 24 } }), "utf8");
+    expect(runThemeCommand({ targetDir: dir }).cssContent).toContain("font-size: clamp(100%");
+    const plainDir = makeTempDir();
+    try {
+      expect(runThemeCommand({ targetDir: plainDir }).cssContent).not.toContain("html {");
+    } finally {
+      cleanupTempDir(plainDir);
+    }
+  });
+
   it("Faz 10 — config.themes'teki ek isimli temalar da CSS'e [data-theme=\"...\"] olarak yazılır", () => {
     writeFileSync(
       join(dir, "mari-ui.config.json"),

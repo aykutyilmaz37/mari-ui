@@ -19,6 +19,7 @@ import { PreviewPanel } from "./PreviewPanel";
 
 const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const SPACING_LABELS: Record<SpacingDensity, string> = { compact: "Sıkı", normal: "Normal", comfortable: "Rahat" };
+const FLUID_MAX_OPTIONS = [18, 20, 22, 24, 26, 28, 32];
 
 function ContrastRow({ label, bg, fg, threshold = 4.5 }: { label: string; bg: HexColor; fg: HexColor; threshold?: number }) {
   const ratio = contrastRatio(bg, fg);
@@ -70,6 +71,8 @@ export function StudioApp() {
   const [fontFamilyHeading, setFontFamilyHeading] = useState(lightTheme.fontFamily.heading ?? lightTheme.fontFamily.sans);
   const [radiusDensity, setRadiusDensity] = useState<RadiusDensity>("md");
   const [spacingDensity, setSpacingDensity] = useState<SpacingDensity>("normal");
+  const [fluidScale, setFluidScale] = useState(defaultThemeConfig.scale.fluid);
+  const [fluidMax, setFluidMax] = useState(defaultThemeConfig.scale.max);
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
   const [previewSpacing, setPreviewSpacing] = useState<SpacingDensity>("normal");
 
@@ -78,8 +81,9 @@ export function StudioApp() {
       color: { primary: primaryHex as HexColor, accent: accentHex as HexColor },
       typography: { fontFamilySans, fontFamilyMono, fontFamilyHeading },
       density: { radius: radiusDensity, spacing: spacingDensity },
+      scale: { fluid: fluidScale, max: fluidMax },
     }),
-    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity]
+    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, fluidScale, fluidMax]
   );
 
   const resolved = useMemo(() => resolveThemeConfig(config), [config]);
@@ -182,6 +186,28 @@ export function StudioApp() {
             <p className="studio-field-hint">
               Tüm yükseklik, iç boşluk ve aralıkları orantılı ölçekler; yazı boyutu değişmez. Son kullanıcı ThemeCustomizer ile kendi tercihini seçebilir — bu, seçim yokken geçerli olan değer.
             </p>
+          </div>
+        </div>
+
+        <div className="studio-section">
+          <h2 className="studio-section-title">Büyük ekran</h2>
+          <div className="studio-field">
+            <label>
+              <input type="checkbox" checked={fluidScale} onChange={(e) => setFluidScale(e.target.checked)} /> Büyük ekranlarda büyüt
+            </label>
+            <p className="studio-field-hint">
+              Kök yazı boyutu 1920px'ten itibaren ekran genişliğiyle büyür, 4K'de (3840px) aşağıdaki değere ulaşır. Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür; 1920px ve altı değişmez. Bu önizleme panelinde görünmez — ekran genişliğine bağlı.
+            </p>
+          </div>
+          <div className="studio-field">
+            <label htmlFor="fluid-max">4K'de kök yazı boyutu (px)</label>
+            <select id="fluid-max" className="studio-select" value={fluidMax} disabled={!fluidScale} onChange={(e) => setFluidMax(Number(e.target.value))}>
+              {FLUID_MAX_OPTIONS.map((px) => (
+                <option key={px} value={px}>
+                  {px}px (×{(px / 16).toFixed(2)})
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

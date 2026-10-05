@@ -115,6 +115,17 @@ export interface MariUiThemeConfig {
      */
     spacing?: SpacingDensity;
   };
+  /**
+   * Faz 16.8.2 — büyük ekran ölçeği. `fluid: true` iken kök yazı boyutu 1920px'ten
+   * itibaren ekran genişliğiyle büyür, 3840px'te (4K) `max` px'e ulaşıp durur.
+   * Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür. 1920px ve altı
+   * etkilenmez. İşletim sistemi ölçeklemesi kapalı (%100) 4K ekranlar için.
+   */
+  scale?: {
+    fluid?: boolean;
+    /** 4K'de (3840px) ulaşılacak kök yazı boyutu, px. Varsayılan 22 (16–32 arası). */
+    max?: number;
+  };
   themes?: Record<string, NamedThemeInput>;
 }
 
@@ -123,6 +134,7 @@ export const defaultThemeConfig = {
   color: { primary: primitives.primaryRamp[600], accent: primitives.accentRamp[600] },
   typography: { fontFamilySans: primitives.fontFamily.sans, fontFamilyMono: primitives.fontFamily.mono, fontFamilyHeading: primitives.fontFamily.heading },
   density: { radius: "md", spacing: "normal" },
+  scale: { fluid: false as boolean, max: 22 },
 } satisfies Required<Omit<MariUiThemeConfig, "themes">>;
 
 export interface NamedThemeInput {
@@ -137,6 +149,8 @@ export interface ResolvedMariUiTheme {
   radiusDensity: primitives.RadiusDensity;
   /** `density.spacing` (varsayılan `"normal"`) — `buildPlainThemeCss`e ve ThemeCustomizer `defaultValue`suna verilir. */
   spacingDensity: SpacingDensity;
+  /** `scale.fluid` açıksa 4K'deki kök yazı boyutu (px), kapalıysa `null` — `buildPlainThemeCss`e verilir. */
+  fluidRootMax: number | null;
   /** `config.themes`teki her girdinin ADI → çözümlenmiş `Theme`si. Girdi yoksa boş obje. */
   themes: Record<string, Theme>;
 }
@@ -185,6 +199,7 @@ export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMari
     dark: buildTheme("dark", { ...baseOptions, name: "dark" }),
     radiusDensity,
     spacingDensity: config.density?.spacing ?? "normal",
+    fluidRootMax: config.scale?.fluid ? (config.scale.max ?? defaultThemeConfig.scale.max) : null,
     themes: namedThemes,
   };
 }

@@ -71,6 +71,22 @@ const schema = {
         default: "normal",
       },
     },
+    scale: {
+      fluid: {
+        type: "boolean",
+        description:
+          "Büyük ekran ölçeği: açıkken kök yazı boyutu 1920px'ten itibaren ekran genişliğiyle büyür, 3840px'te (4K) `max`a ulaşır. " +
+          "Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür; 1920px ve altı etkilenmez.",
+        default: false,
+      },
+      max: {
+        type: "number",
+        description: "4K'de (3840px) ulaşılacak kök yazı boyutu (px, 16–32).",
+        min: 16,
+        max: 32,
+        default: 22,
+      },
+    },
     themes: {
       type: "record",
       description:

@@ -58,7 +58,7 @@ export function runThemeCommand(options: ThemeCommandOptions): ThemeCommandResul
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
 
-  const cssContent = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER, spacingDensity: resolved.spacingDensity });
+  const cssContent = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER, spacingDensity: resolved.spacingDensity, fluidRootMax: resolved.fluidRootMax });
   const themeTsContent = buildThemeTsContent(resolved);
 
   const cssPath = join(outDir, THEME_CSS_FILE_NAME);

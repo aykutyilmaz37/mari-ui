@@ -40,6 +40,13 @@ describe("resolveThemeConfig", () => {
     expect(resolveThemeConfig({ density: { radius: "lg" } }).radiusDensity).toBe("lg");
   });
 
+  it("scale: kapalıyken fluidRootMax null; açıkken max (varsayılan 22)", () => {
+    expect(resolveThemeConfig().fluidRootMax).toBeNull();
+    expect(resolveThemeConfig({ scale: { fluid: true } }).fluidRootMax).toBe(22);
+    expect(resolveThemeConfig({ scale: { fluid: true, max: 26 } }).fluidRootMax).toBe(26);
+    expect(resolveThemeConfig({ scale: { max: 26 } }).fluidRootMax).toBeNull();
+  });
+
   it("density.spacing verilmezse 'normal', verilirse aynen taşınır", () => {
     expect(resolveThemeConfig().spacingDensity).toBe("normal");
     expect(resolveThemeConfig({ density: { spacing: "compact" } }).spacingDensity).toBe("compact");
