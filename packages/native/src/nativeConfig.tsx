@@ -58,6 +58,33 @@ export interface NativeBadgeSize {
   readonly dot: number;
 }
 
+export interface NativeSelectionSize {
+  /** Checkbox/Radio kutusu (pt). */
+  readonly box: number;
+  readonly radius: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly descriptionFontSize: number;
+  readonly descriptionLineHeight: number;
+  readonly gap: number;
+}
+
+export interface NativeSwitchSize {
+  readonly width: number;
+  /** `switchTrueLabel`/`switchFalseLabel` varken iz genişliği. */
+  readonly labelWidth: number;
+  readonly height: number;
+  readonly knob: number;
+  readonly fontSize: number;
+}
+
+export interface NativeSegmentedSize {
+  readonly height: number;
+  readonly fontSize: number;
+  readonly paddingHorizontal: number;
+  readonly radius: number;
+}
+
 export interface NativeTagSize {
   readonly fontSize: number;
   readonly lineHeight: number;
@@ -77,6 +104,9 @@ export interface NativeConfig {
   readonly avatar: Readonly<Record<Size, NativeAvatarSize>>;
   readonly badge: Readonly<Record<"sm" | "md", NativeBadgeSize>>;
   readonly tag: NativeTagSize;
+  readonly selection: Readonly<Record<Size, NativeSelectionSize>>;
+  readonly switch: Readonly<Record<Size, NativeSwitchSize>>;
+  readonly segmented: Readonly<Record<Size, NativeSegmentedSize>>;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -121,6 +151,24 @@ export const defaultNativeConfig: NativeConfig = {
   },
   // Tag: HIG Footnote 13/18 → 24pt yükseklik (statik etiket; kapatma düğmesi hitSlop ile 44).
   tag: { fontSize: 13, lineHeight: 18, paddingHorizontal: 8, paddingVertical: 3, gap: 4, iconSize: 14, radius: "sm" },
+  // Checkbox/Radio: M3 kutusu 18dp (2dp kenar); satır en az 44pt dokunma alanı. Etiket md = Body 17/22.
+  selection: {
+    sm: { box: 18, radius: 4, fontSize: 15, lineHeight: 20, descriptionFontSize: 13, descriptionLineHeight: 18, gap: 10 },
+    md: { box: 22, radius: 5, fontSize: 17, lineHeight: 22, descriptionFontSize: 15, descriptionLineHeight: 20, gap: 12 },
+    lg: { box: 26, radius: 6, fontSize: 19, lineHeight: 24, descriptionFontSize: 15, descriptionLineHeight: 20, gap: 14 },
+  },
+  // Switch: md = iOS UISwitch 51×31 (topuz 27); M3 52×32.
+  switch: {
+    sm: { width: 40, labelWidth: 64, height: 24, knob: 20, fontSize: 10 },
+    md: { width: 51, labelWidth: 80, height: 31, knob: 27, fontSize: 12 },
+    lg: { width: 60, labelWidth: 96, height: 36, knob: 32, fontSize: 13 },
+  },
+  // Segmented: md = iOS UISegmentedControl 32pt, 13 orta kalın; dokunma alanı hitSlop ile 44.
+  segmented: {
+    sm: { height: 28, fontSize: 13, paddingHorizontal: 10, radius: 7 },
+    md: { height: 32, fontSize: 13, paddingHorizontal: 12, radius: 8 },
+    lg: { height: 40, fontSize: 15, paddingHorizontal: 16, radius: 10 },
+  },
 };
 
 export interface NativeConfigOverrides {
@@ -132,6 +180,9 @@ export interface NativeConfigOverrides {
   avatar?: Partial<Record<Size, Partial<NativeAvatarSize>>>;
   badge?: Partial<Record<"sm" | "md", Partial<NativeBadgeSize>>>;
   tag?: Partial<NativeTagSize>;
+  selection?: Partial<Record<Size, Partial<NativeSelectionSize>>>;
+  switch?: Partial<Record<Size, Partial<NativeSwitchSize>>>;
+  segmented?: Partial<Record<Size, Partial<NativeSegmentedSize>>>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -150,6 +201,9 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     avatar: mergeScale(base.avatar, overrides.avatar),
     badge: mergeScale(base.badge, overrides.badge),
     tag: { ...base.tag, ...overrides.tag },
+    selection: mergeScale(base.selection, overrides.selection),
+    switch: mergeScale(base.switch, overrides.switch),
+    segmented: mergeScale(base.segmented, overrides.segmented),
   };
 }
 

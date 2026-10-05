@@ -136,7 +136,9 @@ export const Standalone: Story = {
 
 export const Colors: Story = {
   name: "Renk ve Boyut",
-  ...storyDoc("Yedi rol rengi ve nokta; üst satır md 20pt, alt satır sm 16pt."),
+  ...storyDoc("Yedi rol rengi ve nokta; üst satır md 20pt, alt satır sm 16pt.", `<Badge count={7} color="success" />
+<Badge count={7} size="sm" color="info" />
+<Badge dot color="primary" />`),
   render: () => (
     <Stack>
       {(["md", "sm"] as const).map((size) => (

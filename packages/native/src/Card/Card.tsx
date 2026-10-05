@@ -87,3 +87,4 @@ export const Card: ForwardRefExoticComponent<CardProps & RefAttributes<Component
   }
   return <View {...shared} style={[containerStyle, (skeleton || disabled) && { pointerEvents: "none" }]}>{content}</View>;
 });
+Card.displayName = "Card";

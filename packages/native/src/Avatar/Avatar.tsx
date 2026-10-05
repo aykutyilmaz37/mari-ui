@@ -128,7 +128,7 @@ export function AvatarGroup({ children, max, size = "md", shape = "circle", skel
 
   return (
     <Hug style={style}>
-      <View accessibilityState={{ busy: Boolean(skeleton) }} style={{ flexDirection: "row", alignItems: "center" }}>
+      <View accessibilityState={{ busy: Boolean(skeleton) }} aria-busy={Boolean(skeleton)} style={{ flexDirection: "row", alignItems: "center" }}>
         {visible.map((item, i) => (
           <View key={item.key ?? i} style={ring(i)}>
             {cloneElement(item, { size: item.props.size ?? size, shape: item.props.shape ?? shape, skeleton: item.props.skeleton ?? skeleton })}

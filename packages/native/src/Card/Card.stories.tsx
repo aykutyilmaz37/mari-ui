@@ -6,7 +6,7 @@ import { Card } from "./Card";
 import { CardMeta } from "./CardMeta";
 import { Button } from "../Button/Button";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 const meta: Meta<typeof Card> = {
   title: "Native/Veri Gösterimi/Card",
@@ -33,7 +33,8 @@ type Story = StoryObj<typeof Card>;
 
 export const Playground: Story = {
   ...storyDoc("Native ölçekte tüm özellikleri deneyin."),
-  render: (args) => <Stack><Card {...args} /></Stack>,
+  decorators: [withStretch],
+  render: (args) => <Card {...args} />,
 };
 
 export const OrderSummary: Story = {
@@ -51,7 +52,11 @@ const products = [
 
 export const ProductGrid: Story = {
   name: "Ürün Kataloğu",
-  ...storyDoc("Mobil mağazada iki sütunlu ürün kartları: görsel alanı, puan, indirimli fiyat ve kart içine yerleştirilmiş bağımsız sepet eylemi."),
+  ...storyDoc("Mobil mağazada iki sütunlu ürün kartları: görsel alanı, puan, indirimli fiyat ve kart içine yerleştirilmiş bağımsız sepet eylemi.", `<Card size="sm" cover={<ProductImage />}>
+  <Text weight="medium" ellipsis={{ rows: 2 }}>{product.name}</Text>
+  <Text color="error" weight="bold">{product.price}</Text>
+  <Button size="sm" onPress={() => addToCart(product)}>Sepete ekle</Button>
+</Card>`),
   render: () => <ProductCatalog />,
 };
 function ProductCatalog() {
@@ -81,7 +86,11 @@ const metrics = [
 
 export const KpiDashboard: Story = {
   name: "Satış Özeti",
-  ...storyDoc("Yönetici dashboard'unda kısa dönem karşılaştırmalı metrikler. Dört kart küçük ekranda iki sütun olur; iskelet düğmesi yüklenme halini gösterir."),
+  ...storyDoc("Yönetici dashboard'unda kısa dönem karşılaştırmalı metrikler. Dört kart küçük ekranda iki sütun olur; iskelet düğmesi yüklenme halini gösterir.", `<Card size="sm" skeleton={isLoading}>
+  <Text muted>Gelir</Text>
+  <Title level={3}>₺342.900</Title>
+  <Text color="success">+12,4%</Text>
+</Card>`),
   render: () => <KpiExample />,
 };
 function KpiExample() {
@@ -97,7 +106,13 @@ function KpiExample() {
 
 export const ArticleFeed: Story = {
   name: "Makale Akışı",
-  ...storyDoc("Okuma listesinde kapak, kategori, iki satırda kesilen başlık ve yazar bilgisi. Kaydet düğmesi kartın geri kalanından bağımsız çalışır."),
+  ...storyDoc("Okuma listesinde kapak, kategori, iki satırda kesilen başlık ve yazar bilgisi. Kaydet düğmesi kartın geri kalanından bağımsız çalışır.", `<Card
+  cover={<CoverImage />}
+  extra="TASARIM"
+  footer={<CardMeta avatar={<Avatar alt="Elif Can" />} title="Elif Can" description="24 Eyl · 6 dk okuma" />}
+>
+  <Title level={5} ellipsis={{ rows: 2 }}>{article.title}</Title>
+</Card>`),
   render: () => <ArticleExample />,
 };
 function ArticleExample() {
@@ -116,7 +131,10 @@ const plans = [
 
 export const Pricing: Story = {
   name: "Abonelik Planları",
-  ...storyDoc("Küçük ekranda art arda akan plan kartları; öne çıkan pakette açık rozet, dahil olan özellikler ve tek ana eylem."),
+  ...storyDoc("Küçük ekranda art arda akan plan kartları; öne çıkan pakette açık rozet, dahil olan özellikler ve tek ana eylem.", `<Card title="Pro" size="sm" inset extra="ÖNERİLEN" footer="Aylık · istediğiniz zaman iptal">
+  <Title level={3}>₺149</Title>
+  <Button block onPress={() => choose("Pro")}>Planı seç</Button>
+</Card>`),
   render: () => <PricingExample />,
 };
 function PricingExample() {
@@ -136,7 +154,11 @@ function PricingExample() {
 
 export const SettingsPanel: Story = {
   name: "Ayarlar ve Oturumlar",
-  ...storyDoc("Hesap ekranında ayar bölümleri ve iç içe oturum kartları. Bildirim anahtarları sistemin native Switch kontrolünü kullanır."),
+  ...storyDoc("Hesap ekranında ayar bölümleri ve iç içe oturum kartları. Bildirim anahtarları sistemin native Switch kontrolünü kullanır.", `<Card title="Açık oturumlar" extra="2 cihaz">
+  <Card size="sm" inset bordered={false}>
+    <CardMeta avatar={<Laptop size={22} />} title="MacBook Pro" description="İstanbul · Şu an aktif" />
+  </Card>
+</Card>`),
   render: () => <SettingsExample />,
 };
 function SettingsExample() {
@@ -162,7 +184,16 @@ const projects = [
 
 export const ProjectCards: Story = {
   name: "Proje Takibi",
-  ...storyDoc("Proje listesinde ilerleme, teslim tarihi, ekip ve satır başına düzenle/paylaş eylemleri. İşlemler kartı açmaktan bağımsız kalır."),
+  ...storyDoc("Proje listesinde ilerleme, teslim tarihi, ekip ve satır başına düzenle/paylaş eylemleri. İşlemler kartı açmaktan bağımsız kalır.", `<Card
+  title="Mobil uygulama"
+  extra="Yolunda"
+  actions={[
+    <Button key="edit" size="sm" variant="ghost">Düzenle</Button>,
+    <Button key="share" size="sm" variant="ghost">Paylaş</Button>,
+  ]}
+>
+  <Text muted>Teslim: 18 Ekim · %72 tamamlandı</Text>
+</Card>`),
   render: () => <ProjectExample />,
 };
 function ProjectExample() {

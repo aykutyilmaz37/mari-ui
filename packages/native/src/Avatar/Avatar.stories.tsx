@@ -98,13 +98,16 @@ function Fallbacks() {
 
 export const FallbackChain: Story = {
   name: "Görsel → Baş Harf → İkon",
-  ...storyDoc("Görsel, görsel yoksa baş harfler (Türkçe büyük harf: İŞ), ikon; yüklenemeyen görsel baş harfe düşer."),
+  ...storyDoc("Görsel, görsel yoksa baş harfler (Türkçe büyük harf: İŞ), ikon; yüklenemeyen görsel baş harfe düşer.", `<Avatar alt="Ayşe Demir" src={photoUrl} />
+<Avatar alt="İlker Şahin" color="primary" />
+<Avatar alt="Misafir" icon={<User size={20} />} />`),
   render: () => <Fallbacks />,
 };
 
 export const Sizes: Story = {
   name: "Boyut ve Biçim",
-  ...storyDoc("sm 32 · md 40 · lg 56; kare biçim temanın köşe ölçeğini kullanır."),
+  ...storyDoc("sm 32 · md 40 · lg 56; kare biçim temanın köşe ölçeğini kullanır.", `<Avatar size="sm" alt="Mert Kaya" />
+<Avatar size="lg" shape="square" alt="Mert Kaya" color="success" />`),
   render: () => (
     <Stack>
       {(["circle", "square"] as const).map((shape) => (

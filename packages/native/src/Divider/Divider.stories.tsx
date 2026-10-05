@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Divider } from "./Divider";
 import { Button } from "../Button";
 import { Paragraph, Text, Title } from "../Typography";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, withStretch, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
 
 const meta: Meta<typeof Divider> = {
   title: "Native/Genel/Divider",
@@ -33,7 +33,8 @@ type Story = StoryObj<typeof Divider>;
 
 export const Playground: Story = {
   ...storyDoc("Yön, çizgi stili, başlık hizası ve boşluğu deneyin."),
-  render: (args) => <View style={{ alignSelf: "stretch" }}><Divider {...args} /></View>,
+  decorators: [withStretch],
+  render: (args) => <Divider {...args} />,
 };
 
 export const SignIn: Story = {
@@ -85,7 +86,9 @@ export const InlineMeta: Story = {
 
 export const LineStyles: Story = {
   name: "Çizgi Stilleri ve Hiza",
-  ...storyDoc("Düz (saç teli), kesik ve noktalı; başlık başta, ortada, sonda."),
+  ...storyDoc("Düz (saç teli), kesik ve noktalı; başlık başta, ortada, sonda.", `<Divider />
+<Divider lineStyle="dashed">Kesik</Divider>
+<Divider labelAlign="start">Başta</Divider>`),
   render: () => (
     <View style={{ alignSelf: "stretch" }}>
       <Divider />

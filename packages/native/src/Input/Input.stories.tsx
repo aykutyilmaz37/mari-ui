@@ -1,14 +1,15 @@
 /**
  * Web `Veri Girişi/Input` story'lerinin native karşılıkları — aynı adlar,
  * aynı senaryolar (web ↔ native ölçümü bu story çiftleri üzerinden).
- * Etiketler, native `Field` (Dalga 1) gelene kadar `FieldStub` ile.
+ * Etiketli örnekler native `Field` ile (etiket = erişilebilir ad, hata rengi Field.ten).
  */
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import type { Meta, StoryObj } from "@storybook/react";
 import { AtSign, Lock, Phone, Search } from "lucide-react-native";
 import { Input } from "./Input";
-import { FieldStub, SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { Field } from "../Field";
+import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNarrow, withNativeTheme } from "../stories/storyMeta";
 import { useTheme } from "../theme/useTheme";
 
 const meta: Meta<typeof Input> = {
@@ -52,11 +53,8 @@ const Narrow = ({ children }: { children: React.ReactNode }) => <View style={{ w
 
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
-  render: (args) => (
-    <Narrow>
-      <Input {...args} />
-    </Narrow>
-  ),
+  decorators: [withNarrow],
+  render: (args) => <Input {...args} />,
 };
 
 function SignUpFormDemo() {
@@ -66,21 +64,21 @@ function SignUpFormDemo() {
   const emailError = email && !looksValid ? "Geçerli bir e-posta adresi girin (ör. ad@alan.com)." : undefined;
   return (
     <View style={{ width: "100%", maxWidth: 448, gap: 16 }}>
-      <FieldStub label="Ad">
-        <Input accessibilityLabel="Ad" autoComplete="given-name" placeholder="Aykut" />
-      </FieldStub>
-      <FieldStub label="Soyad">
-        <Input accessibilityLabel="Soyad" autoComplete="family-name" placeholder="Yılmaz" />
-      </FieldStub>
-      <FieldStub label="E-posta" error={emailError}>
-        <Input accessibilityLabel="E-posta" type="email" autoComplete="email" icon={<AtSign />} value={email} onChangeText={setEmail} onClear={() => setEmail("")} allowClear color={emailError ? "error" : undefined} />
-      </FieldStub>
-      <FieldStub label="Şifre" hint="En az 8 karakter, bir rakam içermeli.">
-        <Input accessibilityLabel="Şifre" type="password" autoComplete="new-password" icon={<Lock />} />
-      </FieldStub>
-      <FieldStub label="Cep telefonu">
-        <Input accessibilityLabel="Cep telefonu" type="tel" autoComplete="tel" mask="0(5__) ___ __ __" placeholder="0(5__) ___ __ __" icon={<Phone />} />
-      </FieldStub>
+      <Field label="Ad">
+        <Input autoComplete="given-name" placeholder="Aykut" />
+      </Field>
+      <Field label="Soyad">
+        <Input autoComplete="family-name" placeholder="Yılmaz" />
+      </Field>
+      <Field label="E-posta" error={emailError}>
+        <Input type="email" autoComplete="email" icon={<AtSign />} value={email} onChangeText={setEmail} onClear={() => setEmail("")} allowClear />
+      </Field>
+      <Field label="Şifre" hint="En az 8 karakter, bir rakam içermeli.">
+        <Input type="password" autoComplete="new-password" icon={<Lock />} />
+      </Field>
+      <Field label="Cep telefonu">
+        <Input type="tel" autoComplete="tel" mask="0(5__) ___ __ __" placeholder="0(5__) ___ __ __" icon={<Phone />} />
+      </Field>
     </View>
   );
 }
@@ -202,9 +200,9 @@ function ValidationDemo() {
   const theme = useTheme();
   return (
     <Narrow>
-      <FieldStub label="IBAN" error="IBAN 26 karakter olmalı.">
-        <Input accessibilityLabel="IBAN" color="error" defaultValue="TR12 3456" allowClear />
-      </FieldStub>
+      <Field label="IBAN" error="IBAN 26 karakter olmalı.">
+        <Input defaultValue="TR12 3456" allowClear />
+      </Field>
       <View style={{ gap: 6 }}>
         <Text style={{ fontSize: 14, lineHeight: 20, fontWeight: "500", color: theme.color.canvas.foreground }}>Kullanıcı adı</Text>
         <Input accessibilityLabel="Kullanıcı adı" color="warning" defaultValue="aykut" />
@@ -217,25 +215,29 @@ function ValidationDemo() {
 export const ValidationStates: Story = {
   name: "Doğrulama Durumları",
   ...storyDoc(
-    "`color=\"error\"` engelleyici hata (ekran okuyucuya geçersiz olarak bildirilir), `color=\"warning\"` engelleyici olmayan uyarı. Renge ek olarak metin de anlamı taşır.",
-    `<Input accessibilityLabel="IBAN" color="error" defaultValue="TR12 3456" />`
+    "`Field` `error` verilince alan hata rengine geçer ve ekran okuyucuya geçersiz olarak bildirilir; `color=\"warning\"` engelleyici olmayan uyarı. Renge ek olarak metin de anlamı taşır.",
+    `<Field label="IBAN" error="IBAN 26 karakter olmalı.">
+  <Input defaultValue="TR12 3456" />
+</Field>`
   ),
   render: () => <ValidationDemo />,
 };
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Input accessibilityLabel="Firma adı" skeleton={isLoading} defaultValue={company.name} />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Field label="Firma adı" skeleton={isLoading}>
+  <Input defaultValue={company.name} />
+</Field>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (
         <Narrow>
-          <FieldStub label="Firma adı">
-            <Input accessibilityLabel="Firma adı" skeleton={skeleton} defaultValue="Mari Yazılım A.Ş." />
-          </FieldStub>
-          <FieldStub label="Vergi no">
-            <Input accessibilityLabel="Vergi no" skeleton={skeleton} size="lg" defaultValue="1234567890" />
-          </FieldStub>
+          <Field label="Firma adı" skeleton={skeleton}>
+            <Input defaultValue="Mari Yazılım A.Ş." />
+          </Field>
+          <Field label="Vergi no" skeleton={skeleton}>
+            <Input size="lg" defaultValue="1234567890" />
+          </Field>
         </Narrow>
       )}
     </SkeletonDemo>
