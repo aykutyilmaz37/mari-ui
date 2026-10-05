@@ -215,6 +215,10 @@
       "types": "./dist/typewriter.d.ts",
       "import": "./dist/typewriter.js"
     },
+    "./splitter": {
+      "types": "./dist/splitter.d.ts",
+      "import": "./dist/splitter.js"
+    },
     "./statistic": {
       "types": "./dist/statistic.d.ts",
       "import": "./dist/statistic.js"
