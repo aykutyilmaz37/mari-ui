@@ -68,6 +68,9 @@ export type { LoadingProps } from "./Loading";
 export { Empty } from "./Empty";
 export type { EmptyProps } from "./Empty";
 
+export { Modal, Dialog } from "./Modal";
+export type { ModalProps, ModalButtonPosition, DialogProps, DialogAction } from "./Modal";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize } from "./nativeConfig";
 

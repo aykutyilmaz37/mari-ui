@@ -5,6 +5,7 @@ import type { ColorRole, Size } from "@mari-ui/core";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
 import { Hug } from "../lib/Hug";
+import { overlaySurface, scrimColor } from "../lib/overlay";
 import { clampPercent } from "../Progress/utils";
 
 export interface LoadingProps {
@@ -106,8 +107,8 @@ export function Loading({ spinning = true, size = "md", tip, delay = 0, percent,
   if (fullscreen) {
     return (
       <Modal transparent visible={visible} animationType="fade" statusBarTranslucent onRequestClose={() => undefined}>
-        <View {...a11yFor(label, percent)} style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: theme.color.canvas.scrim }}>
-          <View style={{ padding: 24, borderRadius: 16, backgroundColor: theme.color.canvas.surface }}>{block}</View>
+        <View {...a11yFor(label, percent)} style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: scrimColor(theme) }}>
+          <View style={[overlaySurface(theme), { padding: 24, borderRadius: 16 }]}>{block}</View>
         </View>
       </Modal>
     );
