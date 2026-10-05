@@ -1,10 +1,11 @@
 import { createElement } from "react";
 import type React from "react";
+import { storyModules } from "@mari-ui/native/stories";
 
 /**
- * packages/native içindeki TÜM `*.stories.tsx` dosyaları — web Storybook'un
- * okuduğu dosyaların aynısı. Yeni story dosyası eklemek yeterli; burada liste
- * tutulmaz (`require.context`, Metro).
+ * @mari-ui/native içindeki TÜM `*.stories.tsx` dosyaları (paketin kendi
+ * `stories/registry`si) — web Storybook'un okuduğu dosyaların aynısı. Yeni
+ * story dosyası eklemek yeterli; burada liste tutulmaz.
  */
 
 export interface StoryContext {
@@ -36,19 +37,11 @@ export interface StoryEntry {
   stories: Array<{ id: string; name: string; description?: string; story: StoryObject }>;
 }
 
-declare const require: {
-  context: (dir: string, deep: boolean, pattern: RegExp) => { keys(): string[]; (id: string): Record<string, unknown> };
-};
-
-const ctx = require.context("../../../packages/native/src", true, /\.stories\.tsx$/);
-
 /** "ColorsAndVariants" → "Colors And Variants" (story'de `name` yoksa). */
 const humanize = (key: string) => key.replace(/([a-z])([A-Z])/g, "$1 $2");
 
-export const STORY_ENTRIES: StoryEntry[] = ctx
-  .keys()
-  .map((key) => {
-    const mod = ctx(key);
+export const STORY_ENTRIES: StoryEntry[] = storyModules
+  .map((mod) => {
     const meta = mod.default as StoryMeta;
     const stories = Object.entries(mod)
       .filter(([exportName]) => exportName !== "default")
