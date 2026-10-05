@@ -17,7 +17,7 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : us
  */
 export type ValueAnimation = "count" | "typewriter";
 
-function motionAllowed(): boolean {
+export function motionAllowed(): boolean {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
   return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
