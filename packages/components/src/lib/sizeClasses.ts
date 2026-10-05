@@ -24,6 +24,20 @@ export const sizeClass: Record<ExtendedSize, string> = {
   xl: "h-12 px-5 py-2.5 text-lg gap-2.5 rounded-lg",
 };
 
+/**
+ * Kontrol içindeki ikonun (doğrudan `<svg>` çocuk) boyutu — yazı boyutuyla
+ * orantılı. Tüketici `<PlusIcon />`ı boyut vermeden geçebilsin: lucide'ın
+ * varsayılanı 24px'ti, küçük butonda metinden iri duruyordu. CSS, SVG'nin
+ * `width`/`height` niteliğini ezer → `size={16}` verilse de tutarlı kalır.
+ */
+export const iconSizeClass: Record<ExtendedSize, string> = {
+  xs: "[&>svg]:size-3",
+  sm: "[&>svg]:size-3.5",
+  md: "[&>svg]:size-4",
+  lg: "[&>svg]:size-[1.125rem]",
+  xl: "[&>svg]:size-5",
+};
+
 /** Sadece font boyutu gereken (Typography gibi) bileşenler için. */
 export const fontSizeClass: Record<ExtendedSize, string> = {
   xs: "text-xs",

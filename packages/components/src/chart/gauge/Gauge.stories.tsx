@@ -7,11 +7,13 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../../lib/SkeletonDemo";
+import { ANIMATION_STORY_DOC, AnimationDemo } from "../../lib/AnimationDemo";
+import { EMPTY_STORY_DOC } from "../_shared/storyDocs";
 import { Card } from "../../card";
 import { Gauge, type GaugeSegment } from "./Gauge";
 
 const meta: Meta<typeof Gauge> = {
-  title: "Veri Gösterimi/Gauge",
+  title: "Veri Gösterimi/Charts/Gauge",
   component: Gauge,
   tags: ["autodocs"],
   parameters: {
@@ -42,7 +44,7 @@ export default meta;
 type Story = StoryObj<typeof Gauge>;
 
 export const Playground: Story = {
-  args: { value: 68, min: 0, max: 100, label: "Disk doluluğu", color: "primary", hideLabel: false, skeleton: false },
+  args: { value: 68, min: 0, max: 100, label: "Disk doluluğu", color: "primary", hideLabel: false, skeleton: false, animated: true },
 };
 
 const capacity: GaugeSegment[] = [
@@ -102,4 +104,20 @@ export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc(SKELETON_STORY_DOC, `<Gauge label="Disk" value={data?.disk ?? 0} skeleton={isLoading} />`),
   render: () => <SkeletonDemo>{(skeleton) => <Gauge label="Disk doluluğu" value={68} skeleton={skeleton} />}</SkeletonDemo>,
+};
+
+export const Animation: Story = {
+  name: "Animasyon",
+  ...storyDoc(ANIMATION_STORY_DOC, `<Gauge label="Disk doluluğu" value={68} />`),
+  render: () => (
+    <AnimationDemo>
+      <Gauge label="Disk doluluğu" value={68} />
+    </AnimationDemo>
+  ),
+};
+
+export const EmptyState: Story = {
+  name: "Boş",
+  ...storyDoc(EMPTY_STORY_DOC, `<Gauge label="Disk doluluğu" value={data?.disk ?? null} emptyText="Henüz ölçüm yok" />`),
+  render: () => <Gauge label="Disk doluluğu" value={null} emptyText="Henüz ölçüm yok" />,
 };

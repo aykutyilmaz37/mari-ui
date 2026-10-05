@@ -69,6 +69,32 @@
   }
 }
 
+/*
+ * Grafik giriş animasyonu (`animated`). Yalnız `from` — bitiş öğenin kendi
+ * hali. Çubuk sıfır çizgisinden büyür, çizgi/alan soldan açılır (kırpma
+ * dikdörtgeni), yay/dilim `pathLength=1` ile süpürülür.
+ */
+@keyframes mari-chart-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes mari-chart-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes mari-chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
 @layer base {
   body { font-family: var(--mari-font-sans); }

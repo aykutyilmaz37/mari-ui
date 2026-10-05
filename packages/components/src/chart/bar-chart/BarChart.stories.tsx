@@ -7,6 +7,8 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../../lib/SkeletonDemo";
+import { ANIMATION_STORY_DOC, AnimationDemo } from "../../lib/AnimationDemo";
+import { EMPTY_STORY_DOC } from "../_shared/storyDocs";
 import { Card } from "../../card";
 import { BarChart } from "./BarChart";
 import { profitByRegion, salesByChannel, ticketsByStatus } from "../storyData";
@@ -14,7 +16,7 @@ import { profitByRegion, salesByChannel, ticketsByStatus } from "../storyData";
 type Row = (typeof salesByChannel)[number];
 
 const meta: Meta<typeof BarChart<Row>> = {
-  title: "Veri Gösterimi/BarChart",
+  title: "Veri Gösterimi/Charts/BarChart",
   component: BarChart,
   tags: ["autodocs"],
   parameters: {
@@ -65,7 +67,7 @@ export const Playground: Story = {
     layout: "vertical",
     stacked: false,
     showGrid: true,
-    skeleton: false,
+    skeleton: false, animated: true,
   },
   render: (args) => <BarChart<Row> {...args} className="h-72" />,
 };
@@ -160,5 +162,25 @@ export const Skeleton: Story = {
     <SkeletonDemo className="w-full max-w-2xl">
       {(skeleton) => <BarChart<Row> label="Satış" data={salesByChannel} xKey="kanal" series={[{ key: "2026", name: "2026" }]} skeleton={skeleton} />}
     </SkeletonDemo>
+  ),
+};
+
+export const Animation: Story = {
+  name: "Animasyon",
+  ...storyDoc(ANIMATION_STORY_DOC, `<BarChart label="Satış" data={data} xKey="kanal" series={series} />`),
+  render: () => (
+    <AnimationDemo className="w-full max-w-2xl">
+      <BarChart<Row> label="Satış" data={salesByChannel} xKey="kanal" series={[{ key: "2026", name: "2026" }]} />
+    </AnimationDemo>
+  ),
+};
+
+export const EmptyState: Story = {
+  name: "Boş",
+  ...storyDoc(EMPTY_STORY_DOC, `<BarChart label="Satış" data={[]} xKey="kanal" series={series} emptyText="Bu dönem için satış yok" />`),
+  render: () => (
+    <div className="max-w-2xl">
+      <BarChart<Row> label="Satış" data={[]} xKey="kanal" series={[{ key: "2026", name: "2026" }]} emptyText="Bu dönem için satış yok" />
+    </div>
   ),
 };

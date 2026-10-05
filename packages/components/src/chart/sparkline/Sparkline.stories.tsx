@@ -7,12 +7,14 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../../lib/SkeletonDemo";
+import { ANIMATION_STORY_DOC, AnimationDemo } from "../../lib/AnimationDemo";
+import { EMPTY_STORY_DOC } from "../_shared/storyDocs";
 import { Card } from "../../card";
 import { Statistic } from "../../statistic";
 import { Sparkline } from "./Sparkline";
 
 const meta: Meta<typeof Sparkline> = {
-  title: "Veri Gösterimi/Sparkline",
+  title: "Veri Gösterimi/Charts/Sparkline",
   component: Sparkline,
   tags: ["autodocs"],
   parameters: {
@@ -45,7 +47,7 @@ const revenue = [182, 195, 214, 201, 236, 258, 249, 271, 289, 312, 334, 361];
 const churn = [4.1, 4.3, 4.0, 4.6, 4.9, 5.2, 5.0, 5.6, 5.9, 6.1, 6.4, 6.8];
 
 export const Playground: Story = {
-  args: { data: revenue, color: "muted", area: false, curve: "smooth", skeleton: false, label: "Son 12 ay gelir, yükselişte" },
+  args: { data: revenue, color: "muted", area: false, curve: "smooth", skeleton: false, animated: true, label: "Son 12 ay gelir, yükselişte" },
   render: (args) => <Sparkline {...args} className="h-10 w-48" />,
 };
 
@@ -78,4 +80,20 @@ export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc(SKELETON_STORY_DOC, `<Sparkline data={data ?? []} skeleton={isLoading} className="h-10 w-48" />`),
   render: () => <SkeletonDemo>{(skeleton) => <Sparkline data={revenue} skeleton={skeleton} className="h-10 w-48" />}</SkeletonDemo>,
+};
+
+export const Animation: Story = {
+  name: "Animasyon",
+  ...storyDoc(ANIMATION_STORY_DOC, `<Sparkline data={data} className="h-10 w-48" />`),
+  render: () => (
+    <AnimationDemo>
+      <Sparkline data={revenue} className="h-10 w-48" />
+    </AnimationDemo>
+  ),
+};
+
+export const EmptyState: Story = {
+  name: "Boş",
+  ...storyDoc(EMPTY_STORY_DOC, `<Sparkline data={[]} className="h-10 w-48" />`),
+  render: () => <Sparkline data={[]} className="h-10 w-48" />,
 };

@@ -7,6 +7,8 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../../lib/SkeletonDemo";
+import { ANIMATION_STORY_DOC, AnimationDemo } from "../../lib/AnimationDemo";
+import { EMPTY_STORY_DOC } from "../_shared/storyDocs";
 import { Card } from "../../card";
 import { LineChart } from "./LineChart";
 import { dailyVisitors, monthlyRevenue, tryFormatter } from "../storyData";
@@ -14,7 +16,7 @@ import { dailyVisitors, monthlyRevenue, tryFormatter } from "../storyData";
 type Row = (typeof monthlyRevenue)[number];
 
 const meta: Meta<typeof LineChart<Row>> = {
-  title: "Veri Gösterimi/LineChart",
+  title: "Veri Gösterimi/Charts/LineChart",
   component: LineChart,
   tags: ["autodocs"],
   parameters: {
@@ -68,7 +70,7 @@ export const Playground: Story = {
     curve: "linear",
     area: false,
     showGrid: true,
-    skeleton: false,
+    skeleton: false, animated: true,
   },
   render: (args) => <LineChart<Row> {...args} className="h-72" />,
 };
@@ -145,7 +147,7 @@ export const MissingData: Story = {
 
 export const EmptyState: Story = {
   name: "Boş",
-  ...storyDoc("Veri yokken `Empty` çizilir; metin `emptyText` ile.", `<LineChart label="Gelir" data={[]} xKey="month" series={series} emptyText="Bu dönem için kayıt yok" />`),
+  ...storyDoc(EMPTY_STORY_DOC, `<LineChart label="Gelir" data={[]} xKey="month" series={series} emptyText="Bu dönem için kayıt yok" />`),
   render: () => (
     <div className="max-w-3xl">
       <LineChart<Row> label="Gelir" data={[]} xKey="month" series={[{ key: "gelir", name: "Gelir" }]} emptyText="Bu dönem için kayıt yok" />
@@ -160,5 +162,15 @@ export const Skeleton: Story = {
     <SkeletonDemo className="w-full max-w-3xl">
       {(skeleton) => <LineChart<Row> label="Gelir" data={monthlyRevenue} xKey="month" series={[{ key: "gelir", name: "Gelir" }]} skeleton={skeleton} />}
     </SkeletonDemo>
+  ),
+};
+
+export const Animation: Story = {
+  name: "Animasyon",
+  ...storyDoc(ANIMATION_STORY_DOC, `<LineChart label="Gelir" data={data} xKey="month" series={series} area />`),
+  render: () => (
+    <AnimationDemo className="w-full max-w-3xl">
+      <LineChart<Row> label="Gelir" data={monthlyRevenue} xKey="month" series={[{ key: "gelir", name: "Gelir" }]} area />
+    </AnimationDemo>
   ),
 };

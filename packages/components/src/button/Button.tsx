@@ -3,7 +3,7 @@ import { Loader2Icon } from "lucide-react";
 import { cn, resolveColorVariant } from "@mari-ui/core";
 import { bgSubtleHoverClass, colorVariantToClassName } from "../lib/colorClasses";
 import { skeletonBoxProps } from "../lib/skeleton";
-import { sizeClass, touchTargetClass, touchTargetSquareClass } from "../lib/sizeClasses";
+import { iconSizeClass, sizeClass, touchTargetClass, touchTargetSquareClass } from "../lib/sizeClasses";
 import type { ButtonProps } from "./types";
 import { getShapeClasses, resolveLegacyButtonProps, resolveLoading } from "./utils";
 
@@ -62,7 +62,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   const resolvedLoadingIcon = loadingIcon ?? <Loader2Icon className="w-4 h-4 animate-spin" aria-hidden />;
   // `loading.delay`: buton hemen devre dışı olur (çift gönderim yok), ama
   // gösterge ancak gecikme dolunca belirir — saf CSS, hook gerekmez.
-  const loadingIconClass = cn(classNames.icon, loadingDelay > 0 && "opacity-0 animate-[mari-fade-in_150ms_ease-out_forwards]");
+  // İkon kapsayıcısı: satır içi hizalama (taban çizgisi boşluğu yok) + butonun boyutuna göre ikon ölçüsü.
+  const iconClass = cn("inline-flex shrink-0", iconSizeClass[size], classNames.icon);
+  const loadingIconClass = cn(iconClass, loadingDelay > 0 && "opacity-0 animate-[mari-fade-in_150ms_ease-out_forwards]");
   const loadingIconStyle = loadingDelay > 0 ? { animationDelay: `${loadingDelay}ms` } : undefined;
 
   if (process.env.NODE_ENV !== "production" && !children && !rest["aria-label"] && !rest["aria-labelledby"]) {
@@ -113,9 +115,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
   const children_ = (
     <>
       {isLoading && loadingIconPosition === "start" && <span className={loadingIconClass} style={loadingIconStyle}>{resolvedLoadingIcon}</span>}
-      {icon && !isLoading && iconPosition === "start" && <span className={classNames.icon}>{icon}</span>}
+      {icon && !isLoading && iconPosition === "start" && <span className={iconClass}>{icon}</span>}
       {children && <span className={cn("min-w-0 truncate", classNames.label)}>{children}</span>}
-      {icon && !isLoading && iconPosition === "end" && <span className={classNames.icon}>{icon}</span>}
+      {icon && !isLoading && iconPosition === "end" && <span className={iconClass}>{icon}</span>}
       {isLoading && loadingIconPosition === "end" && <span className={loadingIconClass} style={loadingIconStyle}>{resolvedLoadingIcon}</span>}
     </>
   );
@@ -125,7 +127,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     return (
       // `outline`'ın 1px kenarlığı kutuyu 2px genişletir — iskelet de aynı (şeffaf) kenarlığı taşır.
       <span {...skeletonBoxProps(cn(geometryClasses, resolvedVariant === "outline" && "border border-transparent", className, classNames.wrapper))}>
-        {icon && <span className={classNames.icon}>{icon}</span>}
+        {icon && <span className={iconClass}>{icon}</span>}
         {children && <span className="min-w-0 truncate">{children}</span>}
       </span>
     );

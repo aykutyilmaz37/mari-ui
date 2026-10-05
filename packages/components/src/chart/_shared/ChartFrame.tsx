@@ -3,7 +3,7 @@
 import React from "react";
 import { cn } from "@mari-ui/core";
 import { Empty } from "../../empty";
-import { skeletonBoxProps } from "../../lib/skeleton";
+import { ChartEmpty, LegendSkeleton } from "./ChartSkeleton";
 
 export interface LegendItem {
   name: string;
@@ -90,7 +90,7 @@ export interface ChartFrameProps {
   legend?: LegendItem[];
   table: TableModel;
   tooltip: TooltipState | null;
-  plotRef: React.RefObject<HTMLDivElement | null>;
+  plotRef: React.Ref<HTMLDivElement>;
   plotWidth: number;
   /** Klavye: ok tuşlarıyla odak noktasını gezdirmek için (grafik türü işler). */
   onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
@@ -98,6 +98,10 @@ export interface ChartFrameProps {
   children: React.ReactNode;
   /** Lejant konumu. Varsayılan üstte (okuyucu önce neyin ne olduğunu görsün). */
   legendPosition?: "top" | "bottom";
+  /** İskelette çizim alanı — grafiğin kendi şekli (`ChartSkeleton`). */
+  skeletonPlot: React.ReactNode;
+  /** İskelette lejant öğesi sayısı (0 → lejant yok); yüklü halle aynı yerde. */
+  skeletonLegend?: number;
 }
 
 /**
@@ -120,9 +124,18 @@ export function ChartFrame({
   onBlur,
   children,
   legendPosition = "top",
+  skeletonPlot,
+  skeletonLegend = 0,
 }: ChartFrameProps) {
   if (skeleton) {
-    return <div {...skeletonBoxProps(cn("h-64 w-full rounded-md", className))} />;
+    const legendStub = skeletonLegend > 0 ? <LegendSkeleton count={skeletonLegend} /> : null;
+    return (
+      <div aria-hidden data-skeleton="" className={cn("pointer-events-none flex h-64 w-full min-w-0 flex-col gap-3", className)}>
+        {legendPosition === "top" && legendStub}
+        <div className="relative min-h-0 flex-1">{skeletonPlot}</div>
+        {legendPosition === "bottom" && legendStub}
+      </div>
+    );
   }
 
   const interactive = !empty && Boolean(onKeyDown);
@@ -139,9 +152,9 @@ export function ChartFrame({
           : {})}
       >
         {empty ? (
-          <div className="absolute inset-0 grid place-items-center">
+          <ChartEmpty plot={skeletonPlot}>
             <Empty size="sm" title={emptyText} />
-          </div>
+          </ChartEmpty>
         ) : (
           children
         )}

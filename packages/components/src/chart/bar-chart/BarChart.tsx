@@ -7,6 +7,8 @@ import { XLabels, XValueGrid, YGrid, labelStride, plotBox, type PlotBox } from "
 import { makeFormatters, seriesColor } from "../_shared/format";
 import { bandScale, linearScale, niceDomain } from "../_shared/scale";
 import { useChartSize } from "../_shared/useChartSize";
+import { CartesianSkeleton } from "../_shared/ChartSkeleton";
+import { growProps } from "../_shared/animation";
 
 export interface BarChartProps<T> extends CartesianChartProps<T> {
   /** `"vertical"` (varsayılan): sütunlar. `"horizontal"`: yatay çubuklar — uzun kategori adları ve sıralamalar için. */
@@ -38,6 +40,7 @@ export function BarChart<T>({
   showLegend,
   emptyText = "Veri yok",
   skeleton,
+  animated = true,
   className,
 }: BarChartProps<T>) {
   const [plotRef, size] = useChartSize<HTMLDivElement>();
@@ -86,6 +89,8 @@ export function BarChart<T>({
       label={label}
       className={className}
       skeleton={skeleton}
+      skeletonPlot={<CartesianSkeleton shape={horizontal ? "barHorizontal" : "bar"} count={data.length || 6} />}
+      skeletonLegend={legend?.length ?? 0}
       empty={data.length === 0 || series.length === 0}
       emptyText={emptyText}
       legend={legend}
@@ -133,7 +138,7 @@ export function BarChart<T>({
             </>
           )}
           {bars.map((bar) => (
-            <path key={`${bar.row}-${bar.series}`} d={bar.d} fill={colors[bar.series]} />
+            <path key={`${bar.row}-${bar.series}`} d={bar.d} fill={colors[bar.series]} {...growProps(animated, horizontal, zero, bar.row, data.length)} />
           ))}
           {/* Vuruş hedefi: tüm kategori bandı (işaretten büyük). */}
           {data.map((_, i) =>

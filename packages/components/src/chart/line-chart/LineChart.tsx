@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
 import type { CartesianChartProps } from "../types";
 import { ChartFrame, nextIndex, type TooltipState } from "../_shared/ChartFrame";
 import { YGrid, XLabels, labelStride, plotBox } from "../_shared/cartesian";
@@ -8,6 +8,8 @@ import { makeFormatters, seriesColor } from "../_shared/format";
 import { areaPath, linePath, type Curve, type Point } from "../_shared/paths";
 import { extent, linearScale, niceDomain } from "../_shared/scale";
 import { useChartSize } from "../_shared/useChartSize";
+import { CartesianSkeleton } from "../_shared/ChartSkeleton";
+import { revealRectProps } from "../_shared/animation";
 
 export interface LineChartProps<T> extends CartesianChartProps<T> {
   /** `"smooth"`: monoton eğri (veriyi aşan tepe çizmez). Varsayılan `"linear"`. */
@@ -44,9 +46,11 @@ export function LineChart<T>({
   showLegend,
   emptyText = "Veri yok",
   skeleton,
+  animated = true,
   className,
 }: LineChartProps<T>) {
   const [plotRef, size] = useChartSize<HTMLDivElement>();
+  const clipId = `mari-line-${useId().replace(/[^\w-]/g, "")}`;
   const [active, setActive] = useState<number | null>(null);
   const fmt = useMemo(() => makeFormatters(locale, valueFormatter), [locale, valueFormatter]);
 
@@ -91,6 +95,8 @@ export function LineChart<T>({
       label={label}
       className={className}
       skeleton={skeleton}
+      skeletonPlot={<CartesianSkeleton shape="line" count={data.length || 6} />}
+      skeletonLegend={legend?.length ?? 0}
       empty={data.length === 0 || series.length === 0}
       emptyText={emptyText}
       legend={legend}
@@ -116,6 +122,15 @@ export function LineChart<T>({
         <svg aria-hidden width={size.width} height={size.height} className="absolute inset-0 overflow-visible">
           <YGrid domain={domain} y={y} box={box} format={fmt.axis} showGrid={showGrid} zeroLine />
           <XLabels labels={xLabels} xAt={xAt} box={box} stride={stride} />
+          {animated && (
+            <defs>
+              {/* Çizgi kalınlığı ve uç yuvarlağı kırpılmasın: kutunun her yanında pay. */}
+              <clipPath id={clipId}>
+                <rect x={box.left - 4} y={0} width={box.width + 8} height={size.height} {...revealRectProps(animated, box.left - 4)} />
+              </clipPath>
+            </defs>
+          )}
+          <g clipPath={animated ? `url(#${clipId})` : undefined}>
           {series.map((s, si) => {
             const pts: Array<Point | null> = data.map((row, i) => {
               const v = toNumber(row[s.key]);
@@ -128,6 +143,7 @@ export function LineChart<T>({
               </g>
             );
           })}
+          </g>
           {active !== null && (
             <g>
               <line x1={xAt(active)} x2={xAt(active)} y1={box.top} y2={box.top + box.height} className="stroke-mari-muted/50" strokeWidth={1} />

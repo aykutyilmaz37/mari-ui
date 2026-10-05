@@ -7,12 +7,14 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { componentDoc, storyDoc } from "../../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../../lib/SkeletonDemo";
+import { ANIMATION_STORY_DOC, AnimationDemo } from "../../lib/AnimationDemo";
+import { EMPTY_STORY_DOC } from "../_shared/storyDocs";
 import { Card } from "../../card";
 import { PieChart } from "./PieChart";
 import { deviceShare, trafficSources } from "../storyData";
 
 const meta: Meta<typeof PieChart> = {
-  title: "Veri Gösterimi/PieChart",
+  title: "Veri Gösterimi/Charts/PieChart",
   component: PieChart,
   tags: ["autodocs"],
   parameters: {
@@ -48,7 +50,7 @@ export default meta;
 type Story = StoryObj<typeof PieChart>;
 
 export const Playground: Story = {
-  args: { label: "Trafik kaynakları", data: trafficSources, donut: true, maxSlices: 6, showPercent: true, skeleton: false },
+  args: { label: "Trafik kaynakları", data: trafficSources, donut: true, maxSlices: 6, showPercent: true, skeleton: false, animated: true },
   render: (args) => <PieChart {...args} className="h-80 max-w-sm" />,
 };
 
@@ -106,4 +108,24 @@ export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc(SKELETON_STORY_DOC, `<PieChart label="Trafik" data={data ?? []} donut skeleton={isLoading} />`),
   render: () => <SkeletonDemo className="w-full max-w-sm">{(skeleton) => <PieChart label="Trafik" data={trafficSources} donut skeleton={skeleton} className="h-80" />}</SkeletonDemo>,
+};
+
+export const Animation: Story = {
+  name: "Animasyon",
+  ...storyDoc(ANIMATION_STORY_DOC, `<PieChart label="Trafik" data={data} donut />`),
+  render: () => (
+    <AnimationDemo className="w-full max-w-sm">
+      <PieChart label="Trafik" data={trafficSources} donut className="h-80" />
+    </AnimationDemo>
+  ),
+};
+
+export const EmptyState: Story = {
+  name: "Boş",
+  ...storyDoc(EMPTY_STORY_DOC, `<PieChart label="Trafik" data={[]} donut emptyText="Henüz ziyaret yok" />`),
+  render: () => (
+    <div className="max-w-sm">
+      <PieChart label="Trafik" data={[]} donut emptyText="Henüz ziyaret yok" className="h-80" />
+    </div>
+  ),
 };

@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
+import { cn } from "@mari-ui/core";
 import type { ChartBaseProps, ChartColor } from "../types";
 import { ChartFrame, nextIndex } from "../_shared/ChartFrame";
 import { makeFormatters, seriesColor } from "../_shared/format";
 import { arcPath, polar } from "../_shared/paths";
 import { useChartSize } from "../_shared/useChartSize";
+import { PieSkeleton } from "../_shared/ChartSkeleton";
+import { drawProps, fadeAfterProps } from "../_shared/animation";
 
 export interface PieDatum {
   name: string;
@@ -51,9 +54,11 @@ export function PieChart({
   locale = "tr-TR",
   emptyText = "Veri yok",
   skeleton,
+  animated = true,
   className,
 }: PieChartProps) {
   const [plotRef, size] = useChartSize<HTMLDivElement>();
+  const maskId = `mari-pie-${useId().replace(/[^\w-]/g, "")}`;
   const [active, setActive] = useState<number | null>(null);
   const fmt = useMemo(() => makeFormatters(locale, valueFormatter), [locale, valueFormatter]);
   const percent = useMemo(() => new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 1 }), [locale]);
@@ -103,6 +108,8 @@ export function PieChart({
       label={label}
       className={className}
       skeleton={skeleton}
+      skeletonPlot={<PieSkeleton donut={donut} />}
+      skeletonLegend={Math.min(data.length || 4, maxSlices)}
       empty={slices.length === 0}
       emptyText={emptyText}
       legend={legend}
@@ -121,6 +128,25 @@ export function PieChart({
     >
       {outer > 0 && (
         <svg aria-hidden width={size.width} height={size.height} className="absolute inset-0 overflow-visible">
+          {animated && (
+            <defs>
+              {/* Süpürme: saat 12'den saat yönünde açılan maske. Kalın çizgili daire tüm diski
+                  (üzerine gelince büyüyen dilim dahil) kaplar; daire yolu saat 3'ten başladığı için -90°. */}
+              <mask id={maskId} maskUnits="userSpaceOnUse">
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={(outer + 6) / 2}
+                  fill="none"
+                  stroke="white"
+                  strokeWidth={outer + 6}
+                  transform={`rotate(-90 ${cx} ${cy})`}
+                  {...drawProps(animated)}
+                />
+              </mask>
+            </defs>
+          )}
+          <g mask={animated ? `url(#${maskId})` : undefined}>
           {arcs.map((a, i) => (
             <path
               key={a.name}
@@ -134,8 +160,9 @@ export function PieChart({
               onPointerLeave={() => setActive(null)}
             />
           ))}
+          </g>
           {donut && (
-            <g className="pointer-events-none">
+            <g className={cn("pointer-events-none", fadeAfterProps(animated, 600).className)} style={fadeAfterProps(animated, 600).style}>
               <text x={cx} y={cy} dy="-0.35em" textAnchor="middle" className="fill-mari-muted text-xs">
                 {centerLabel}
               </text>

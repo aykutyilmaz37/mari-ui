@@ -31,6 +31,12 @@ export interface ChartBaseProps extends SkeletonableProps {
    * tabanlı, yoğunluk ve büyük ekran ölçeğiyle büyür. Genişlik kapsayıcıyı doldurur.
    */
   className?: string;
+  /**
+   * Giriş animasyonu: ilk çizimde (iskeletten yüklü hale geçerken de) çubuklar
+   * büyür, çizgiler soldan açılır, dilimler süpürülür. Varsayılan açık (`false` ile kapatılır);
+   * hareket azaltma tercihinde çalışmaz.
+   */
+  animated?: boolean;
 }
 
 export interface CartesianChartProps<T> extends ChartBaseProps {

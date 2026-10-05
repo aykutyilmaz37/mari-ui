@@ -150,6 +150,19 @@ describe("Gauge", () => {
     expect(meter).toHaveAttribute("aria-valuenow", "100");
     expect(meter).toHaveAttribute("aria-valuetext", "120, Kritik");
   });
+
+  it("değer yoksa meter değil boş hal: '0' okunmaz, ad + emptyText okunur", () => {
+    render(<Gauge label="Disk" value={null} emptyText="Henüz ölçüm yok" />);
+    expect(screen.queryByRole("meter")).not.toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Disk: Henüz ölçüm yok" })).toBeInTheDocument();
+  });
+});
+
+describe("Boş hal", () => {
+  it("Sparkline değer yoksa uyarı gösterir", () => {
+    render(<Sparkline data={[null, null]} emptyText="Kayıt yok" />);
+    expect(screen.getByRole("img", { name: "Kayıt yok" })).toBeInTheDocument();
+  });
 });
 
 describe("Sparkline", () => {

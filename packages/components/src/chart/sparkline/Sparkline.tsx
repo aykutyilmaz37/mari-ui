@@ -1,13 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useId } from "react";
+import { InboxIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import type { ChartColor } from "../types";
 import { seriesColor } from "../_shared/format";
 import { areaPath, linePath, type Curve, type Point } from "../_shared/paths";
 import { extent, linearScale } from "../_shared/scale";
 import { useChartSize } from "../_shared/useChartSize";
-import { skeletonBoxProps, type SkeletonableProps } from "../../lib/skeleton";
+import { skeletonFill, type SkeletonableProps } from "../../lib/skeleton";
+import { ChartEmpty, waveMask } from "../_shared/ChartSkeleton";
+import { fadeAfterProps, revealRectProps } from "../_shared/animation";
 
 export interface SparklineProps extends SkeletonableProps {
   data: Array<number | null>;
@@ -24,6 +27,10 @@ export interface SparklineProps extends SkeletonableProps {
   curve?: Curve;
   /** Boyut. Varsayılan `h-8 w-full`. */
   className?: string;
+  /** Değer yokken bulanık çizginin önünde görünen metin. Varsayılan "Veri yok". */
+  emptyText?: string;
+  /** Giriş animasyonu: çizgi soldan açılır, son nokta ardından belirir. Varsayılan açık. */
+  animated?: boolean;
 }
 
 /**
@@ -31,9 +38,11 @@ export interface SparklineProps extends SkeletonableProps {
  * eğilimi göstermek için. Değer okutmaz (değeri yanındaki sayı taşır); ekseni,
  * tooltip'i yoktur.
  */
-export function Sparkline({ data, label, color = "muted", endColor = "primary", area = false, curve = "smooth", skeleton, className }: SparklineProps) {
+export function Sparkline({ data, label, color = "muted", endColor = "primary", area = false, curve = "smooth", skeleton, animated = true, emptyText = "Veri yok", className }: SparklineProps) {
   const [ref, size] = useChartSize<HTMLDivElement>();
-  if (skeleton) return <span {...skeletonBoxProps(cn("block h-8 w-full rounded-sm", className))} />;
+  const clipId = `mari-spark-${useId().replace(/[^\w-]/g, "")}`;
+  // İskelet: aynı kutuda ince dalga (çizginin kendisi) — düz blok değil.
+  if (skeleton) return <span aria-hidden data-skeleton="" className={cn("pointer-events-none block h-8 w-full", skeletonFill(true), className)} style={waveMask(1.5)} />;
 
   const stroke = color === "muted" ? "var(--mari-color-muted)" : seriesColor(color, 0);
   const pad = 3;
@@ -51,6 +60,21 @@ export function Sparkline({ data, label, color = "muted", endColor = "primary", 
   }
   const last = lastIndex >= 0 ? pts[lastIndex] : null;
 
+  // Boş: diğer grafiklerle aynı desen — bulanık sabit dalga, önde kısa uyarı.
+  if (!last) {
+    return (
+      <div role="img" aria-label={emptyText} className={cn("relative h-8 w-full", className)}>
+        <ChartEmpty compact plot={<span className={cn("absolute inset-0", skeletonFill(false))} style={waveMask(1.5)} />}>
+          {/* Empty ile aynı ikon; 2rem'lik satıra sığsın diye ikon + metin yan yana. */}
+          <span className="flex items-center gap-1.5 text-xs text-mari-muted">
+            <InboxIcon aria-hidden className="size-3.5 shrink-0" />
+            {emptyText}
+          </span>
+        </ChartEmpty>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={ref}
@@ -61,9 +85,18 @@ export function Sparkline({ data, label, color = "muted", endColor = "primary", 
     >
       {size.width > 0 && (
         <svg width={size.width} height={size.height} aria-hidden className="block overflow-visible">
-          {area && <path d={areaPath(pts, size.height, curve)} fill={stroke} fillOpacity={0.1} />}
-          <path d={linePath(pts, curve)} fill="none" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-          {last && <circle cx={last[0]} cy={last[1]} r={3} fill={seriesColor(endColor, 0)} className="stroke-mari-surface" strokeWidth={1.5} />}
+          {animated && (
+            <defs>
+              <clipPath id={clipId}>
+                <rect x={-2} y={-2} width={size.width + 4} height={size.height + 4} {...revealRectProps(animated, -2)} />
+              </clipPath>
+            </defs>
+          )}
+          <g clipPath={animated ? `url(#${clipId})` : undefined}>
+            {area && <path d={areaPath(pts, size.height, curve)} fill={stroke} fillOpacity={0.1} />}
+            <path d={linePath(pts, curve)} fill="none" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+          </g>
+          {last && <circle cx={last[0]} cy={last[1]} r={3} fill={seriesColor(endColor, 0)} className={cn("stroke-mari-surface", fadeAfterProps(animated).className)} style={fadeAfterProps(animated).style} strokeWidth={1.5} />}
         </svg>
       )}
     </div>
