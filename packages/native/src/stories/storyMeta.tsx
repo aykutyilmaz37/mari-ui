@@ -9,7 +9,7 @@
  * story'yi `render(args)` ile kendisi çağırır.
  */
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { darkTheme, lightTheme } from "@mari-ui/tokens";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import { useTheme } from "../theme/useTheme";
@@ -87,6 +87,26 @@ export function SkeletonDemo({ children }: { children: (skeleton: boolean) => Re
       </Row>
       {children(skeleton)}
     </Stack>
+  );
+}
+
+/**
+ * YALNIZ STORY'LER — web `Field`ın görünümü (etiket 14/500, alana 6px; ipucu /
+ * hata 12px, üstten 6px). Native `Field` Dalga 1'de gelince bunun yerini alır.
+ */
+export function FieldStub({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: React.ReactNode }) {
+  const theme = useTheme();
+  const c = theme.color;
+  const text = (size: number, color: string, weight: "400" | "500" = "400") => ({ fontSize: size, lineHeight: size === 14 ? 20 : 16, color, fontWeight: weight });
+  return (
+    <View style={{ gap: 6, alignSelf: "stretch" }}>
+      <Text style={text(14, c.canvas.foreground, "500")}>{label}</Text>
+      <View>
+        {children}
+        {hint ? <Text style={[text(12, c.canvas.muted), { marginTop: 6 }]}>{hint}</Text> : null}
+        {error ? <Text style={[text(12, c.error.text), { marginTop: 6 }]}>{error}</Text> : null}
+      </View>
+    </View>
   );
 }
 
