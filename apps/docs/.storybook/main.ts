@@ -44,7 +44,14 @@ const config: StorybookConfig = {
       { find: /^@mari-ui\/native$/, replacement: path.resolve(__dirname, "../../../packages/native/src/index.ts") },
     ];
     // react-native-web platform uzantıları + RN kodunun beklediği global.
-    viteConfig.resolve.extensions = [".web.tsx", ".web.ts", ".web.js", ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json"];
+    const webFirst = [".web.tsx", ".web.ts", ".web.js", ".tsx", ".ts", ".mjs", ".js", ".jsx", ".json"];
+    viteConfig.resolve.extensions = webFirst;
+    // Bağımlılık ön-paketlemesi (Vite 8 / rolldown) da `.web.js`i önce seçmeli —
+    // yoksa react-native-svg'nin native dosyaları (react-native'in Flow iç dosyalarını
+    // import eden) paketlenmeye çalışılıyor ve Storybook açılmıyor.
+    viteConfig.optimizeDeps ??= {};
+    const optimize = viteConfig.optimizeDeps as { rolldownOptions?: { resolve?: Record<string, unknown> } };
+    optimize.rolldownOptions = { ...optimize.rolldownOptions, resolve: { ...optimize.rolldownOptions?.resolve, extensions: webFirst } };
     viteConfig.define = { ...viteConfig.define, __DEV__: JSON.stringify(process.env.NODE_ENV !== "production") };
     // Prop tablosu üreten react-docgen, native tiplerini izlerken `react-native`in
     // Flow sözdizimli kaynağına iniyor ve ayrıştıramıyor (story yüklenmiyordu).

@@ -1,4 +1,3 @@
-import { StyleSheet } from "react-native";
 import { useTheme } from "../theme/useTheme";
 import { buttonRecipe, type ButtonRecipeOptions, type ButtonRecipeResult } from "./recipes/buttonRecipe";
 import { inputRecipe, type InputRecipeOptions, type InputRecipeResult } from "./recipes/inputRecipe";
@@ -36,10 +35,8 @@ export function useStyles<K extends keyof RecipeMap>(name: K, options: RecipeMap
   // bir sınırı) — çağıranın imzası (`RecipeMap[K]`) zaten doğru eşleşmeyi
   // garanti ettiği için tek satırlık bir cast yeterli.
   const recipe = recipeFns[name] as (theme: ReturnType<typeof useTheme>, options: RecipeMap[K]["options"]) => RecipeMap[K]["result"];
-  const resolved = recipe(theme, options);
-  // `StyleSheet.create`'in generic imzası (`T extends NamedStyles<T>`) union
-  // dönüş tipimizle (üç recipe'nin birleşimi) statik olarak birleşmiyor —
-  // `tsup.config.ts`'teki `as never` kullanımıyla aynı, bilinçli bir
-  // generic-uyuşmazlığı atlatma (yukarıdaki cast'le aynı gerekçe).
-  return StyleSheet.create(resolved as never) as unknown as RecipeMap[K]["result"];
+  // `StyleSheet.create` YOK: stiller prop'a göre her render'da yeniden çözülüyor
+  // (önbellek kazancı yok) ve recipe artık stil olmayan değerler de döndürüyor
+  // (`iconSize`, `hitSlop`) — create bunları stil sanıp işlemeye çalışırdı.
+  return recipe(theme, options);
 }

@@ -14,7 +14,7 @@ const path = require("node:path");
 const { getDefaultConfig } = require("expo/metro-config");
 
 const config = getDefaultConfig(__dirname);
-const SINGLETONS = ["react", "react-dom", "react-native", "react-native-web"];
+const SINGLETONS = ["react", "react-dom", "react-native", "react-native-web", "react-native-svg"];
 const appEntry = path.join(__dirname, "index.ts");
 const nativeSource = path.resolve(__dirname, "../../packages/native/src/index.ts");
 

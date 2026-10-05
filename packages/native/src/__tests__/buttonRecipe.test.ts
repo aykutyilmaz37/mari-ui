@@ -45,9 +45,33 @@ describe("buttonRecipe", () => {
     expect(container.width).toBe("100%");
   });
 
-  it("variant=link: metin altı çizili", () => {
+  it("variant=link: web ile aynı — alt çizgi yok", () => {
     const { label } = buttonRecipe(lightTheme, { ...base, variant: "link" });
-    expect(label.textDecorationLine).toBe("underline");
+    expect(label.textDecorationLine).toBe("none");
+  });
+
+  it("satır yüksekliği web'in Tailwind ölçeği: sm 12/16, md 14/20, lg 16/24", () => {
+    expect(buttonRecipe(lightTheme, { ...base, size: "sm" }).label.lineHeight).toBe(16);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).label.lineHeight).toBe(20);
+    expect(buttonRecipe(lightTheme, { ...base, size: "lg" }).label.lineHeight).toBe(24);
+  });
+
+  it("basılma = web hover + active: outline/ghost rolün yumuşak zemini, hepsi %98", () => {
+    const outline = buttonRecipe(lightTheme, { ...base, variant: "outline" }).pressedContainer;
+    expect(outline.backgroundColor).toBe(lightTheme.color.primary.subtle);
+    expect(outline.transform).toEqual([{ scale: 0.98 }]);
+    const solid = buttonRecipe(lightTheme, { ...base, variant: "solid" }).pressedContainer;
+    expect(solid.backgroundColor).toBe(lightTheme.color.primary.solidHover);
+  });
+
+  it("ikon boyutu web iconSizeClass ile aynı; dokunma alanı 44'e tamamlanır", () => {
+    expect(buttonRecipe(lightTheme, { ...base, size: "xs" }).iconSize).toBe(12);
+    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).iconSize).toBe(20);
+    const md = buttonRecipe(lightTheme, { ...base, size: "md" }).hitSlop;
+    expect(md).toEqual({ top: 6, bottom: 6, left: 0, right: 0 });
+    const circle = buttonRecipe(lightTheme, { ...base, size: "sm", shape: "circle" }).hitSlop;
+    expect(circle).toEqual({ top: 10, bottom: 10, left: 10, right: 10 });
+    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).hitSlop.top).toBe(0);
   });
 
   it("boyut arttıkça height ve fontSize artar (sm < md < lg)", () => {

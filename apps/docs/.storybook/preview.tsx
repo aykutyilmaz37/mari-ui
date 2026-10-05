@@ -21,6 +21,23 @@ import { DocsContainer } from "./DocsContainer";
  * alıyor.
  */
 const preview: Preview = {
+  // Native story'lerinin font kipi (ThemeProvider `fonts`): "system" varsayılan,
+  // "brand" Geist/Manrope — web component'leriyle birebir karşılaştırmak için.
+  globalTypes: {
+    fonts: {
+      description: "Native font kipi",
+      toolbar: {
+        title: "Native font",
+        icon: "paragraph",
+        items: [
+          { value: "system", title: "Sistem fontu" },
+          { value: "brand", title: "Marka fontu (Geist)" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: { fonts: "system" },
   parameters: {
     docs: { container: DocsContainer },
     backgrounds: { disable: true },

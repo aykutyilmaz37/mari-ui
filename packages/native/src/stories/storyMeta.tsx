@@ -92,7 +92,8 @@ export function SkeletonDemo({ children }: { children: (skeleton: boolean) => Re
 
 /** Story içinde yan yana / alt alta örnek dizmek için. */
 export function Row({ children }: { children: React.ReactNode }) {
-  return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" }}>{children}</View>;
+  // Web story'lerinin `flex flex-wrap gap-3` düzeni (12px) — karşılaştırma birebir olsun.
+  return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, alignItems: "center" }}>{children}</View>;
 }
 
 export function Stack({ children }: { children: React.ReactNode }) {
