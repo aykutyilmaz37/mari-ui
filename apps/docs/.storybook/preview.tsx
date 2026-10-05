@@ -41,7 +41,7 @@ const preview: Preview = {
       // Storybook bu fonksiyonu KAYNAK METİN olarak alıp çalıştırır: içinde TypeScript tipi olamaz.
       // @ts-expect-error -- parametreler bilinçli olarak tipsiz (tip açıklaması dizinlemeyi bozar)
       storySort: (a, b) => {
-        const categories = ["Genel Bakış", "Foundations", "Genel", "Navigasyon", "Veri Girişi", "Veri Gösterimi", "Geri Bildirim"];
+        const categories = ["Genel Bakış", "Foundations", "Genel", "Navigasyon", "Veri Girişi", "Veri Gösterimi", "Geri Bildirim", "Native"];
         const foundations = ["Yumuşak İris", "Marka", "Renkler", "Tipografi", "Spacing", "Elevation"];
         const pa = a.title.split("/");
         const pb = b.title.split("/");

@@ -13,9 +13,11 @@
   "dependencies": {
     "@mari-ui/components": "workspace:*",
     "@mari-ui/core": "workspace:*",
+    "@mari-ui/native": "workspace:*",
     "@mari-ui/tokens": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-native-web": "^0.21.3"
   },
   "devDependencies": {
     "@mari-ui/eslint-config": "workspace:*",

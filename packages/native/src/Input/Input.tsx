@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useControllableState } from "@mari-ui/core";
 import { useStyles } from "../styles/useStyles";
+import { SkeletonBox } from "../lib/Skeleton";
 import { useTheme } from "../theme/useTheme";
 import type { InputProps } from "./types";
 
@@ -36,11 +37,15 @@ export function Input({
   inputStyle,
   testID,
   accessibilityLabel,
+  skeleton = false,
 }: InputProps) {
   const [internalValue, setInternalValue] = useControllableState({ value, defaultValue, onChange: onChangeText });
   const [focused, setFocused] = useState(false);
   const styles = useStyles("input", { color, variant, size, shape, disabled, focused });
   const theme = useTheme();
+
+  // Aynı kutu: yükseklik, köşe, kenarlık kalınlığı; tam genişlik (alan da öyle).
+  if (skeleton) return <SkeletonBox style={[styles.container, style]} />;
 
   return (
     <View style={[styles.container, style]}>

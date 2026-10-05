@@ -1,3 +1,4 @@
+import type { SkeletonableProps } from "../lib/Skeleton";
 import type { ReactNode } from "react";
 import type { StyleProp, TextInputProps, TextStyle, ViewStyle } from "react-native";
 import type { ColorRole, Size } from "@mari-ui/core";
@@ -11,7 +12,7 @@ import type { ColorRole, Size } from "@mari-ui/core";
 export type InputVariant = "outline" | "soft" | "ghost" | "underlined";
 export type InputShape = "default" | "pill" | "square";
 
-export interface InputProps {
+export interface InputProps extends SkeletonableProps {
   value?: string;
   defaultValue?: string;
   onChangeText?: (value: string) => void;

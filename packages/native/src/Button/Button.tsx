@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useStyles } from "../styles/useStyles";
+import { SkeletonBox } from "../lib/Skeleton";
 import type { ButtonProps } from "./types";
 
 export type { ButtonProps };
@@ -26,9 +27,22 @@ export function Button({
   style,
   testID,
   accessibilityLabel,
+  skeleton = false,
 }: ButtonProps) {
   const styles = useStyles("button", { color, variant, size, shape, block, disabled });
   const isDisabled = disabled || loading;
+
+  if (skeleton) {
+    // Aynı kutu (yükseklik, köşe, iç boşluk); etiket ve ikon görünmez ama yer kaplar → aynı genişlik.
+    return (
+      <SkeletonBox style={[styles.container, style]}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: styles.container.gap }}>
+          {icon}
+          {typeof children === "string" ? <Text style={styles.label}>{children}</Text> : children}
+        </View>
+      </SkeletonBox>
+    );
+  }
 
   return (
     <Pressable

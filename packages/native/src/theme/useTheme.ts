@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { useColorScheme } from "react-native";
 import { lightTheme, darkTheme, type Theme } from "@mari-ui/tokens";
 import { ThemeContext } from "./ThemeContext";
+import { withFonts } from "./fonts";
 
 /**
  * `<ThemeProvider>` varsa onu kullanır; yoksa `react-native`'in
@@ -16,5 +17,6 @@ export function useTheme(): Theme {
   const provided = useContext(ThemeContext);
   const systemScheme = useColorScheme();
   if (provided) return provided;
-  return systemScheme === "dark" ? darkTheme : lightTheme;
+  // Provider yok: sıfır kurulum — platform fontu (bkz. theme/fonts.ts).
+  return withFonts(systemScheme === "dark" ? darkTheme : lightTheme, "system");
 }

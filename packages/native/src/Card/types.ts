@@ -1,8 +1,9 @@
+import type { SkeletonableProps } from "../lib/Skeleton";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import type { Size } from "@mari-ui/core";
 
-export interface CardProps {
+export interface CardProps extends SkeletonableProps {
   children: ReactNode;
   title?: ReactNode;
   extra?: ReactNode;
@@ -16,6 +17,7 @@ export interface CardProps {
    * render eder ve `pressed` durumunda aynı görsel değişimi uygular.
    */
   hoverable?: boolean;
+  /** @deprecated `skeleton` kullanın (web ile aynı — Faz 15); bir sonraki major'da kaldırılacak. */
   loading?: boolean;
   size?: Size;
   /** İç içe/gömülü kart görünümü — her zaman `surfaceAlt` arka plan + kenarlık. */

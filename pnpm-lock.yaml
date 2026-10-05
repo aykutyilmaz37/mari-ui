@@ -129,6 +129,9 @@ importers:
       '@mari-ui/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@mari-ui/native':
+        specifier: workspace:*
+        version: link:../../packages/native
       '@mari-ui/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -138,6 +141,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.8(react@19.2.8)
+      react-native-web:
+        specifier: ^0.21.3
+        version: 0.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
     devDependencies:
       '@mari-ui/eslint-config':
         specifier: workspace:*
@@ -487,6 +493,9 @@ importers:
       '@mari-ui/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@storybook/react':
+        specifier: ^8.6.18
+        version: 8.6.18(@storybook/test@8.6.18(storybook@8.6.18(supports-color@7.2.0)))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@8.6.18(supports-color@7.2.0))(typescript@5.9.3)
       '@types/react':
         specifier: ^19.0.2
         version: 19.2.18
@@ -10628,6 +10637,21 @@ snapshots:
       postcss-value-parser: 4.2.0
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
+      styleq: 0.1.3
+    transitivePeerDependencies:
+      - encoding
+
+  react-native-web@0.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@react-native/normalize-colors': 0.74.89
+      fbjs: 3.0.5
+      inline-style-prefixer: 7.0.1
+      memoize-one: 6.0.0
+      nullthrows: 1.1.1
+      postcss-value-parser: 4.2.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       styleq: 0.1.3
     transitivePeerDependencies:
       - encoding

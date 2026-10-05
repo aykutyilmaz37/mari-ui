@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Theme } from "@mari-ui/tokens";
 import { ThemeContext } from "./ThemeContext";
+import { withFonts, type NativeFonts } from "./fonts";
 
 export interface ThemeProviderProps {
   /**
@@ -10,6 +11,12 @@ export interface ThemeProviderProps {
    * sadece bir `Theme` objesi geçmekten ibaret).
    */
   theme: Theme;
+  /**
+   * `"system"` (varsayılan): platform fontu, kurulum gerekmez. `"brand"`:
+   * Geist / Manrope / Geist Mono — önce `expo-font` ile yükleyin (kayıt adları
+   * `BRAND_FONT_FAMILIES`).
+   */
+  fonts?: NativeFonts;
   children: ReactNode;
 }
 
@@ -19,6 +26,6 @@ export interface ThemeProviderProps {
  * import ETMEZ (sadece `react`) — bu yüzden bu dosya, tersine, vitest altında
  * da (herhangi bir RN mock'una gerek kalmadan) test edilebilir durumda.
  */
-export function ThemeProvider({ theme, children }: ThemeProviderProps) {
-  return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
+export function ThemeProvider({ theme, fonts = "system", children }: ThemeProviderProps) {
+  return <ThemeContext.Provider value={withFonts(theme, fonts)}>{children}</ThemeContext.Provider>;
 }

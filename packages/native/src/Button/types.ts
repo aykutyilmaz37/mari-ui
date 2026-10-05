@@ -1,3 +1,4 @@
+import type { SkeletonableProps } from "../lib/Skeleton";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import type { ColorRole, ExtendedSize, Variant } from "@mari-ui/core";
@@ -6,7 +7,7 @@ import type { ColorRole, ExtendedSize, Variant } from "@mari-ui/core";
 export type ButtonShape = "default" | "pill" | "circle" | "square";
 export type ButtonIconPosition = "start" | "end";
 
-export interface ButtonProps {
+export interface ButtonProps extends SkeletonableProps {
   /** Semantik renk. Varsayılan: `primary`. */
   color?: ColorRole;
   /**
