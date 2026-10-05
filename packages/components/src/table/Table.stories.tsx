@@ -88,7 +88,15 @@ export const Default: Story = {
   name: "Varsayılan",
   ...storyDoc(
     "Tüm sütunlar varsayılan olarak sola hizalıdır (kullanıcı bulgusu: eskiden DOM sırasına göre sol/merkez/sağ " +
-      "karışık hizalanıyordu). `age` gibi sayısal bir sütun `align: \"end\"` ile açıkça sağa hizalanabilir."
+      "karışık hizalanıyordu). `age` gibi sayısal bir sütun `align: \"end\"` ile açıkça sağa hizalanabilir.",
+    `
+const columns: ColumnDef<User>[] = [
+  { header: "İsim", columnName: "name" },
+  { header: "Yaş", columnName: "age", align: "end" },
+  { header: "Şehir", columnName: "city", info: true },
+];
+
+<Table label="Kullanıcılar" data={users} columns={columns} />`
   ),
   render: () => {
     const columns: ColumnDef<DataType>[] = [
@@ -102,7 +110,15 @@ export const Default: Story = {
 
 export const EmptyData: Story = {
   name: "Boş Veri",
-  ...storyDoc("`data` boş dizi olduğunda artık gerçek `Empty` component'i render edilir — eskiki düz \"Veri yok.\" metni yerine. `emptyState` ile başlık/açıklama özelleştirilebilir."),
+  ...storyDoc(
+    "`data` boş dizi olduğunda gerçek `Empty` component'i render edilir. `emptyState` ile başlık/açıklama özelleştirilebilir.",
+    `
+<Table
+  data={[]}
+  columns={columns}
+  emptyState={{ title: "Kayıt Bulunamadı", description: "Henüz eklenmiş bir kullanıcı yok." }}
+/>`
+  ),
   render: () => {
     // Not: `align: "end"` kasıtlı olarak burada YOK — sayısal bir sütunu
     // sağa hizalamak "Varsayılan" story'sinde gerçek değerlerle anlamlı,
@@ -254,7 +270,26 @@ export const PaginationClient: Story = {
   ...storyDoc(
     "`paginationMode=\"client\"` iken `Table` TÜM veriyi (`largeData`, 47 satır) alır ve `page`/`pageSize`'a göre " +
       "kendi diler — sunucuya istek atmadan, sadece sayfa state'i güncellenir. `onPageSizeChange` verildiğinde " +
-      "sayfa başına satır sayısı seçilebilir."
+      "sayfa başına satır sayısı seçilebilir.",
+    `
+const [page, setPage] = useState(1);
+const [pageSize, setPageSize] = useState(10);
+
+<Table
+  data={allUsers}
+  columns={columns}
+  paginationMode="client"
+  pagination={{
+    page,
+    pageSize,
+    total: allUsers.length,
+    onPageChange: setPage,
+    onPageSizeChange: (size) => {
+      setPageSize(size);
+      setPage(1);
+    },
+  }}
+/>`
   ),
   render: () => <PaginationClientStory />,
 };
@@ -284,7 +319,17 @@ export const PaginationServer: Story = {
   ...storyDoc(
     "`paginationMode=\"server\"` (varsayılan) iken `Table` hiçbir dilimleme yapmaz — `data` her zaman zaten o " +
       "sayfaya ait dilim olarak verilir. `onPageChange`'de tüketici yeni sayfanın verisini kendisi getirir (API " +
-      "çağrısı vb.); burada gösterim amaçlı yerel diziden simüle edildi."
+      "çağrısı vb.); burada gösterim amaçlı yerel diziden simüle edildi.",
+    `
+const [page, setPage] = useState(1);
+const { data, total } = useUsers({ page, pageSize: 10 }); // sunucudan yalnız bu sayfa
+
+<Table
+  data={data}
+  columns={columns}
+  paginationMode="server"
+  pagination={{ page, pageSize: 10, total, onPageChange: setPage }}
+/>`
   ),
   render: () => <PaginationServerStory />,
 };
