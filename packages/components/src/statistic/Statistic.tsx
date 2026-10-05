@@ -7,7 +7,8 @@ import { Button } from "../button";
 import { ContentSkeleton } from "../lib/ContentSkeleton";
 import { SkeletonBlock } from "../skeleton";
 import type { ClockProps, CountdownProps, StatisticProps, StopwatchProps } from "./types";
-import { formatCountdown, formatStopwatch, formatValue, spokenDuration, trendTone, type TrendTone } from "./utils";
+import { decimalPlaces, formatCountdown, formatStopwatch, formatValue, spokenDuration, trendTone, type TrendTone } from "./utils";
+import { AnimatedText, useAnimatedValue, type ValueAnimation } from "../lib/useAnimatedValue";
 
 export type { StatisticProps, CountdownProps, ClockProps, StopwatchProps };
 
@@ -79,23 +80,44 @@ function StatisticShell({ title, prefix, suffix, description, footer, size, skel
   );
 }
 
-function Trend({ trend, locale }: { trend: NonNullable<StatisticProps["trend"]>; locale: string }) {
+/** Trend oku yönünde kayarak gelir (yukarı ok aşağı-soldan, aşağı ok yukarı-soldan); yatay çizgi belirir. */
+const TREND_ICON_ANIMATION = {
+  up: "animate-[mari-trend-up_500ms_var(--mari-easing-decelerate)_both] motion-reduce:animate-none",
+  down: "animate-[mari-trend-down_500ms_var(--mari-easing-decelerate)_both] motion-reduce:animate-none",
+  flat: "animate-[mari-fade-in_400ms_ease-out_both] motion-reduce:animate-none",
+} as const;
+
+interface TrendProps {
+  trend: NonNullable<StatisticProps["trend"]>;
+  locale: string;
+  animate: boolean;
+  mode: ValueAnimation;
+}
+
+function Trend({ trend, locale, animate, mode }: TrendProps) {
   const tone = trendTone(trend.value, trend.goodWhen ?? "up");
-  const amount = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(Math.abs(trend.value));
-  const text = trend.unit === "points" ? `${amount} puan` : `%${amount}`;
+  const nf = new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+  const withUnit = (n: string) => (trend.unit === "points" ? `${n} puan` : `%${n}`);
+  const text = withUnit(nf.format(Math.abs(trend.value)));
+  const fixed = new Intl.NumberFormat(locale, { minimumFractionDigits: Number.isInteger(trend.value) ? 0 : 1, maximumFractionDigits: 1 });
+  const shown = useAnimatedValue({ text, number: Math.abs(trend.value), format: (v) => withUnit(fixed.format(v)), mode, enabled: animate });
   let Icon = MinusIcon;
   let verb = "değişmedi";
+  let direction: keyof typeof TREND_ICON_ANIMATION = "flat";
   if (trend.value > 0) {
     Icon = TrendingUpIcon;
     verb = "artış";
+    direction = "up";
   } else if (trend.value < 0) {
     Icon = TrendingDownIcon;
     verb = "düşüş";
+    direction = "down";
   }
   return (
     <span className={cn("mr-0.5 inline-flex items-center gap-1 align-top font-medium", TONE_CLASS[tone])}>
-      <Icon aria-hidden size={16} />
-      {text}
+      {/* key: yön değişince ok yeniden canlansın. */}
+      <Icon key={direction} aria-hidden size={16} className={animate ? TREND_ICON_ANIMATION[direction] : undefined} />
+      <AnimatedText text={text} shown={shown} />
       {/* Yön ve anlam ikon/renkte — ekran okuyucuya sözle. */}
       <span className="sr-only">
         {trend.value === 0 ? verb : `${verb}, ${TONE_WORD[tone]}`}
@@ -109,19 +131,44 @@ function Trend({ trend, locale }: { trend: NonNullable<StatisticProps["trend"]>;
  * önek/sonek, trend. Trendin rengi yönden değil ANLAMdan (`goodWhen`):
  * maliyetin düşmesi yeşil. Yön ve anlam ekran okuyucuya sözle de söylenir.
  */
-export function Statistic({ title, value, precision, prefix, suffix, trend, description, locale = "tr-TR", size = "md", className, skeleton = false }: StatisticProps) {
+export function Statistic({
+  title,
+  value,
+  precision,
+  prefix,
+  suffix,
+  trend,
+  description,
+  locale = "tr-TR",
+  size = "md",
+  className,
+  skeleton = false,
+  animated = true,
+  valueAnimation = "count",
+}: StatisticProps) {
+  const text = formatValue(value, precision, locale);
+  const animate = animated && !skeleton;
+  // Sayarken ara değerler hedefin basamak sayısıyla — "1.284.500,5" sayarken 17 ondalık görünmesin.
+  const decimals = typeof value === "number" ? (precision ?? decimalPlaces(value)) : 0;
+  const shown = useAnimatedValue({
+    text,
+    number: typeof value === "number" ? value : undefined,
+    format: (v) => new Intl.NumberFormat(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(v),
+    mode: valueAnimation,
+    enabled: animate,
+  });
   return (
     <StatisticShell
       title={title}
       prefix={prefix}
       suffix={suffix}
       description={description}
-      footer={trend ? <Trend trend={trend} locale={locale} /> : undefined}
+      footer={trend ? <Trend trend={trend} locale={locale} animate={animate} mode={valueAnimation} /> : undefined}
       size={size}
       skeleton={skeleton}
       className={className}
     >
-      {formatValue(value, precision, locale)}
+      <AnimatedText text={text} shown={shown} />
     </StatisticShell>
   );
 }

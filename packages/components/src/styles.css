@@ -95,6 +95,24 @@
   }
 }
 
+/*
+ * Statistic trend oku (`animated`): ok kendi yönünde kayarak belirir —
+ * yükselen ok aşağı-soldan, düşen ok yukarı-soldan gelir.
+ */
+@keyframes mari-trend-up {
+  from {
+    opacity: 0;
+    transform: translate(-4px, 4px);
+  }
+}
+
+@keyframes mari-trend-down {
+  from {
+    opacity: 0;
+    transform: translate(-4px, -4px);
+  }
+}
+
 /* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
 @layer base {
   body { font-family: var(--mari-font-sans); }

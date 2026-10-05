@@ -27,6 +27,48 @@ describe("Statistic", () => {
   });
 });
 
+describe("Statistic animasyonu", () => {
+  const setReducedMotion = (reduce: boolean) => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({ matches: reduce && query.includes("reduce"), media: query })) as typeof window.matchMedia;
+  };
+  beforeEach(() => vi.useFakeTimers({ toFake: ["requestAnimationFrame", "cancelAnimationFrame", "performance"] }));
+  afterEach(() => {
+    vi.useRealTimers();
+    // @ts-expect-error — testte eklenen matchMedia kaldırılır (jsdom'da yok).
+    delete window.matchMedia;
+  });
+
+  it("count: ara değerler gizli katmanda, okunan metin hep son değer; sonunda düz metin", () => {
+    setReducedMotion(false);
+    const { container } = render(<Statistic title="Gelir" value={1000} />);
+    expect(container.querySelector("[aria-hidden].absolute")).toHaveTextContent("0");
+    expect(screen.getByText("1.000")).toHaveClass("text-transparent");
+    act(() => vi.advanceTimersByTime(1200));
+    expect(container.querySelector("[aria-hidden].absolute")).toBeNull();
+    expect(screen.getByText("1.000")).not.toHaveClass("text-transparent");
+  });
+
+  it("typewriter: metin karakter karakter yazılır", () => {
+    setReducedMotion(false);
+    const { container } = render(<Statistic title="Kullanıcı" value={48213} valueAnimation="typewriter" />);
+    act(() => vi.advanceTimersByTime(100));
+    const partial = container.querySelector("[aria-hidden].absolute")?.textContent ?? "";
+    expect(partial.length).toBeGreaterThan(0);
+    expect("48.213".startsWith(partial)).toBe(true);
+    act(() => vi.advanceTimersByTime(1500));
+    expect(screen.getByText("48.213")).not.toHaveClass("text-transparent");
+  });
+
+  it("hareket azaltma ya da animated={false}: doğrudan son değer", () => {
+    setReducedMotion(true);
+    const { container, rerender } = render(<Statistic title="Gelir" value={1000} />);
+    expect(container.querySelector("[aria-hidden].absolute")).toBeNull();
+    setReducedMotion(false);
+    rerender(<Statistic title="Gelir" value={2000} animated={false} />);
+    expect(screen.getByText("2.000")).not.toHaveClass("text-transparent");
+  });
+});
+
 describe("Countdown / Clock / Stopwatch", () => {
   beforeEach(() => {
     vi.useFakeTimers();
