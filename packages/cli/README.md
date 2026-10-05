@@ -6,6 +6,8 @@ Faz 7 — mari-ui'ı bir tüketici projesine kurar ve AI ajan kural dosyaların�
 
 Kurallar elle yazılmaz. `packages/components/scripts/build-manifest.ts` (ts-morph ile `src/**/index.ts`i introspect eder) her component'in gerçek prop sözleşmesini, terk edilmiş prop'larını (JSDoc `@deprecated`'dan) ve `@mari-ui/core`'un beş paylaşılan eksenini (`ColorRole`/`Size`/`Variant`/`Radius`/`Placement`) `dist/manifest.json`a yazar. `@mari-ui/cli` bunu okuyup beş aracın formatına uygun tek bir içerik üretir — elle yazılan bir kural dosyası ilk sürümde eskiyip tam da düzeltmeye çalıştığımız kopukluğu (terk edilmiş prop'ların "güncel" sanılması) yeniden üretirdi.
 
+Faz 17 — iki katman (`src/skillGuide.ts`, elle yazılı tasarım kararları): **kesin kurallar** (7 madde: önce mari-ui, sabit renk/px yok, skala dışı gölge/köşe/katman yok, yüklenme `skeleton` ile, erişilebilirlik temeli, linkler düz `<a href>` + `onNavigate`) TÜM araç dosyalarına ve `CLAUDE.md`ye girer — her istekte okunduğu için kısa. **Sayfa kurma rehberi** (iş akışı, uygulama iskeleti, sayfa kalıpları, "hangi durumda hangi component" tablosu, tema/ölçek, framework'ten bağımsız proje yapısı ilkeleri) YALNIZ Claude skill'ine (`SKILL.md`) girer; Claude onu ilgili işte yükler. Rehberde adı geçen her component'in gerçek manifest'te var olduğunu bir test denetler.
+
 ## Komutlar
 
 ```bash

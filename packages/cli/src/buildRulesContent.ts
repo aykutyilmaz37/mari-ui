@@ -1,5 +1,6 @@
 import type { Theme } from "@mari-ui/tokens";
 import type { Manifest } from "./manifest";
+import { SKILL_GUIDE, formatMustRules } from "./skillGuide";
 
 /**
  * Faz 7'nin tek içerik kaynağı: `manifest.json` (component envanteri + prop
@@ -111,6 +112,12 @@ export function buildRulesContent({ manifest, theme }: BuildRulesContentOptions)
 
 Bu dosya \`npx mari-ui sync\` ile OTOMATİK üretilir — \`manifest.json\` (component envanteri + prop sözleşmesi) ve projenin çözümlenmiş temasından türetilir. Elle düzenlemeyin; değişiklik için \`mari-ui.config.json\`ı güncelleyip \`npx mari-ui sync\`i tekrar çalıştırın.
 
+## Kesin kurallar
+
+Bunlar her zaman geçerli; sapma yok.
+
+${formatMustRules()}
+
 ## Component envanteri
 
 ${formatComponentInventory(manifest)}
@@ -133,4 +140,13 @@ ${formatThemeTokens(theme)}
 
 ${ANTI_PATTERNS.map((p) => `### ${p.title}\n\n- ❌ \`${p.wrong}\`\n- ✅ \`${p.right}\`\n- Neden: ${p.why}`).join("\n\n")}
 `;
+}
+
+/**
+ * Faz 17 — Claude skill'inin (`SKILL.md`) gövdesi: kısa kural içeriği +
+ * ayrıntılı sayfa kurma rehberi. Diğer araçların dosyaları kısa kalır
+ * (her istekte okunuyorlar); Claude skill'i yalnız ilgili işte yükler.
+ */
+export function buildSkillContent(options: BuildRulesContentOptions): string {
+  return `${buildRulesContent(options)}\n${SKILL_GUIDE}`;
 }

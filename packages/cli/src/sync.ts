@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { resolveThemeConfig } from "@mari-ui/tokens";
-import { buildRulesContent } from "./buildRulesContent";
+import { buildRulesContent, buildSkillContent } from "./buildRulesContent";
 import { readConfig } from "./configFile";
 import { loadManifestSafe } from "./manifest";
 import { isMarkerBlockUpToDate, upsertMarkerBlock } from "./markerBlock";
@@ -15,16 +15,22 @@ import type { FileTarget } from "./writers/types";
 export const ALL_AGENTS = ["claude", "codex", "cursor", "gemini", "copilot"] as const;
 export type AgentName = (typeof ALL_AGENTS)[number];
 
-const AGENT_BUILDERS: Record<AgentName, (rulesBody: string) => FileTarget[]> = {
-  claude: buildClaudeTargets,
-  codex: buildAgentsTargets,
-  cursor: buildCursorTargets,
-  gemini: buildGeminiTargets,
-  copilot: buildCopilotTargets,
+/** `rules`: kısa içerik (her istekte okunan dosyalar). `skill`: Claude skill'inin zengin içeriği (Faz 17). */
+export interface AgentRuleBodies {
+  rules: string;
+  skill: string;
+}
+
+const AGENT_BUILDERS: Record<AgentName, (bodies: AgentRuleBodies) => FileTarget[]> = {
+  claude: ({ skill }) => buildClaudeTargets(skill),
+  codex: ({ rules }) => buildAgentsTargets(rules),
+  cursor: ({ rules }) => buildCursorTargets(rules),
+  gemini: ({ rules }) => buildGeminiTargets(rules),
+  copilot: ({ rules }) => buildCopilotTargets(rules),
 };
 
-export function planAgentRuleTargets(agents: readonly AgentName[], rulesBody: string): FileTarget[] {
-  return agents.flatMap((agent) => AGENT_BUILDERS[agent](rulesBody));
+export function planAgentRuleTargets(agents: readonly AgentName[], bodies: AgentRuleBodies): FileTarget[] {
+  return agents.flatMap((agent) => AGENT_BUILDERS[agent](bodies));
 }
 
 /**
@@ -74,9 +80,8 @@ export function syncAgentRules(options: SyncOptions): SyncResult {
   const manifest = loadManifestSafe(targetDir, manifestPath);
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
-  const rulesBody = buildRulesContent({ manifest, theme: resolved.light });
-
-  const targets = planAgentRuleTargets(agents, rulesBody);
+  const contentOptions = { manifest, theme: resolved.light };
+  const targets = planAgentRuleTargets(agents, { rules: buildRulesContent(contentOptions), skill: buildSkillContent(contentOptions) });
   const result: SyncResult = { changed: [], upToDate: [] };
 
   for (const target of targets) {
