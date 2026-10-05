@@ -1,5 +1,6 @@
 import type { Theme } from "./theme";
 import type { SemanticColorRole } from "./semantic/deriveColorRole";
+import { chartPalette } from "./primitives/chartPalette";
 
 /**
  * `--mari-space-0.5` gibi kesirli spacing anahtarlarındaki nokta bazı
@@ -50,6 +51,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   vars["--mari-color-disabled"] = c.disabled;
   vars["--mari-color-rating"] = c.rating;
   vars["--mari-color-rating-stroke"] = c.ratingStroke;
+  // Faz 16.9 — grafik serileri; moda göre doğrulanmış set (bkz. primitives/chartPalette).
+  chartPalette[theme.mode].forEach((hex, i) => (vars[`--mari-color-chart-${i + 1}`] = hex));
 
   for (const [key, value] of Object.entries(theme.spacing)) vars[`--mari-space-${cssSafeKey(key)}`] = value;
   for (const [key, value] of Object.entries(theme.radius)) vars[`--mari-radius-${key}`] = value;

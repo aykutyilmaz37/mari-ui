@@ -96,6 +96,12 @@ export const GUIDE_COMPONENTS = [
   "ThemeCustomizer",
   "Title",
   "Text",
+  "LineChart",
+  "BarChart",
+  "PieChart",
+  "Gauge",
+  "Sparkline",
+  "Progress",
 ] as const;
 
 export const SKILL_GUIDE = `## Sayfa kurma rehberi (öneri)
@@ -123,7 +129,7 @@ Aşağıdakiler öneri: projenin ihtiyacı farklıysa sapabilirsin, ama yukarıd
 - **Liste/tablo sayfası:** başlık satırı (\`Title\` + birincil eylem \`Button\`), filtre satırı (\`Input\` arama, \`Select\`, \`Segmented\`), \`Table\` ya da \`List\`, altta \`Pagination\` (sunucu sayfalaması için Table \`paginationMode="server"\`). Uzun ve sürekli akışta \`List\` \`onLoadMore\`.
 - **Detay sayfası:** \`Breadcrumb\`, başlık + eylemler, içerik \`Card\`'larda; ilgili alt kümeler \`Tabs\` ile.
 - **Form sayfası:** her alan \`Field\` içinde (etiket, ipucu, hata metni); uzun formu \`Card\` bölümlerine ayır; çok adımlıysa \`Steps\`; kaydet/vazgeç düğmeleri en altta, birincil eylem tek.
-- **Panel (dashboard):** üstte \`Statistic\` kartları (\`grid sm:grid-cols-2 lg:grid-cols-4\`), altında grafik/tablo kartları; farklı yükseklikte kartlar için \`Masonry\`.
+- **Panel (dashboard):** üstte \`Statistic\` kartları (\`grid sm:grid-cols-2 lg:grid-cols-4\`, eğilim için altına \`Sparkline\`), altında grafik/tablo kartları; farklı yükseklikte kartlar için \`Masonry\`.
 - **Ayarlar sayfası:** bölüm başına \`Card\`, \`Field\` yatay düzen; anlık açılıp kapanan tercihler \`Switch\`. Görünüm tercihi için \`ThemeCustomizer\`.
 
 ### Component seçimi
@@ -143,6 +149,10 @@ Aşağıdakiler öneri: projenin ihtiyacı farklıysa sapabilirsin, ama yukarıd
 | Sayfada kalıcı uyarı/bilgi | \`Alert\` | |
 | Aynı seviyede içerik grupları arası geçiş | \`Tabs\` | Sıralı süreç → \`Steps\` |
 | Kayıt yok / sonuç yok | \`Empty\` (eylem düğmesiyle) | Boş beyaz alan |
+| Zaman içinde değişim (aylık gelir, günlük ziyaret) | \`LineChart\` (\`area\` ile alan) | Kategori karşılaştırması için çizgi |
+| Kategoriler arası büyüklük (kanal, bölge, ürün) | \`BarChart\` (uzun adlarda \`layout="horizontal"\`, parça–bütün için \`stacked\`) | 6'dan çok parçalı pasta |
+| Bir bütünün 2–6 parçası | \`PieChart\` (\`donut\` ile toplam ortada) | Parçaları hassas karşılaştırmak → \`BarChart\` |
+| Tek değerin aralıktaki yeri (doluluk, hedef, skor) | \`Gauge\` (eşikler için \`segments\`) | Doğrusal ilerleme → \`Progress\` |
 
 ### Tema ve ölçek
 
