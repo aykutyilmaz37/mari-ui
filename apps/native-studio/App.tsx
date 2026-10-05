@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
-import { STORY_ENTRIES, renderStory, type StoryContext, type StoryEntry } from "./src/stories";
+import { STORY_CATEGORIES, STORY_ENTRIES, renderStory, type StoryContext, type StoryEntry } from "./src/stories";
 
 /**
  * native-studio — @mari-ui/native story tarayıcısı ("storybook gibi, yalnız
@@ -67,16 +67,21 @@ export default function App() {
           <Text style={[styles.description, { color: c.muted }]}>
             {STORY_ENTRIES.length} component · story'ler web Storybook'taki "Native" bölümüyle aynı dosyalardan.
           </Text>
-          {STORY_ENTRIES.map((entry) => (
-            <Pressable
-              key={entry.title}
-              onPress={() => setSelected(entry)}
-              accessibilityRole="button"
-              style={({ pressed }) => [styles.row, { backgroundColor: c.card, borderColor: c.border, opacity: pressed ? 0.7 : 1 }]}
-            >
-              <Text style={[styles.rowTitle, { color: c.text }]}>{entry.title}</Text>
-              <Text style={{ color: c.muted }}>{entry.stories.length} story ›</Text>
-            </Pressable>
+          {STORY_CATEGORIES.map((category) => (
+            <View key={category} style={styles.category}>
+              <Text accessibilityRole="header" style={[styles.categoryTitle, { color: c.muted }]}>{category}</Text>
+              {STORY_ENTRIES.filter((entry) => entry.category === category).map((entry) => (
+                <Pressable
+                  key={entry.title}
+                  onPress={() => setSelected(entry)}
+                  accessibilityRole="button"
+                  style={({ pressed }) => [styles.row, { backgroundColor: c.card, borderColor: c.border, opacity: pressed ? 0.7 : 1 }]}
+                >
+                  <Text style={[styles.rowTitle, { color: c.text }]}>{entry.title}</Text>
+                  <Text style={{ color: c.muted }}>{entry.stories.length} story ›</Text>
+                </Pressable>
+              ))}
+            </View>
           ))}
         </ScrollView>
       )}
@@ -111,4 +116,6 @@ const styles = StyleSheet.create({
   frame: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 10, overflow: "hidden" },
   row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth },
   rowTitle: { fontSize: 16, fontWeight: "500" },
+  category: { gap: 8 },
+  categoryTitle: { marginTop: 8, fontSize: 12, fontWeight: "700", letterSpacing: 0.7, textTransform: "uppercase" },
 });

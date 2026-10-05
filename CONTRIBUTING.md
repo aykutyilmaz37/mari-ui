@@ -46,6 +46,7 @@ packages/components/src/<ad>/
 
 ### Tasarım ve token'lar
 
+- Genel tasarım yönü: [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/) temel alınır; erişilebilirlik, açıklık, platform alışkanlıkları ve tutarlı geri bildirim tasarıma baştan katılır. [Material Design 3](https://m3.material.io/) renk rolleri, tipografi hiyerarşisi, uyarlanabilir düzen ve etkileşim durumları için ilham kaynağıdır. Rehberler mari-ui token ve API'lerine uyarlanır; her platform kendi ölçü ölçeğini ve yerleşik davranışlarını izler.
 - Sabit renk (hex, `bg-white`), sabit px boşluk/köşe, skala dışı gölge veya `z-[999]` yok. Renk `mari-*` sınıflarıyla (`bg-mari-surface`, `text-mari-muted`, `border-mari-border`; rol renkleri `colorClasses` tablolarından), boyut `sizeClass` ile, yükselti `elevationClass` ile.
 - Paylaşılan eksenler `@mari-ui/core`dan: `color` (`ColorRole`), `variant`, `size`, `shape`, `placement` — yeni bir eksen icat etmeden önce bunlara bakın.
 - Dokunma hedefi: küçük kontrollerde `touchTargetClass` / `touchTargetSquareClass` (görünümü değiştirmeden 44px).

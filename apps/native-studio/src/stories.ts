@@ -31,7 +31,9 @@ export interface StoryMeta {
 }
 
 export interface StoryEntry {
-  /** "Native/Button" → "Button". */
+  /** Storybook grubu (Genel, Veri Girişi, Veri Gösterimi…). */
+  category: string;
+  /** "Native/Genel/Button" → "Button". */
   title: string;
   meta: StoryMeta;
   stories: Array<{ id: string; name: string; description?: string; story: StoryObject }>;
@@ -49,9 +51,15 @@ export const STORY_ENTRIES: StoryEntry[] = storyModules
         const story = value as StoryObject;
         return { id: exportName, name: story.name ?? humanize(exportName), description: story.parameters?.docs?.description?.story, story };
       });
-    return { title: meta.title.replace(/^Native\//, ""), meta, stories };
+    const [, category = "Genel", ...nameParts] = meta.title.split("/");
+    return { category, title: nameParts.join("/") || category, meta, stories };
   })
-  .sort((a, b) => a.title.localeCompare(b.title, "tr"));
+  .sort((a, b) => {
+    const order = ["Genel", "Navigasyon", "Veri Girişi", "Veri Gösterimi", "Geri Bildirim"];
+    return order.indexOf(a.category) - order.indexOf(b.category) || a.category.localeCompare(b.category, "tr") || a.title.localeCompare(b.title, "tr");
+  });
+
+export const STORY_CATEGORIES = [...new Set(STORY_ENTRIES.map((entry) => entry.category))];
 
 /**
  * Storybook'un yaptığı gibi: args birleştirilir, `render` (yoksa component)
@@ -72,4 +80,3 @@ export function renderStory(entry: StoryEntry, story: StoryObject, globals: Stor
   }
   return element();
 }
-

@@ -36,7 +36,7 @@ packages/
   tokens/      @mari-ui/tokens       platform-agnostic tek token kaynağı, tema çözümleme, tema kalıcılığı
   core/        @mari-ui/core         headless mantık: cn(), variant tabloları, paylaşılan eksen tipleri
   components/  @mari-ui/components   web component'leri (her biri ayrı subpath: @mari-ui/components/button)
-  native/      @mari-ui/native       React Native component'leri (pilot: Button, Input, Card)
+  native/      @mari-ui/native       React Native component'leri (Button, Input, Card, List)
   utils/       @mari-ui/utils        UI'dan bağımsız modüller: dataLayer, captcha, asset çözümleyici
   cli/         @mari-ui/cli          init / sync / theme — tema üretimi ve AI ajan kuralları
   modules/     (iskelet)             sayfa modülleri — backend sözleşmesi netleşince

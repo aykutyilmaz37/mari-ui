@@ -12,7 +12,7 @@ import { FieldStub, SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, story
 import { useTheme } from "../theme/useTheme";
 
 const meta: Meta<typeof Input> = {
-  title: "Native/Input",
+  title: "Native/Veri Girişi/Input",
   component: Input,
   tags: ["autodocs"],
   decorators: [withNativeTheme],

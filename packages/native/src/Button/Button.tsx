@@ -75,7 +75,7 @@ export function Button({
   const iconColor = styles.label.color;
   const iconNode = sizedIcon(icon, styles.iconSize, iconColor);
 
-  if (process.env.NODE_ENV !== "production" && children == null && icon && !accessibilityLabel) {
+  if (__DEV__ && children == null && icon && !accessibilityLabel) {
     console.warn("[@mari-ui/native] Button: yalnız ikonlu butona `accessibilityLabel` verin — ekran okuyucu aksi halde adsız bir buton okur.");
   }
 
