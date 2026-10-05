@@ -81,7 +81,9 @@ export const ProductCard: Story = {
 
 export const Shapes: Story = {
   name: "Biçimler",
-  ...storyDoc("Kare avatar, hap köşeli satırlar (`round`), duran (`active={false}`) iskelet."),
+  ...storyDoc("Kare avatar, hap köşeli satırlar (`round`), duran (`active={false}`) iskelet.", `<Skeleton avatar={{ shape: "square", size: "lg" }} paragraph={{ rows: 2 }} />
+<Skeleton round title={false} paragraph={{ rows: 2, width: ["90%", "50%"] }} />
+<Skeleton active={false} avatar={{ size: "sm" }} paragraph={false} />`),
   render: () => (
     <Stack>
       <Skeleton avatar={{ shape: "square", size: "lg" }} paragraph={{ rows: 2 }} />

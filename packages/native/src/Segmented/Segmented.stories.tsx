@@ -113,7 +113,9 @@ export const BillingCycle: Story = {
 
 export const SizesAndStates: Story = {
   name: "Boyutlar ve Durumlar",
-  ...storyDoc("sm 28 · md 32 · lg 40; tek seçenek ya da tümü devre dışı."),
+  ...storyDoc("sm 28 · md 32 · lg 40; tek seçenek ya da tümü devre dışı.", `<Segmented size="lg" options={["Gün", "Hafta", "Ay"]} />
+<Segmented options={[{ value: "std", label: "Standart" }, { value: "fast", label: "Hızlı", disabled: true }]} />
+<Segmented disabled options={["Açık", "Kapalı"]} />`),
   render: () => (
     <Stack>
       {(["sm", "md", "lg"] as const).map((size) => <Segmented key={size} size={size} accessibilityLabel={size} options={["Gün", "Hafta", "Ay"]} />)}

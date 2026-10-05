@@ -5,7 +5,7 @@ import { Textarea } from "./Textarea";
 import { Button } from "../Button";
 import { Field } from "../Field";
 import { Text, Title } from "../Typography";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, withStretch, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
 
 const meta: Meta<typeof Textarea> = {
   title: "Native/Veri Girişi/Textarea",
@@ -36,7 +36,8 @@ type Story = StoryObj<typeof Textarea>;
 
 export const Playground: Story = {
   ...storyDoc("Satır, boyut, varyant, sayaç ve temizlemeyi deneyin."),
-  render: (args) => <View style={{ alignSelf: "stretch" }}><Textarea {...args} /></View>,
+  decorators: [withStretch],
+  render: (args) => <Textarea {...args} />,
 };
 
 export const Message: Story = {

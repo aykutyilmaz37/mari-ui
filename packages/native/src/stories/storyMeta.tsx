@@ -102,3 +102,25 @@ export function Row({ children }: { children: React.ReactNode }) {
 export function Stack({ children }: { children: React.ReactNode }) {
   return <View style={{ gap: 10, alignSelf: "stretch" }}>{children}</View>;
 }
+
+/**
+ * Story'yi tam genişliğe yayar (canvas öğeleri sola hizalı). Render içinde
+ * sarmak yerine DEKORATÖR olarak verin: dekoratörler "Show code"a girmez,
+ * kod yalnız component'in kendisini gösterir.
+ */
+export function withStretch(Story: () => React.ReactElement) {
+  return (
+    <View style={{ alignSelf: "stretch" }}>
+      <Story />
+    </View>
+  );
+}
+
+/** Web `max-w-sm` (384px) form genişliği — dekoratör olarak. */
+export function withNarrow(Story: () => React.ReactElement) {
+  return (
+    <View style={{ width: "100%", maxWidth: 384 }}>
+      <Story />
+    </View>
+  );
+}

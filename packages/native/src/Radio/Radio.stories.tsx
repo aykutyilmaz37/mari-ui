@@ -55,7 +55,9 @@ export const ControlledStory: Story = {
 
 export const Variants: Story = {
   name: "Renk × Varyant × Boyut",
-  ...storyDoc("outline: rol kenarı + dolu nokta; solid: rol dolgusu + yüzey noktası."),
+  ...storyDoc("outline: rol kenarı + dolu nokta; solid: rol dolgusu + yüzey noktası.", `<Radio defaultChecked color="success" label="outline" />
+<Radio defaultChecked variant="solid" color="accent" label="solid" />
+<Radio size="lg" defaultChecked label="lg" />`),
   render: () => (
     <Stack>
       {(["outline", "solid"] as const).map((variant) => (

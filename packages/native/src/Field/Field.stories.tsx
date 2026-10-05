@@ -8,7 +8,7 @@ import { Input, OtpInput, Textarea } from "../Input";
 import { RadioGroup } from "../Radio";
 import { Segmented } from "../Segmented";
 import { Switch } from "../Switch";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, withStretch, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
 
 const meta: Meta<typeof Field> = {
   title: "Native/Veri Girişi/Field",
@@ -37,12 +37,11 @@ type Story = StoryObj<typeof Field>;
 
 export const Playground: Story = {
   ...storyDoc("Etiket, ipucu, hata, zorunluluk ve düzeni deneyin."),
+  decorators: [withStretch],
   render: (args) => (
-    <View style={{ alignSelf: "stretch" }}>
-      <Field {...args}>
-        <Input type="email" placeholder="ad@alan.com" />
-      </Field>
-    </View>
+    <Field {...args}>
+      <Input type="email" placeholder="ad@alan.com" />
+    </Field>
   ),
 };
 

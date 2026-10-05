@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AtSign, Lock, Phone, Search } from "lucide-react-native";
 import { Input } from "./Input";
 import { Field } from "../Field";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNarrow, withNativeTheme } from "../stories/storyMeta";
 import { useTheme } from "../theme/useTheme";
 
 const meta: Meta<typeof Input> = {
@@ -53,11 +53,8 @@ const Narrow = ({ children }: { children: React.ReactNode }) => <View style={{ w
 
 export const Playground: Story = {
   ...storyDoc("Tüm props'ları canlı deneyin."),
-  render: (args) => (
-    <Narrow>
-      <Input {...args} />
-    </Narrow>
-  ),
+  decorators: [withNarrow],
+  render: (args) => <Input {...args} />,
 };
 
 function SignUpFormDemo() {

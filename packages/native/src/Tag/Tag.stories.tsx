@@ -91,7 +91,10 @@ export const Filters: Story = {
 
 export const Variants: Story = {
   name: "Varyant ve Renk",
-  ...storyDoc("soft (varsayılan), solid, outline; `bordered` soft'a rolün kenarlık tonunu ekler."),
+  ...storyDoc("soft (varsayılan), solid, outline; `bordered` soft'a rolün kenarlık tonunu ekler.", `<Tag color="success">Teslim edildi</Tag>
+<Tag variant="solid" color="error">İptal</Tag>
+<Tag variant="outline" color="info">Kargoda</Tag>
+<Tag bordered color="warning">Beklemede</Tag>`),
   render: () => (
     <Stack>
       {(["soft", "solid", "outline"] as const).map((variant) => (

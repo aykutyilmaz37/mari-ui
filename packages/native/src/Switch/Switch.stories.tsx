@@ -108,7 +108,8 @@ export const Loading: Story = {
 
 export const Colors: Story = {
   name: "Renk ve Boyut",
-  ...storyDoc("Açık hal rol rengi, kapalı hal her renkte aynı gri; sm/md/lg."),
+  ...storyDoc("Açık hal rol rengi, kapalı hal her renkte aynı gri; sm/md/lg.", `<Switch defaultChecked color="success" accessibilityLabel="Bildirimler" />
+<Switch size="lg" defaultChecked accessibilityLabel="Konum" />`),
   render: () => (
     <Stack>
       <Row>{COLORS.map((color) => <Switch key={color} color={color} defaultChecked accessibilityLabel={color} />)}</Row>
@@ -119,7 +120,8 @@ export const Colors: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("Devre dışı: durum rengi %50 korunur; dokunma yok."),
+  ...storyDoc("Devre dışı: durum rengi %50 korunur; dokunma yok.", `<Switch disabled defaultChecked accessibilityLabel="Kilitli ayar" />
+<Switch loading accessibilityLabel="Kaydediliyor" />`),
   render: () => (
     <Row>
       <Switch disabled accessibilityLabel="Devre dışı" />

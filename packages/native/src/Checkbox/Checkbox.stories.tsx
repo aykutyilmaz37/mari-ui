@@ -76,7 +76,9 @@ export const Permissions: Story = {
 
 export const Variants: Story = {
   name: "Renk × Varyant × Boyut",
-  ...storyDoc("outline (varsayılan) ve solid; rol renkleri; sm/md/lg."),
+  ...storyDoc("outline (varsayılan) ve solid; rol renkleri; sm/md/lg.", `<Checkbox defaultChecked color="success" />
+<Checkbox defaultChecked variant="solid" color="accent" />
+<Checkbox size="lg" defaultChecked label="lg" />`),
   render: () => (
     <Stack>
       {(["outline", "solid"] as const).map((variant) => (
@@ -93,7 +95,9 @@ export const Variants: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("Devre dışı: durum rengi %50 korunur, etiket soluk; basılınca tepki yok."),
+  ...storyDoc("Devre dışı: durum rengi %50 korunur, etiket soluk; basılınca tepki yok.", `<Checkbox disabled label="Devre dışı" />
+<Checkbox disabled defaultChecked label="Devre dışı, seçili" />
+<Checkbox disabled indeterminate label="Devre dışı, kısmen" />`),
   render: () => (
     <View style={{ alignSelf: "stretch" }}>
       <Checkbox disabled label="Devre dışı" />

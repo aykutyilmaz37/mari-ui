@@ -61,7 +61,8 @@ export const DeliveryStory: Story = {
 
 export const Variants: Story = {
   name: "Renk × Varyant",
-  ...storyDoc("Grup rengi ve varyantı tüm seçeneklere geçer; yatay yerleşim kısa seçenekler için."),
+  ...storyDoc("Grup rengi ve varyantı tüm seçeneklere geçer; yatay yerleşim kısa seçenekler için.", `<RadioGroup orientation="horizontal" color="success" defaultValue="a" options={[{ value: "a", label: "Açık" }, { value: "b", label: "Kapalı" }]} />
+<RadioGroup orientation="horizontal" variant="solid" color="accent" options={["Aylık", "Yıllık"]} />`),
   render: () => (
     <Stack>
       <RadioGroup accessibilityLabel="Renk" orientation="horizontal" color="success" defaultValue="a" options={[{ value: "a", label: "Açık" }, { value: "b", label: "Kapalı" }]} />

@@ -81,7 +81,17 @@ function ContactList() {
 }
 
 export const Playground: Story = {
-  ...storyDoc("Native ölçekte yoğunluk, düzen, kenarlık, ayırıcı ve iskeleti deneyin."),
+  ...storyDoc("Native ölçekte yoğunluk, düzen, kenarlık, ayırıcı ve iskeleti deneyin.", `<List
+  bordered
+  size="md"
+  data={contacts}
+  keyExtractor={(c) => c.id}
+  renderItem={(c) => (
+    <ListItem>
+      <ListItemMeta avatar={<Avatar alt={c.name} />} title={c.name} description={c.role} />
+    </ListItem>
+  )}
+/>`),
   render: (args) => (
     <List
       {...args}
@@ -141,7 +151,16 @@ function NotificationFeed() {
 
 export const Notifications: Story = {
   name: "Bildirim Akışı",
-  ...storyDoc("Bildirim satırlarında avatar/ikon, başlık ve açıklama; yenilemek için native pull-to-refresh hareketi."),
+  ...storyDoc("Bildirim satırlarında avatar/ikon, başlık ve açıklama; yenilemek için native pull-to-refresh hareketi.", `<List
+  data={notifications}
+  refreshing={refreshing}
+  onRefresh={reload}
+  renderItem={(n) => (
+    <ListItem extra={<Text muted>{n.time}</Text>}>
+      <ListItemMeta avatar={<n.Icon size={20} />} title={n.title} description={n.description} />
+    </ListItem>
+  )}
+/>`),
   render: () => <NotificationFeed />,
 };
 
@@ -248,19 +267,34 @@ function RefreshableOrders() {
 
 export const PullToRefresh: Story = {
   name: "Siparişler · Yenile",
-  ...storyDoc("Sipariş geçmişinde yerel pull-to-refresh hareketi ve her satırda durum/ücret bilgisi."),
+  ...storyDoc("Sipariş geçmişinde yerel pull-to-refresh hareketi ve her satırda durum/ücret bilgisi.", `<List
+  data={orders}
+  refreshing={refreshing}
+  onRefresh={reload}
+  renderItem={(o) => (
+    <ListItem extra={<Tag color={o.color}>{o.status}</Tag>}>
+      <ListItemMeta title={"Sipariş #" + o.id} description={o.total} />
+    </ListItem>
+  )}
+/>`),
   render: () => <RefreshableOrders />,
 };
 
 export const LoadMore: Story = {
   name: "Sayfalı Bildirimler",
-  ...storyDoc("`ListFooterComponent` bir devam eylemi sunar; düğmenin boyutu native kontrol ölçeğini kullanır."),
+  ...storyDoc("`ListFooterComponent` bir devam eylemi sunar; düğmenin boyutu native kontrol ölçeğini kullanır.", `<List
+  data={items}
+  renderItem={(n) => <ListItem><ListItemMeta title={n.title} description={n.description} /></ListItem>}
+  ListFooterComponent={hasMore ? <Button variant="outline" size="sm" loading={loading} onPress={loadMore}>Daha fazla yükle</Button> : undefined}
+/>`),
   render: () => <LoadMoreDemo />,
 };
 
 export const CustomNativeScale: Story = {
   name: "Uygulamaya Özel Native Ölçek",
-  ...storyDoc("`NativeConfigProvider` ile yalnızca bu alanın satır yüksekliği, dolgusu ve başlık boyutu değişir; diğer native varsayılanlar korunur."),
+  ...storyDoc("`NativeConfigProvider` ile yalnızca bu alanın satır yüksekliği, dolgusu ve başlık boyutu değişir; diğer native varsayılanlar korunur.", `<NativeConfigProvider config={{ list: { md: { rowMinHeight: 56, rowPaddingVertical: 16, titleFontSize: 17 } } }}>
+  <List data={contacts} renderItem={(c) => <ListItem><ListItemMeta title={c.name} description={c.role} /></ListItem>} />
+</NativeConfigProvider>`),
   render: () => (
     <NativeConfigProvider config={{ list: { md: { rowMinHeight: 56, rowPaddingVertical: 16, titleFontSize: 17 } } }}>
       <List
@@ -292,7 +326,16 @@ function LoadMoreDemo() {
 }
 export const Empty: Story = {
   name: "Boş Durum",
-  ...storyDoc("Özel `ListEmptyComponent` ile henüz içerik yokken sonraki adımı açıklayın."),
+  ...storyDoc("Özel `ListEmptyComponent` ile henüz içerik yokken sonraki adımı açıklayın.", `<List
+  data={[]}
+  renderItem={() => null}
+  ListEmptyComponent={
+    <View style={{ alignItems: "center", padding: 24, gap: 12 }}>
+      <Text weight="semibold">Kaydedilmiş adres yok</Text>
+      <Button size="sm" onPress={addAddress}>Adres ekle</Button>
+    </View>
+  }
+/>`),
   render: () => <EmptyAddresses />,
 };
 

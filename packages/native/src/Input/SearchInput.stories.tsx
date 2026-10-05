@@ -3,7 +3,7 @@ import { View } from "react-native";
 import type { Meta, StoryObj } from "@storybook/react";
 import { SearchInput } from "./SearchInput";
 import { Text } from "../Typography";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, withStretch, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme } from "../stories/storyMeta";
 
 const meta: Meta<typeof SearchInput> = {
   title: "Native/Veri Girişi/SearchInput",
@@ -33,7 +33,8 @@ type Story = StoryObj<typeof SearchInput>;
 
 export const Playground: Story = {
   ...storyDoc("Boyut, varyant, biçim ve yükleniyor halini deneyin."),
-  render: (args) => <View style={{ alignSelf: "stretch" }}><SearchInput {...args} /></View>,
+  decorators: [withStretch],
+  render: (args) => <SearchInput {...args} />,
 };
 
 const PRODUCTS = ["Kablosuz kulaklık", "Kulak üstü kulaklık", "Bluetooth hoparlör", "Akıllı saat", "Telefon kılıfı"];

@@ -75,7 +75,9 @@ export const InCard: Story = {
 
 export const TitleLevels: Story = {
   name: "Başlık Seviyeleri",
-  ...storyDoc("HIG karşılıkları: 1 Large Title 34 · 2 Title 1 28 · 3 Title 2 22 · 4 Title 3 20 · 5 Headline 17 · 6 Subheadline 15."),
+  ...storyDoc("HIG karşılıkları: 1 Large Title 34 · 2 Title 1 28 · 3 Title 2 22 · 4 Title 3 20 · 5 Headline 17 · 6 Subheadline 15.", `<Title level={1}>Large Title</Title>
+<Title level={3}>Title 2</Title>
+<Title level={5}>Headline</Title>`),
   render: () => (
     <Stack>
       {([1, 2, 3, 4, 5, 6] as const).map((level) => <Title key={level} level={level}>{`Başlık ${level}`}</Title>)}
@@ -85,7 +87,9 @@ export const TitleLevels: Story = {
 
 export const Weights: Story = {
   name: "Ağırlık ve Renk",
-  ...storyDoc("`weight` dört kademe; `muted` ikincil metin; `color` rol rengi (metin tonu, zemine AA kontrast)."),
+  ...storyDoc("`weight` dört kademe; `muted` ikincil metin; `color` rol rengi (metin tonu, zemine AA kontrast).", `<Text weight="semibold">Vurgulu</Text>
+<Text muted>İkincil metin</Text>
+<Text color="success">Teslim edildi</Text>`),
   render: () => (
     <Stack>
       {(["normal", "medium", "semibold", "bold"] as const).map((weight) => <Text key={weight} weight={weight}>{`Ağırlık: ${weight}`}</Text>)}
