@@ -129,15 +129,27 @@ importers:
       '@mari-ui/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@mari-ui/native':
+        specifier: workspace:*
+        version: link:../../packages/native
       '@mari-ui/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      lucide-react-native:
+        specifier: ^1.52.0
+        version: 1.52.0(@types/react@19.2.18)(react-native-svg@15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8)
       react:
         specifier: ^19.0.0
         version: 19.2.8
       react-dom:
         specifier: ^19.0.0
         version: 19.2.8(react@19.2.8)
+      react-native-svg:
+        specifier: 15.15.4
+        version: 15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8)
+      react-native-web:
+        specifier: ^0.21.3
+        version: 0.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
     devDependencies:
       '@mari-ui/eslint-config':
         specifier: workspace:*
@@ -208,6 +220,9 @@ importers:
       expo-status-bar:
         specifier: ~57.0.1
         version: 57.0.1(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3)
+      lucide-react-native:
+        specifier: ^1.52.0
+        version: 1.52.0(@types/react@19.2.18)(react-native-svg@15.15.4(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3)
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -217,6 +232,9 @@ importers:
       react-native:
         specifier: 0.86.3
         version: 0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0)
+      react-native-svg:
+        specifier: 15.15.4
+        version: 15.15.4(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3)
       react-native-web:
         specifier: ^0.21.3
         version: 0.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -487,18 +505,27 @@ importers:
       '@mari-ui/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@storybook/react':
+        specifier: ^8.6.18
+        version: 8.6.18(@storybook/test@8.6.18(storybook@8.6.18(supports-color@7.2.0)))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(storybook@8.6.18(supports-color@7.2.0))(typescript@5.9.3)
       '@types/react':
         specifier: ^19.0.2
         version: 19.2.18
       eslint:
         specifier: ^9.17.0
         version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+      lucide-react-native:
+        specifier: ^1.52.0
+        version: 1.52.0(@types/react@19.2.18)(react-native-svg@15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8)
       react:
         specifier: ^19.2.8
         version: 19.2.8
       react-native:
         specifier: ^0.87.1
         version: 0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0)
+      react-native-svg:
+        specifier: 15.15.4
+        version: 15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8)
       tsup:
         specifier: ^8.3.5
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.28)(supports-color@7.2.0)(tsx@4.23.13)(typescript@5.9.3)(yaml@2.9.0)
@@ -2816,6 +2843,9 @@ packages:
     resolution: {integrity: sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==}
     engines: {node: '>=0.6'}
 
+  boolbase@1.0.0:
+    resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
+
   bplist-creator@0.1.0:
     resolution: {integrity: sha512-sXaHZicyEEmY86WyueLTQesbeoH/mquvarJaQNbjuOQO+7gbFcDEWqKmcWA4cOTLzFlfgvkiVxolk1k5bBIpmg==}
 
@@ -3041,6 +3071,17 @@ packages:
   css-in-js-utils@3.1.0:
     resolution: {integrity: sha512-fJAcud6B3rRu+KHYk+Bwf+WFL2MDCJJ1XG9x137tJQ0xYxor7XziQtuGFbWNdqrvF4Tk26O3H73nfVqXt/fW1A==}
 
+  css-select@5.2.2:
+    resolution: {integrity: sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw==}
+
+  css-tree@1.1.3:
+    resolution: {integrity: sha512-tRpdppF7TRazZrjJ6v3stzv93qxRcSsFmW6cX0Zm2NVKpxE1WV1HblnghVv9TreireHkqI/VDEsfolRF1p6y7Q==}
+    engines: {node: '>=8.0.0'}
+
+  css-what@6.2.2:
+    resolution: {integrity: sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==}
+    engines: {node: '>= 6'}
+
   css.escape@1.5.1:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
 
@@ -3162,6 +3203,19 @@ packages:
   dom-accessibility-api@0.6.3:
     resolution: {integrity: sha512-7ZgogeTnjuHbo+ct10G9Ffp0mif17idi0IyWNVA/wcwcm7NPOD/WEHVP3n7n3MhXqxoIYm8d6MuZohYWIZ4T3w==}
 
+  dom-serializer@2.0.0:
+    resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
+
+  domelementtype@2.3.0:
+    resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
+
+  domhandler@5.0.3:
+    resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
+    engines: {node: '>= 4'}
+
+  domutils@3.2.2:
+    resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
+
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
@@ -3210,6 +3264,10 @@ packages:
   enhanced-resolve@5.24.5:
     resolution: {integrity: sha512-L1l8TNvomm6UVW5B253AGxQagSQr+vGwhMlrrfRS2qmhx46AMpMVJKQYLvWYbysTMY8VoicOvzHzoHMbyzB+4A==}
     engines: {node: '>=10.13.0'}
+
+  entities@4.5.0:
+    resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
+    engines: {node: '>=0.12'}
 
   entities@6.0.1:
     resolution: {integrity: sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==}
@@ -4191,6 +4249,17 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lucide-react-native@1.52.0:
+    resolution: {integrity: sha512-BCkyiFbeCAKvM1q+1GMFbAT6+eq57trBXt4ETyLtWaxGM2X4Ux/iff1S5B/wwDnfcWytcfJo03MkKzHnHFcpyw==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-native: '*'
+      react-native-svg: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   lucide-react@0.511.0:
     resolution: {integrity: sha512-VK5a2ydJ7xm8GvBeKLS9mu1pVK6ucef9780JVUjw6bAjJL/QXnd4Y0p7SPeOUMC27YhzNCZvm5d/QX0Tp3rc0w==}
     peerDependencies:
@@ -4219,6 +4288,9 @@ packages:
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
+
+  mdn-data@2.0.14:
+    resolution: {integrity: sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow==}
 
   memoize-one@5.2.1:
     resolution: {integrity: sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==}
@@ -4549,6 +4621,9 @@ packages:
     resolution: {integrity: sha512-sHGJy8sOC1YraBywpzQlIKBE4pBbGbiF95U6Auspzyem956E0+FtDtsx1ZxlOJkQCZ1AFXAY/yuvtFYrOxF+Bw==}
     engines: {node: ^16.14.0 || >=18.0.0}
 
+  nth-check@2.1.1:
+    resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
+
   nullthrows@1.1.1:
     resolution: {integrity: sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==}
 
@@ -4820,6 +4895,12 @@ packages:
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
+
+  react-native-svg@15.15.4:
+    resolution: {integrity: sha512-boT/vIRgj6zZKBpfTPJJiYWMbZE9duBMOwPK6kCSTgxsS947IFMOq9OgIFkpWZTB7t229H24pDRkh3W9ZK/J1A==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
 
   react-native-web@0.21.3:
     resolution: {integrity: sha512-ozvZM0z8UWfduoKnYx03KUccM2LdHNaW8nNJu4Md0glyqWL+Ysa6dRZzMOO6Yp/hhTYT9yluwjknpd9l04uvDw==}
@@ -5602,6 +5683,9 @@ packages:
 
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
+
+  warn-once@0.1.1:
+    resolution: {integrity: sha512-VkQZJbO8zVImzYFteBXvBOZEl1qL175WH8VmZcxF2fZAoudNhNDvHi+doCaAEdU2l2vtcIwa2zn0QK5+I1HQ3Q==}
 
   wcwidth@1.0.1:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
@@ -8175,6 +8259,8 @@ snapshots:
 
   big-integer@1.6.52: {}
 
+  boolbase@1.0.0: {}
+
   bplist-creator@0.1.0:
     dependencies:
       stream-buffers: 2.2.0
@@ -8416,6 +8502,21 @@ snapshots:
     dependencies:
       hyphenate-style-name: 1.1.0
 
+  css-select@5.2.2:
+    dependencies:
+      boolbase: 1.0.0
+      css-what: 6.2.2
+      domhandler: 5.0.3
+      domutils: 3.2.2
+      nth-check: 2.1.1
+
+  css-tree@1.1.3:
+    dependencies:
+      mdn-data: 2.0.14
+      source-map: 0.6.1
+
+  css-what@6.2.2: {}
+
   css.escape@1.5.1: {}
 
   cssstyle@4.6.0:
@@ -8516,6 +8617,24 @@ snapshots:
 
   dom-accessibility-api@0.6.3: {}
 
+  dom-serializer@2.0.0:
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+      entities: 4.5.0
+
+  domelementtype@2.3.0: {}
+
+  domhandler@5.0.3:
+    dependencies:
+      domelementtype: 2.3.0
+
+  domutils@3.2.2:
+    dependencies:
+      dom-serializer: 2.0.0
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+
   dunder-proto@1.0.1:
     dependencies:
       call-bind-apply-helpers: 1.0.2
@@ -8556,6 +8675,8 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.3.3
+
+  entities@4.5.0: {}
 
   entities@6.0.1: {}
 
@@ -9675,6 +9796,22 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lucide-react-native@1.52.0(@types/react@19.2.18)(react-native-svg@15.15.4(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3):
+    dependencies:
+      react: 19.2.3
+      react-native: 0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0)
+      react-native-svg: 15.15.4(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3)
+    optionalDependencies:
+      '@types/react': 19.2.18
+
+  lucide-react-native@1.52.0(@types/react@19.2.18)(react-native-svg@15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8):
+    dependencies:
+      react: 19.2.8
+      react-native: 0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0)
+      react-native-svg: 15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.18
+
   lucide-react@0.511.0(react@19.2.8):
     dependencies:
       react: 19.2.8
@@ -9698,6 +9835,8 @@ snapshots:
   marky@1.3.0: {}
 
   math-intrinsics@1.1.0: {}
+
+  mdn-data@2.0.14: {}
 
   memoize-one@5.2.1: {}
 
@@ -10341,6 +10480,10 @@ snapshots:
       semver: 7.8.5
       validate-npm-package-name: 5.0.1
 
+  nth-check@2.1.1:
+    dependencies:
+      boolbase: 1.0.0
+
   nullthrows@1.1.1: {}
 
   nwsapi@2.2.27: {}
@@ -10617,6 +10760,22 @@ snapshots:
 
   react-is@18.3.1: {}
 
+  react-native-svg@15.15.4(react-native@0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0))(react@19.2.3):
+    dependencies:
+      css-select: 5.2.2
+      css-tree: 1.1.3
+      react: 19.2.3
+      react-native: 0.86.3(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.3)(supports-color@7.2.0)
+      warn-once: 0.1.1
+
+  react-native-svg@15.15.4(react-native@0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0))(react@19.2.8):
+    dependencies:
+      css-select: 5.2.2
+      css-tree: 1.1.3
+      react: 19.2.8
+      react-native: 0.87.1(@babel/core@7.29.7(supports-color@7.2.0))(@types/react@19.2.18)(react@19.2.8)(supports-color@7.2.0)
+      warn-once: 0.1.1
+
   react-native-web@0.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -10628,6 +10787,21 @@ snapshots:
       postcss-value-parser: 4.2.0
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
+      styleq: 0.1.3
+    transitivePeerDependencies:
+      - encoding
+
+  react-native-web@0.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@react-native/normalize-colors': 0.74.89
+      fbjs: 3.0.5
+      inline-style-prefixer: 7.0.1
+      memoize-one: 6.0.0
+      nullthrows: 1.1.1
+      postcss-value-parser: 4.2.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
       styleq: 0.1.3
     transitivePeerDependencies:
       - encoding
@@ -11558,6 +11732,8 @@ snapshots:
   walker@1.0.8:
     dependencies:
       makeerror: 1.0.12
+
+  warn-once@0.1.1: {}
 
   wcwidth@1.0.1:
     dependencies:

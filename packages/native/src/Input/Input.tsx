@@ -1,34 +1,78 @@
-import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { cloneElement, isValidElement, useRef, useState, type ComponentRef, type ReactNode } from "react";
+import { Pressable, TextInput, type TextInputProps } from "react-native";
 import { useControllableState } from "@mari-ui/core";
 import { useStyles } from "../styles/useStyles";
-import { useTheme } from "../theme/useTheme";
-import type { InputProps } from "./types";
+import { SkeletonBox } from "../lib/Skeleton";
+import { formatMask } from "./mask";
+import { ClearButton, CountText, PasswordToggle } from "./FieldAdornments";
+import type { InputProps, InputType } from "./types";
 
 export type { InputProps };
 
+/** Web `type` → native klavye / otomatik doldurma ayarları. */
+function keyboardFor(type: InputType, masked: boolean): Partial<TextInputProps> {
+  switch (type) {
+    case "email":
+      return { keyboardType: "email-address", autoCapitalize: "none", autoCorrect: false, textContentType: "emailAddress" };
+    case "number":
+      return { keyboardType: "numeric" };
+    case "tel":
+      return { keyboardType: "phone-pad", textContentType: "telephoneNumber" };
+    case "url":
+      return { keyboardType: "url", autoCapitalize: "none", autoCorrect: false };
+    case "search":
+      return { returnKeyType: "search" };
+    case "password":
+      return { autoCapitalize: "none", autoCorrect: false, textContentType: "password" };
+    default:
+      return masked ? { keyboardType: "number-pad" } : {};
+  }
+}
+
+/** Süs ikonu: boyut / renk verilmemişse alan boyutunun ikon ölçüsü ve soluk renk (web adornment `text-mari-muted`). */
+function adornment(icon: ReactNode, size: number, color: string): ReactNode {
+  if (!isValidElement<{ size?: number; color?: string }>(icon)) return icon;
+  return cloneElement(icon, { size: icon.props.size ?? size, color: icon.props.color ?? color });
+}
+
 /**
- * Controlled/uncontrolled mantığı web'deki `Input`la AYNI paylaşılan hook'tan
- * (`useControllableState`, `@mari-ui/core`) gelir — bu hook Faz 2'de tam da
- * bu ikili kullanım için (Input/Checkbox/Radio/Slider web tarafında, şimdi
- * Input native tarafında) çıkarılmıştı; iki platform arasında BİREBİR aynı
- * state mantığı, ayrı ayrı yazılmış iki versiyon değil.
+ * Web `Input` ile aynı renk / kenarlık / odak davranışı (ölçümle doğrulandı),
+ * boyutlar native ölçekte (theme/nativeSize), ve aynı özellikler:
+ * varyant / boyut / şekil, doğrulama rengi (`color` / `status`), ikon,
+ * temizle, şifre göster/gizle, karakter sayacı, maske, Enter eylemi, iskelet.
+ * Alanın herhangi bir yerine dokununca yazma alanı odaklanır (web: wrapper
+ * mousedown); dokunma alanı 44px'e tamamlanır.
  */
 export function Input({
   value,
   defaultValue = "",
   onChangeText,
+  onPressEnter,
   placeholder,
+  type = "text",
   disabled = false,
+  readOnly = false,
   size = "md",
   shape = "default",
   variant = "outline",
   color,
+  status,
   icon,
   iconPosition = "start",
   allowClear = false,
+  clearLabel = "Temizle",
+  onClear,
   maxLength,
-  secureTextEntry = false,
+  showCount = false,
+  count,
+  visibilityToggle = true,
+  visibilityIconRender,
+  mask,
+  replacement,
+  secureTextEntry,
+  autoFocus,
+  autoComplete,
+  returnKeyType,
   onFocus,
   onBlur,
   onSubmitEditing,
@@ -36,25 +80,56 @@ export function Input({
   inputStyle,
   testID,
   accessibilityLabel,
+  accessibilityHint,
+  skeleton = false,
 }: InputProps) {
-  const [internalValue, setInternalValue] = useControllableState({ value, defaultValue, onChange: onChangeText });
+  const [current, setCurrent] = useControllableState({ value, defaultValue, onChange: onChangeText });
   const [focused, setFocused] = useState(false);
-  const styles = useStyles("input", { color, variant, size, shape, disabled, focused });
-  const theme = useTheme();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const resolvedColor = status ?? color;
+  const styles = useStyles("input", { color: resolvedColor, variant, size, shape, disabled, focused });
+
+  // Aynı kutu: yükseklik, köşe, kenarlık kalınlığı; tam genişlik (alan da öyle).
+  if (skeleton) return <SkeletonBox style={[styles.container, style]} />;
+
+  const isPassword = type === "password" || secureTextEntry === true;
+  const showToggle = isPassword && visibilityToggle;
+  const clearable = Boolean(allowClear);
+  const showClear = clearable && current.length > 0 && !disabled && !readOnly;
+  const clearIcon = typeof allowClear === "object" ? allowClear.clearIcon : undefined;
+
+  const handleChange = (text: string) => setCurrent(mask ? formatMask(text, mask, replacement) : text);
+  const handleClear = () => {
+    setCurrent("");
+    onClear?.();
+    inputRef.current?.focus();
+  };
 
   return (
-    <View style={[styles.container, style]}>
-      {icon && iconPosition === "start" && <View>{icon}</View>}
+    <Pressable
+      onPress={() => inputRef.current?.focus()}
+      disabled={disabled}
+      hitSlop={styles.hitSlop}
+      accessible={false}
+      style={[styles.container, style]}
+      testID={testID}
+    >
+      {icon && iconPosition === "start" && adornment(icon, styles.iconSize, styles.mutedColor)}
       <TextInput
-        value={internalValue}
-        onChangeText={setInternalValue}
+        ref={inputRef}
+        value={current}
+        onChangeText={handleChange}
         placeholder={placeholder}
-        // Yer tutucu soluk (web'deki `input::placeholder` ile aynı `muted`); eskiden metin rengiydi →
-        // boş alan doldurulmuş gibi görünüyordu (Expo'da gerçek render'da fark edildi).
-        placeholderTextColor={theme.color.canvas.muted}
-        editable={!disabled}
-        maxLength={maxLength}
-        secureTextEntry={secureTextEntry}
+        // Yer tutucu soluk (web `placeholder:text-mari-muted`).
+        placeholderTextColor={styles.mutedColor}
+        editable={!disabled && !readOnly}
+        maxLength={mask ? mask.length : maxLength}
+        secureTextEntry={isPassword && !passwordVisible}
+        autoFocus={autoFocus}
+        autoComplete={autoComplete}
+        returnKeyType={returnKeyType}
+        {...keyboardFor(type, Boolean(mask))}
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);
@@ -63,17 +138,21 @@ export function Input({
           setFocused(false);
           onBlur?.(e);
         }}
-        onSubmitEditing={onSubmitEditing}
+        onSubmitEditing={(e) => {
+          onPressEnter?.(current);
+          onSubmitEditing?.(e);
+        }}
         style={[styles.input, inputStyle]}
-        testID={testID}
         accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
+        accessibilityState={{ disabled }}
+        // Hata rengi = geçersiz (web: otomatik aria-invalid).
+        aria-invalid={resolvedColor === "error" || undefined}
       />
-      {allowClear && internalValue.length > 0 && !disabled && (
-        <Pressable onPress={() => setInternalValue("")} accessibilityRole="button" accessibilityLabel="Temizle" hitSlop={8}>
-          <Text style={styles.input}>✕</Text>
-        </Pressable>
-      )}
-      {icon && iconPosition === "end" && <View>{icon}</View>}
-    </View>
+      {clearable && <ClearButton visible={showClear} label={clearLabel} icon={clearIcon} size={styles.iconSize} color={styles.mutedColor} onClear={handleClear} />}
+      {(showCount || count?.formatter) && <CountText value={current} maxLength={maxLength} formatter={count?.formatter} style={styles.count} />}
+      {icon && iconPosition === "end" && adornment(icon, styles.iconSize, styles.mutedColor)}
+      {showToggle && <PasswordToggle visible={passwordVisible} disabled={disabled} size={styles.iconSize} color={styles.mutedColor} onToggle={() => setPasswordVisible((v) => !v)} iconRender={visibilityIconRender} />}
+    </Pressable>
   );
 }

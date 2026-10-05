@@ -1,9 +1,9 @@
 import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
-import { componentSize, resolveColorVariant, type ColorRole, type ExtendedSize, type Variant } from "@mari-ui/core";
+import { resolveColorVariant, type ColorRole, type ExtendedSize, type Variant } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
 import { resolveColorVariantStyle } from "../../theme/colorVariantStyle";
-import { resolveComponentSize } from "../../theme/sizeToRNStyle";
+import { nativeSize } from "../../theme/nativeSize";
 import type { ButtonShape } from "../../Button/types";
 
 export interface ButtonRecipeOptions {
@@ -19,7 +19,14 @@ export interface ButtonRecipeResult {
   container: ViewStyle;
   pressedContainer: ViewStyle;
   label: TextStyle;
+  /** İkon boyutu (px) — native ölçek: xs 14 · sm 16 · md 18 · lg 20 · xl 22. */
+  iconSize: number;
+  /** Görünümü değiştirmeden dokunma alanını 44px'e tamamlayan pay (web `touchTargetClass`). */
+  hitSlop: { top: number; bottom: number; left: number; right: number };
 }
+
+/** Önerilen en küçük dokunma hedefi (Apple HIG 44pt). */
+const MIN_TOUCH = 44;
 
 /**
  * `shape` boyuttan gelen radius'u geçersiz kılar (`default` hariç — o boyutun
@@ -42,38 +49,46 @@ const SHAPE_RADIUS: Partial<Record<ButtonShape, number>> = {
 export function buttonRecipe(theme: Theme, options: ButtonRecipeOptions): ButtonRecipeResult {
   const { color, variant, size, shape, block, disabled } = options;
   const colorStyle = resolveColorVariantStyle(theme, resolveColorVariant(color, variant));
-  const sizeStyle = resolveComponentSize(componentSize[size]);
+  const sz = nativeSize(theme, size);
   const isCircle = shape === "circle";
 
   const container: ViewStyle = {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: sizeStyle.container.gap,
-    height: sizeStyle.container.height,
-    paddingHorizontal: isCircle ? 0 : sizeStyle.container.paddingHorizontal,
-    paddingVertical: sizeStyle.container.paddingVertical,
-    borderRadius: SHAPE_RADIUS[shape] ?? sizeStyle.container.borderRadius,
+    gap: sz.gap,
+    height: sz.height,
+    paddingHorizontal: isCircle ? 0 : sz.paddingHorizontal,
+    borderRadius: SHAPE_RADIUS[shape] ?? sz.borderRadius,
     // `borderWidth`i variant'tan değil, `resolveColorVariant`in fiilen bir
     // `border` token'ı üretip üretmediğinden türetiyoruz — "outline mı değil
     // mi" kararını burada TEKRAR yazmak yerine core'un tek kaynağına
     // güveniyoruz.
     borderWidth: colorStyle.container.borderColor ? 1 : 0,
     ...colorStyle.container,
-    ...(isCircle && { aspectRatio: 1, width: sizeStyle.container.height }),
+    ...(isCircle && { aspectRatio: 1, width: sz.height }),
     ...(block && { width: "100%" }),
     ...(disabled && { opacity: 0.5 }),
   };
 
   const label: TextStyle = {
     fontFamily: nativeFontFamily(theme.fontFamily.sans),
-    fontSize: sizeStyle.label.fontSize,
+    fontSize: sz.fontSize,
+    lineHeight: sz.lineHeight,
     fontWeight: "500",
-    // Web'de `variant="link"` bir `<a>` gibi altı çizili görünür; native'de
-    // href/anchor kavramı yok ama bu görsel ipucu metinle taşınabilir.
-    textDecorationLine: variant === "link" ? "underline" : "none",
+    // Web'deki `variant="link"` alt çizgisiz (yalnız renk + dolgusuz) — birebir aynı.
+    textDecorationLine: "none",
     ...colorStyle.label,
   };
 
-  return { container, pressedContainer: colorStyle.pressedContainer, label };
+  // Basılma = web'deki hover + active birlikte: solid'de koyu ton (core'un hoverBackground'u),
+  // outline/ghost'ta rolün yumuşak zemini (web `bgSubtleHoverClass`), hepsinde %98 küçülme (`active:scale-[0.98]`).
+  const interactiveSubtle = variant === "outline" || variant === "ghost" ? { backgroundColor: theme.color[color].subtle } : {};
+  const pressedContainer: ViewStyle = { ...colorStyle.pressedContainer, ...interactiveSubtle, transform: [{ scale: 0.98 }] };
+
+  const vertical = Math.max(0, Math.ceil((MIN_TOUCH - sz.height) / 2));
+  // Yatay pay yalnız kare/daire (ikon) butonlarda — yan yana butonların alanları çakışmasın (web ile aynı kural).
+  const horizontal = isCircle ? vertical : 0;
+
+  return { container, pressedContainer, label, iconSize: sz.iconSize, hitSlop: { top: vertical, bottom: vertical, left: horizontal, right: horizontal } };
 }

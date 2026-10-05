@@ -14,6 +14,10 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./stories": {
+      "types": "./src/stories/registry.ts",
+      "default": "./src/stories/registry.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -30,7 +34,8 @@
   },
   "peerDependencies": {
     "react": ">=18.2.0",
-    "react-native": ">=0.76.0"
+    "react-native": ">=0.76.0",
+    "react-native-svg": ">=15.0.0"
   },
   "dependencies": {
     "@mari-ui/core": "workspace:*",
@@ -39,6 +44,9 @@
   "devDependencies": {
     "@mari-ui/eslint-config": "workspace:*",
     "@mari-ui/tsconfig": "workspace:*",
+    "@storybook/react": "^8.6.18",
+    "lucide-react-native": "^1.52.0",
+    "react-native-svg": "15.15.4",
     "@types/react": "^19.0.2",
     "eslint": "^9.17.0",
     "react": "^19.2.8",

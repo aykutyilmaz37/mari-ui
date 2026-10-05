@@ -21,6 +21,23 @@ import { DocsContainer } from "./DocsContainer";
  * alıyor.
  */
 const preview: Preview = {
+  // Native story'lerinin font kipi (ThemeProvider `fonts`): "system" varsayılan,
+  // "brand" Geist/Manrope — web component'leriyle birebir karşılaştırmak için.
+  globalTypes: {
+    fonts: {
+      description: "Native font kipi",
+      toolbar: {
+        title: "Native font",
+        icon: "paragraph",
+        items: [
+          { value: "system", title: "Sistem fontu" },
+          { value: "brand", title: "Marka fontu (Geist)" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: { fonts: "system" },
   parameters: {
     docs: { container: DocsContainer },
     backgrounds: { disable: true },
@@ -41,8 +58,7 @@ const preview: Preview = {
       // Storybook bu fonksiyonu KAYNAK METİN olarak alıp çalıştırır: içinde TypeScript tipi olamaz.
       // @ts-expect-error -- parametreler bilinçli olarak tipsiz (tip açıklaması dizinlemeyi bozar)
       storySort: (a, b) => {
-        const categories = ["Genel Bakış", "Başlarken", "Foundations", "Genel", "Navigasyon", "Veri Girişi", "Veri Gösterimi", "Geri Bildirim"];
-        const guides = ["Kurulum", "Tema", "AI Kuralları", "React Native"];
+        const categories = ["Genel Bakış", "Foundations", "Genel", "Navigasyon", "Veri Girişi", "Veri Gösterimi", "Geri Bildirim", "Native"];
         const foundations = ["Yumuşak İris", "Marka", "Renkler", "Tipografi", "Spacing", "Elevation"];
         const pa = a.title.split("/");
         const pb = b.title.split("/");

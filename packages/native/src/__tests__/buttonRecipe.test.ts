@@ -45,9 +45,38 @@ describe("buttonRecipe", () => {
     expect(container.width).toBe("100%");
   });
 
-  it("variant=link: metin altı çizili", () => {
+  it("variant=link: web ile aynı — alt çizgi yok", () => {
     const { label } = buttonRecipe(lightTheme, { ...base, variant: "link" });
-    expect(label.textDecorationLine).toBe("underline");
+    expect(label.textDecorationLine).toBe("none");
+  });
+
+  it("native ölçek: yükseklik 32/36/44/50/56, yazı 13/14/16/17/18, satır yüksekliği açık", () => {
+    const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
+    expect(sizes.map((size) => buttonRecipe(lightTheme, { ...base, size }).container.height)).toEqual([32, 36, 44, 50, 56]);
+    expect(sizes.map((size) => buttonRecipe(lightTheme, { ...base, size }).label.fontSize)).toEqual([13, 14, 16, 17, 18]);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).label.lineHeight).toBe(22);
+  });
+
+  it("basılma = web hover + active: outline/ghost rolün yumuşak zemini, hepsi %98", () => {
+    const outline = buttonRecipe(lightTheme, { ...base, variant: "outline" }).pressedContainer;
+    expect(outline.backgroundColor).toBe(lightTheme.color.primary.subtle);
+    expect(outline.transform).toEqual([{ scale: 0.98 }]);
+    const solid = buttonRecipe(lightTheme, { ...base, variant: "solid" }).pressedContainer;
+    expect(solid.backgroundColor).toBe(lightTheme.color.primary.solidHover);
+  });
+
+  it("ikon 14–22; dokunma alanı 44'e tamamlanır (md ve üstü zaten 44+)", () => {
+    expect(buttonRecipe(lightTheme, { ...base, size: "xs" }).iconSize).toBe(14);
+    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).iconSize).toBe(22);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).hitSlop).toEqual({ top: 0, bottom: 0, left: 0, right: 0 });
+    expect(buttonRecipe(lightTheme, { ...base, size: "xs" }).hitSlop).toEqual({ top: 6, bottom: 6, left: 0, right: 0 });
+    expect(buttonRecipe(lightTheme, { ...base, size: "sm", shape: "circle" }).hitSlop).toEqual({ top: 4, bottom: 4, left: 4, right: 4 });
+  });
+
+  it("köşe temanın radius anahtarından (xs/sm md · md/lg lg · xl xl)", () => {
+    expect(buttonRecipe(lightTheme, { ...base, size: "sm" }).container.borderRadius).toBe(8);
+    expect(buttonRecipe(lightTheme, { ...base, size: "md" }).container.borderRadius).toBe(12);
+    expect(buttonRecipe(lightTheme, { ...base, size: "xl" }).container.borderRadius).toBe(16);
   });
 
   it("boyut arttıkça height ve fontSize artar (sm < md < lg)", () => {

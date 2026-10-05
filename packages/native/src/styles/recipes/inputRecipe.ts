@@ -1,9 +1,10 @@
 import { nativeFontFamily } from "../../theme/fontFamily";
 import type { ViewStyle, TextStyle } from "react-native";
-import { componentSize, resolveColorVariant, type ColorRole, type ColorVariantStyle, type Size } from "@mari-ui/core";
+import type { ColorRole, Size } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
-import { resolveColorVariantStyle } from "../../theme/colorVariantStyle";
-import { resolveComponentSize } from "../../theme/sizeToRNStyle";
+import { nativeSize } from "../../theme/nativeSize";
+import { withAlpha } from "../../theme/skeletonColor";
+import { lineHeightFor } from "../lineHeight";
 import type { InputShape, InputVariant } from "../../Input/types";
 
 export interface InputRecipeOptions {
@@ -18,66 +19,86 @@ export interface InputRecipeOptions {
 export interface InputRecipeResult {
   container: ViewStyle;
   input: TextStyle;
+  /** Yer tutucu ve ikonların soluk rengi (`canvas.muted`). */
+  mutedColor: string;
+  /** Karakter sayacı yazısı (web `text-xs tabular-nums text-mari-muted`). */
+  count: TextStyle;
+  /** Süs / göz ikonu boyutu (native ölçek); temizle X'i bundan 2px küçük. */
+  iconSize: number;
+  /** Görünümü değiştirmeden dokunma alanını 44px'e tamamlayan pay. */
+  hitSlop: { top: number; bottom: number; left: number; right: number };
 }
 
-/** İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-conditional`). */
-function resolveBorderWidth(active: boolean, focused: boolean): number {
-  if (!active) return 0;
-  return focused ? 2 : 1;
-}
+const MIN_TOUCH = 44;
 
-const SHAPE_RADIUS: Partial<Record<InputShape, number>> = {
-  square: 0,
-  pill: 9999,
-};
+/** Odak halesi (web `focus-within:ring-3 ring-<renk>/20`; ghost `ring-mari-ring/40`). */
+function ring(color: string, alpha: number): ViewStyle {
+  return { boxShadow: `0px 0px 0px 3px ${withAlpha(color, alpha)}` } as ViewStyle;
+}
 
 /**
- * `InputVariant`in `"outline"|"soft"|"ghost"` üyeleri `@mari-ui/core`'un
- * `Variant` union'ının bir alt kümesidir — bu üçü için mantığı burada
- * TEKRAR yazmak yerine doğrudan `resolveColorVariant`e devrediyoruz.
- * `"underlined"` Input'a özgüdür (core'da karşılığı yok): görsel olarak
- * "outline"a yakındır ama tam kenarlık yerine sadece ALT kenarlık ister —
- * bu farkı `inputRecipe` (renk token'ı burada, kenarlık GEOMETRİSİ orada)
- * ayırıyor.
+ * Renk / kenarlık / odak web `Input` ile aynı (getComputedStyle ölçümüyle
+ * doğrulandı); boyut native ölçekte (theme/nativeSize):
+ * - Köşe her boyutta 8px (web `rounded-md` boyutun köşesini ezer); `pill`
+ *   tam yuvarlak + 16px yan boşluk; `square` ve `underlined` köşesiz.
+ * - Dinlenme kenarlığı: renk verilmediyse `canvas.input` (nötr gri), verildiyse
+ *   rolün metin rengi. Odakta kenarlık KALINLAŞMAZ (1px) — rolün metin rengine
+ *   döner + 3px %20 hale. Ghost: kenarlık yok, odakta `canvas.ring` %40 hale.
+ *   Underlined: yalnız alt çizgi, hale yok.
+ * - Zemin: outline `surface`, soft `surfaceAlt`, ghost / underlined saydam.
  */
-function resolveInputColorRefs(color: ColorRole, variant: InputVariant): ColorVariantStyle {
-  if (variant === "underlined") {
-    return resolveColorVariant(color, "outline");
-  }
-  return resolveColorVariant(color, variant);
-}
-
 export function inputRecipe(theme: Theme, options: InputRecipeOptions): InputRecipeResult {
   const { color, variant, size, shape, disabled, focused } = options;
-  const colorStyle = resolveColorVariantStyle(theme, resolveInputColorRefs(color ?? "primary", variant));
-  const sizeStyle = resolveComponentSize(componentSize[size]);
-  const hasBorderColor = variant !== "ghost";
-  const borderColor = color ? theme.color[color].border : theme.color.canvas.input;
-  const activeBorder = focused ? theme.color[color ?? "primary"].border : borderColor;
-  const borderWidth = resolveBorderWidth(hasBorderColor && variant !== "underlined", focused);
-  const underlineWidth = resolveBorderWidth(hasBorderColor && variant === "underlined", focused);
+  const sz = nativeSize(theme, size);
+  const accent = theme.color[color ?? "primary"].text;
+  const restBorder = color ? theme.color[color].text : theme.color.canvas.input;
+  const borderColor = focused ? accent : restBorder;
+
+  // Köşe: buton ile aynı boyut ölçeği (native) — web'de alan köşesi her boyutta md'ydi,
+  // native'de boyutla büyür ki aynı satırdaki buton ve alan uyumlu görünsün.
+  let radius = sz.borderRadius;
+  if (shape === "pill") radius = 9999;
+  if (shape === "square" || variant === "underlined") radius = 0;
+
+  const variantStyle: Record<InputVariant, ViewStyle> = {
+    outline: { borderWidth: 1, borderColor, backgroundColor: theme.color.canvas.surface, ...(focused && ring(accent, 0.2)) },
+    soft: { borderWidth: 1, borderColor, backgroundColor: theme.color.canvas.surfaceAlt, ...(focused && ring(accent, 0.2)) },
+    ghost: { borderWidth: 0, backgroundColor: "transparent", ...(focused && ring(theme.color.canvas.ring, 0.4)) },
+    underlined: { borderWidth: 0, borderBottomWidth: 1, borderColor, backgroundColor: "transparent" },
+  };
+
+  const height = sz.height;
+  const vertical = Math.max(0, Math.ceil((MIN_TOUCH - height) / 2));
 
   const container: ViewStyle = {
     flexDirection: "row",
     alignItems: "center",
-    height: sizeStyle.container.height,
-    paddingHorizontal: sizeStyle.container.paddingHorizontal,
-    gap: sizeStyle.container.gap,
-    borderRadius: variant === "underlined" ? 0 : (SHAPE_RADIUS[shape] ?? sizeStyle.container.borderRadius),
-    borderWidth,
-    borderBottomWidth: variant === "underlined" ? underlineWidth : borderWidth,
-    ...colorStyle.container,
-    backgroundColor: variant === "soft" ? theme.color.canvas.surfaceAlt : theme.color.canvas.surface,
-    ...(hasBorderColor && { borderColor: activeBorder }),
+    height,
+    paddingHorizontal: shape === "pill" && variant !== "underlined" ? sz.paddingHorizontal + 4 : sz.paddingHorizontal,
+    gap: sz.gap,
+    borderRadius: radius,
+    ...variantStyle[variant],
     ...(disabled && { opacity: 0.5 }),
   };
 
   const input: TextStyle = {
     fontFamily: nativeFontFamily(theme.fontFamily.sans),
     flex: 1,
-    fontSize: sizeStyle.label.fontSize,
+    minWidth: 0,
+    // Tek satırlı TextInput'ta dikey ortalama: iç boşluk ve platform satır payı sıfırlanır.
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    fontSize: sz.fontSize,
     color: theme.color.canvas.foreground,
   };
 
-  return { container, input };
+  const count: TextStyle = {
+    fontFamily: nativeFontFamily(theme.fontFamily.sans),
+    fontSize: 12,
+    lineHeight: lineHeightFor(12),
+    fontVariant: ["tabular-nums"],
+    color: theme.color.canvas.muted,
+  };
+
+  return { container, input, mutedColor: theme.color.canvas.muted, count, iconSize: sz.iconSize, hitSlop: { top: vertical, bottom: vertical, left: 0, right: 0 } };
 }
