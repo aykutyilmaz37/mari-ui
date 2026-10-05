@@ -23,32 +23,41 @@ function CardContent({ props, styles, skeleton }: { props: CardProps; styles: Ca
   const { children, title, extra, cover, footer, actions, slotStyles } = props;
   const theme = useTheme();
   const slotRadius = toPx(theme.radius.sm);
+  const hasBottom = footer != null || Boolean(actions?.length);
+  // İki grup: kapsayıcı `space-between` ile alt grubu (alt bilgi + eylemler) eşit
+  // yükseklikteki kartlarda dibe indirir; esneyen çocuk gerekmez (bkz. cardRecipe).
   return (
     <>
-      {cover != null ? <View style={slotStyles?.cover}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(cover, styles.bodyText)}</Slot></View> : null}
-      {title != null || extra != null ? (
-        <>
-          <View style={[styles.header, slotStyles?.header]}>
-            {title != null ? <View style={{ flex: 1, minWidth: 0 }}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(title, styles.titleText, 1)}</Slot></View> : null}
-            {extra != null ? <View style={{ flexShrink: 0, marginStart: "auto" }}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(extra, styles.extraText)}</Slot></View> : null}
-          </View>
-          <View style={styles.divider} />
-        </>
-      ) : null}
-      <View style={[styles.body, slotStyles?.body]}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(children, styles.bodyText)}</Slot></View>
-      {footer != null ? (
-        <>
-          <View style={styles.divider} />
-          <View style={[styles.footer, slotStyles?.footer]}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(footer, styles.bodyText)}</Slot></View>
-        </>
-      ) : null}
-      {actions?.length ? (
-        <View style={[styles.actions, slotStyles?.actions]}>
-          {actions.map((action, index) => (
-            <View key={index} style={[styles.action, index > 0 && styles.actionDivider]}>
-              <Slot skeleton={skeleton} radius={slotRadius}>{cardText(action, styles.bodyText)}</Slot>
+      <View>
+        {cover != null ? <View style={slotStyles?.cover}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(cover, styles.bodyText)}</Slot></View> : null}
+        {title != null || extra != null ? (
+          <>
+            <View style={[styles.header, slotStyles?.header]}>
+              {title != null ? <View style={{ flex: 1, minWidth: 0 }}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(title, styles.titleText, 1)}</Slot></View> : null}
+              {extra != null ? <View style={{ flexShrink: 0, marginStart: "auto" }}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(extra, styles.extraText)}</Slot></View> : null}
             </View>
-          ))}
+            <View style={styles.divider} />
+          </>
+        ) : null}
+        <View style={[styles.body, slotStyles?.body]}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(children, styles.bodyText)}</Slot></View>
+      </View>
+      {hasBottom ? (
+        <View>
+          {footer != null ? (
+            <>
+              <View style={styles.divider} />
+              <View style={[styles.footer, slotStyles?.footer]}><Slot skeleton={skeleton} radius={slotRadius}>{cardText(footer, styles.bodyText)}</Slot></View>
+            </>
+          ) : null}
+          {actions?.length ? (
+            <View style={[styles.actions, slotStyles?.actions]}>
+              {actions.map((action, index) => (
+                <View key={index} style={[styles.action, index > 0 && styles.actionDivider]}>
+                  <Slot skeleton={skeleton} radius={slotRadius}>{cardText(action, styles.bodyText)}</Slot>
+                </View>
+              ))}
+            </View>
+          ) : null}
         </View>
       ) : null}
     </>

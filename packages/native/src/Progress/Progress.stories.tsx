@@ -104,9 +104,6 @@ export const Strength: Story = {
 export const Storage: Story = {
   name: "Depolama Kullanımı (daire)",
   ...storyDoc("Daire + `success` ile iki katman: kullanılan ve yedeklenen.", `<Progress type="circle" size="lg" percent={72} success={{ percent: 40 }} format={(p) => \`%\${p}\`} accessibilityLabel="Depolama" />`),
-  // Card'ı diğer Card story'leri gibi tam genişlikte kullan: içerik genişliğine
-  // daralan Card telefonda aşağı doğru uzuyordu (web'de görünmüyor).
-  decorators: [withStretch],
   render: () => (
     <Card>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>

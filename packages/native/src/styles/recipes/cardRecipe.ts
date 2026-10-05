@@ -40,6 +40,11 @@ export function cardRecipe(theme: Theme, { size = "md", bordered, inset }: CardR
   return {
     container: {
       minWidth: 0,
+      // Eşit yükseklikteki kartlarda (ızgara satırı) alt bilgi/eylemler dibe iner; kart
+      // serbestse içeriği kadar kalır. Gövdeye flexGrow VERMEYİN: Yoga, üst sınırı olan
+      // ama sabit olmayan yükseklikte esneyen çocuğu tüm boş alana büyütüyor — kart
+      // telefonda aşağı "sonsuz" uzuyordu (web'de görünmez; cihazda ölçüldü).
+      justifyContent: "space-between",
       borderRadius: toPx(theme.radius[layout.radius]),
       backgroundColor: inset ? theme.color.canvas.surfaceAlt : theme.color.canvas.surface,
       overflow: "hidden",
@@ -51,8 +56,7 @@ export function cardRecipe(theme: Theme, { size = "md", bordered, inset }: CardR
     titleText: { ...bodyText, fontFamily: nativeFontFamily(theme.fontFamily.heading ?? theme.fontFamily.sans), fontWeight: "600" },
     extraText: { ...bodyText, color: theme.color.canvas.muted },
     divider: { height: 1, backgroundColor: theme.color.canvas.border },
-    // flexGrow, flex:1'in sıfır tabanı yerine içeriğin gerçek yüksekliğini korur.
-    body: { flexGrow: 1, padding },
+    body: { padding },
     bodyText,
     footer: { paddingHorizontal: padding, paddingVertical: layout.footerPaddingVertical },
     actions: { flexDirection: "row", borderTopWidth: 1, borderColor: theme.color.canvas.border },
