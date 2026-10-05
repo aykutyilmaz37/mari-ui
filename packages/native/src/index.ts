@@ -41,8 +41,17 @@ export type { BadgeProps, StatusBadgeProps } from "./Badge";
 export { Avatar, AvatarGroup } from "./Avatar";
 export type { AvatarProps, AvatarGroupProps, AvatarSize, AvatarShape } from "./Avatar";
 
+export { Checkbox } from "./Checkbox";
+export type { CheckboxProps, CheckboxShape } from "./Checkbox";
+
+export { Radio, RadioGroup } from "./Radio";
+export type { RadioProps, RadioGroupProps, RadioOption, RadioValue } from "./Radio";
+
+export { Switch } from "./Switch";
+export type { SwitchProps } from "./Switch";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";

@@ -37,6 +37,7 @@ export function PasswordToggle({ visible, disabled, size, color, onToggle, iconR
       accessibilityRole="button"
       accessibilityLabel={visible ? "Şifreyi gizle" : "Şifreyi göster"}
       accessibilityState={{ selected: visible, disabled }}
+      aria-selected={visible}
       hitSlop={10}
       style={{ width: size + 8, height: size + 8, alignItems: "center", justifyContent: "center", borderRadius: 4 }}
     >

@@ -119,6 +119,7 @@ export function Button({
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: isDisabled, busy: load.isLoading }}
+      aria-busy={load.isLoading}
     >
       {load.isLoading && load.position === "start" && loadingSlot}
       {showIcon && iconPosition === "start" && iconNode}

@@ -44,3 +44,19 @@ export function EyeOffIcon({ size = 16, color = "currentColor" }: IconProps) {
     </Svg>
   );
 }
+
+export function CheckIcon({ size = 16, color = "currentColor", strokeWidth = 3 }: IconProps & { strokeWidth?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M20 6 9 17l-5-5" {...stroke(color)} strokeWidth={strokeWidth} />
+    </Svg>
+  );
+}
+
+export function MinusIcon({ size = 16, color = "currentColor", strokeWidth = 3 }: IconProps & { strokeWidth?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M5 12h14" {...stroke(color)} strokeWidth={strokeWidth} />
+    </Svg>
+  );
+}
