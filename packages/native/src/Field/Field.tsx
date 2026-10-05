@@ -44,7 +44,7 @@ export function Field({ label, hint, error, required = false, disabled = false, 
   const labelStyle = { fontFamily: font, fontSize: t.h6.fontSize, lineHeight: t.h6.lineHeight, fontWeight: "500" as const, color: theme.color.canvas.foreground, opacity: disabled ? 0.5 : 1 };
   const smallStyle = { fontFamily: font, fontSize: 13, lineHeight: 18 };
   const labelText = (
-    <Text style={labelStyle} importantForAccessibility="no" accessibilityElementsHidden>
+    <Text style={labelStyle} importantForAccessibility="no" accessibilityElementsHidden aria-hidden>
       {label}
       {required && !skeleton ? <Text style={{ color: theme.color.error.text }}> *</Text> : null}
     </Text>

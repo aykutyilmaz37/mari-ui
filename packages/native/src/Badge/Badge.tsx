@@ -74,7 +74,7 @@ export function Badge({ count, overflowCount = 99, showZero = false, dot = false
     <View
       accessible={announced}
       accessibilityLabel={announced ? label : undefined}
-      accessibilityElementsHidden={!announced}
+      accessibilityElementsHidden={!announced} aria-hidden={!announced}
       importantForAccessibility={announced ? "yes" : "no-hide-descendants"}
       pointerEvents="none"
       style={bubbleStyle}
@@ -112,7 +112,7 @@ export function StatusBadge({ color = "neutral", children, processing = false, s
   return (
     <Hug style={style}>
       <View
-        accessibilityElementsHidden={skeleton}
+        accessibilityElementsHidden={skeleton} aria-hidden={skeleton}
         importantForAccessibility={skeleton ? "no-hide-descendants" : "auto"}
         style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
       >

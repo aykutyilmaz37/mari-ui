@@ -40,10 +40,10 @@ function ParagraphSkeleton({ metrics, rows, ellipsis, style, children }: { metri
   const count = Math.max(1, measured ?? Math.floor(rows));
   const lines = Array.from({ length: count }, (_, i) => <SkeletonLine key={i} fontSize={metrics.fontSize} lineHeight={metrics.lineHeight} width={i === count - 1 && count > 1 ? "60%" : "100%"} />);
   if (children == null) {
-    return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>{lines}</View>;
+    return <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>{lines}</View>;
   }
   return (
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>
+    <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>
       <RNText
         numberOfLines={numberOfLines(ellipsis)}
         onLayout={(event) => setMeasured(Math.round(event.nativeEvent.layout.height / metrics.lineHeight))}
@@ -70,7 +70,7 @@ export function Text({ children, color, weight, muted, ellipsis, skeleton = fals
     const bar = Math.round(metrics.fontSize * 0.7);
     return (
       <Hug>
-        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ maxWidth: "100%", minWidth: children == null ? 120 : undefined, height: metrics.lineHeight }}>
+        <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ maxWidth: "100%", minWidth: children == null ? 120 : undefined, height: metrics.lineHeight }}>
         <RNText numberOfLines={1} style={[textStyle, style, { opacity: 0 }]}>{children ?? " "}</RNText>
         <SkeletonBox style={{ position: "absolute", left: 0, right: 0, top: (metrics.lineHeight - bar) / 2, height: bar, borderRadius: 4 }} />
         </View>
@@ -114,7 +114,7 @@ export function Title({ level = 1, children, color, ellipsis, skeleton = false, 
 
   if (skeleton) {
     return (
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ alignSelf: "stretch" }}>
         <SkeletonLine fontSize={metrics.fontSize} lineHeight={metrics.lineHeight} width="40%" />
       </View>
     );

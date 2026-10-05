@@ -22,7 +22,7 @@ export function Spinner({ size, color }: { size: number; color: string }) {
   const spin = rotation.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
 
   return (
-    <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }} accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants">
       <Animated.View
         style={{
           width: diameter,

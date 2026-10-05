@@ -28,7 +28,11 @@ describe("cardRecipe", () => {
     expect(variants.map((v) => v.header.minHeight)).toEqual([44, 48, 56]);
     for (const v of variants) {
       expect(v.action.minHeight).toBeGreaterThanOrEqual(44);
-      expect(v.body.flexGrow).toBe(1);
+      // Gövde esnemez: native'de flexGrow, üst sınırı olan ama sabit olmayan yükseklikte
+      // tüm boş alana büyüyordu (kart aşağı "sonsuz" uzuyordu). Alt grup dibe
+      // space-between ile iner.
+      expect(v.body.flexGrow).toBeUndefined();
+      expect(v.container.justifyContent).toBe("space-between");
     }
   });
 

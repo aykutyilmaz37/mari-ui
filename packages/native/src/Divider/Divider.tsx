@@ -72,7 +72,7 @@ export function Divider({ children, lineStyle = "solid", orientation = "horizont
 
   if (orientation === "vertical") {
     return (
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ marginHorizontal: spacing * 0.75, alignSelf: "center" }, style]}>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[{ marginHorizontal: spacing * 0.75, alignSelf: "center" }, style]}>
         {skeleton ? <SkeletonBox style={{ width: 1, height }} /> : <Line vertical lineStyle={lineStyle} color={color} length={height} />}
       </View>
     );
@@ -89,7 +89,7 @@ export function Divider({ children, lineStyle = "solid", orientation = "horizont
   // Ayırıcı görseldir; başlık (varsa) okunur — RN'de "separator" rolü yok.
   return (
     <View
-      accessibilityElementsHidden={label == null || skeleton}
+      accessibilityElementsHidden={label == null || skeleton} aria-hidden={label == null || skeleton}
       importantForAccessibility={label == null || skeleton ? "no-hide-descendants" : "auto"}
       style={[{ flexDirection: "row", alignItems: "center", alignSelf: "stretch", marginVertical: spacing }, style]}
     >

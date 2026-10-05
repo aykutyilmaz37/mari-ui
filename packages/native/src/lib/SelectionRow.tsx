@@ -64,7 +64,7 @@ export function SelectionRow({ role, state, onPress, disabled = false, size, con
 
   if (skeleton) {
     return (
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[rowStyle, style]}>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[rowStyle, style]}>
         {content}
       </View>
     );

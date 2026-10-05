@@ -121,7 +121,7 @@ export function Switch({ checked, defaultChecked = false, onChange, disabled: ow
 
   if (skeleton) {
     const placeholder = (
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[rowStyle, label ? style : null]}>
+      <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={[rowStyle, label ? style : null]}>
         {labelText ? <SkeletonBox style={{ borderRadius: 4 }}>{labelText}</SkeletonBox> : null}
         <SkeletonBox style={{ width, height: m.height, borderRadius: m.height / 2 }} />
       </View>
