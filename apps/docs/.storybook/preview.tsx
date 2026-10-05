@@ -64,6 +64,7 @@ const preview: Preview = {
         const pb = b.title.split("/");
         // Listede olmayan öğe sona: `[...liste, v].indexOf(v)` = yoksa liste uzunluğu.
         if (pa[0] !== pb[0]) return [...categories, pa[0]].indexOf(pa[0]) - [...categories, pb[0]].indexOf(pb[0]);
+        if (pa[1] !== pb[1] && pa[0] === "Başlarken") return [...guides, pa[1]].indexOf(pa[1]) - [...guides, pb[1]].indexOf(pb[1]);
         if (pa[1] !== pb[1] && pa[0] === "Foundations") return [...foundations, pa[1]].indexOf(pa[1]) - [...foundations, pb[1]].indexOf(pb[1]);
         if (pa[1] !== pb[1]) return String(pa[1]).localeCompare(String(pb[1]), "tr");
         if (a.type !== b.type) return a.type === "docs" ? -1 : 1;

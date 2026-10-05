@@ -1,0 +1,100 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Başlarken/Tema" />
+
+# Tema
+
+Tema iki katmanlıdır:
+
+1. **Proje teması** — marka rengi, font, köşe ve boşluk yoğunluğu. Geliştirici `mari-ui.config.json`da tanımlar, `npx mari-ui theme` CSS'e çevirir.
+2. **Son kullanıcı ayarı** — açık/koyu/sistem, vurgu rengi, yoğunluk. Kullanıcı `ThemeCustomizer` ile seçer; tarayıcıda saklanır.
+
+İkisi de `--mari-*` CSS değişkenleri üzerinden akar: component'ler yeniden derlenmez, değişiklik anında uygulanır.
+
+## Proje teması: `mari-ui.config.json`
+
+```json
+{
+  "color": { "primary": "#6951ce", "accent": "#765991" },
+  "typography": {
+    "fontFamilySans": "\"Geist\", ui-sans-serif, system-ui, sans-serif",
+    "fontFamilyMono": "\"Geist Mono\", ui-monospace, monospace",
+    "fontFamilyHeading": "\"Manrope\", \"Geist\", ui-sans-serif, sans-serif"
+  },
+  "density": { "radius": "md", "spacing": "normal" },
+  "scale": { "fluid": false, "max": 22 }
+}
+```
+
+| Alan | Değerler | Etkisi |
+|---|---|---|
+| `color.primary`, `color.accent` | hex | Tek renkten 50–950 rampa üretilir; her rolün dolgu/metin/kenarlık tonları açık ve koyu modda WCAG AA kontrastına göre seçilir. |
+| `typography.*` | CSS font ailesi | Gövde, kod ve başlık aileleri. |
+| `density.radius` | `none` · `sm` · `md` · `lg` | Tüm köşe skalası orantılı (×0 · ×0,5 · ×1 · ×1,5). Daire/hap şekilleri etkilenmez. |
+| `density.spacing` | `compact` · `normal` · `comfortable` | Varsayılan boşluk yoğunluğu (kullanıcı ayarı her zaman önce gelir). |
+| `scale.fluid`, `scale.max` | `true` / px | Büyük ekranda kök yazı boyutu akışkan büyür (4K'de `max` px'e kadar). |
+
+```bash
+npx mari-ui theme      # mari-ui-theme.css + mari-ui-theme.ts üretir
+```
+
+`mari-ui-theme.css`i `@mari-ui/components/styles.css`ten **sonra** import edin. `mari-ui-theme.ts` aynı temayı JS objesi olarak verir (React Native ve token'lara koddan erişmek için). Değerleri görerek seçmek için **tema stüdyosu** (`apps/studio`) aynı config'i dışa aktarır.
+
+### Ek temalar
+
+Açık ve koyunun ötesinde isimli temalar tanımlanabilir; her biri `[data-theme="<ad>"]` bloğu olarak üretilir:
+
+```json
+{
+  "themes": {
+    "brand": { "base": "light", "color": { "primary": "#a21caf" } },
+    "highContrast": { "base": "dark", "color": { "primary": "#facc15" } }
+  }
+}
+```
+
+`base`, kontrast hesabının yönüdür (açık zemin mi, koyu zemin mi).
+
+## Açık / koyu tema
+
+- `<html data-theme="dark">` koyu, `data-theme="light"` açık; öznitelik yoksa işletim sisteminin tercihi (`prefers-color-scheme`) kullanılır.
+- İç içe bölgeler kendi temasını kurabilir: bir kartı `data-theme="dark"` ile sarmak yalnız o bölgeyi koyu yapar.
+
+## Son kullanıcı ayarı: `ThemeCustomizer`
+
+```tsx
+"use client";
+import { ThemeCustomizer, loadTheme, saveTheme } from "@mari-ui/components/theme-customizer";
+
+<ThemeCustomizer defaultValue={loadTheme()} onChange={saveTheme} />;
+```
+
+- Seçim anında uygulanır (`apply`, varsayılan açık); `saveTheme` tarayıcıda saklar.
+- Sayfa açılışında kayıtlı ayarın **çizimden önce** uygulanması için `getThemeScript()` `<head>`e konur (bkz. **Başlarken / Kurulum**); React açıldıktan sonra `applyTheme(loadTheme())` aynı değerleri yazar, görünür değişim olmaz.
+- Config'te `density.spacing` varsayılandan farklıysa panele verin: `defaultValue={{ spacing: mariTheme.spacingDensity, ...loadTheme() }}`.
+
+```tsx
+"use client";
+import { useEffect } from "react";
+import { applyTheme, loadTheme } from "@mari-ui/components/theme-customizer";
+
+export function ThemeBoot() {
+  useEffect(() => applyTheme(loadTheme()), []);
+  return null;
+}
+```
+
+## Token'ları kendi stillerinizde kullanmak
+
+Kendi CSS'inizde aynı değişkenleri kullanın — sabit renk yazmayın:
+
+```css
+.ozel-banner {
+  background: var(--mari-color-primary-subtle);
+  color: var(--mari-color-primary-subtle-contrast);
+  border-radius: var(--mari-radius-md);
+  box-shadow: var(--mari-shadow-sm);
+}
+```
+
+Projeniz Tailwind v4 kullanıyorsa `@mari-ui/tokens/tailwind-theme.css`i import ederek `bg-mari-surface`, `text-mari-muted`, `rounded-md`, `shadow-mari-md` gibi sınıfları kendi kodunuzda da kullanabilirsiniz. Tüm değişkenler **Foundations** sayfalarında.

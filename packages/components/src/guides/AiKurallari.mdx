@@ -1,0 +1,45 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Başlarken/AI Kuralları" />
+
+# AI kuralları
+
+Projenizde Claude Code, Codex, Cursor, Gemini ya da GitHub Copilot ile çalışıyorsanız, `@mari-ui/cli` bu araçlara mari-ui'ı **doğru** kullanmayı öğreten kural dosyalarını yazar. Kurallar elle yazılmaz: kütüphanenin derlenmiş **gerçek** prop sözleşmesinden (`manifest.json`) ve projenizin çözümlenmiş temasından üretilir — böylece ajan, var olmayan bir prop'u ya da kaldırılmış bir API'yi "güncel" sanmaz.
+
+## Komutlar
+
+```bash
+npx mari-ui init     # paketleri package.json'a ekler, mari-ui.config.json ve kural dosyalarını oluşturur
+npx mari-ui sync     # paket sürümü ya da tema değişince kural dosyalarını tazeler
+npx mari-ui sync --check   # hiçbir şey yazmaz; bayat dosya varsa çıkış kodu 1 (CI için)
+```
+
+Belirli araçlar için: `--agents claude,cursor`. `init` paket yöneticisini kendisi çalıştırmaz: kurulumdan sonra `npx mari-ui sync` ile kuralları gerçek manifest'ten tazeleyin.
+
+## Yazılan dosyalar
+
+| Araç | Dosya |
+|---|---|
+| Claude Code | `CLAUDE.md` + `.claude/skills/mari-ui/SKILL.md` |
+| Codex | `AGENTS.md` |
+| Cursor | `.cursor/rules/mari-ui.mdc` |
+| Gemini | `GEMINI.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+
+Kendi içeriğinizi de yazdığınız dosyalarda (`AGENTS.md`, `GEMINI.md`…) mari-ui yalnız `<!-- mari-ui:start -->` ile `<!-- mari-ui:end -->` arasını değiştirir; geri kalanına dokunmaz.
+
+## İçerik
+
+**Kesin kurallar** (her dosyada, kısa):
+
+1. Önce mari-ui — ihtiyacı karşılayan bir component varsa onu kullan, yenisini yazma.
+2. Sabit renk yok — renkler `mari-*` token'larından.
+3. Sabit px yok — boşluk ve boyut skaladan (`rem`).
+4. Gölge, köşe, katman skaladan — keyfi `shadow-[…]`, `rounded-[…]`, `z-[999]` yok.
+5. Yüklenme `skeleton` ile — veri gelene kadar component'in kendi iskeleti.
+6. Erişilebilirlik temeli — etiketler, rol, klavye.
+7. Linkler düz `<a href>` — sayfa geçişi `onNavigate` ile.
+
+**Sayfa kurma rehberi** (yalnız Claude skill'inde, ilgili işte yüklenir): iş akışı, uygulama iskeleti, sayfa kalıpları (panel, liste + detay, form…), "hangi durumda hangi component" tablosu, tema ve ölçek ipuçları.
+
+Her component'in güncel prop listesi ve kaldırılmış prop'ları da dosyalara girer.
