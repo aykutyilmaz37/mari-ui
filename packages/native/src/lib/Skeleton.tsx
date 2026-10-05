@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AccessibilityInfo, Animated, Easing, View, type StyleProp, type ViewStyle } from "react-native";
+import { AccessibilityInfo, Animated, Easing, View, type DimensionValue, type StyleProp, type ViewStyle } from "react-native";
 import { useTheme } from "../theme/useTheme";
 import { skeletonColor } from "../theme/skeletonColor";
 
@@ -35,23 +35,23 @@ function useReduceMotion(): boolean {
 }
 
 /** Tüm iskeletler aynı ritimde nabız atar (1 → 0,55 → 1, 1,4 sn — web parıltısıyla aynı süre). */
-function usePulse(): Animated.Value {
+export function usePulse(enabled = true, low = 0.55): Animated.Value {
   const reduce = useReduceMotion();
   const opacity = useRef(new Animated.Value(1)).current;
   useEffect(() => {
-    if (reduce) {
+    if (reduce || !enabled) {
       opacity.setValue(1);
       return;
     }
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.55, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: low, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
         Animated.timing(opacity, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
       ])
     );
     loop.start();
     return () => loop.stop();
-  }, [reduce, opacity]);
+  }, [reduce, enabled, low, opacity]);
   return opacity;
 }
 
@@ -60,9 +60,9 @@ function usePulse(): Animated.Value {
  * köşe, iç boşluk) taşır; dolgu ve kenarlık burada iskelet tonuna çevrilir.
  * `children` görünmez ama yer kaplar (ör. buton etiketi → aynı genişlik).
  */
-export function SkeletonBox({ style, children }: { style?: StyleProp<ViewStyle>; children?: ReactNode }) {
+export function SkeletonBox({ style, children, animated = true }: { style?: StyleProp<ViewStyle>; children?: ReactNode; animated?: boolean }) {
   const theme = useTheme();
-  const opacity = usePulse();
+  const opacity = usePulse(animated);
   return (
     <Animated.View
       accessibilityElementsHidden
@@ -72,5 +72,18 @@ export function SkeletonBox({ style, children }: { style?: StyleProp<ViewStyle>;
     >
       {children ? <View style={{ opacity: 0 }}>{children}</View> : null}
     </Animated.View>
+  );
+}
+
+/**
+ * Metin satırı iskeleti: tam bir satır yüksekliğinde kutu, ortasında yazı
+ * gövdesi kalınlığında (≈0,7 em) çubuk — Typography ve `Skeleton` ortak
+ * kullanır, böylece iskelet satırı gerçek metin satırıyla aynı yükseklikte.
+ */
+export function SkeletonLine({ fontSize, lineHeight, width, animated = true }: { fontSize: number; lineHeight: number; width: DimensionValue; animated?: boolean }) {
+  return (
+    <View style={{ height: lineHeight, justifyContent: "center" }}>
+      <SkeletonBox animated={animated} style={{ width, height: Math.round(fontSize * 0.7), borderRadius: 4 }} />
+    </View>
   );
 }
