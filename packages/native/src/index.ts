@@ -77,8 +77,20 @@ export type { BottomSheetProps, SnapPoint, ActionSheetProps, ActionSheetAction }
 export { ToastProvider, useToast } from "./Toast";
 export type { ToastOptions, ToastContextValue, ToastProviderProps, ToastType, ToastAction, ToastPosition } from "./Toast";
 
+export { Rate } from "./Rate";
+export type { RateProps, RateCharacterState } from "./Rate";
+
+export { Slider } from "./Slider";
+export type { SliderProps, SliderValue, SliderIconItem, SliderIconPosition } from "./Slider";
+
+export { Statistic, Countdown, Clock, Stopwatch } from "./Statistic";
+export type { StatisticProps, StatisticTrend, StatisticSize, CountdownProps, ClockProps, StopwatchProps } from "./Statistic";
+
+export { Steps, StepsContent } from "./Steps";
+export type { StepsProps, StepItem, StepData, StepStatus, StepsVariant, StepsSize, StepsLabelPlacement, StepsContentProps } from "./Steps";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";

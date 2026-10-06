@@ -85,6 +85,35 @@ export interface NativeSegmentedSize {
   readonly radius: number;
 }
 
+export interface NativeSliderSize {
+  /** Ray kalınlığı. */
+  readonly track: number;
+  /** Tutamaç çapı. */
+  readonly thumb: number;
+  /** Dikey slider'ın yüksekliği. */
+  readonly verticalLength: number;
+}
+
+export interface NativeStatisticSize {
+  readonly valueFontSize: number;
+  readonly valueLineHeight: number;
+  /** Başlık, trend ve açıklama satırı. */
+  readonly labelFontSize: number;
+  readonly labelLineHeight: number;
+}
+
+export interface NativeStepsSize {
+  /** Gösterge dairesi. */
+  readonly indicator: number;
+  readonly iconSize: number;
+  /** Dairedeki numara. */
+  readonly numberFontSize: number;
+  readonly titleFontSize: number;
+  readonly titleLineHeight: number;
+  readonly descriptionFontSize: number;
+  readonly descriptionLineHeight: number;
+}
+
 export interface NativeTagSize {
   readonly fontSize: number;
   readonly lineHeight: number;
@@ -107,6 +136,9 @@ export interface NativeConfig {
   readonly selection: Readonly<Record<Size, NativeSelectionSize>>;
   readonly switch: Readonly<Record<Size, NativeSwitchSize>>;
   readonly segmented: Readonly<Record<Size, NativeSegmentedSize>>;
+  readonly slider: Readonly<Record<Size, NativeSliderSize>>;
+  readonly statistic: Readonly<Record<Size, NativeStatisticSize>>;
+  readonly steps: Readonly<Record<"sm" | "md", NativeStepsSize>>;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -169,6 +201,23 @@ export const defaultNativeConfig: NativeConfig = {
     md: { height: 32, fontSize: 13, paddingHorizontal: 12, radius: 8 },
     lg: { height: 40, fontSize: 15, paddingHorizontal: 16, radius: 10 },
   },
+  // Slider: md tutamaç 28 = iOS UISlider; ray 4. Dokunma alanı her boyutta en az 44.
+  slider: {
+    sm: { track: 4, thumb: 20, verticalLength: 160 },
+    md: { track: 4, thumb: 28, verticalLength: 200 },
+    lg: { track: 6, thumb: 32, verticalLength: 240 },
+  },
+  // Statistic: değer HIG Title 2 / Title 1 / Large Title; etiket Footnote / Subheadline.
+  statistic: {
+    sm: { valueFontSize: 22, valueLineHeight: 28, labelFontSize: 13, labelLineHeight: 18 },
+    md: { valueFontSize: 28, valueLineHeight: 34, labelFontSize: 15, labelLineHeight: 20 },
+    lg: { valueFontSize: 34, valueLineHeight: 41, labelFontSize: 15, labelLineHeight: 20 },
+  },
+  // Steps: gösterge web ile aynı 24/32; başlık Subheadline / Body, açıklama Footnote / Subheadline.
+  steps: {
+    sm: { indicator: 24, iconSize: 12, numberFontSize: 12, titleFontSize: 15, titleLineHeight: 20, descriptionFontSize: 13, descriptionLineHeight: 18 },
+    md: { indicator: 32, iconSize: 16, numberFontSize: 14, titleFontSize: 17, titleLineHeight: 22, descriptionFontSize: 15, descriptionLineHeight: 20 },
+  },
 };
 
 export interface NativeConfigOverrides {
@@ -183,6 +232,9 @@ export interface NativeConfigOverrides {
   selection?: Partial<Record<Size, Partial<NativeSelectionSize>>>;
   switch?: Partial<Record<Size, Partial<NativeSwitchSize>>>;
   segmented?: Partial<Record<Size, Partial<NativeSegmentedSize>>>;
+  slider?: Partial<Record<Size, Partial<NativeSliderSize>>>;
+  statistic?: Partial<Record<Size, Partial<NativeStatisticSize>>>;
+  steps?: Partial<Record<"sm" | "md", Partial<NativeStepsSize>>>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -204,6 +256,9 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     selection: mergeScale(base.selection, overrides.selection),
     switch: mergeScale(base.switch, overrides.switch),
     segmented: mergeScale(base.segmented, overrides.segmented),
+    slider: mergeScale(base.slider, overrides.slider),
+    statistic: mergeScale(base.statistic, overrides.statistic),
+    steps: mergeScale(base.steps, overrides.steps),
   };
 }
 
