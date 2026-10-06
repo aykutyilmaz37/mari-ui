@@ -71,6 +71,9 @@ export type { EmptyProps } from "./Empty";
 export { Modal, Dialog } from "./Modal";
 export type { ModalProps, ModalButtonPosition, DialogProps, DialogAction } from "./Modal";
 
+export { BottomSheet, ActionSheet } from "./BottomSheet";
+export type { BottomSheetProps, SnapPoint, ActionSheetProps, ActionSheetAction } from "./BottomSheet";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize } from "./nativeConfig";
 
