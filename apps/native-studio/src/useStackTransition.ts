@@ -61,12 +61,28 @@ export function useStackTransition<T>() {
   // kilitlenir — iOS'ta yerel kaydırma JS responder'ı yakalasa da kaymaya devam ediyordu.
   const [swiping, setSwiping] = useState(false);
 
+  // Dokunuşun başladığı nokta. `gestureState.x0/dx/dy` KULLANILMAZ: PanResponder
+  // onları ancak bu responder bir kez yakaladıktan sonra doldurur — öncesinde x0 = 0
+  // (her dokunuş "kenardan" sayılıyordu) ve dx dokunuşlar arası birikiyordu. Sonuç:
+  // story'ye girince ilk Slider sürüklemesi geri çekiş sanılıp ekran titriyor,
+  // kaydırma kilitleniyordu; ikinci denemede düzeliyordu (cihazda görüldü).
+  const touchStart = useRef({ x: 0, y: 0 });
+
   const panHandlers = useMemo(() => {
-    const isEdgeSwipe = (x0: number, dx: number, dy: number) => x0 < EDGE && dx > 8 && Math.abs(dy) < dx;
+    const isEdgeSwipe = (pageX: number, pageY: number) => {
+      const dx = pageX - touchStart.current.x;
+      const dy = pageY - touchStart.current.y;
+      return touchStart.current.x < EDGE && dx > 8 && Math.abs(dy) < dx;
+    };
     const finish = () => setSwiping(false);
     return PanResponder.create({
+      // Her dokunuşun başlangıcını kaydet (yakalamadan).
+      onStartShouldSetPanResponderCapture: (e) => {
+        touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
+        return false;
+      },
       // Capture: içerideki ScrollView dikey kaydırmayı alsa da kenardan yatay çekiş bizim.
-      onMoveShouldSetPanResponderCapture: (_, g) => isEdgeSwipe(g.x0, g.dx, g.dy),
+      onMoveShouldSetPanResponderCapture: (e) => isEdgeSwipe(e.nativeEvent.pageX, e.nativeEvent.pageY),
       onPanResponderGrant: () => setSwiping(true),
       // Çekiş başladıktan sonra ScrollView geri alamasın.
       onPanResponderTerminationRequest: () => false,
