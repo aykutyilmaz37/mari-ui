@@ -5,7 +5,8 @@ import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
 import { toPx } from "../theme/toPx";
-import { CircleAlertIcon, CircleCheckIcon, CircleXIcon, InfoIcon, SparklesIcon, XIcon } from "../lib/icons";
+import { XIcon } from "../lib/icons";
+import { ROLE_ICON } from "../lib/roleIcon";
 import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
 
 export interface AlertProps extends SkeletonableProps {
@@ -30,18 +31,6 @@ export interface AlertProps extends SkeletonableProps {
   role?: "alert" | "status" | "none";
   style?: StyleProp<ViewStyle>;
 }
-
-type IconComponent = (props: { size?: number; color?: string }) => React.ReactElement;
-
-const ICON: Record<ColorRole, IconComponent> = {
-  success: CircleCheckIcon,
-  info: InfoIcon,
-  warning: CircleAlertIcon,
-  error: CircleXIcon,
-  primary: InfoIcon,
-  accent: SparklesIcon,
-  neutral: InfoIcon,
-};
 
 const LIVE = { alert: "assertive", status: "polite" } as const;
 
@@ -82,7 +71,7 @@ function Slot({ node, style, skeleton }: { node: React.ReactNode; style: object;
 function resolveIcon(icon: AlertProps["icon"], color: ColorRole, tint: string): React.ReactNode {
   if (icon === false) return null;
   if (icon !== true) return icon;
-  const Icon = ICON[color];
+  const Icon = ROLE_ICON[color];
   return <Icon size={ICON_SIZE} color={tint} />;
 }
 
