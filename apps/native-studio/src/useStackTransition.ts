@@ -57,17 +57,29 @@ export function useStackTransition<T>() {
     return () => sub.remove();
   }, []);
 
+  // Çekiş sürerken true: detay ekranının ScrollView'u `scrollEnabled={!swiping}` ile
+  // kilitlenir — iOS'ta yerel kaydırma JS responder'ı yakalasa da kaymaya devam ediyordu.
+  const [swiping, setSwiping] = useState(false);
+
   const panHandlers = useMemo(() => {
     const isEdgeSwipe = (x0: number, dx: number, dy: number) => x0 < EDGE && dx > 8 && Math.abs(dy) < dx;
+    const finish = () => setSwiping(false);
     return PanResponder.create({
       // Capture: içerideki ScrollView dikey kaydırmayı alsa da kenardan yatay çekiş bizim.
       onMoveShouldSetPanResponderCapture: (_, g) => isEdgeSwipe(g.x0, g.dx, g.dy),
+      onPanResponderGrant: () => setSwiping(true),
+      // Çekiş başladıktan sonra ScrollView geri alamasın.
+      onPanResponderTerminationRequest: () => false,
       onPanResponderMove: (_, g) => x.setValue(Math.max(0, g.dx)),
       onPanResponderRelease: (_, g) => {
+        finish();
         if (g.dx > widthRef.current * 0.35 || g.vx > 0.5) popRef.current(g.vx);
         else animateTo(0);
       },
-      onPanResponderTerminate: () => animateTo(0),
+      onPanResponderTerminate: () => {
+        finish();
+        animateTo(0);
+      },
     }).panHandlers;
   }, []);
 
@@ -78,5 +90,5 @@ export function useStackTransition<T>() {
   const topStyle = { transform: [{ translateX: x }] };
   const scrimOpacity = x.interpolate({ inputRange: [0, width], outputRange: [0.12, 0], extrapolate: "clamp" });
 
-  return { item, push, pop: () => pop(), panHandlers, underStyle, topStyle, scrimOpacity };
+  return { item, push, pop: () => pop(), panHandlers, swiping, underStyle, topStyle, scrimOpacity };
 }

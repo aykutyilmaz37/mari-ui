@@ -202,7 +202,6 @@ interface ThumbProps {
   vertical: boolean;
   disabled: boolean;
   active: boolean;
-  bubble: boolean;
   m: NativeSliderSize;
   tint: string;
   theme: Theme;
@@ -210,12 +209,9 @@ interface ThumbProps {
   onStep: (direction: 1 | -1) => void;
 }
 
-/** Tek tutamaç: ekran okuyucuda `adjustable` (yukarı/aşağı kaydırma bir adım), üstünde değer baloncuğu. */
-function Thumb({ value, bounds, text, label, vertical, disabled, active, bubble, m, tint, theme, position, onStep }: ThumbProps) {
+/** Tek tutamaç: ekran okuyucuda `adjustable` (yukarı/aşağı kaydırma bir adım). */
+function Thumb({ value, bounds, text, label, vertical, disabled, active, m, tint, theme, position, onStep }: ThumbProps) {
   const [lo, hi] = bounds;
-  const bubbleBox: ViewStyle = vertical
-    ? { position: "absolute", left: m.thumb + 6, top: 0, height: m.thumb - 4, justifyContent: "center" }
-    : { position: "absolute", bottom: m.thumb + 4, left: -60, width: m.thumb + 116, alignItems: "center" };
   return (
     <View
       accessible
@@ -249,16 +245,29 @@ function Thumb({ value, bounds, text, label, vertical, disabled, active, bubble,
         },
         position,
       ]}
-    >
-      {bubble ? (
-        <View style={bubbleBox}>
-          <View style={{ backgroundColor: theme.color.neutral.solid, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 }}>
-            <Text numberOfLines={1} style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: 12, fontWeight: "500", color: theme.color.neutral.solidContrast, fontVariant: ["tabular-nums"] }}>
-              {text}
-            </Text>
-          </View>
-        </View>
-      ) : null}
+    />
+  );
+}
+
+const BUBBLE_SPAN = 160;
+
+/**
+ * Değer baloncuğu — tutamacın İÇİNDE değil, rayın üst katmanında kardeş öğe:
+ * yuvarlatılmış tutamacın içinde Android taşan çocuğu kırpabiliyordu
+ * (cihazda kesik görünüyordu). Geniş, sabit genişlikli bir kutuda ortalanır;
+ * metin tek satıra zorlanmaz (`numberOfLines` iOS'ta tabular rakamı dar
+ * ölçüp "…" ile kesebiliyor) — kutu geniş olduğu için zaten sarmaz.
+ */
+function Bubble({ visible, text, offset, vertical, cross, m, theme }: { visible: boolean; text: string; offset: number; vertical: boolean; cross: number; m: NativeSliderSize; theme: Theme }) {
+  if (!visible) return null;
+  const box: ViewStyle = vertical
+    ? { position: "absolute", left: (cross + m.thumb) / 2 + 8, top: offset, height: m.thumb, width: BUBBLE_SPAN, justifyContent: "center", alignItems: "flex-start" }
+    : { position: "absolute", left: offset + m.thumb / 2 - BUBBLE_SPAN / 2, width: BUBBLE_SPAN, bottom: cross - (cross - m.thumb) / 2 + 6, alignItems: "center" };
+  return (
+    <View pointerEvents="none" accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={box}>
+      <View style={{ backgroundColor: theme.color.neutral.solid, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, minWidth: 40, alignItems: "center" }}>
+        <Text style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: 13, lineHeight: 18, fontWeight: "600", color: theme.color.neutral.solidContrast, fontVariant: ["tabular-nums"] }}>{text}</Text>
+      </View>
     </View>
   );
 }
@@ -380,7 +389,6 @@ export function Slider({
                     vertical={vertical}
                     disabled={disabled}
                     active={active === i}
-                    bubble={tooltipVisible !== false && (tooltipAlwaysVisible || active === i)}
                     m={m}
                     tint={tint}
                     theme={theme}
@@ -390,6 +398,10 @@ export function Slider({
                 );
               })
             : null}
+          {/* Baloncuklar tutamaçlardan sonra → üstte çizilir. */}
+          {values.map((v, i) => (
+            <Bubble key={`b${i}`} visible={length > 0 && tooltipVisible !== false && (tooltipAlwaysVisible || active === i)} text={formatText(formatValue, v)} offset={offsetOf(v)} vertical={vertical} cross={cross} m={m} theme={theme} />
+          ))}
         </View>
       </View>
     );
