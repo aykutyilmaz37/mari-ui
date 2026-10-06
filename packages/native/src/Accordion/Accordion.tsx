@@ -69,6 +69,9 @@ function useExpand(open: boolean) {
   const reduce = useReduceMotion();
   const progress = useRef(new Animated.Value(open ? 1 : 0)).current;
   const [height, setHeight] = useState<number>();
+  // Kırpma yalnız hareket sırasında ve kapalıyken: tamamen açık gövde taşan
+  // öğeyi (Slider baloncuğu, menü) kesmesin (kullanıcı filtre örneğinde gördü).
+  const [clip, setClip] = useState(!open);
   const first = useRef(true);
   useEffect(() => {
     if (first.current) {
@@ -77,12 +80,14 @@ function useExpand(open: boolean) {
     }
     if (reduce) {
       progress.setValue(open ? 1 : 0);
+      setClip(!open);
       return;
     }
-    Animated.timing(progress, { toValue: open ? 1 : 0, duration: DURATION, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+    setClip(true);
+    Animated.timing(progress, { toValue: open ? 1 : 0, duration: DURATION, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start(({ finished }) => finished && open && setClip(false));
   }, [open, reduce, progress]);
   const boxHeight = progress.interpolate({ inputRange: [0, 1], outputRange: [0, height ?? 0] });
-  return { progress, boxHeight, onMeasure: (h: number) => setHeight((prev) => (prev === h ? prev : h)) };
+  return { progress, boxHeight, clip, onMeasure: (h: number) => setHeight((prev) => (prev === h ? prev : h)) };
 }
 
 /** İçerik ilk açılışta çizilir; `destroyOnHidden`da kapanış animasyonundan sonra kaldırılır. */
@@ -187,7 +192,7 @@ function PanelHeader({ item, open, onToggle, m, theme, iconPlacement, arrow, ske
 
 function Panel({ item, open, onToggle, variant, m, theme, iconPlacement, expandIcon, destroyOnHidden, skeleton, isLast }: PanelProps) {
   const c = theme.color.canvas;
-  const { progress, boxHeight, onMeasure } = useExpand(open);
+  const { progress, boxHeight, clip, onMeasure } = useExpand(open);
   const rendered = useRendered(open, Boolean(item.forceRender), destroyOnHidden);
   const { outer, body: bodyPad } = panelChrome(variant, isLast, theme, m);
   // Metin gövde Subheadline 15/20.
@@ -198,7 +203,7 @@ function Panel({ item, open, onToggle, variant, m, theme, iconPlacement, expandI
     <View style={outer}>
       <PanelHeader item={item} open={open} onToggle={onToggle} m={m} theme={theme} iconPlacement={iconPlacement} arrow={arrow} skeleton={skeleton} />
       {/* Kapalıyken ekran okuyucudan gizli. */}
-      <Animated.View style={{ height: boxHeight, overflow: "hidden" }} {...(open && !skeleton ? null : HIDDEN_A11Y)}>
+      <Animated.View style={{ height: boxHeight, overflow: clip ? "hidden" : "visible", zIndex: clip ? 0 : 1 }} {...(open && !skeleton ? null : HIDDEN_A11Y)}>
         {rendered ? (
           <View onLayout={(e) => onMeasure(e.nativeEvent.layout.height)} style={[bodyPad, { position: "absolute", top: 0, left: 0, right: 0 }]}>
             {skeleton ? <SkeletonBox style={{ borderRadius: 4 }}>{body}</SkeletonBox> : body}
