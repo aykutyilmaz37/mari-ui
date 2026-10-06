@@ -111,7 +111,8 @@ function VolumeRow() {
         <View style={{ flex: 1 }}>
           <Slider accessibilityLabel="Ses düzeyi" value={volume} onChange={(v) => setVolume(v as number)} formatValue={(v) => `%${v}`} />
         </View>
-        <Text muted style={{ width: 40, textAlign: "right", fontVariant: ["tabular-nums"] }}>{`%${volume}`}</Text>
+        {/* "%100" sığsın: 40pt yetmiyordu, son sıfır alt satıra iniyordu. */}
+        <Text muted style={{ width: 52, textAlign: "right", fontVariant: ["tabular-nums"] }}>{`%${volume}`}</Text>
       </View>
     </Card>
   );
