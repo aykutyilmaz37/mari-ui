@@ -48,21 +48,23 @@ export function storyDoc(description: string, code?: string) {
 
 /**
  * Web Storybook'un tema düğmesi (`globals.theme`) ya da native-studio'nun
- * anahtarları (`globals.theme`, `globals.fonts`) → ThemeProvider.
+ * anahtarları (`globals.theme`, `globals.fonts`) → ThemeProvider. `globals.radius`:
+ * studio çerçevesinin köşesi — zemin yuvarlanır, çerçeve kırpmaz (taşan
+ * baloncuk/menü kesilmesin).
  */
-export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string } }) {
+export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; radius?: number } }) {
   return (
     <ThemeProvider theme={context.globals?.theme === "dark" ? darkTheme : lightTheme} fonts={context.globals?.fonts === "brand" ? "brand" : "system"}>
-      <Canvas>
+      <Canvas radius={context.globals?.radius}>
         <Story />
       </Canvas>
     </ThemeProvider>
   );
 }
 
-function Canvas({ children }: { children: React.ReactNode }) {
+function Canvas({ children, radius }: { children: React.ReactNode; radius?: number }) {
   const theme = useTheme();
-  return <View style={{ padding: 16, gap: 12, backgroundColor: theme.color.canvas.surface, alignItems: "flex-start" }}>{children}</View>;
+  return <View style={{ padding: 16, gap: 12, backgroundColor: theme.color.canvas.surface, alignItems: "flex-start", borderRadius: radius }}>{children}</View>;
 }
 
 /** "İskelet" story'lerinin ortak açıklaması (web ile aynı sözleşme). */

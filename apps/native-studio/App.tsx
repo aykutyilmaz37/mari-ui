@@ -35,7 +35,8 @@ export default function App() {
   if (!fontsLoaded && !fontError) return null;
 
   const c = SHELL[theme];
-  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system" };
+  // radius: çerçeve kırpmaz (taşan baloncuk kesilmesin), zemin köşesi story tarafında yuvarlanır.
+  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system", radius: FRAME_RADIUS };
 
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: c.bg }]}>
@@ -115,6 +116,9 @@ function Toggle({ label, value, onChange, color }: { label: string; value: boole
 /** Story açıklamalarındaki `kod` işaretlerini düz metne çevirir. */
 const stripMarkdown = (text: string) => text.replace(/`/g, "").replace(/\*\*/g, "");
 
+/** Story çerçevesinin köşesi — çerçeve kırpmaz, story zemini aynı yarıçapla yuvarlanır. */
+const FRAME_RADIUS = 10;
+
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   toolbar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth },
@@ -128,7 +132,7 @@ const styles = StyleSheet.create({
   story: { gap: 6 },
   storyName: { fontSize: 15, fontWeight: "600" },
   description: { fontSize: 13, lineHeight: 18 },
-  frame: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 10, overflow: "hidden" },
+  frame: { borderWidth: StyleSheet.hairlineWidth, borderRadius: FRAME_RADIUS },
   row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth },
   rowTitle: { fontSize: 16, fontWeight: "500" },
   category: { gap: 8 },

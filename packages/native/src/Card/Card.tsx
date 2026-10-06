@@ -78,7 +78,8 @@ export const Card: ForwardRefExoticComponent<CardProps & RefAttributes<Component
     accessibilityElementsHidden: skeleton, "aria-hidden": skeleton,
     importantForAccessibility: skeleton ? "no-hide-descendants" as const : "auto" as const,
   };
-  const containerStyle = [styles.container, interactive && { minHeight: 44 }, disabled && { opacity: 0.5 }, style];
+  // Kırpma yalnız kapakta (köşeleri yuvarlansın); kapaksız kart taşan öğeyi (Slider baloncuğu) kesmesin.
+  const containerStyle = [styles.container, props.cover != null && { overflow: "hidden" as const }, interactive && { minHeight: 44 }, disabled && { opacity: 0.5 }, style];
   if (interactive && !skeleton) {
     return (
       <Pressable
