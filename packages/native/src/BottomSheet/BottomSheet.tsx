@@ -66,7 +66,13 @@ function useReduceMotion() {
  * (iOS sheet duraklarıyla aynı). Bedeli: native driver yok (yerleşim değişir).
  */
 function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onAfterClose?: () => void) {
-  const height = useRef(new Animated.Value(0)).current;
+  // HER AÇILIŞTA TAZE değer. Kapanınca Modal içeriği sökülür; RN Animated,
+  // değeri kullanan son görünüm sökülünce değeri grafikten çözer (`__detach`:
+  // dinleyiciler silinir, bağ kopar). Aynı değerle ikinci açılışta animasyon
+  // zamanlayıcısı çalışıyor ama hiçbir kare görünüme ulaşmıyordu → panel
+  // görünmez kalıyordu (iOS simülatöründe kayıtla ölçüldü; web'de görünmez).
+  const [height, setHeightValue] = useState(() => new Animated.Value(0));
+  const fresh = useRef(height);
   const current = useRef(0);
   const [mounted, setMounted] = useState(open);
   const reduce = useReduceMotion();
@@ -101,6 +107,10 @@ function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onA
   useEffect(() => {
     if (open) {
       wasOpen.current = true;
+      const next = new Animated.Value(0);
+      fresh.current = next;
+      current.current = 0;
+      setHeightValue(next);
       setMounted(true);
       return;
     }
@@ -110,13 +120,13 @@ function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onA
   }, [open]);
 
   // Duraklar belli olunca (açılış ya da içerik ölçüldü): başlangıç durağına büyü.
+  // Yalnız bu açılışın taze değeriyle (açılış çizimindeki eski değerle değil).
   const ready = snaps.length > 0;
   useEffect(() => {
-    if (!open || !ready) return;
-    height.setValue(0);
+    if (!open || !ready || height !== fresh.current) return;
     animateTo(snaps[Math.min(initialSnap, snaps.length - 1)] ?? 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, ready]);
+  }, [open, ready, height]);
 
   return { height, current, mounted, animateTo };
 }
@@ -134,13 +144,21 @@ function useContentHeight(hasFooter: boolean) {
   const [footer, setFooter] = useState<number>();
   const known = header !== undefined && content !== undefined && (!hasFooter || footer !== undefined);
   const footerHeight = hasFooter ? (footer ?? 0) : 0;
-  const total = known ? Math.ceil((header ?? 0) + (content ?? 0) + footerHeight) : undefined;
+  const total = known ? (header ?? 0) + (content ?? 0) + footerHeight : undefined;
   const reset = () => {
     setHeader(undefined);
     setContent(undefined);
     setFooter(undefined);
   };
-  return { total, setHeader, setContent, setFooter, reset };
+  // Tam sayıya yuvarla: cihaz 23,9999 / 24,0001 verip durağı 293 ↔ 294 oynatıyordu.
+  // Başlık/alt bölümün 0 ölçümü yok sayılır: kapanışın sonunda panel 0'a inince
+  // sıkışıyorlar; o 0 kalırsa sonraki açılış 24pt kısa hesaplanıyordu (simülatörde ölçüldü).
+  const settle = (set: (v: number) => void, ignoreZero: boolean) => (h: number) => {
+    const v = Math.round(h);
+    if (ignoreZero && v === 0) return;
+    set(v);
+  };
+  return { total, setHeader: settle(setHeader, true), setContent: settle(setContent, false), setFooter: settle(setFooter, true), reset };
 }
 
 /** Duraklar (pt): `snapPoints` ya da ölçülen içerik yüksekliği. */
