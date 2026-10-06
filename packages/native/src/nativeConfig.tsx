@@ -114,6 +114,32 @@ export interface NativeStepsSize {
   readonly descriptionLineHeight: number;
 }
 
+export interface NativeAccordionSize {
+  readonly paddingVertical: number;
+  readonly paddingHorizontal: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly iconSize: number;
+}
+
+export interface NativeTabsSize {
+  readonly height: number;
+  readonly fontSize: number;
+  readonly paddingHorizontal: number;
+  readonly iconSize: number;
+}
+
+export interface NativeSelectSize {
+  /** Paneldeki seçenek satırı. */
+  readonly optionMinHeight: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly descriptionFontSize: number;
+  readonly descriptionLineHeight: number;
+  /** Grup başlığı (büyük harf, soluk). */
+  readonly groupFontSize: number;
+}
+
 export interface NativeTagSize {
   readonly fontSize: number;
   readonly lineHeight: number;
@@ -139,6 +165,9 @@ export interface NativeConfig {
   readonly slider: Readonly<Record<Size, NativeSliderSize>>;
   readonly statistic: Readonly<Record<Size, NativeStatisticSize>>;
   readonly steps: Readonly<Record<"sm" | "md", NativeStepsSize>>;
+  readonly accordion: Readonly<Record<Size, NativeAccordionSize>>;
+  readonly tabs: Readonly<Record<Size, NativeTabsSize>>;
+  readonly select: NativeSelectSize;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -218,6 +247,20 @@ export const defaultNativeConfig: NativeConfig = {
     sm: { indicator: 24, iconSize: 12, numberFontSize: 12, titleFontSize: 15, titleLineHeight: 20, descriptionFontSize: 13, descriptionLineHeight: 18 },
     md: { indicator: 32, iconSize: 16, numberFontSize: 14, titleFontSize: 17, titleLineHeight: 22, descriptionFontSize: 15, descriptionLineHeight: 20 },
   },
+  // Accordion: başlık satırı her boyutta en az 44pt; md = iOS liste satırı (Body 17/22).
+  accordion: {
+    sm: { paddingVertical: 10, paddingHorizontal: 12, fontSize: 15, lineHeight: 20, iconSize: 16 },
+    md: { paddingVertical: 12, paddingHorizontal: 16, fontSize: 17, lineHeight: 22, iconSize: 18 },
+    lg: { paddingVertical: 16, paddingHorizontal: 20, fontSize: 17, lineHeight: 22, iconSize: 20 },
+  },
+  // Tabs: sekme yüksekliği md 44 (dokunma hedefi); pills iç yüzeyi Segmented gibi.
+  tabs: {
+    sm: { height: 36, fontSize: 14, paddingHorizontal: 12, iconSize: 14 },
+    md: { height: 44, fontSize: 15, paddingHorizontal: 16, iconSize: 16 },
+    lg: { height: 48, fontSize: 17, paddingHorizontal: 20, iconSize: 18 },
+  },
+  // Select: alan Input ölçeğini (`sizes`) kullanır; panel satırı iOS liste satırı.
+  select: { optionMinHeight: 48, fontSize: 17, lineHeight: 22, descriptionFontSize: 15, descriptionLineHeight: 20, groupFontSize: 13 },
 };
 
 export interface NativeConfigOverrides {
@@ -235,6 +278,9 @@ export interface NativeConfigOverrides {
   slider?: Partial<Record<Size, Partial<NativeSliderSize>>>;
   statistic?: Partial<Record<Size, Partial<NativeStatisticSize>>>;
   steps?: Partial<Record<"sm" | "md", Partial<NativeStepsSize>>>;
+  accordion?: Partial<Record<Size, Partial<NativeAccordionSize>>>;
+  tabs?: Partial<Record<Size, Partial<NativeTabsSize>>>;
+  select?: Partial<NativeSelectSize>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -259,6 +305,9 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     slider: mergeScale(base.slider, overrides.slider),
     statistic: mergeScale(base.statistic, overrides.statistic),
     steps: mergeScale(base.steps, overrides.steps),
+    accordion: mergeScale(base.accordion, overrides.accordion),
+    tabs: mergeScale(base.tabs, overrides.tabs),
+    select: { ...base.select, ...overrides.select },
   };
 }
 

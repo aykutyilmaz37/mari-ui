@@ -126,6 +126,22 @@ export function SparklesIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
+export function ChevronDownIcon({ size = 16, color = "currentColor" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="m6 9 6 6 6-6" {...stroke(color)} />
+    </Svg>
+  );
+}
+
+export function ChevronRightIcon({ size = 16, color = "currentColor" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="m9 18 6-6-6-6" {...stroke(color)} />
+    </Svg>
+  );
+}
+
 export function TrendingUpIcon({ size = 16, color = "currentColor" }: IconProps) {
   const s = stroke(color);
   return (

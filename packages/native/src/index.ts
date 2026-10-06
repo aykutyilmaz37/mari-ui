@@ -89,8 +89,17 @@ export type { StatisticProps, StatisticTrend, StatisticSize, CountdownProps, Clo
 export { Steps, StepsContent } from "./Steps";
 export type { StepsProps, StepItem, StepData, StepStatus, StepsVariant, StepsSize, StepsLabelPlacement, StepsContentProps } from "./Steps";
 
+export { Accordion } from "./Accordion";
+export type { AccordionProps, AccordionItem, AccordionVariant } from "./Accordion";
+
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsTriggerState, TabsContentProps, TabsVariant, TabsOrientation } from "./Tabs";
+
+export { Select } from "./Select";
+export type { SelectProps, SelectSingleProps, SelectMultipleProps, SelectOption, SelectOptionGroup, SelectValue } from "./Select";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";
