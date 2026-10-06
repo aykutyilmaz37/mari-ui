@@ -5,7 +5,7 @@ import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
 import { useStyles } from "../styles/useStyles";
-import { BottomSheet } from "../BottomSheet";
+import { BottomSheet, type SnapPoint } from "../BottomSheet";
 import { Button } from "../Button";
 import { SearchInput } from "../Input";
 import type { InputShape, InputVariant } from "../Input/types";
@@ -119,6 +119,9 @@ function OptionRow({ option, selected, multiple, onPress, render }: OptionRowPro
     </Pressable>
   );
 }
+
+/** Arama varken sabit durak (süzerken panel zıplamasın); sabit dizi — her çizimde yeni dizi sürüklemeyi bozuyordu. */
+const SEARCH_SNAPS: SnapPoint[] = ["85%"];
 
 const labelOf = (o: SelectOption) => plain(o.label) ?? o.searchText ?? String(o.value);
 const notNull = (v: SelectValue | null | undefined): v is SelectValue => v != null;
@@ -279,7 +282,7 @@ export function Select(props: SelectProps) {
         onClose={() => setOpen(false)}
         title={sheetTitle}
         // Arama varken süzme yüksekliği oynatmasın: sabit uzun durak.
-        snapPoints={showSearch ? ["85%"] : undefined}
+        snapPoints={showSearch ? SEARCH_SNAPS : undefined}
         footer={multiple ? <Button block onPress={() => setOpen(false)}>{values.length ? `Tamam (${values.length})` : "Tamam"}</Button> : undefined}
       >
         {showSearch ? (

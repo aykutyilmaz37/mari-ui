@@ -57,9 +57,13 @@ const DURATION = 200;
 const HIDDEN_A11Y = { accessibilityElementsHidden: true, "aria-hidden": true, importantForAccessibility: "no-hide-descendants" as const };
 
 /**
- * Açılma: dış kutunun yüksekliği 0 → içeriğin doğal yüksekliği. İç kutu
- * yüksekliği sınırlanmadığı için `onLayout` doğal yüksekliği verir. Ölçülene
- * kadar açık bölüm `auto` (ilk çizimde boş görünmesin). Ok aynı değerle döner.
+ * Açılma: dış kutunun yüksekliği 0 → içeriğin doğal yüksekliği. İçerik dış
+ * kutunun içinde MUTLAK konumlu (top/left/right 0) çizilir ve ölçülür: böylece
+ * doğal yüksekliği dış kutunun canlandırılan yüksekliğinden bağımsızdır.
+ * Eskiden içerik akışta (relative) ölçülüyordu — web'de doğruydu ama cihazda
+ * Yoga sınırlı kutudaki çocuğu sıkıştırıp ölçümü bozuyor, içerik BOŞ
+ * görünüyordu (kullanıcı Expo'da gördü). Ölçülene kadar kutu 0 (tek kare).
+ * Ok aynı değerle döner.
  */
 function useExpand(open: boolean) {
   const reduce = useReduceMotion();
@@ -77,8 +81,7 @@ function useExpand(open: boolean) {
     }
     Animated.timing(progress, { toValue: open ? 1 : 0, duration: DURATION, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
   }, [open, reduce, progress]);
-  let boxHeight: Animated.AnimatedInterpolation<number> | number | undefined = progress.interpolate({ inputRange: [0, 1], outputRange: [0, height ?? 0] });
-  if (height === undefined) boxHeight = open ? undefined : 0;
+  const boxHeight = progress.interpolate({ inputRange: [0, 1], outputRange: [0, height ?? 0] });
   return { progress, boxHeight, onMeasure: (h: number) => setHeight((prev) => (prev === h ? prev : h)) };
 }
 
@@ -197,7 +200,7 @@ function Panel({ item, open, onToggle, variant, m, theme, iconPlacement, expandI
       {/* Kapalıyken ekran okuyucudan gizli. */}
       <Animated.View style={{ height: boxHeight, overflow: "hidden" }} {...(open && !skeleton ? null : HIDDEN_A11Y)}>
         {rendered ? (
-          <View onLayout={(e) => onMeasure(e.nativeEvent.layout.height)} style={bodyPad}>
+          <View onLayout={(e) => onMeasure(e.nativeEvent.layout.height)} style={[bodyPad, { position: "absolute", top: 0, left: 0, right: 0 }]}>
             {skeleton ? <SkeletonBox style={{ borderRadius: 4 }}>{body}</SkeletonBox> : body}
           </View>
         ) : null}
