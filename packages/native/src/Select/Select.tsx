@@ -70,6 +70,9 @@ export interface SelectMultipleProps extends SelectBaseProps {
 
 export type SelectProps = SelectSingleProps | SelectMultipleProps;
 
+/** Basılı zemin metnin etrafında pay bıraksın; eksi kenar boşluğu metni panel kenarıyla hizalı tutar. */
+const ROW_INSET = 12;
+
 const plain = (node: React.ReactNode) => (typeof node === "string" || typeof node === "number" ? String(node) : undefined);
 
 interface OptionRowProps {
@@ -113,7 +116,7 @@ function OptionRow({ option, selected, multiple, onPress, render }: OptionRowPro
       aria-disabled={option.disabled || undefined}
       disabled={option.disabled}
       onPress={onPress}
-      style={({ pressed }) => ({ minHeight: s.optionMinHeight, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 8, borderRadius: 8, opacity: option.disabled ? 0.5 : 1, backgroundColor: pressed ? c.surfaceAlt : "transparent" })}
+      style={({ pressed }) => ({ minHeight: s.optionMinHeight, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 8, paddingHorizontal: ROW_INSET, marginHorizontal: -ROW_INSET, borderRadius: 10, opacity: option.disabled ? 0.5 : 1, backgroundColor: pressed ? c.surfaceAlt : "transparent" })}
     >
       {render ? render(option, { selected, active: false }) : <OptionContent option={option} selected={selected} />}
     </Pressable>
