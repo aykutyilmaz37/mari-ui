@@ -90,21 +90,61 @@ export default function App() {
                   story'deki Modal/BottomSheet de bu ScrollView'un çocuğu sayılır. Varsayılan
                   ("never") klavye açıkken her dokunuşu yakalayıp klavyeyi kapatıyordu; Select
                   aramasında sonuca dokunmak seçmiyordu (simülatörde kayıtla bulundu). */}
-              <ScrollView scrollEnabled={!stack.swiping} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-                <Text style={[styles.title, { color: c.text }]}>{selected.title}</Text>
-                {selected.stories.map(({ id, name, description, story }) => (
-                  <View key={id} style={styles.story}>
-                    <Text style={[styles.storyName, { color: c.text }]}>{name}</Text>
-                    {description ? <Text style={[styles.description, { color: c.muted }]}>{stripMarkdown(description)}</Text> : null}
-                    <View style={[styles.frame, { borderColor: c.border }]}>{renderStory(selected, story, globals)}</View>
-                  </View>
-                ))}
-              </ScrollView>
+              {selected.meta.parameters?.studio?.layout === "screen" ? (
+                <ScreenStories key={selected.title} entry={selected} globals={globals} colors={c} />
+              ) : (
+                <ScrollView scrollEnabled={!stack.swiping} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+                  <Text style={[styles.title, { color: c.text }]}>{selected.title}</Text>
+                  {selected.stories.map(({ id, name, description, story }) => (
+                    <View key={id} style={styles.story}>
+                      <Text style={[styles.storyName, { color: c.text }]}>{name}</Text>
+                      {description ? <Text style={[styles.description, { color: c.muted }]}>{stripMarkdown(description)}</Text> : null}
+                      <View style={[styles.frame, { borderColor: c.border }]}>{renderStory(selected, story, globals)}</View>
+                    </View>
+                  ))}
+                </ScrollView>
+              )}
             </Animated.View>
           </>
         ) : null}
       </View>
     </SafeAreaView>
+  );
+}
+
+/**
+ * Kendi içinde kayan component'ler (ImageGallery, List): sayfa ScrollView'u
+ * yok — üstte yatay story seçici, altta seçili story ekranın kalanında.
+ */
+function ScreenStories({ entry, globals, colors: c }: { entry: StoryEntry; globals: StoryContext["globals"]; colors: (typeof SHELL)["light"] }) {
+  const [index, setIndex] = useState(0);
+  const current = entry.stories[index] ?? entry.stories[0];
+  if (!current) return null;
+  return (
+    <View style={styles.screenStories}>
+      <Text style={[styles.title, { color: c.text }]}>{entry.title}</Text>
+      {/* Yatay: sayfa yönüyle çakışmaz. */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={styles.chips}>
+        {entry.stories.map(({ id, name }, i) => {
+          const active = i === index;
+          return (
+            <Pressable
+              key={id}
+              onPress={() => setIndex(i)}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
+              style={[styles.chip, { borderColor: active ? c.accent : c.border, backgroundColor: active ? c.card : "transparent" }]}
+            >
+              <Text style={{ color: active ? c.accent : c.muted, fontSize: 13, fontWeight: active ? "600" : "400" }}>{name}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+      {current.description ? <Text style={[styles.description, { color: c.muted }]}>{stripMarkdown(current.description)}</Text> : null}
+      <View key={current.id} style={[styles.frame, styles.screenFrame, { borderColor: c.border }]}>
+        {renderStory(entry, current.story, globals)}
+      </View>
+    </View>
   );
 }
 
@@ -137,6 +177,10 @@ const styles = StyleSheet.create({
   storyName: { fontSize: 15, fontWeight: "600" },
   description: { fontSize: 13, lineHeight: 18 },
   frame: { borderWidth: StyleSheet.hairlineWidth, borderRadius: FRAME_RADIUS },
+  screenStories: { flex: 1, padding: 16, gap: 10 },
+  screenFrame: { flex: 1, overflow: "hidden" },
+  chips: { gap: 8 },
+  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, borderWidth: StyleSheet.hairlineWidth },
   row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth },
   rowTitle: { fontSize: 16, fontWeight: "500" },
   category: { gap: 8 },

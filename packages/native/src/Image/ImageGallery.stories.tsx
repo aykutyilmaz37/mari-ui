@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Share2, Trash2 } from "lucide-react-native";
 import { ImageGallery, type ImageGalleryItem } from "./ImageGallery";
@@ -28,7 +28,8 @@ const meta: Meta<typeof ImageGallery> = {
   tags: ["autodocs"],
   // İlk dekoratör en içte: story tam genişlik, tema onun dışında.
   decorators: [withStretch, withNativeTheme],
-  parameters: { docs: { description: { component: componentDoc({
+  // native-studio: kendi içinde kayan galeri sayfa ScrollView'una konmasın (RN iç içe sanal liste uyarısı).
+  parameters: { studio: { layout: "screen" }, docs: { description: { component: componentDoc({
     summary: "Fotoğraf/video galerisi (yapı iPhone Fotoğraflar): kare küçük resimler kıl payı aralıkla, tarihe göre bölümler ve Yıllar / Aylar / Günler / Tümü görünümleri (üst görünümde başlığa dokununca bir alta inilir), sütun sayısı, seçim modu, tam ekran görüntüleyici. Binlerce öğede akıcı: satırlar sanal, `infinite` ile sonraki sayfalar istenir.",
     whenToUse: ["Kullanıcının kendi fotoğrafları/videoları, ilan ya da ürün albümü.", "Tarihe göre gezilen büyük medya koleksiyonu."],
     whenNotToUse: ["Birkaç görsel — `Image` ya da Carousel.", "Metin ağırlıklı kartlar — List."],
@@ -44,10 +45,14 @@ const meta: Meta<typeof ImageGallery> = {
 export default meta;
 type Story = StoryObj<typeof ImageGallery>;
 
-/** Galeri kendi içinde kayar: story'lerde sabit yükseklikte kutu (uygulamada ekranın kendisi). */
+/**
+ * Galeri kendi içinde kayar: story'lerde sabit yükseklikte kutu (uygulamada
+ * ekranın kendisi). Telefonda studio başlığı + story seçiciyle ekrana sığsın.
+ */
 function Frame({ height = 560, children }: { height?: number; children: React.ReactNode }) {
   const theme = useTheme();
-  return <View style={{ height, borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 12, overflow: "hidden", padding: 4 }}>{children}</View>;
+  const window = useWindowDimensions();
+  return <View style={{ height: Math.min(height, Math.max(320, window.height - 300)), borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 12, overflow: "hidden", padding: 4 }}>{children}</View>;
 }
 
 function Note({ children }: { children: React.ReactNode }) {
