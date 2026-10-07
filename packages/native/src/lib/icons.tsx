@@ -150,6 +150,29 @@ export function ChevronLeftIcon({ size = 16, color = "currentColor" }: IconProps
   );
 }
 
+export function ZoomInIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx={11} cy={11} r={8} {...s} />
+      <Line x1={21} x2={16.65} y1={21} y2={16.65} {...s} />
+      <Line x1={11} x2={11} y1={8} y2={14} {...s} />
+      <Line x1={8} x2={14} y1={11} y2={11} {...s} />
+    </Svg>
+  );
+}
+
+export function ZoomOutIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx={11} cy={11} r={8} {...s} />
+      <Line x1={21} x2={16.65} y1={21} y2={16.65} {...s} />
+      <Line x1={8} x2={14} y1={11} y2={11} {...s} />
+    </Svg>
+  );
+}
+
 export function ImageOffIcon({ size = 16, color = "currentColor" }: IconProps) {
   const s = stroke(color);
   return (

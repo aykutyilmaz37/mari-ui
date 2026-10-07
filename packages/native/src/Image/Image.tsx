@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Image as RNImage, PixelRatio, Pressable, Text, View, type ImageSourcePropType } from "react-native";
+import { Animated, Easing, Image as RNImage, PixelRatio, Platform, Pressable, Text, View, type ImageSourcePropType } from "react-native";
 import { ImageOffIcon } from "../lib/icons";
 import { SkeletonBox, useReduceMotion } from "../lib/Skeleton";
 import { useControllable } from "../lib/useControllable";
@@ -8,7 +8,7 @@ import { toPx } from "../theme/toPx";
 import { useTheme } from "../theme/useTheme";
 import { ImageViewer } from "./ImageViewer";
 import type { ImagePreviewConfig, ImageProps, ImageSource, ImageStaticSource } from "./types";
-import { getBoxStyle, normalizeSource, resizeModeFor, resolveBlurSource, resolveUri } from "./utils";
+import { getBoxStyle, imageButtonRole, normalizeSource, resizeModeFor, resolveBlurSource, resolveUri } from "./utils";
 
 type Status = "loading" | "loaded" | "error";
 type Natural = { width: number; height: number };
@@ -226,7 +226,7 @@ function PreviewFrame({
         onLayout={onLayout}
         onPress={() => setOpen(true)}
         disabled={disabled}
-        accessibilityRole="imagebutton"
+        accessibilityRole={imageButtonRole(Platform.OS)}
         accessibilityLabel={alt || "Görsel"}
         accessibilityHint="Tam ekranda açar"
         accessibilityState={{ disabled }}

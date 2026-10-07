@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getBoxStyle, normalizeSource, parseRatio, pickWidth, resizeModeFor, resolveBlurSource, resolveUri } from "../Image/utils";
+import { getBoxStyle, imageButtonRole, normalizeSource, parseRatio, pickWidth, resizeModeFor, resolveBlurSource, resolveUri } from "../Image/utils";
 
 const loader = ({ src, width }: { src: string; width: number }) => `${src}?w=${width}`;
 
@@ -57,5 +57,12 @@ describe("Image utils", () => {
     expect(resizeModeFor("scale-down", { width: 50, height: 50 }, { width: 100, height: 100 })).toBe("center");
     expect(resizeModeFor("scale-down", { width: 500, height: 50 }, { width: 100, height: 100 })).toBe("contain");
     expect(resizeModeFor("cover")).toBe("cover");
+  });
+});
+
+describe("imageButtonRole", () => {
+  it("web'de button, cihazda imagebutton", () => {
+    expect(imageButtonRole("web")).toBe("button");
+    expect(imageButtonRole("ios")).toBe("imagebutton");
   });
 });

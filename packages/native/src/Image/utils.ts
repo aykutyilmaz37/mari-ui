@@ -140,3 +140,11 @@ export function resizeModeFor(fit: ImageFit, natural?: { width: number; height: 
       return "cover";
   }
 }
+
+/**
+ * Dokunulabilir görsel rolü: iOS/Android'de `imagebutton` (görsel + düğme);
+ * react-native-web bu rolü karşılıksız bırakıyor (rol hiç yazılmıyor) → web'de `button`.
+ */
+export function imageButtonRole(os: string): "imagebutton" | "button" {
+  return os === "web" ? "button" : "imagebutton";
+}
