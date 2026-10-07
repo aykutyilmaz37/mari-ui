@@ -22,7 +22,9 @@ function keyboardFor(type: InputType, masked: boolean): Partial<TextInputProps> 
     case "url":
       return { keyboardType: "url", autoCapitalize: "none", autoCorrect: false };
     case "search":
-      return { returnKeyType: "search" };
+      // Süzme/arama: iOS otomatik düzeltmesi klavye kapanırken "mugla"yı "Mughal" yapıyor,
+      // liste boşalıp dokunulan sonuç kayboluyordu (simülatörde görüldü).
+      return { returnKeyType: "search", autoCorrect: false, autoCapitalize: "none", spellCheck: false };
     case "password":
       return { autoCapitalize: "none", autoCorrect: false, textContentType: "password" };
     default:

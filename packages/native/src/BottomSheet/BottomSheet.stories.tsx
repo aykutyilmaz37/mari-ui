@@ -20,7 +20,7 @@ const meta: Meta<typeof BottomSheet> = {
     summary: "Alttan açılan panel: sürüklenir, durak noktalarında (yarım/tam) durur, aşağı çekince kapanır.",
     whenToUse: ["Filtre, sıralama, seçenek listesi.", "Bağlamı bozmadan ikincil içerik (yorumlar, ayrıntı).", "Eylem listesi — `ActionSheet`."],
     whenNotToUse: ["Kısa onay — `Dialog`.", "Odaklı form ya da uzun okuma (tablet/geniş ekran) — `Modal`."],
-    vsWeb: "Web'de `Drawer` (`placement=\"bottom\"`) karşılığı; native'de ek paket olmadan (Animated + PanResponder) sürükleme ve durak noktaları. Sürükleme tutamaç ve başlıktan (içerikteki kaydırma bozulmaz). Tutamaca dokunmak sonraki durağa geçer. Kapatma: aşağı çekme, karartma, Android geri tuşu, VoiceOver \"geri\" hareketi. Klavye açılınca panel yukarı kayar. Alt güvenli alan payı `bottomInset` (varsayılan iOS 28 / Android 16).",
+    vsWeb: "Web'de `Drawer` (`placement=\"bottom\"`) karşılığı; native'de ek paket olmadan (Animated + PanResponder) sürükleme ve durak noktaları. Sürükleme tutamaç ve başlıktan (içerikteki kaydırma bozulmaz). Tutamaca dokunmak sonraki durağa geçer. Kapatma: aşağı çekme, karartma, Android geri tuşu, VoiceOver \"geri\" hareketi. Klavye açılınca panel yukarı kayar. Alt güvenli alan payı `bottomInset` (varsayılan iOS 28 / Android 16). **Klavye + ScrollView:** RN dokunuşu React ağacına göre dağıtır; panel Modal'da açılsa da onu açan ekranın ScrollView'unun çocuğu sayılır. O ScrollView'a `keyboardShouldPersistTaps=\"handled\"` verin — vermezseniz klavye açıkken paneldeki ilk dokunuş yalnız klavyeyi kapatır (ör. Select aramasında sonuç seçilmez).",
   }) } } },
   argTypes: {
     title: { control: "text" },

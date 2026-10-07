@@ -86,7 +86,11 @@ export default function App() {
             <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#000", opacity: stack.scrimOpacity }]} />
             <Animated.View {...stack.panHandlers} style={[StyleSheet.absoluteFill, styles.top, { backgroundColor: c.bg }, stack.topStyle]}>
               {/* Kenardan geri çekerken dikey kaydırma kilitli (yerel kaydırma JS responder'ı dinlemez). */}
-              <ScrollView scrollEnabled={!stack.swiping} contentContainerStyle={styles.content}>
+              {/* keyboardShouldPersistTaps="handled": RN dokunuşu React ağacına göre dağıtır —
+                  story'deki Modal/BottomSheet de bu ScrollView'un çocuğu sayılır. Varsayılan
+                  ("never") klavye açıkken her dokunuşu yakalayıp klavyeyi kapatıyordu; Select
+                  aramasında sonuca dokunmak seçmiyordu (simülatörde kayıtla bulundu). */}
+              <ScrollView scrollEnabled={!stack.swiping} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
                 <Text style={[styles.title, { color: c.text }]}>{selected.title}</Text>
                 {selected.stories.map(({ id, name, description, story }) => (
                   <View key={id} style={styles.story}>

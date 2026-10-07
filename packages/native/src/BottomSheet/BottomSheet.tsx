@@ -276,11 +276,12 @@ function SheetHeader({ title, skeleton, multiSnap, onHandlePress }: { title: Rea
 /**
  * İçerik görünen alanda kayar. Panelin yüksekliği belliyken (ölçüldükten
  * sonra) `flex: 1`; ilk ölçümde içerik kadar (`flexShrink`, esneme değil —
- * Card dersi). İskelette görünmez yer tutar.
+ * Card dersi). İskelette görünmez yer tutar. Klavye listeyi kaydırmaya
+ * başlayınca kapanır (iOS arama listeleri gibi).
  */
 function SheetBody({ children, sized, skeleton, bottom, style, onContentHeight }: { children: React.ReactNode; sized: boolean; skeleton: boolean; bottom: number; style?: StyleProp<ViewStyle>; onContentHeight: (h: number) => void }) {
   return (
-    <ScrollView style={sized ? { flex: 1 } : { flexShrink: 1 }} contentContainerStyle={[{ paddingHorizontal: 20, paddingBottom: bottom }, style]} onContentSizeChange={(_, h) => onContentHeight(h)} keyboardShouldPersistTaps="handled">
+    <ScrollView style={sized ? { flex: 1 } : { flexShrink: 1 }} contentContainerStyle={[{ paddingHorizontal: 20, paddingBottom: bottom }, style]} onContentSizeChange={(_, h) => onContentHeight(h)} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <View aria-hidden={skeleton} accessibilityElementsHidden={skeleton} style={{ opacity: skeleton ? 0 : 1 }}>{children}</View>
       {skeleton ? <SkeletonBox style={{ position: "absolute", top: 0, left: 20, right: 20, bottom, borderRadius: 8 }} /> : null}
     </ScrollView>
