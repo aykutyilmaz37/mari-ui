@@ -98,6 +98,9 @@ export type { TabsProps, TabsListProps, TabsTriggerProps, TabsTriggerState, Tabs
 export { Select } from "./Select";
 export type { SelectProps, SelectSingleProps, SelectMultipleProps, SelectOption, SelectOptionGroup, SelectValue } from "./Select";
 
+export { Image, ImageViewer } from "./Image";
+export type { ImageProps, ImageSource, ImageStaticSource, ImageLoader, ImageLoaderParams, ImageFit, ImagePreviewConfig, ImageLoadInfo, ImageViewerProps, ImageViewerItem } from "./Image";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize } from "./nativeConfig";
 
