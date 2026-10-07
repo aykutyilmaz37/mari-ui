@@ -257,7 +257,7 @@ export function ImageGallery(props: ImageGalleryProps) {
 
   const viewerItems = useMemo(() => flat.map(toViewerItem), [flat]);
 
-  if (skeleton) return <GallerySkeleton toolbar={toolbar} twoRows={hasDates && views.length > 1} columns={columnsSetting} view={view} gap={gap} style={style} />;
+  if (skeleton) return <GallerySkeleton toolbar={toolbar} views={hasDates ? views : []} columns={columnsSetting} view={view} gap={gap} style={style} />;
 
   const tile: TileShared = {
     loader,
@@ -584,7 +584,7 @@ function InfiniteFooter({ options, onLoadMore }: { options: InfiniteScrollOption
 }
 
 /** Yüklü hâliyle aynı ölçü: aynı araç çubuğu yüksekliği, aynı sütun hesabı, aynı başlık yüksekliği. */
-function GallerySkeleton({ toolbar, twoRows, columns, view, gap, style }: { toolbar: boolean; twoRows: boolean; columns: number | "auto"; view: GalleryView; gap: number; style?: StyleProp<ViewStyle> }) {
+function GallerySkeleton({ toolbar, views, columns, view, gap, style }: { toolbar: boolean; views: GalleryView[]; columns: number | "auto"; view: GalleryView; gap: number; style?: StyleProp<ViewStyle> }) {
   const theme = useTheme();
   const [width, setWidth] = useGridWidth();
   const cols = columns === "auto" ? autoColumns(width, view, gap) : clampColumns(columns);
@@ -600,9 +600,9 @@ function GallerySkeleton({ toolbar, twoRows, columns, view, gap, style }: { tool
             </View>
             <SkeletonBox style={{ height: 32, width: 72, borderRadius: toPx(theme.radius.md) }} />
           </View>
-          {twoRows ? (
+          {views.length > 1 ? (
             <View style={ROW2}>
-              <Segmented block skeleton size="md" options={["", ""]} style={{ flex: 1 }} />
+              <Segmented block skeleton size="md" options={views.map((v) => ({ value: v, label: VIEW_LABEL[v] }))} style={{ flex: 1 }} />
             </View>
           ) : null}
         </View>
