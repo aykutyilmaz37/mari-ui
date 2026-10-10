@@ -14,8 +14,6 @@ const meta: Meta<typeof AppBar> = {
   tags: ["autodocs"],
   decorators: [withStretch, withNativeTheme],
   parameters: {
-    // native-studio: ekran örnekleri kendi içinde kayıyor — sayfa ScrollView'una konmasın.
-    studio: { layout: "screen" },
     docs: { description: { component: componentDoc({
       summary: "Ekranın üst çubuğu: geri düğmesi ya da `leading`, başlık (+ alt başlık), sağda `AppBarAction`'lar. `size=\"large\"` büyük başlıkla açılır, `useAppBarScroll` ile kaydırınca küçük başlığa daralır.",
       whenToUse: ["Her ekranın başlığı ve ekran düzeyi eylemleri (paylaş, ara, daha fazla).", "Liste / ana sekme ekranlarında büyük başlık (`large`)."],
