@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { AccessibilityInfo, Animated, Easing, KeyboardAvoidingView, Modal as RNModal, PanResponder, Platform, Pressable, ScrollView, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from "react-native";
+import { AccessibilityInfo, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal as RNModal, PanResponder, Platform, Pressable, ScrollView, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from "react-native";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
@@ -66,7 +66,13 @@ function useReduceMotion() {
  * (iOS sheet duraklarıyla aynı). Bedeli: native driver yok (yerleşim değişir).
  */
 function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onAfterClose?: () => void) {
-  const height = useRef(new Animated.Value(0)).current;
+  // HER AÇILIŞTA TAZE değer. Kapanınca Modal içeriği sökülür; RN Animated,
+  // değeri kullanan son görünüm sökülünce değeri grafikten çözer (`__detach`:
+  // dinleyiciler silinir, bağ kopar). Aynı değerle ikinci açılışta animasyon
+  // zamanlayıcısı çalışıyor ama hiçbir kare görünüme ulaşmıyordu → panel
+  // görünmez kalıyordu (iOS simülatöründe kayıtla ölçüldü; web'de görünmez).
+  const [height, setHeightValue] = useState(() => new Animated.Value(0));
+  const fresh = useRef(height);
   const current = useRef(0);
   const [mounted, setMounted] = useState(open);
   const reduce = useReduceMotion();
@@ -101,6 +107,10 @@ function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onA
   useEffect(() => {
     if (open) {
       wasOpen.current = true;
+      const next = new Animated.Value(0);
+      fresh.current = next;
+      current.current = 0;
+      setHeightValue(next);
       setMounted(true);
       return;
     }
@@ -110,13 +120,13 @@ function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onA
   }, [open]);
 
   // Duraklar belli olunca (açılış ya da içerik ölçüldü): başlangıç durağına büyü.
+  // Yalnız bu açılışın taze değeriyle (açılış çizimindeki eski değerle değil).
   const ready = snaps.length > 0;
   useEffect(() => {
-    if (!open || !ready) return;
-    height.setValue(0);
+    if (!open || !ready || height !== fresh.current) return;
     animateTo(snaps[Math.min(initialSnap, snaps.length - 1)] ?? 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, ready]);
+  }, [open, ready, height]);
 
   return { height, current, mounted, animateTo };
 }
@@ -134,13 +144,21 @@ function useContentHeight(hasFooter: boolean) {
   const [footer, setFooter] = useState<number>();
   const known = header !== undefined && content !== undefined && (!hasFooter || footer !== undefined);
   const footerHeight = hasFooter ? (footer ?? 0) : 0;
-  const total = known ? Math.ceil((header ?? 0) + (content ?? 0) + footerHeight) : undefined;
+  const total = known ? (header ?? 0) + (content ?? 0) + footerHeight : undefined;
   const reset = () => {
     setHeader(undefined);
     setContent(undefined);
     setFooter(undefined);
   };
-  return { total, setHeader, setContent, setFooter, reset };
+  // Tam sayıya yuvarla: cihaz 23,9999 / 24,0001 verip durağı 293 ↔ 294 oynatıyordu.
+  // Başlık/alt bölümün 0 ölçümü yok sayılır: kapanışın sonunda panel 0'a inince
+  // sıkışıyorlar; o 0 kalırsa sonraki açılış 24pt kısa hesaplanıyordu (simülatörde ölçüldü).
+  const settle = (set: (v: number) => void, ignoreZero: boolean) => (h: number) => {
+    const v = Math.round(h);
+    if (ignoreZero && v === 0) return;
+    set(v);
+  };
+  return { total, setHeader: settle(setHeader, true), setContent: settle(setContent, false), setFooter: settle(setFooter, true), reset };
 }
 
 /** Duraklar (pt): `snapPoints` ya da ölçülen içerik yüksekliği. */
@@ -169,29 +187,68 @@ function useSnapControl(motion: Motion, snaps: number[], onClose: () => void, on
   return { settle, nextSnap, scrimOpacity };
 }
 
-/** Tutamaç + başlıktan sürükleme; bırakınca durağa oturur ya da kapanır. */
+/**
+ * Tutamaç + başlıktan sürükleme; bırakınca durağa oturur ya da kapanır.
+ *
+ * Responder BİR KEZ yaratılır, güncel durakları ref'ten okur: eskiden
+ * `[snaps]`e bağlıydı — çağıran her çizimde yeni `snapPoints` dizisi verince
+ * (Select) sürükleme ortasında yeniden yaratılıyor, başlangıç yüksekliği 0'a
+ * düşüyor, panel parmağı izlemek yerine kapanıyordu (cihazda görüldü).
+ * Tutamaç bir Pressable (dokununca sonraki durak): dikey çekişi CAPTURE ile
+ * baştan alıyoruz ve bırakmıyoruz — devralma pazarlığına kalmasın.
+ */
 function useSheetPan(motion: Motion, snaps: number[], closable: boolean, settle: (index: number, velocity?: number) => void) {
   const { height, current } = motion;
+  const live = useRef({ snaps, closable, settle });
+  live.current = { snaps, closable, settle };
   return useMemo(() => {
     let start = 0;
-    const top = snaps[snaps.length - 1] ?? 0;
+    const vertical = (g: { dx: number; dy: number }) => Math.abs(g.dy) > 4 && Math.abs(g.dy) > Math.abs(g.dx);
     return PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dy) > 4 && Math.abs(g.dy) > Math.abs(g.dx),
+      onMoveShouldSetPanResponderCapture: (_, g) => vertical(g),
+      onMoveShouldSetPanResponder: (_, g) => vertical(g),
+      onPanResponderTerminationRequest: () => false,
       onPanResponderGrant: () => {
         height.stopAnimation();
         start = current.current;
       },
       // Yukarı çekiş yüksekliği artırır; en üst durağın üstünde direnç (yarım hız).
       onPanResponderMove: (_, g) => {
+        const top = live.current.snaps[live.current.snaps.length - 1] ?? 0;
         const next = Math.max(0, start - g.dy);
         height.setValue(next > top ? top + (next - top) / 2 : next);
       },
-      onPanResponderRelease: (_, g) => settle(releaseTarget(current.current, g.vy, snaps, closable), g.vy),
-      onPanResponderTerminate: () => settle(0),
+      onPanResponderRelease: (_, g) => {
+        const s = live.current;
+        s.settle(releaseTarget(current.current, g.vy, s.snaps, s.closable), g.vy);
+      },
+      onPanResponderTerminate: () => live.current.settle(0),
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snaps, closable]);
+  }, [height, current]);
 }
+
+/**
+ * Açık klavyenin yüksekliği. iOS'ta KeyboardAvoidingView paneli klavye kadar
+ * yukarı iter; panel yüksekliği sınırlanmazsa (%85 durak + klavye > ekran)
+ * tepesi — arama alanı — ekrandan çıkıyordu (cihazda görüldü).
+ */
+function useKeyboardHeight(): number {
+  const [kb, setKb] = useState(0);
+  useEffect(() => {
+    const show = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hide = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const a = Keyboard.addListener(show, (e) => setKb(e.endCoordinates.height));
+    const b = Keyboard.addListener(hide, () => setKb(0));
+    return () => {
+      a.remove();
+      b.remove();
+    };
+  }, []);
+  return kb;
+}
+
+/** Klavye açıkken panelin üstünde bırakılan pay (durum çubuğu / çentik). */
+const KEYBOARD_TOP_GAP = 56;
 
 function SheetHeader({ title, skeleton, multiSnap, onHandlePress }: { title: React.ReactNode; skeleton: boolean; multiSnap: boolean; onHandlePress: () => void }) {
   const theme = useTheme();
@@ -219,11 +276,12 @@ function SheetHeader({ title, skeleton, multiSnap, onHandlePress }: { title: Rea
 /**
  * İçerik görünen alanda kayar. Panelin yüksekliği belliyken (ölçüldükten
  * sonra) `flex: 1`; ilk ölçümde içerik kadar (`flexShrink`, esneme değil —
- * Card dersi). İskelette görünmez yer tutar.
+ * Card dersi). İskelette görünmez yer tutar. Klavye listeyi kaydırmaya
+ * başlayınca kapanır (iOS arama listeleri gibi).
  */
 function SheetBody({ children, sized, skeleton, bottom, style, onContentHeight }: { children: React.ReactNode; sized: boolean; skeleton: boolean; bottom: number; style?: StyleProp<ViewStyle>; onContentHeight: (h: number) => void }) {
   return (
-    <ScrollView style={sized ? { flex: 1 } : { flexShrink: 1 }} contentContainerStyle={[{ paddingHorizontal: 20, paddingBottom: bottom }, style]} onContentSizeChange={(_, h) => onContentHeight(h)} keyboardShouldPersistTaps="handled">
+    <ScrollView style={sized ? { flex: 1 } : { flexShrink: 1 }} contentContainerStyle={[{ paddingHorizontal: 20, paddingBottom: bottom }, style]} onContentSizeChange={(_, h) => onContentHeight(h)} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <View aria-hidden={skeleton} accessibilityElementsHidden={skeleton} style={{ opacity: skeleton ? 0 : 1 }}>{children}</View>
       {skeleton ? <SkeletonBox style={{ position: "absolute", top: 0, left: 20, right: 20, bottom, borderRadius: 8 }} /> : null}
     </ScrollView>
@@ -248,12 +306,15 @@ function sheetHandlers(props: BottomSheetProps) {
 }
 
 /** Pencere yüzeyi: üst köşeler yuvarlak. Ölçümden önce içerik kadar ve görünmez (en fazla %90); sonra canlı yükseklik. */
-function sheetStyle(theme: ReturnType<typeof useTheme>, ready: boolean, height: Animated.Value, screenHeight: number): StyleProp<ViewStyle> {
+function sheetStyle(theme: ReturnType<typeof useTheme>, ready: boolean, height: Animated.Value, screenHeight: number, keyboard: number): StyleProp<ViewStyle> {
   const radius = toPx(theme.radius.xl);
+  // Klavye açıkken görünen alana sığsın (KeyboardAvoidingView paneli klavye kadar iter).
+  const cap = keyboard > 0 ? { maxHeight: screenHeight - keyboard - KEYBOARD_TOP_GAP } : null;
   return [
     overlaySurface(theme),
     { borderTopLeftRadius: radius, borderTopRightRadius: radius, borderBottomWidth: 0, overflow: "hidden" },
     ready ? { height: height as unknown as number } : { maxHeight: screenHeight * 0.9, opacity: 0 },
+    cap,
   ];
 }
 
@@ -269,6 +330,7 @@ export function BottomSheet(props: BottomSheetProps) {
   const motion = useSheetMotion(open, snaps, initialSnap, props.onAfterClose);
   const { settle, nextSnap, scrimOpacity } = useSnapControl(motion, snaps, onClose, onSnapChange);
   const pan = useSheetPan(motion, snaps, closable, settle);
+  const keyboard = useKeyboardHeight();
 
   // Kapanınca bir sonraki açılışta içerik yeniden ölçülsün (içerik değişmiş olabilir).
   useEffect(() => {
@@ -287,7 +349,7 @@ export function BottomSheet(props: BottomSheetProps) {
           aria-modal
           accessibilityLabel={h.label}
           onAccessibilityEscape={onClose}
-          style={sheetStyle(theme, ready, motion.height, window.height)}
+          style={sheetStyle(theme, ready, motion.height, window.height, keyboard)}
         >
           {/* Sürükleme yalnız tutamaç + başlıktan: içerikteki kaydırma bozulmasın. */}
           <View {...pan.panHandlers} onLayout={(e) => parts.setHeader(e.nativeEvent.layout.height)}>

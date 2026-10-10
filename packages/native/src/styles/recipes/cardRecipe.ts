@@ -47,7 +47,6 @@ export function cardRecipe(theme: Theme, { size = "md", bordered, inset }: CardR
       justifyContent: "space-between",
       borderRadius: toPx(theme.radius[layout.radius]),
       backgroundColor: inset ? theme.color.canvas.surfaceAlt : theme.color.canvas.surface,
-      overflow: "hidden",
       ...(bordered || inset ? { borderWidth: 1, borderColor: theme.color.canvas.border } : {}),
     },
     // Hareket yok: azaltılmış hareket tercihinde de güvenli dokunma geri bildirimi.

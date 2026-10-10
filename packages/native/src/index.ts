@@ -77,8 +77,35 @@ export type { BottomSheetProps, SnapPoint, ActionSheetProps, ActionSheetAction }
 export { ToastProvider, useToast } from "./Toast";
 export type { ToastOptions, ToastContextValue, ToastProviderProps, ToastType, ToastAction, ToastPosition } from "./Toast";
 
+export { Rate } from "./Rate";
+export type { RateProps, RateCharacterState } from "./Rate";
+
+export { Slider } from "./Slider";
+export type { SliderProps, SliderValue, SliderIconItem, SliderIconPosition } from "./Slider";
+
+export { Statistic, Countdown, Clock, Stopwatch } from "./Statistic";
+export type { StatisticProps, StatisticTrend, StatisticSize, CountdownProps, ClockProps, StopwatchProps } from "./Statistic";
+
+export { Steps, StepsContent } from "./Steps";
+export type { StepsProps, StepItem, StepData, StepStatus, StepsVariant, StepsSize, StepsLabelPlacement, StepsContentProps } from "./Steps";
+
+export { Accordion } from "./Accordion";
+export type { AccordionProps, AccordionItem, AccordionVariant } from "./Accordion";
+
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
+export type { TabsProps, TabsListProps, TabsTriggerProps, TabsTriggerState, TabsContentProps, TabsVariant, TabsOrientation } from "./Tabs";
+
+export { Select } from "./Select";
+export type { SelectProps, SelectSingleProps, SelectMultipleProps, SelectOption, SelectOptionGroup, SelectValue } from "./Select";
+
+export { Image, ImageViewer, ImageGallery } from "./Image";
+export type { ImageProps, ImageSource, ImageStaticSource, ImageLoader, ImageLoaderParams, ImageFit, ImagePreviewConfig, ImageLoadInfo, ImageViewerProps, ImageViewerItem, ImageGalleryProps, ImageGalleryItem, GalleryView } from "./Image";
+
+export { Carousel } from "./Carousel";
+export type { CarouselProps, CarouselControls, DotPosition, ArrowsPlacement, DotsPlacement, ResponsiveItem, CarouselAlign } from "./Carousel";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";

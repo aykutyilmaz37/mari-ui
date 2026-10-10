@@ -10,7 +10,7 @@ import { storyModules } from "@mari-ui/native/stories";
 
 export interface StoryContext {
   args: Record<string, unknown>;
-  globals: { theme: "light" | "dark"; fonts: "system" | "brand" };
+  globals: { theme: "light" | "dark"; fonts: "system" | "brand"; radius?: number };
 }
 
 type Decorator = (Story: () => React.ReactElement, context: StoryContext) => React.ReactElement;
@@ -25,6 +25,12 @@ export interface StoryObject {
 
 export interface StoryMeta {
   title: string;
+  /**
+   * `studio.layout: "screen"`: story'ler tek tek, ScrollView'suz tam ekranda
+   * (üstte story seçici). Kendi içinde kayan (FlatList) component'ler için —
+   * aynı yönde ScrollView içinde sanal liste RN'de uyarı verir ve sanallaştırma bozulur.
+   */
+  parameters?: { studio?: { layout?: "scroll" | "screen" } };
   component?: React.ComponentType<Record<string, unknown>>;
   args?: Record<string, unknown>;
   decorators?: Decorator[];

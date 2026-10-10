@@ -28,7 +28,9 @@ const meta: Meta<typeof List> = {
   component: List,
   tags: ["autodocs"],
   decorators: [withNativeTheme],
+  // native-studio: FlatList sayfa ScrollView'una konmasın (RN iç içe sanal liste uyarısı).
   parameters: {
+    studio: { layout: "screen" },
     docs: {
       description: {
         component: componentDoc({

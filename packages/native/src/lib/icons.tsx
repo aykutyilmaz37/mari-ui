@@ -1,4 +1,4 @@
-import Svg, { Circle, Line, Path, Polyline } from "react-native-svg";
+import Svg, { Circle, Line, Path, Polygon, Polyline, Rect } from "react-native-svg";
 
 /**
  * Paketin kendi iç ikonları — lucide'ın (web'de kullanılan) BİREBİR aynı
@@ -122,6 +122,129 @@ export function SparklesIcon({ size = 16, color = "currentColor" }: IconProps) {
       <Path d="M20 2v4" {...s} />
       <Path d="M22 4h-4" {...s} />
       <Circle cx={4} cy={20} r={2} {...s} />
+    </Svg>
+  );
+}
+
+export function ChevronDownIcon({ size = 16, color = "currentColor" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="m6 9 6 6 6-6" {...stroke(color)} />
+    </Svg>
+  );
+}
+
+export function ChevronRightIcon({ size = 16, color = "currentColor" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="m9 18 6-6-6-6" {...stroke(color)} />
+    </Svg>
+  );
+}
+
+export function ChevronLeftIcon({ size = 16, color = "currentColor" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="m15 18-6-6 6-6" {...stroke(color)} />
+    </Svg>
+  );
+}
+
+export function ZoomInIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx={11} cy={11} r={8} {...s} />
+      <Line x1={21} x2={16.65} y1={21} y2={16.65} {...s} />
+      <Line x1={11} x2={11} y1={8} y2={14} {...s} />
+      <Line x1={8} x2={14} y1={11} y2={11} {...s} />
+    </Svg>
+  );
+}
+
+export function ZoomOutIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx={11} cy={11} r={8} {...s} />
+      <Line x1={21} x2={16.65} y1={21} y2={16.65} {...s} />
+      <Line x1={8} x2={14} y1={11} y2={11} {...s} />
+    </Svg>
+  );
+}
+
+export function ImageOffIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Line x1={2} x2={22} y1={2} y2={22} {...s} />
+      <Path d="M10.41 10.41a2 2 0 1 1-2.83-2.83" {...s} />
+      <Line x1={13.5} x2={6} y1={13.5} y2={21} {...s} />
+      <Line x1={18} x2={21} y1={12} y2={15} {...s} />
+      <Path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59" {...s} />
+      <Path d="M21 15V5a2 2 0 0 0-2-2H9" {...s} />
+    </Svg>
+  );
+}
+
+export function TrendingUpIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M16 7h6v6" {...s} />
+      <Path d="m22 7-8.5 8.5-5-5L2 17" {...s} />
+    </Svg>
+  );
+}
+
+export function TrendingDownIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M16 17h6v-6" {...s} />
+      <Path d="m22 17-8.5-8.5-5 5L2 7" {...s} />
+    </Svg>
+  );
+}
+
+export function PlayIcon({ size = 16, color = "currentColor" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Polygon points="6 3 20 12 6 21 6 3" {...stroke(color)} />
+    </Svg>
+  );
+}
+
+export function PauseIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Rect x={14} y={4} width={4} height={16} rx={1} {...s} />
+      <Rect x={6} y={4} width={4} height={16} rx={1} {...s} />
+    </Svg>
+  );
+}
+
+export function RotateCcwIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" {...s} />
+      <Path d="M3 3v5h5" {...s} />
+    </Svg>
+  );
+}
+
+/** Puan yıldızı — dolgu ve kontur ayrı (Rate). */
+export function StarIcon({ size = 16, fill = "none", color = "currentColor", strokeWidth = 1.5 }: IconProps & { fill?: string; strokeWidth?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+        {...stroke(color)}
+        strokeWidth={strokeWidth}
+        fill={fill}
+      />
     </Svg>
   );
 }

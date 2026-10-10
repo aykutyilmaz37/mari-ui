@@ -20,6 +20,12 @@
       "port": 8083
     },
     {
+      "name": "native-studio-ios",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@mari-ui/native-studio", "exec", "expo", "start", "--ios", "--port", "8084"],
+      "port": 8084
+    },
+    {
       "name": "studio",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@mari-ui/studio", "dev"],

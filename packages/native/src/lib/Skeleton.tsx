@@ -18,7 +18,8 @@ export interface SkeletonableProps {
   skeleton?: boolean;
 }
 
-function useReduceMotion(): boolean {
+/** Sistemdeki "Hareketi azalt" tercihi (canlı). */
+export function useReduceMotion(): boolean {
   const [reduce, setReduce] = useState(false);
   useEffect(() => {
     let active = true;
