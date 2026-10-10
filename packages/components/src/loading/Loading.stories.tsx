@@ -210,7 +210,7 @@ export const FullscreenSetup: Story = {
     return (
       <>
         <div className="max-w-md rounded-xl border border-mari-border bg-mari-surface p-6">
-          <p className="mb-1 font-semibold text-mari-foreground">Kuzey Yazılım</p>
+          <p className="mb-1 font-semibold text-mari-foreground">mari-ui</p>
           <p className="mb-4 text-sm text-mari-muted">Çalışma alanınız birkaç saniye içinde hazır olacak.</p>
           <Button
             onClick={() => {

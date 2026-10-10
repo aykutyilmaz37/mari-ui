@@ -460,16 +460,16 @@ const [step, setStep] = useState(2);
             {step === 2 && (
               <div className="grid gap-4">
                 <Field label="Şirket adı">
-                  <Input defaultValue="Kuzey Yazılım A.Ş." />
+                  <Input defaultValue="mari-ui A.Ş." />
                 </Field>
                 <Field label="Çalışma alanı adresi" hint="Küçük harf, rakam ve tire kullanılabilir.">
-                  <Input defaultValue="kuzey" icon={<span className="text-sm text-mari-muted">app.mari.io/</span>} />
+                  <Input defaultValue="mari-ui" icon={<span className="text-sm text-mari-muted">app.mari.io/</span>} />
                 </Field>
               </div>
             )}
             {step === 3 && (
               <div className="grid gap-3">
-                {["can@kuzey.com.tr", "elif@kuzey.com.tr", ""].map((email, i) => (
+                {["can@mari-ui.com", "elif@mari-ui.com", ""].map((email, i) => (
                   <Field key={i} label={`E-posta ${i + 1}`}>
                     <Input type="email" placeholder="ad@sirket.com" defaultValue={email} />
                   </Field>

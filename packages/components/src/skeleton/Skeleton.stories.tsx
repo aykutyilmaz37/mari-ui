@@ -144,10 +144,10 @@ export const ProductGrid: Story = {
 /* ─────────────────────────── 2. Tablo satırları ─────────────────────────── */
 
 const rows = [
-  { initials: "DK", name: "Deniz Kaya", email: "deniz@kuzey.com.tr", role: "Yönetici" },
-  { initials: "AY", name: "Aykut Yılmaz", email: "aykut@kuzey.com.tr", role: "Geliştirici" },
-  { initials: "EC", name: "Elif Can", email: "elif@kuzey.com.tr", role: "Tasarımcı" },
-  { initials: "MY", name: "Mert Yıldız", email: "mert@kuzey.com.tr", role: "Destek" },
+  { initials: "DK", name: "Deniz Kaya", email: "deniz@mari-ui.com", role: "Yönetici" },
+  { initials: "AY", name: "Aykut Yılmaz", email: "aykut@mari-ui.com", role: "Geliştirici" },
+  { initials: "EC", name: "Elif Can", email: "elif@mari-ui.com", role: "Tasarımcı" },
+  { initials: "MY", name: "Mert Yıldız", email: "mert@mari-ui.com", role: "Destek" },
 ];
 
 export const TableRows: Story = {

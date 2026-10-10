@@ -495,7 +495,7 @@ export const PaymentSuccess: Story = {
           color="success"
           size="sm"
           title="Ödeme alındı"
-          description="Makbuz deniz@kuzey.com.tr adresine gönderildi."
+          description="Makbuz deniz@mari-ui.com adresine gönderildi."
           footer={
             <Button block onClick={() => setOpen(false)}>
               Tamam
@@ -524,7 +524,7 @@ export const PaymentSuccess: Story = {
 /* ─────────────────────────── 5. Uzun içerik ─────────────────────────── */
 
 const sections: [string, string][] = [
-  ["1. Taraflar", "Bu sözleşme, Kuzey Yazılım A.Ş. (\"Hizmet Sağlayıcı\") ile hizmeti kullanan gerçek veya tüzel kişi (\"Kullanıcı\") arasında akdedilmiştir."],
+  ["1. Taraflar", "Bu sözleşme, mari-ui A.Ş. (\"Hizmet Sağlayıcı\") ile hizmeti kullanan gerçek veya tüzel kişi (\"Kullanıcı\") arasında akdedilmiştir."],
   ["2. Hizmetin kapsamı", "Hizmet; tasarım sistemi bileşenleri, tema stüdyosu ve ilgili belgelere çevrim içi erişimi kapsar. Hizmet Sağlayıcı kapsamı önceden bildirmek kaydıyla değiştirebilir."],
   ["3. Hesap güvenliği", "Kullanıcı, hesap bilgilerinin gizliliğinden sorumludur. Yetkisiz kullanımı fark ettiğinde derhal bildirmelidir."],
   ["4. Ücretlendirme", "Ücretli planlar aylık veya yıllık olarak peşin tahsil edilir. Plan değişiklikleri bir sonraki fatura döneminde geçerli olur."],

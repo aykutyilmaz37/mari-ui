@@ -91,7 +91,7 @@ function AccountDemo() {
               <Input defaultValue="Deniz" />
             </Field>
             <Field label="E-posta" hint="Değiştirirseniz doğrulama e-postası gönderilir.">
-              <Input type="email" defaultValue="deniz@kuzey.com.tr" />
+              <Input type="email" defaultValue="deniz@mari-ui.com" />
             </Field>
           </View>
         </TabsContent>

@@ -90,7 +90,7 @@ export const AppBar: Story = {
     const [cart, setCart] = useState(97);
     return (
       <div className="flex max-w-xl flex-wrap items-center justify-between gap-4 rounded-xl border border-mari-border bg-mari-surface px-4 py-3">
-        <span className="font-semibold text-mari-foreground">Kuzey Store</span>
+        <span className="font-semibold text-mari-foreground">mari-ui Store</span>
         <div className="flex items-center gap-3">
           <Badge dot color="primary">
             <Button variant="ghost" color="neutral" shape="circle" aria-label="Mesajlar, yeni mesaj var" icon={<MessageSquareIcon size={18} aria-hidden />} />

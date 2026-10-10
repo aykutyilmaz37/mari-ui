@@ -82,7 +82,7 @@ export const Home: Story = {
   ...storyDoc(
     "`leading` ile menü düğmesi (Sidebar'ı açar); `badge` sayı ya da nokta rozeti. Rozetli eylemde sayıyı adına da yazın.",
     `<AppBar
-  title="Kuzey Market"
+  title="mari-ui Market"
   leading={<AppBarAction icon={({ color }) => <Menu color={color} />} accessibilityLabel="Menüyü aç" onPress={openDrawer} />}
   actions={<>
     <AppBarAction icon={({ color }) => <Bell color={color} />} badge accessibilityLabel="Bildirimler, yeni var" />
@@ -92,7 +92,7 @@ export const Home: Story = {
   ),
   render: () => (
     <AppBar
-      title="Kuzey Market"
+      title="mari-ui Market"
       bordered
       leading={<AppBarAction icon={icon(Menu)} accessibilityLabel="Menüyü aç" onPress={noop} />}
       actions={

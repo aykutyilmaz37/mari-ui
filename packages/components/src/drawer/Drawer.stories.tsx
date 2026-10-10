@@ -281,7 +281,7 @@ const categories = [
   { label: "Klavye", count: 91 },
   { label: "Hoparlör", count: 47 },
 ];
-const brands = ["Aurora", "Kuzey", "Nova", "Pulse", "Zenith"];
+const brands = ["Aurora", "Mari", "Nova", "Pulse", "Zenith"];
 
 export const Filters: Story = {
   name: "Filtre Paneli",
@@ -446,8 +446,8 @@ export const EditRecord: Story = {
           </thead>
           <tbody className="divide-y divide-mari-border">
             {[
-              ["Deniz Kaya", "deniz@kuzey.com.tr", "İstanbul"],
-              ["Elif Can", "elif@kuzey.com.tr", "İzmir"],
+              ["Deniz Kaya", "deniz@mari-ui.com", "İstanbul"],
+              ["Elif Can", "elif@mari-ui.com", "İzmir"],
             ].map(([name, email, city]) => (
               <tr key={email}>
                 <td className="px-4 py-3">
@@ -495,7 +495,7 @@ export const EditRecord: Story = {
               <Input defaultValue="Kaya" />
             </Field>
             <Field label="E-posta" className="sm:col-span-2">
-              <Input type="email" defaultValue="deniz@kuzey.com.tr" />
+              <Input type="email" defaultValue="deniz@mari-ui.com" />
             </Field>
             <Field label="Telefon">
               <Input mask="(___) ___ __ __" replacement={{ _: /\d/ }} defaultValue="(532) 000 00 00" />
@@ -523,7 +523,7 @@ export const EditRecord: Story = {
 const initialNotifications = [
   { id: 1, Icon: PackageCheckIcon, title: "Siparişiniz teslim edildi", body: "#TR-48213 · Kadıköy", time: "5 dk", unread: true },
   { id: 2, Icon: MessageCircleIcon, title: "Elif Can yorum yaptı", body: "\"Buton boyutları token'a bağlandı mı?\"", time: "1 sa", unread: true },
-  { id: 3, Icon: UserPlusIcon, title: "Deniz ekibe katıldı", body: "Kuzey Yazılım çalışma alanı", time: "3 sa", unread: false },
+  { id: 3, Icon: UserPlusIcon, title: "Deniz ekibe katıldı", body: "mari-ui çalışma alanı", time: "3 sa", unread: false },
   { id: 4, Icon: MailIcon, title: "Fatura hazır", body: "Eylül 2026 · 1.192,00 ₺", time: "Dün", unread: false },
 ];
 

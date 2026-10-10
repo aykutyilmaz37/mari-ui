@@ -69,7 +69,7 @@ type Story = StoryObj<typeof Popover>;
 
 function ShareContent() {
   const [copied, setCopied] = useState(false);
-  const url = "https://kuzey.co/r/eylul-raporu";
+  const url = "https://mari-ui.com/r/eylul-raporu";
   return (
     <div className="flex w-72 max-w-full flex-col gap-2">
       <p className="text-mari-muted">Bağlantıya sahip herkes raporu görüntüleyebilir.</p>

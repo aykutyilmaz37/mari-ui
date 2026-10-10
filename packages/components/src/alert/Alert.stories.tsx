@@ -172,7 +172,7 @@ export const Colors: Story = {
   render: () => (
     <div className="flex max-w-xl flex-col gap-3">
       <Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." />
-      <Alert color="success" title="Alan adı doğrulandı" description="kuzey.com.tr artık e-posta gönderebilir." />
+      <Alert color="success" title="Alan adı doğrulandı" description="mari-ui.com artık e-posta gönderebilir." />
       <Alert color="warning" title="Depolamanın %90'ı dolu" description="Eski dosyaları silin ya da planınızı yükseltin." />
       <Alert color="error" title="Senkronizasyon başarısız" description="Son 2 saatteki değişiklikler eşitlenmedi." />
       <Alert color="neutral" description="Bu proje arşivlendi; yalnız görüntüleyebilirsiniz." />

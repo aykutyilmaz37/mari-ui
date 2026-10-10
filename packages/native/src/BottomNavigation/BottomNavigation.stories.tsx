@@ -55,7 +55,7 @@ function Screen({ children }: { children: React.ReactNode }) {
   return <View style={{ height: 440, alignSelf: "stretch", borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 16, overflow: "hidden", backgroundColor: theme.color.canvas.surface }}>{children}</View>;
 }
 
-const TITLES: Record<string, string> = { home: "Kuzey Market", categories: "Kategoriler", cart: "Sepetim", favorites: "Favoriler", account: "Hesabım" };
+const TITLES: Record<string, string> = { home: "mari-ui Market", categories: "Kategoriler", cart: "Sepetim", favorites: "Favoriler", account: "Hesabım" };
 
 function ShopDemo() {
   const [tab, setTab] = useState("home");
