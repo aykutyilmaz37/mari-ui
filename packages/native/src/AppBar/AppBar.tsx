@@ -146,6 +146,7 @@ function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hid
   const c = theme.color.canvas;
   const font = nativeFontFamily(theme.fontFamily.sans);
   const textAlign = centered ? ("center" as const) : ("left" as const);
+  const align = centered ? "center" : "flex-start";
   const frame: ViewStyle = centered ? { position: "absolute", left: inset, right: inset, top: 0, bottom: 0, alignItems: "center" } : { flex: 1, minWidth: 0, paddingLeft: hasLeading ? 4 : 12 };
   return (
     <Animated.View
@@ -154,8 +155,8 @@ function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hid
       style={[frame, { justifyContent: "center", opacity }]}
       {...(hidden ? { accessibilityElementsHidden: true, importantForAccessibility: "no-hide-descendants" as const } : null)}
     >
-      {sk(skeleton, titleText(title, { fontFamily: font, fontSize: m.titleFontSize, lineHeight: m.titleLineHeight, fontWeight: "600", color: c.foreground, textAlign }, 1, header), centered ? "center" : "flex-start")}
-      {subtitle == null ? null : sk(skeleton, titleText(subtitle, { fontFamily: font, fontSize: m.subtitleFontSize, lineHeight: m.subtitleLineHeight, color: c.muted, textAlign }), centered ? "center" : "flex-start")}
+      {sk(skeleton, titleText(title, { fontFamily: font, fontSize: m.titleFontSize, lineHeight: m.titleLineHeight, fontWeight: "600", color: c.foreground, textAlign }, 1, header), align)}
+      {subtitle == null ? null : sk(skeleton, titleText(subtitle, { fontFamily: font, fontSize: m.subtitleFontSize, lineHeight: m.subtitleLineHeight, color: c.muted, textAlign }), align)}
     </Animated.View>
   );
 }
@@ -197,6 +198,12 @@ export function AppBar({
   const centered = titleAlign === "center";
   // Ortalı başlık iki ucun genişini kadar içeri çekilir → gerçekten ortada kalır, uçlarla çakışmaz.
   const [sides, setSides] = useState({ left: 0, right: 0 });
+  // Genişlik güncelleyiciden ÖNCE okunur: iOS olay nesnesini hemen boşaltır (güncelleyici sonra çalışır).
+  const measure = (side: "left" | "right", width: number) =>
+    setSides((s) => {
+      if (s[side] === width) return s;
+      return { ...s, [side]: width };
+    });
   const anim = useCollapse(scrollY, m.largeAreaHeight, large);
 
   const leadNode = leading !== undefined || !onBack ? leading : <AppBarAction icon={({ color }) => <ChevronLeftIcon size={m.iconSize + 4} color={color} />} accessibilityLabel={backAccessibilityLabel} onPress={onBack} />;
@@ -225,11 +232,11 @@ export function AppBar({
       <View style={[{ alignSelf: "stretch", backgroundColor: c.surface, paddingTop: topInset }, style]}>
         <View style={{ height: m.height, flexDirection: "row", alignItems: "center", paddingHorizontal: 4 }}>
           {centered ? titleBlock : null}
-          <View onLayout={(e) => setSides((s) => ({ ...s, left: e.nativeEvent.layout.width }))} style={sideStyle}>
+          <View onLayout={(e) => measure("left", e.nativeEvent.layout.width)} style={sideStyle}>
             {leadNode}
           </View>
           {centered ? <View style={{ flex: 1 }} /> : titleBlock}
-          <View onLayout={(e) => setSides((s) => ({ ...s, right: e.nativeEvent.layout.width }))} style={[sideStyle, { justifyContent: "flex-end" }]}>
+          <View onLayout={(e) => measure("right", e.nativeEvent.layout.width)} style={[sideStyle, { justifyContent: "flex-end" }]}>
             {actions}
           </View>
         </View>
