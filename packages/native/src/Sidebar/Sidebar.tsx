@@ -351,6 +351,8 @@ export function Sidebar({
   const m = useNativeConfig().sidebar;
   const { width: screenWidth } = useWindowDimensions();
   const width = Math.min(screenWidth * m.widthRatio, m.maxWidth);
+  // Ekranı kaplıyorsa kenar çizgisi gereksiz.
+  const edgeBorder = width < screenWidth ? 1 : 0;
   const [trail, setTrail] = useState<SidebarItem[]>([]);
   const motion = useDrawerMotion(open);
   const close = () => onOpenChange(false);
@@ -390,7 +392,7 @@ export function Sidebar({
         style={[
           overlaySurface(theme),
           { position: "absolute", top: 0, bottom: 0, width, borderWidth: 0, transform: [{ translateX }] },
-          position === "left" ? { left: 0, borderRightWidth: 1, borderRightColor: c.border } : { right: 0, borderLeftWidth: 1, borderLeftColor: c.border },
+          position === "left" ? { left: 0, borderRightWidth: edgeBorder, borderRightColor: c.border } : { right: 0, borderLeftWidth: edgeBorder, borderLeftColor: c.border },
           style,
         ]}
       >

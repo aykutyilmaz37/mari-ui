@@ -311,8 +311,8 @@ export const defaultNativeConfig: NativeConfig = {
     pill: { height: 80, iconSize: 24, labelFontSize: 12, labelLineHeight: 16, indicatorWidth: 64, indicatorHeight: 32 },
     plain: { height: 56, iconSize: 24, labelFontSize: 11, labelLineHeight: 13, indicatorWidth: 0, indicatorHeight: 0 },
   },
-  // Sidebar (drawer): ekranın %85'i, en fazla 320; satır iOS liste satırı.
-  sidebar: { widthRatio: 0.85, maxWidth: 320, rowMinHeight: 48, fontSize: 17, lineHeight: 22, iconSize: 20, headingFontSize: 13, paddingHorizontal: 16 },
+  // Sidebar (drawer): telefonda tam genişlik (kullanıcı kararı), tablette en fazla 480; satır iOS liste satırı.
+  sidebar: { widthRatio: 1, maxWidth: 480, rowMinHeight: 48, fontSize: 17, lineHeight: 22, iconSize: 20, headingFontSize: 13, paddingHorizontal: 16 },
 };
 
 export interface NativeConfigOverrides {
