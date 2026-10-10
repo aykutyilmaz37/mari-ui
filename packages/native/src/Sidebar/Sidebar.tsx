@@ -34,6 +34,13 @@ export interface SidebarItem {
   badge?: number | boolean;
 }
 
+/**
+ * Açılış animasyonu. `slide`: yandan kayar (kenara kaydırarak kapatma yalnız
+ * bunda). `fade`: yerinde belirir, hafif yukarı süzülür. `scale`: hafif
+ * büyüyerek belirir. `slideUp` / `slideDown`: alttan / üstten tam boy gelir.
+ */
+export type SidebarAnimation = "slide" | "fade" | "scale" | "slideUp" | "slideDown";
+
 export interface SidebarHeaderInk {
   /** Başlık bandındaki metin rengi (`emphasizedHeader`da rol renginin karşıtı). */
   color: string;
@@ -61,6 +68,8 @@ export interface SidebarProps extends SkeletonableProps {
   footer?: React.ReactNode;
   /** Varsayılan: `left`. */
   position?: "left" | "right";
+  /** Açılış / kapanış animasyonu. Varsayılan: `slide`. */
+  animation?: SidebarAnimation;
   /** Aktif öğe rengi. Varsayılan: `primary`. */
   color?: ColorRole;
   /** Kök seviyesine dönen satırın etiketi. Varsayılan: "Ana Menü". */
@@ -133,13 +142,14 @@ function useDrawerMotion(open: boolean) {
  * sürüklemeyi ortasında koparıyordu). Yalnız yatay ve kapanma yönündeki
  * çekiş alınır — dikey kaydırma listeye kalır.
  */
-function useSwipeToClose(motion: ReturnType<typeof useDrawerMotion>, width: number, side: "left" | "right", onClose: () => void) {
-  const live = useRef({ motion, width, side, onClose });
-  live.current = { motion, width, side, onClose };
+function useSwipeToClose(motion: ReturnType<typeof useDrawerMotion>, width: number, side: "left" | "right", onClose: () => void, enabled: boolean) {
+  const live = useRef({ motion, width, side, onClose, enabled });
+  live.current = { motion, width, side, onClose, enabled };
   return useMemo(
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponder: (_e, g) => {
+          if (!live.current.enabled) return false;
           const dir = live.current.side === "left" ? -1 : 1;
           return Math.abs(g.dx) > 8 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5 && Math.sign(g.dx) === dir;
         },
@@ -159,6 +169,25 @@ function useSwipeToClose(motion: ReturnType<typeof useDrawerMotion>, width: numb
       }),
     []
   );
+}
+
+/** İlerlemeden (0 kapalı → 1 açık) panelin dönüşümü / opaklığı — hepsi yerel sürücüde. */
+function panelMotion(animation: SidebarAnimation, progress: Animated.Value, slideX: number, screenHeight: number) {
+  const lerp = (from: number, to: number) => progress.interpolate({ inputRange: [0, 1], outputRange: [from, to] });
+  // Opaklık kapanırken yarı yolda biter — panel karartmadan önce kaybolsun.
+  const fadeIn = progress.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] });
+  switch (animation) {
+    case "fade":
+      return { opacity: fadeIn, transform: [{ translateY: lerp(16, 0) }] };
+    case "scale":
+      return { opacity: fadeIn, transform: [{ scale: lerp(0.94, 1) }] };
+    case "slideUp":
+      return { transform: [{ translateY: lerp(screenHeight, 0) }] };
+    case "slideDown":
+      return { transform: [{ translateY: lerp(-screenHeight, 0) }] };
+    default:
+      return { transform: [{ translateX: lerp(slideX, 0) }] };
+  }
 }
 
 interface LevelProps {
@@ -335,6 +364,7 @@ export function Sidebar({
   emphasizedHeader = false,
   footer,
   position = "left",
+  animation = "slide",
   color = "primary",
   rootLabel = "Ana Menü",
   seeAllLabel = "Tümünü gör",
@@ -349,14 +379,14 @@ export function Sidebar({
   const bottomInset = bottomInsetProp ?? safe?.bottom ?? FALLBACK_BOTTOM;
   const theme = useTheme();
   const m = useNativeConfig().sidebar;
-  const { width: screenWidth } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const width = Math.min(screenWidth * m.widthRatio, m.maxWidth);
   // Ekranı kaplıyorsa kenar çizgisi gereksiz.
   const edgeBorder = width < screenWidth ? 1 : 0;
   const [trail, setTrail] = useState<SidebarItem[]>([]);
   const motion = useDrawerMotion(open);
   const close = () => onOpenChange(false);
-  const pan = useSwipeToClose(motion, width, position, close);
+  const pan = useSwipeToClose(motion, width, position, close, animation === "slide");
   const active = activeKey ?? findActiveKey(data, currentPath);
 
   // Her açılış kökten başlar.
@@ -374,8 +404,7 @@ export function Sidebar({
   };
 
   const c = theme.color.canvas;
-  const shift = position === "left" ? -width : width;
-  const translateX = motion.progress.interpolate({ inputRange: [0, 1], outputRange: [shift, 0] });
+  const motionStyle = panelMotion(animation, motion.progress, position === "left" ? -width : width, screenHeight);
   const items = levelItems(data, trail);
   const levelKey = trail.map((t) => t.key).join("/") || "root";
 
@@ -391,7 +420,8 @@ export function Sidebar({
         onAccessibilityEscape={requestBack}
         style={[
           overlaySurface(theme),
-          { position: "absolute", top: 0, bottom: 0, width, borderWidth: 0, transform: [{ translateX }] },
+          { position: "absolute", top: 0, bottom: 0, width, borderWidth: 0 },
+          motionStyle,
           position === "left" ? { left: 0, borderRightWidth: edgeBorder, borderRightColor: c.border } : { right: 0, borderLeftWidth: edgeBorder, borderLeftColor: c.border },
           style,
         ]}

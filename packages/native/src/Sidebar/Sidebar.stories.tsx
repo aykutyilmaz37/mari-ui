@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Pressable, Text as RNText, View } from "react-native";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Archive, Bell, Clock, FileText, HelpCircle, Home, Inbox, LogOut, Menu, Package, Send, Settings, Star, Trash2, User } from "lucide-react-native";
-import { Sidebar, type SidebarIconState, type SidebarItem, type SidebarProps } from "./Sidebar";
+import { Sidebar, type SidebarAnimation, type SidebarIconState, type SidebarItem, type SidebarProps } from "./Sidebar";
 import { AppBar, AppBarAction } from "../AppBar";
 import { Avatar } from "../Avatar";
 import { Button } from "../Button";
+import { Segmented } from "../Segmented";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
 import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
@@ -23,11 +24,12 @@ const meta: Meta<typeof Sidebar> = {
   }) } } },
   argTypes: {
     position: { control: "select", options: ["left", "right"] },
+    animation: { control: "select", options: ["slide", "fade", "scale", "slideUp", "slideDown"] },
     color: { control: "select", options: ["primary", "accent", "success", "neutral"] },
     emphasizedHeader: { control: "boolean" },
     skeleton: { control: "boolean" },
   },
-  args: { position: "left", color: "primary", emphasizedHeader: false, skeleton: false },
+  args: { position: "left", animation: "slide", color: "primary", emphasizedHeader: false, skeleton: false },
 };
 export default meta;
 type Story = StoryObj<typeof Sidebar>;
@@ -223,6 +225,35 @@ export const Right: Story = {
   name: "Sağdan",
   ...storyDoc("`position=\"right\"`: çekmece sağdan gelir, sağa kaydırınca kapanır.", `<Sidebar position="right" … />`),
   render: () => <MailDemo position="right" />,
+};
+
+const ANIMATIONS: { value: SidebarAnimation; label: string }[] = [
+  { value: "slide", label: "Kay" },
+  { value: "fade", label: "Belir" },
+  { value: "scale", label: "Büyü" },
+  { value: "slideUp", label: "Alttan" },
+  { value: "slideDown", label: "Üstten" },
+];
+
+function AnimationsDemo() {
+  const [animation, setAnimation] = useState<SidebarAnimation>("slide");
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={{ gap: 16, alignSelf: "stretch", alignItems: "flex-start" }}>
+      <Segmented size="sm" accessibilityLabel="Açılış animasyonu" options={ANIMATIONS} value={animation} onChange={(v) => setAnimation(v as SidebarAnimation)} />
+      <Button onPress={() => setOpen(true)}>Menüyü aç</Button>
+      <Sidebar animation={animation} data={MAIL} open={open} onOpenChange={setOpen} currentPath="/inbox" header={<Text weight="semibold">Posta</Text>} />
+    </View>
+  );
+}
+
+export const Animations: Story = {
+  name: "Açılış Animasyonları",
+  ...storyDoc(
+    "`animation`: `slide` yandan kayar (varsayılan; kenara kaydırarak kapatma yalnız bunda), `fade` yerinde belirir, `scale` hafif büyüyerek gelir, `slideUp` / `slideDown` alttan / üstten tam boy. Hareketi azalt açıksa hepsi anında.",
+    `<Sidebar animation="slideUp" data={items} open={open} onOpenChange={setOpen} />`
+  ),
+  render: () => <AnimationsDemo />,
 };
 
 const PROFILE: SidebarItem[] = [
