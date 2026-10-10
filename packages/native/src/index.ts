@@ -107,6 +107,9 @@ export type { CarouselProps, CarouselControls, DotPosition, ArrowsPlacement, Dot
 export { AppBar, AppBarAction, useAppBarScroll } from "./AppBar";
 export type { AppBarProps, AppBarActionProps, AppBarActionState, AppBarSize } from "./AppBar";
 
+export { BottomNavigation } from "./BottomNavigation";
+export type { BottomNavigationProps, BottomNavigationItem, BottomNavigationIconState, BottomNavigationVariant } from "./BottomNavigation";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize } from "./nativeConfig";
 
