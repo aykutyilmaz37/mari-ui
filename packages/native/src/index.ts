@@ -104,8 +104,11 @@ export type { ImageProps, ImageSource, ImageStaticSource, ImageLoader, ImageLoad
 export { Carousel } from "./Carousel";
 export type { CarouselProps, CarouselControls, DotPosition, ArrowsPlacement, DotsPlacement, ResponsiveItem, CarouselAlign } from "./Carousel";
 
+export { AppBar, AppBarAction, useAppBarScroll } from "./AppBar";
+export type { AppBarProps, AppBarActionProps, AppBarActionState, AppBarSize } from "./AppBar";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";
