@@ -91,7 +91,7 @@ export const Onboarding: Story = {
   onOpenChange={setOpen}
   onFinish={() => markTourSeen()}
   steps={[
-    { title: "Kuzey'e hoş geldiniz", description: "Bir dakikada temel adımlar.", cover: <img … /> },
+    { title: "mari-ui'ya hoş geldiniz", description: "Bir dakikada temel adımlar.", cover: <img … /> },
     { title: "Proje oluşturun", description: "…", target: () => newRef.current },
     { title: "Filtreleyin", description: "…", target: () => filterRef.current, placement: "bottom-start" },
     { title: "Bildirimler", description: "…", target: () => bellRef.current, placement: "bottom-end" },
@@ -137,7 +137,7 @@ export const Onboarding: Story = {
           onFinish={() => setSeen(true)}
           steps={[
             {
-              title: "Kuzey'e hoş geldiniz",
+              title: "mari-ui'ya hoş geldiniz",
               description: "Bir dakikada temel adımları gösterelim.",
               cover: (
                 <div aria-hidden className="grid h-28 place-items-center bg-mari-primary-subtle text-mari-primary">

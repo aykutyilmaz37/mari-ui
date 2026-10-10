@@ -3,6 +3,7 @@ import { AccessibilityInfo, Animated, Easing, Keyboard, KeyboardAvoidingView, Mo
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
+import { useSafeInsets, type SafeAreaInsets } from "../theme/insets";
 import { toPx } from "../theme/toPx";
 import { overlaySurface, scrimColor } from "../lib/overlay";
 import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
@@ -32,7 +33,7 @@ export interface BottomSheetProps extends SkeletonableProps {
   closable?: boolean;
   /** Android geri tuşu kapatır. Varsayılan: `true`. */
   keyboard?: boolean;
-  /** Alt güvenli alan payı (iOS ev çubuğu). Varsayılan: iOS 28, Android 16. */
+  /** Alt güvenli alan payı (iOS ev çubuğu). Varsayılan: `ThemeProvider insets`in `bottom`ı (en az 16), yoksa iOS 28, Android 16. */
   bottomInset?: number;
   /**
    * Kapanış animasyonu bitip panel kaldırıldıktan sonra. Kapanışta başka bir
@@ -296,12 +297,12 @@ function SheetFooter({ inset, children, onHeight }: { inset: number; children: R
 }
 
 /** Prop'lardan türeyen kapatma işleyicileri, erişilebilir ad ve alt pay. */
-function sheetHandlers(props: BottomSheetProps) {
+function sheetHandlers(props: BottomSheetProps, safe: Partial<SafeAreaInsets> | null) {
   return {
     onRequestClose: props.keyboard === false ? noop : props.onClose,
     onMaskPress: props.maskClosable === false ? undefined : props.onClose,
     label: typeof props.title === "string" ? props.title : props.accessibilityLabel,
-    inset: props.bottomInset ?? DEFAULT_INSET,
+    inset: props.bottomInset ?? (safe ? Math.max(safe.bottom ?? 0, 16) : DEFAULT_INSET),
   };
 }
 
@@ -320,7 +321,7 @@ function sheetStyle(theme: ReturnType<typeof useTheme>, ready: boolean, height: 
 
 export function BottomSheet(props: BottomSheetProps) {
   const { open, onClose, title, children, footer, snapPoints, initialSnap = 0, onSnapChange, closable = true, contentStyle, skeleton = false } = props;
-  const h = sheetHandlers(props);
+  const h = sheetHandlers(props, useSafeInsets());
   const theme = useTheme();
   const window = useWindowDimensions();
   const parts = useContentHeight(Boolean(footer));

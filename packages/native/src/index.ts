@@ -104,12 +104,23 @@ export type { ImageProps, ImageSource, ImageStaticSource, ImageLoader, ImageLoad
 export { Carousel } from "./Carousel";
 export type { CarouselProps, CarouselControls, DotPosition, ArrowsPlacement, DotsPlacement, ResponsiveItem, CarouselAlign } from "./Carousel";
 
+export { AppBar, AppBarAction, useAppBarScroll } from "./AppBar";
+export type { AppBarProps, AppBarActionProps, AppBarActionState, AppBarSize } from "./AppBar";
+
+export { BottomNavigation } from "./BottomNavigation";
+export type { BottomNavigationProps, BottomNavigationItem, BottomNavigationIconState, BottomNavigationVariant } from "./BottomNavigation";
+
+export { Sidebar, SidebarLayout } from "./Sidebar";
+export type { SidebarProps, SidebarBaseProps, SidebarLayoutProps, SidebarItem, SidebarIconState, SidebarHeaderInk, SidebarAnimation, SidebarLayoutAnimation } from "./Sidebar";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
-export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize } from "./nativeConfig";
+export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";
 export { useTheme } from "./theme/useTheme";
+export { SafeAreaInsetsProvider, useSafeInsets } from "./theme/insets";
+export type { SafeAreaInsets } from "./theme/insets";
 export { BRAND_FONT_FAMILIES, withFonts } from "./theme/fonts";
 export type { NativeFonts } from "./theme/fonts";
 export { useStyles } from "./styles/useStyles";

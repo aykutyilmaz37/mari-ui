@@ -5,7 +5,7 @@ describe("mention utils", () => {
   it("findMention: satır başı/boşluktan sonra tetik; kelime içi @ ve boşluklu sorgu tetiklemez", () => {
     expect(findMention("@ay", 3, ["@"])).toEqual({ prefix: "@", start: 0, query: "ay" });
     expect(findMention("Merhaba @", 9, ["@"])).toEqual({ prefix: "@", start: 8, query: "" });
-    expect(findMention("ayse@kuzey.co", 13, ["@"])).toBeNull();
+    expect(findMention("ayse@mari-ui.com", 16, ["@"])).toBeNull();
     expect(findMention("@ayse demir", 11, ["@"])).toBeNull();
     expect(findMention("a\n@me", 5, ["@"])).toEqual({ prefix: "@", start: 2, query: "me" });
   });
@@ -23,7 +23,7 @@ describe("mention utils", () => {
   });
 
   it("filterMentionOptions: Türkçe/aksansız, searchText; false → süzmez", () => {
-    const opts = [{ value: "ayse", label: "Ayşe Demir" }, { value: "cagri", label: "Çağrı Işık", searchText: "cagri isik cagri@kuzey.co" }];
+    const opts = [{ value: "ayse", label: "Ayşe Demir" }, { value: "cagri", label: "Çağrı Işık", searchText: "cagri isik cagri@mari-ui.com" }];
     expect(filterMentionOptions(opts, "ayşe").map((o) => o.value)).toEqual(["ayse"]);
     expect(filterMentionOptions(opts, "IŞIK").map((o) => o.value)).toEqual(["cagri"]);
     expect(filterMentionOptions(opts, "zzz", false)).toHaveLength(2);

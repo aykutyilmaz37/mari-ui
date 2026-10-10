@@ -18,7 +18,7 @@ function Harness(props: Partial<React.ComponentProps<typeof Popover>>) {
         title="Paylaş"
         content={
           <div>
-            <input aria-label="Bağlantı" defaultValue="https://kuzey.co/p/42" readOnly />
+            <input aria-label="Bağlantı" defaultValue="https://mari-ui.com/p/42" readOnly />
             <button>Kopyala</button>
           </div>
         }

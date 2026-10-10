@@ -12,6 +12,7 @@ import React from "react";
 import { View } from "react-native";
 import { darkTheme, lightTheme } from "@mari-ui/tokens";
 import { ThemeProvider } from "../theme/ThemeProvider";
+import { SafeAreaInsetsProvider, type SafeAreaInsets } from "../theme/insets";
 import { useTheme } from "../theme/useTheme";
 import { Segmented } from "../Segmented";
 
@@ -52,9 +53,9 @@ export function storyDoc(description: string, code?: string) {
  * studio çerçevesinin köşesi — zemin yuvarlanır, çerçeve kırpmaz (taşan
  * baloncuk/menü kesilmesin).
  */
-export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; radius?: number } }) {
+export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; radius?: number; insets?: SafeAreaInsets } }) {
   return (
-    <ThemeProvider theme={context.globals?.theme === "dark" ? darkTheme : lightTheme} fonts={context.globals?.fonts === "brand" ? "brand" : "system"}>
+    <ThemeProvider theme={context.globals?.theme === "dark" ? darkTheme : lightTheme} fonts={context.globals?.fonts === "brand" ? "brand" : "system"} insets={context.globals?.insets}>
       <Canvas radius={context.globals?.radius}>
         <Story />
       </Canvas>
@@ -115,6 +116,19 @@ export function withStretch(Story: () => React.ReactElement) {
     <View style={{ alignSelf: "stretch" }}>
       <Story />
     </View>
+  );
+}
+
+/**
+ * Story'deki çubuklar (AppBar, BottomNavigation) ekran kenarında değil, sayfa
+ * içindeki bir çerçevede — güvenli alan payı almasınlar. Tam ekran katmanlar
+ * (Sidebar, BottomSheet) bunu kullanmaz, gerçek çentiği görür.
+ */
+export function withoutInsets(Story: () => React.ReactElement) {
+  return (
+    <SafeAreaInsetsProvider insets={{ top: 0, bottom: 0, left: 0, right: 0 }}>
+      <Story />
+    </SafeAreaInsetsProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AccessibilityInfo, Platform, StatusBar, View } from "react-native";
+import { useSafeInsets, type SafeAreaInsets } from "../theme/insets";
 import { ToastView, type ToastAction, type ToastType } from "./Toast";
 import { pushToast, resolveDuration, toastEdge, type ToastEdge, type ToastPosition } from "./utils";
 
@@ -88,12 +89,23 @@ function Stack({ edge, toasts, inset, onClose, onRemoved }: { edge: ToastEdge; t
  * bu yüzden açık bir Modal/BottomSheet'in ALTINDA kalır; pencere açıkken
  * bildirim gerekiyorsa pencereyi kapattıktan sonra gösterin.
  */
+/** Öncelik: ThemeProvider insets (+8 boşluk) → platform tahmini. */
+function toastEdges(safe: Partial<SafeAreaInsets> | null): { top: number; bottom: number } {
+  const fallbackTop = Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 8 : 54;
+  const fallbackBottom = Platform.OS === "ios" ? 34 : 16;
+  return {
+    top: safe?.top === undefined ? fallbackTop : safe.top + 8,
+    bottom: safe?.bottom === undefined ? fallbackBottom : Math.max(safe.bottom, 8) + 8,
+  };
+}
+
 export function ToastProvider({ children, insets }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const closers = useRef(new Map<string, (() => void) | undefined>());
   const screenReader = useScreenReader();
-  const top = insets?.top ?? (Platform.OS === "android" ? (StatusBar.currentHeight ?? 24) + 8 : 54);
-  const bottom = insets?.bottom ?? (Platform.OS === "ios" ? 34 : 16);
+  const edges = toastEdges(useSafeInsets());
+  const top = insets?.top ?? edges.top;
+  const bottom = insets?.bottom ?? edges.bottom;
 
   const close = useCallback((id: string) => {
     if (!closers.current.has(id)) return; // zaten kapanıyor

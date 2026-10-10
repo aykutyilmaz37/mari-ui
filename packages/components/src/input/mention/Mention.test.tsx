@@ -107,7 +107,7 @@ describe("mentions (Input/Textarea)", () => {
         <Input aria-label="Düz" />
       </>
     );
-    await user.type(screen.getByRole("combobox", { name: "E-posta" }), "ayse@kuzey");
+    await user.type(screen.getByRole("combobox", { name: "E-posta" }), "ayse@mari-ui");
     expect(screen.queryByRole("listbox")).toBeNull();
     expect(screen.getByRole("textbox", { name: "Düz" })).not.toHaveAttribute("aria-autocomplete");
   });

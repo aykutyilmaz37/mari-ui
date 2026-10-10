@@ -110,14 +110,14 @@ export const RolePermissions: Story = {
 /* ─────────────────────────── 2. Alıcılar (oneWay) ─────────────────────────── */
 
 const PEOPLE = [
-  ["ayse", "Ayşe Demir", "ayse.demir@kuzey.co"],
-  ["mehmet", "Mehmet Kaya", "mehmet.kaya@kuzey.co"],
-  ["zeynep", "Zeynep Arslan", "zeynep.arslan@kuzey.co"],
-  ["can", "Can Öztürk", "can.ozturk@kuzey.co"],
-  ["elif", "Elif Şahin", "elif.sahin@kuzey.co"],
-  ["burak", "Burak Yıldız", "burak.yildiz@kuzey.co"],
-  ["selin", "Selin Aydın", "selin.aydin@kuzey.co"],
-  ["emre", "Emre Çelik", "emre.celik@kuzey.co"],
+  ["ayse", "Ayşe Demir", "ayse.demir@mari-ui.com"],
+  ["mehmet", "Mehmet Kaya", "mehmet.kaya@mari-ui.com"],
+  ["zeynep", "Zeynep Arslan", "zeynep.arslan@mari-ui.com"],
+  ["can", "Can Öztürk", "can.ozturk@mari-ui.com"],
+  ["elif", "Elif Şahin", "elif.sahin@mari-ui.com"],
+  ["burak", "Burak Yıldız", "burak.yildiz@mari-ui.com"],
+  ["selin", "Selin Aydın", "selin.aydin@mari-ui.com"],
+  ["emre", "Emre Çelik", "emre.celik@mari-ui.com"],
 ];
 const RECIPIENTS: TransferItem[] = PEOPLE.map(([key, name, email]) => ({ key: key!, title: name, description: email, searchText: `${name} ${email}` }));
 

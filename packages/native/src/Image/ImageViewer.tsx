@@ -26,6 +26,7 @@ import { useControllable } from "../lib/useControllable";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
 import { useTheme } from "../theme/useTheme";
+import { useSafeInsets } from "../theme/insets";
 import type { ImageLoader, ImageSource } from "./types";
 import { normalizeSource, resolveUri } from "./utils";
 import {
@@ -136,7 +137,10 @@ function touchGeometry(touches: readonly NativeTouchEvent[], stage: Size) {
  * (iOS'ta sökülen görünümün değeri grafikten çözülüyor, ikinci açılışta
  * kareler ulaşmıyordu — BottomSheet'te ölçülen sorun).
  */
-function ViewerContent({ items, open, onClose, index, defaultIndex = 0, onIndexChange, loader, thumbnails, actions, accessibilityLabel, topInset = DEFAULT_TOP, bottomInset = DEFAULT_BOTTOM, onExited }: ImageViewerProps & { onExited: () => void }) {
+function ViewerContent({ items, open, onClose, index, defaultIndex = 0, onIndexChange, loader, thumbnails, actions, accessibilityLabel, topInset: topInsetProp, bottomInset: bottomInsetProp, onExited }: ImageViewerProps & { onExited: () => void }) {
+  const safe = useSafeInsets();
+  const topInset = topInsetProp ?? (safe?.top === undefined ? DEFAULT_TOP : safe.top + 4);
+  const bottomInset = bottomInsetProp ?? (safe?.bottom === undefined ? DEFAULT_BOTTOM : Math.max(safe.bottom, 16));
   const theme = useTheme();
   const window = useWindowDimensions();
   const stage = useMemo<Size>(() => ({ width: window.width, height: window.height }), [window.width, window.height]);

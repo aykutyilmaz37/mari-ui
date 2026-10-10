@@ -213,7 +213,7 @@ export const AccountSettings: Story = {
                 <Input defaultValue="Kaya" />
               </Field>
               <Field label="E-posta" hint="Değiştirirseniz doğrulama e-postası gönderilir.">
-                <Input type="email" defaultValue="deniz@kuzey.com.tr" />
+                <Input type="email" defaultValue="deniz@mari-ui.com" />
               </Field>
               <Field label="Unvan">
                 <Input defaultValue="Ürün Yöneticisi" />
@@ -548,9 +548,9 @@ export const VerticalSettings: Story = {
   ),
   render: () => {
     const members = [
-      { initials: "DK", name: "Deniz Kaya", email: "deniz@kuzey.com.tr", role: "Yönetici" },
-      { initials: "AY", name: "Aykut Yılmaz", email: "aykut@kuzey.com.tr", role: "Geliştirici" },
-      { initials: "EC", name: "Elif Can", email: "elif@kuzey.com.tr", role: "Tasarımcı" },
+      { initials: "DK", name: "Deniz Kaya", email: "deniz@mari-ui.com", role: "Yönetici" },
+      { initials: "AY", name: "Aykut Yılmaz", email: "aykut@mari-ui.com", role: "Geliştirici" },
+      { initials: "EC", name: "Elif Can", email: "elif@mari-ui.com", role: "Tasarımcı" },
     ];
     return (
       <div className="mx-auto max-w-3xl rounded-xl border border-mari-border bg-mari-surface p-5 sm:p-6">
@@ -571,7 +571,7 @@ export const VerticalSettings: Story = {
           </TabsList>
           <TabsContent value="general">
             <Field label="Ekip adı">
-              <Input defaultValue="Kuzey Yazılım" />
+              <Input defaultValue="mari-ui" />
             </Field>
           </TabsContent>
           <TabsContent value="members">

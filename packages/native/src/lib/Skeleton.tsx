@@ -88,3 +88,22 @@ export function SkeletonLine({ fontSize, lineHeight, width, animated = true }: {
     </View>
   );
 }
+
+/**
+ * Tek satırlık metnin iskeleti: metin görünmez ama yerini (genişlik + satır
+ * yüksekliği) korur, üstünde satırın ortasında yazı gövdesi kalınlığında
+ * çubuk. Satırın tamamını boyayan `SkeletonBox`un aksine alt alta iki metin
+ * (başlık + alt başlık) birbirine yapışmaz; yüklenince yerleşim kaymaz.
+ */
+export function SkeletonText({ fontSize, align = "flex-start", children }: { fontSize: number; align?: "flex-start" | "center"; children: ReactNode }) {
+  return (
+    <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ alignItems: align, maxWidth: "100%" }}>
+      <View style={{ maxWidth: "100%" }}>
+        <View style={{ opacity: 0 }}>{children}</View>
+        <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, justifyContent: "center" }}>
+          <SkeletonBox style={{ height: Math.round(fontSize * 0.7), borderRadius: 4 }} />
+        </View>
+      </View>
+    </View>
+  );
+}

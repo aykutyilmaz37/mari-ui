@@ -18,7 +18,7 @@ describe("FloatButton", () => {
   });
 
   it("kare + açıklama: ad açıklamadan; href → bağlantı (_blank güvenli)", () => {
-    render(<FloatButton shape="square" icon={<Icon />} description="Destek" href="https://kuzey.co/destek" target="_blank" />);
+    render(<FloatButton shape="square" icon={<Icon />} description="Destek" href="https://mari-ui.com/destek" target="_blank" />);
     const link = screen.getByRole("link", { name: "Destek" });
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });

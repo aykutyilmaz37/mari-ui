@@ -150,6 +150,46 @@ export interface NativeTagSize {
   readonly radius: keyof Theme["radius"];
 }
 
+export interface NativeAppBarSize {
+  /** Üst sıra (geri / başlık / eylemler) yüksekliği. */
+  readonly height: number;
+  readonly titleFontSize: number;
+  readonly titleLineHeight: number;
+  readonly subtitleFontSize: number;
+  readonly subtitleLineHeight: number;
+  /** `size="large"`: üst sıranın altındaki büyük başlık. */
+  readonly largeTitleFontSize: number;
+  readonly largeTitleLineHeight: number;
+  /** Büyük başlık alanının yüksekliği (kaydırınca 0'a iner). */
+  readonly largeAreaHeight: number;
+  /** Eylem / geri düğmesinin dokunma kutusu. */
+  readonly actionSize: number;
+  readonly iconSize: number;
+}
+
+export interface NativeBottomNavigationSize {
+  /** Çubuğun yüksekliği (güvenli alan payı hariç). */
+  readonly height: number;
+  readonly iconSize: number;
+  readonly labelFontSize: number;
+  readonly labelLineHeight: number;
+  /** `pill`: aktif ikonun arkasındaki hap zemin. */
+  readonly indicatorWidth: number;
+  readonly indicatorHeight: number;
+}
+
+export interface NativeSidebarSize {
+  /** Panel genişliği: ekranın bu oranı, en fazla `maxWidth`. */
+  readonly widthRatio: number;
+  readonly maxWidth: number;
+  readonly rowMinHeight: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly iconSize: number;
+  readonly headingFontSize: number;
+  readonly paddingHorizontal: number;
+}
+
 /** Native ölçüleri web ölçeğinden bağımsızdır; değerler dp/pt cinsindendir. */
 export interface NativeConfig {
   readonly sizes: Readonly<Record<ExtendedSize, NativeControlSize>>;
@@ -168,6 +208,9 @@ export interface NativeConfig {
   readonly accordion: Readonly<Record<Size, NativeAccordionSize>>;
   readonly tabs: Readonly<Record<Size, NativeTabsSize>>;
   readonly select: NativeSelectSize;
+  readonly appBar: NativeAppBarSize;
+  readonly bottomNavigation: Readonly<Record<"pill" | "plain", NativeBottomNavigationSize>>;
+  readonly sidebar: NativeSidebarSize;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -261,6 +304,15 @@ export const defaultNativeConfig: NativeConfig = {
   },
   // Select: alan Input ölçeğini (`sizes`) kullanır; panel satırı iOS liste satırı.
   select: { optionMinHeight: 48, fontSize: 17, lineHeight: 22, descriptionFontSize: 15, descriptionLineHeight: 20, groupFontSize: 13 },
+  // AppBar: başlık iOS Headline (17/22), büyük başlık iOS Large Title (34/41); eylem kutusu 44 (dokunma hedefi).
+  appBar: { height: 56, titleFontSize: 17, titleLineHeight: 22, subtitleFontSize: 13, subtitleLineHeight: 18, largeTitleFontSize: 34, largeTitleLineHeight: 41, largeAreaHeight: 52, actionSize: 44, iconSize: 24 },
+  // BottomNavigation: pill = Material 3 (80, gösterge 64×32), plain = iOS sekme çubuğu (56).
+  bottomNavigation: {
+    pill: { height: 80, iconSize: 24, labelFontSize: 12, labelLineHeight: 16, indicatorWidth: 64, indicatorHeight: 32 },
+    plain: { height: 56, iconSize: 24, labelFontSize: 11, labelLineHeight: 13, indicatorWidth: 0, indicatorHeight: 0 },
+  },
+  // Sidebar (drawer): telefonda tam genişlik (kullanıcı kararı), tablette en fazla 480; satır iOS liste satırı.
+  sidebar: { widthRatio: 1, maxWidth: 480, rowMinHeight: 48, fontSize: 17, lineHeight: 22, iconSize: 20, headingFontSize: 13, paddingHorizontal: 16 },
 };
 
 export interface NativeConfigOverrides {
@@ -281,6 +333,9 @@ export interface NativeConfigOverrides {
   accordion?: Partial<Record<Size, Partial<NativeAccordionSize>>>;
   tabs?: Partial<Record<Size, Partial<NativeTabsSize>>>;
   select?: Partial<NativeSelectSize>;
+  appBar?: Partial<NativeAppBarSize>;
+  bottomNavigation?: Partial<Record<"pill" | "plain", Partial<NativeBottomNavigationSize>>>;
+  sidebar?: Partial<NativeSidebarSize>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -308,6 +363,9 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     accordion: mergeScale(base.accordion, overrides.accordion),
     tabs: mergeScale(base.tabs, overrides.tabs),
     select: { ...base.select, ...overrides.select },
+    appBar: { ...base.appBar, ...overrides.appBar },
+    bottomNavigation: mergeScale(base.bottomNavigation, overrides.bottomNavigation),
+    sidebar: { ...base.sidebar, ...overrides.sidebar },
   };
 }
 
