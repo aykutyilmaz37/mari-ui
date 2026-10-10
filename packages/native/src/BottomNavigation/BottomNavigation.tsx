@@ -5,8 +5,9 @@ import type { Theme } from "@mari-ui/tokens";
 import { useNativeConfig, type NativeBottomNavigationSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
+import { useSafeInsets } from "../theme/insets";
 import { Badge } from "../Badge";
-import { SkeletonBox, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
+import { SkeletonBox, SkeletonText, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
 import { useControllable } from "../lib/useControllable";
 
 /** `pill`: Material 3 — aktif ikonun arkasında hap zemin. `plain`: iOS — yalnız renk değişir. */
@@ -44,7 +45,7 @@ export interface BottomNavigationProps extends SkeletonableProps {
   color?: ColorRole;
   /** Etiketleri gizler (yalnız ikon; erişilebilir ad yine `label`). */
   hideLabels?: boolean;
-  /** Alt güvenli alan payı (ev çubuğu). `useSafeAreaInsets().bottom` verin. Varsayılan: 0. */
+  /** Alt güvenli alan payı (ev çubuğu). Varsayılan: `ThemeProvider insets`in `bottom`ı, yoksa 0. */
   bottomInset?: number;
   /** Üst ayırıcı çizgi. Varsayılan: `true`. */
   bordered?: boolean;
@@ -124,7 +125,7 @@ function NavItem({ item, active, onPress, variant, color, hideLabels, skeleton, 
         {/* Web'de mutlak konumlu gösterge akıştaki ikonun üstüne boyanır — ikon üst katmanda. */}
         <View style={{ zIndex: 1 }}>{icon}</View>
       </View>
-      {label != null && skeleton ? <SkeletonBox style={{ borderRadius: 4 }}>{label}</SkeletonBox> : label}
+      {label != null && skeleton ? <SkeletonText fontSize={m.labelFontSize} align="center">{label}</SkeletonText> : label}
     </Pressable>
   );
 }
@@ -138,7 +139,7 @@ export function BottomNavigation({
   variant = "pill",
   color = "primary",
   hideLabels = false,
-  bottomInset = 0,
+  bottomInset: bottomInsetProp,
   bordered = true,
   skeleton = false,
   accessibilityLabel,
@@ -146,6 +147,8 @@ export function BottomNavigation({
 }: BottomNavigationProps) {
   const theme = useTheme();
   const m = useNativeConfig().bottomNavigation[variant];
+  const safe = useSafeInsets();
+  const bottomInset = bottomInsetProp ?? safe?.bottom ?? 0;
   const [active, setActive] = useControllable<string | undefined>(value, defaultValue ?? items[0]?.key);
   const c = theme.color.canvas;
 

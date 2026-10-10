@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Theme } from "@mari-ui/tokens";
 import { ThemeContext } from "./ThemeContext";
 import { withFonts, type NativeFonts } from "./fonts";
+import { InsetsContext, type SafeAreaInsets } from "./insets";
 
 export interface ThemeProviderProps {
   /**
@@ -17,6 +18,13 @@ export interface ThemeProviderProps {
    * `BRAND_FONT_FAMILIES`).
    */
   fonts?: NativeFonts;
+  /**
+   * Güvenli alan payları — kökte bir kez `useSafeAreaInsets()` verin. Ekran
+   * kenarına değen bileşenler (AppBar, BottomNavigation, Sidebar, BottomSheet,
+   * Toast, ImageViewer) kendi prop'u verilmezse bunu kullanır. Verilmezse üst
+   * sağlayıcınınki geçerli kalır.
+   */
+  insets?: Partial<SafeAreaInsets>;
   children: ReactNode;
 }
 
@@ -26,6 +34,7 @@ export interface ThemeProviderProps {
  * import ETMEZ (sadece `react`) — bu yüzden bu dosya, tersine, vitest altında
  * da (herhangi bir RN mock'una gerek kalmadan) test edilebilir durumda.
  */
-export function ThemeProvider({ theme, fonts = "system", children }: ThemeProviderProps) {
-  return <ThemeContext.Provider value={withFonts(theme, fonts)}>{children}</ThemeContext.Provider>;
+export function ThemeProvider({ theme, fonts = "system", insets, children }: ThemeProviderProps) {
+  const themed = <ThemeContext.Provider value={withFonts(theme, fonts)}>{children}</ThemeContext.Provider>;
+  return insets ? <InsetsContext.Provider value={insets}>{themed}</InsetsContext.Provider> : themed;
 }

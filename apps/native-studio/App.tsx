@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Animated, Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from "react-native";
+import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { STORY_CATEGORIES, STORY_ENTRIES, renderStory, type StoryContext, type StoryEntry } from "./src/stories";
 import { MariLogo } from "./src/MariLogo";
 import { useStackTransition } from "./src/useStackTransition";
@@ -26,6 +27,17 @@ const SHELL = {
 };
 
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <Studio />
+    </SafeAreaProvider>
+  );
+}
+
+function Studio() {
+  // Gerçek çentik / ev çubuğu payı: kabuk kendi kenarlarında kullanır, story'lere
+  // `globals.insets` ile geçer (Sidebar / BottomSheet gibi tam ekran katmanlar için).
+  const insets = useSafeAreaInsets();
   const system = useColorScheme();
   const [theme, setTheme] = useState<StoryContext["globals"]["theme"]>(system === "dark" ? "dark" : "light");
   const [brandFonts, setBrandFonts] = useState(false);
@@ -36,10 +48,10 @@ export default function App() {
 
   const c = SHELL[theme];
   // radius: çerçeve kırpmaz (taşan baloncuk kesilmesin), zemin köşesi story tarafında yuvarlanır.
-  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system", radius: FRAME_RADIUS };
+  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system", radius: FRAME_RADIUS, insets };
 
   return (
-    <SafeAreaView style={[styles.screen, { backgroundColor: c.bg }]}>
+    <View style={[styles.screen, { backgroundColor: c.bg, paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
       <StatusBar style={theme === "dark" ? "light" : "dark"} />
       <View style={[styles.toolbar, { borderColor: c.border }]}>
         {selected ? (
@@ -108,7 +120,7 @@ export default function App() {
           </>
         ) : null}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

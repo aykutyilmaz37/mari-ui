@@ -7,18 +7,19 @@ import { AppBar, AppBarAction } from "../AppBar";
 import { Empty } from "../Empty";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
 
 const meta: Meta<typeof BottomNavigation> = {
   title: "Native/Navigasyon/BottomNavigation",
   component: BottomNavigation,
   tags: ["autodocs"],
-  decorators: [withStretch, withNativeTheme],
+  // withoutInsets: çubuklar sayfa içindeki çerçevede, çentik payı almasın.
+  decorators: [withStretch, withoutInsets, withNativeTheme],
   parameters: { docs: { description: { component: componentDoc({
     summary: "Uygulamanın ana bölümleri arasında geçiş: ekranın altında sabit 3–5 sekme. İkon + etiket, rozet, iki görünüm (`pill` Material 3, `plain` iOS), yeniden dokunma (`onReselect`).",
     whenToUse: ["Uygulamanın 3–5 üst düzey bölümü (Ana Sayfa / Ara / Sepet / Hesabım).", "Bölümler arası sık ve eşit önemde geçiş."],
     whenNotToUse: ["2 bölüm — Segmented ya da Tabs.", "6+ bölüm — Sidebar (drawer) ya da \"Daha fazla\" sekmesi.", "Ekran içi görünüm değiştirmek — Tabs."],
-    vsWeb: "Web'de karşılığı yok. Yönlendiriciden bağımsız: `value` / `onChange` ile kontrollü kullanın. React Navigation'da `tabBar={({ state, navigation }) => <BottomNavigation items={…} value={state.routes[state.index].name} onChange={(k) => navigation.navigate(k)} bottomInset={insets.bottom} />}`. Güvenli alan bağımlılıksız: `bottomInset={useSafeAreaInsets().bottom}` (varsayılan 0). Ölçüler `nativeConfig.bottomNavigation`.",
+    vsWeb: "Web'de karşılığı yok. Yönlendiriciden bağımsız: `value` / `onChange` ile kontrollü kullanın. React Navigation'da `tabBar={({ state, navigation }) => <BottomNavigation items={…} value={state.routes[state.index].name} onChange={(k) => navigation.navigate(k)} />}`. Güvenli alan: kökteki `<ThemeProvider insets={useSafeAreaInsets()}>` — alt pay oradan (`bottomInset` ezer). Ölçüler `nativeConfig.bottomNavigation`.",
   }) } } },
   argTypes: {
     variant: { control: "select", options: ["pill", "plain"] },
@@ -75,14 +76,13 @@ function ShopDemo() {
 export const Shop: Story = {
   name: "Alışveriş Uygulaması",
   ...storyDoc(
-    "Beş bölüm, sepette sayı rozeti; aktif sekmede dolu ikon (`icon` fonksiyonu `active` alır). Aktif sekmeye yeniden dokunmak `onReselect` çağırır — listeyi başa kaydırmak için. Gerçek uygulamada `bottomInset={insets.bottom}`.",
+    "Beş bölüm, sepette sayı rozeti; aktif sekmede dolu ikon (`icon` fonksiyonu `active` alır). Aktif sekmeye yeniden dokunmak `onReselect` çağırır — listeyi başa kaydırmak için. Ev çubuğu payı kökteki `ThemeProvider insets`ten gelir.",
     `const [tab, setTab] = useState("home");
 
 <BottomNavigation
   value={tab}
   onChange={setTab}
   onReselect={() => listRef.current?.scrollToOffset({ offset: 0 })}
-  bottomInset={insets.bottom}
   accessibilityLabel="Ana gezinme"
   items={[
     { key: "home", label: "Ana Sayfa", icon: ({ active, color, size }) => <Home size={size} color={color} fill={active ? color : "none"} /> },

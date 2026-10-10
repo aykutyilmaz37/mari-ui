@@ -4,9 +4,10 @@ import type { Theme } from "@mari-ui/tokens";
 import { useNativeConfig, type NativeAppBarSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
+import { useSafeInsets } from "../theme/insets";
 import { Badge } from "../Badge";
 import { ChevronLeftIcon } from "../lib/icons";
-import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
+import { SkeletonBox, SkeletonText, type SkeletonableProps } from "../lib/Skeleton";
 
 /** `small`: tek sıra. `large`: altta büyük başlık; `scrollY` verilirse kaydırınca küçük başlığa geçer. */
 export type AppBarSize = "small" | "large";
@@ -26,7 +27,7 @@ export interface AppBarProps extends SkeletonableProps {
   leading?: React.ReactNode;
   /** Sağ uç — genelde `AppBarAction`'lar. */
   actions?: React.ReactNode;
-  /** Üst güvenli alan payı (çentik / durum çubuğu). `useSafeAreaInsets().top` verin. Varsayılan: 0. */
+  /** Üst güvenli alan payı (çentik / durum çubuğu). Varsayılan: `ThemeProvider insets`in `top`ı, yoksa 0. */
   topInset?: number;
   /** Sayfanın dikey kaydırma değeri (`useAppBarScroll`). `large` daralır, alt çizgi kaydırınca belirir. */
   scrollY?: Animated.Value;
@@ -99,13 +100,13 @@ function titleText(node: React.ReactNode, style: object, lines = 1, header = fal
   );
 }
 
-/** İskelette metin kendi genişliğinde kalsın (sütunda tam genişliğe uzamasın). */
-function sk(skeleton: boolean, node: React.ReactNode, align: "flex-start" | "center" = "flex-start") {
+/** İskelette metin kendi genişliğinde, satırın ortasında ince çubuk (başlık + alt başlık birbirine yapışmasın). */
+function sk(skeleton: boolean, node: React.ReactNode, fontSize: number, align: "flex-start" | "center" = "flex-start") {
   if (!skeleton || node == null) return node;
   return (
-    <View style={{ alignItems: align, maxWidth: "100%" }}>
-      <SkeletonBox style={{ borderRadius: 4 }}>{node}</SkeletonBox>
-    </View>
+    <SkeletonText fontSize={fontSize} align={align}>
+      {node}
+    </SkeletonText>
   );
 }
 
@@ -155,8 +156,8 @@ function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hid
       style={[frame, { justifyContent: "center", opacity }]}
       {...(hidden ? { accessibilityElementsHidden: true, importantForAccessibility: "no-hide-descendants" as const } : null)}
     >
-      {sk(skeleton, titleText(title, { fontFamily: font, fontSize: m.titleFontSize, lineHeight: m.titleLineHeight, fontWeight: "600", color: c.foreground, textAlign }, 1, header), align)}
-      {subtitle == null ? null : sk(skeleton, titleText(subtitle, { fontFamily: font, fontSize: m.subtitleFontSize, lineHeight: m.subtitleLineHeight, color: c.muted, textAlign }), align)}
+      {sk(skeleton, titleText(title, { fontFamily: font, fontSize: m.titleFontSize, lineHeight: m.titleLineHeight, fontWeight: "600", color: c.foreground, textAlign }, 1, header), m.titleFontSize, align)}
+      {subtitle == null ? null : sk(skeleton, titleText(subtitle, { fontFamily: font, fontSize: m.subtitleFontSize, lineHeight: m.subtitleLineHeight, color: c.muted, textAlign }), m.subtitleFontSize, align)}
     </Animated.View>
   );
 }
@@ -165,7 +166,7 @@ function LargeTitle({ title, height, opacity, skeleton, m, theme }: { title: Rea
   const style = { fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: m.largeTitleFontSize, lineHeight: m.largeTitleLineHeight, fontWeight: "700", color: theme.color.canvas.foreground };
   return (
     <Animated.View style={{ height, overflow: "hidden", justifyContent: "flex-end", paddingHorizontal: 16 }}>
-      <Animated.View style={{ opacity, paddingBottom: 8 }}>{sk(skeleton, titleText(title, style, 1, true))}</Animated.View>
+      <Animated.View style={{ opacity, paddingBottom: 8 }}>{sk(skeleton, titleText(title, style, 1, true), m.largeTitleFontSize)}</Animated.View>
     </Animated.View>
   );
 }
@@ -185,7 +186,7 @@ export function AppBar({
   backAccessibilityLabel = "Geri",
   leading,
   actions,
-  topInset = 0,
+  topInset,
   scrollY,
   bordered,
   skeleton = false,
@@ -193,6 +194,7 @@ export function AppBar({
 }: AppBarProps) {
   const theme = useTheme();
   const m = useNativeConfig().appBar;
+  const safe = useSafeInsets();
   const c = theme.color.canvas;
   const large = size === "large";
   const centered = titleAlign === "center";
@@ -229,7 +231,7 @@ export function AppBar({
 
   return (
     <AppBarContext.Provider value={{ skeleton, m, theme }}>
-      <View style={[{ alignSelf: "stretch", backgroundColor: c.surface, paddingTop: topInset }, style]}>
+      <View style={[{ alignSelf: "stretch", backgroundColor: c.surface, paddingTop: topInset ?? safe?.top ?? 0 }, style]}>
         <View style={{ height: m.height, flexDirection: "row", alignItems: "center", paddingHorizontal: 4 }}>
           {centered ? titleBlock : null}
           <View onLayout={(e) => measure("left", e.nativeEvent.layout.width)} style={sideStyle}>

@@ -10,7 +10,7 @@ import { storyModules } from "@mari-ui/native/stories";
 
 export interface StoryContext {
   args: Record<string, unknown>;
-  globals: { theme: "light" | "dark"; fonts: "system" | "brand"; radius?: number };
+  globals: { theme: "light" | "dark"; fonts: "system" | "brand"; radius?: number; insets?: { top: number; bottom: number; left: number; right: number } };
 }
 
 type Decorator = (Story: () => React.ReactElement, context: StoryContext) => React.ReactElement;

@@ -6,19 +6,20 @@ import { AppBar, AppBarAction, useAppBarScroll, type AppBarProps } from "./AppBa
 import { ListItem, ListItemMeta } from "../List";
 import { Paragraph, Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
 
 const meta: Meta<typeof AppBar> = {
   title: "Native/Navigasyon/AppBar",
   component: AppBar,
   tags: ["autodocs"],
-  decorators: [withStretch, withNativeTheme],
+  // withoutInsets: çubuklar sayfa içindeki çerçevede, çentik payı almasın.
+  decorators: [withStretch, withoutInsets, withNativeTheme],
   parameters: {
     docs: { description: { component: componentDoc({
       summary: "Ekranın üst çubuğu: geri düğmesi ya da `leading`, başlık (+ alt başlık), sağda `AppBarAction`'lar. `size=\"large\"` büyük başlıkla açılır, `useAppBarScroll` ile kaydırınca küçük başlığa daralır.",
       whenToUse: ["Her ekranın başlığı ve ekran düzeyi eylemleri (paylaş, ara, daha fazla).", "Liste / ana sekme ekranlarında büyük başlık (`large`)."],
       whenNotToUse: ["Sayfa içi bölüm başlığı — Title.", "Ekranlar arası ana gezinme — BottomNavigation.", "React Navigation'ın kendi başlığını kullanıyorsanız ikisini birden koymayın (`headerShown: false` + AppBar ya da yalnız onun başlığı)."],
-      vsWeb: "Web'de karşılığı yok (web'de üst gezinme BasicMenu / MegaMenu). Güvenli alan bağımlılıksız: `topInset={useSafeAreaInsets().top}` verin (varsayılan 0). Başlık hizası platforma göre: iOS ortalı, Android / web sola. Ölçüler `nativeConfig.appBar`.",
+      vsWeb: "Web'de karşılığı yok (web'de üst gezinme BasicMenu / MegaMenu). Güvenli alan: kökte bir kez `<ThemeProvider insets={useSafeAreaInsets()}>` — AppBar üst payı oradan alır (`topInset` ezer). Ekranı ayrıca üstten SafeAreaView ile sarmayın, pay iki kez eklenir. Başlık hizası platforma göre: iOS ortalı, Android / web sola. Ölçüler `nativeConfig.appBar`.",
     }) } },
   },
   argTypes: {
@@ -54,7 +55,6 @@ export const Detail: Story = {
   title="Sipariş #48213"
   subtitle="Kargoda"
   onBack={() => navigation.goBack()}
-  topInset={insets.top}
   actions={<>
     <AppBarAction icon={({ color }) => <Share2 color={color} />} accessibilityLabel="Paylaş" onPress={share} />
     <AppBarAction icon={({ color }) => <MoreVertical color={color} />} accessibilityLabel="Daha fazla" onPress={openMenu} />
@@ -142,7 +142,7 @@ export const LargeCollapsing: Story = {
     "`size=\"large\"` + `useAppBarScroll`: büyük başlık kaydırdıkça kısalır ve solar, küçük başlık üst sırada belirir, alt çizgi daralınca çıkar. iOS Mail / Ayarlar düzeni.",
     `const { scrollY, onScroll, scrollEventThrottle } = useAppBarScroll();
 
-<AppBar size="large" title="Mesajlar" scrollY={scrollY} topInset={insets.top} actions={…} />
+<AppBar size="large" title="Mesajlar" scrollY={scrollY} actions={…} />
 <Animated.ScrollView onScroll={onScroll} scrollEventThrottle={scrollEventThrottle}>
   …
 </Animated.ScrollView>`
