@@ -110,12 +110,17 @@ export type { AppBarProps, AppBarActionProps, AppBarActionState, AppBarSize } fr
 export { BottomNavigation } from "./BottomNavigation";
 export type { BottomNavigationProps, BottomNavigationItem, BottomNavigationIconState, BottomNavigationVariant } from "./BottomNavigation";
 
+export { Sidebar } from "./Sidebar";
+export type { SidebarProps, SidebarItem, SidebarIconState, SidebarHeaderInk } from "./Sidebar";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize } from "./nativeConfig";
 
 export { ThemeProvider } from "./theme/ThemeProvider";
 export type { ThemeProviderProps } from "./theme/ThemeProvider";
 export { useTheme } from "./theme/useTheme";
+export { SafeAreaInsetsProvider, useSafeInsets } from "./theme/insets";
+export type { SafeAreaInsets } from "./theme/insets";
 export { BRAND_FONT_FAMILIES, withFonts } from "./theme/fonts";
 export type { NativeFonts } from "./theme/fonts";
 export { useStyles } from "./styles/useStyles";
