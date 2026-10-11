@@ -116,6 +116,9 @@ export type { SidebarProps, SidebarBaseProps, SidebarLayoutProps, SidebarItem, S
 export { Tree } from "./Tree";
 export type { TreeProps, TreeNode, TreeCheckInfo } from "./Tree";
 
+export { TreeSelect } from "./TreeSelect";
+export type { TreeSelectProps, TreeSelectSingleProps, TreeSelectMultipleProps, TreeSelectCheckedStrategy } from "./TreeSelect";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize, NativeTreeSize } from "./nativeConfig";
 
