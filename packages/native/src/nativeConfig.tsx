@@ -190,6 +190,18 @@ export interface NativeSidebarSize {
   readonly paddingHorizontal: number;
 }
 
+export interface NativeTreeSize {
+  /** Satır en az yüksekliği (dokunma hedefi). */
+  readonly rowMinHeight: number;
+  /** Her seviyenin girintisi. */
+  readonly indent: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+  readonly iconSize: number;
+  /** Aç/kapa okunun dokunma kutusu. */
+  readonly toggleSize: number;
+}
+
 /** Native ölçüleri web ölçeğinden bağımsızdır; değerler dp/pt cinsindendir. */
 export interface NativeConfig {
   readonly sizes: Readonly<Record<ExtendedSize, NativeControlSize>>;
@@ -211,6 +223,7 @@ export interface NativeConfig {
   readonly appBar: NativeAppBarSize;
   readonly bottomNavigation: Readonly<Record<"pill" | "plain", NativeBottomNavigationSize>>;
   readonly sidebar: NativeSidebarSize;
+  readonly tree: NativeTreeSize;
 }
 
 /** Bileşenleri değiştirmeden uygulama düzeyinde geçersiz kılınabilen varsayılanlar. */
@@ -313,6 +326,8 @@ export const defaultNativeConfig: NativeConfig = {
   },
   // Sidebar (drawer): telefonda tam genişlik (kullanıcı kararı), tablette en fazla 480; satır iOS liste satırı.
   sidebar: { widthRatio: 1, maxWidth: 480, rowMinHeight: 48, fontSize: 17, lineHeight: 22, iconSize: 20, headingFontSize: 13, paddingHorizontal: 16 },
+  // Tree: satır 44 (dokunma hedefi), metin iOS Callout (16/21), girinti 20.
+  tree: { rowMinHeight: 44, indent: 20, fontSize: 16, lineHeight: 21, iconSize: 18, toggleSize: 32 },
 };
 
 export interface NativeConfigOverrides {
@@ -336,6 +351,7 @@ export interface NativeConfigOverrides {
   appBar?: Partial<NativeAppBarSize>;
   bottomNavigation?: Partial<Record<"pill" | "plain", Partial<NativeBottomNavigationSize>>>;
   sidebar?: Partial<NativeSidebarSize>;
+  tree?: Partial<NativeTreeSize>;
 }
 
 function mergeScale<K extends string, T extends object>(defaults: Readonly<Record<K, T>>, overrides?: Partial<Record<K, Partial<T>>>): Record<K, T> {
@@ -366,6 +382,7 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
     appBar: { ...base.appBar, ...overrides.appBar },
     bottomNavigation: mergeScale(base.bottomNavigation, overrides.bottomNavigation),
     sidebar: { ...base.sidebar, ...overrides.sidebar },
+    tree: { ...base.tree, ...overrides.tree },
   };
 }
 
