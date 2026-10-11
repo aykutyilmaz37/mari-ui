@@ -105,7 +105,13 @@ function Studio() {
               {selected.meta.parameters?.studio?.layout === "screen" ? (
                 <ScreenStories key={selected.title} entry={selected} globals={globals} colors={c} />
               ) : (
-                <ScrollView scrollEnabled={!stack.swiping} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+                <ScrollView
+                  scrollEnabled={!stack.swiping}
+                  keyboardShouldPersistTaps="handled"
+                  // Klavye açılınca alt pay klavye kadar artar, odaklanan alan görünür yere kayar (iOS; Android'de adjustResize).
+                  automaticallyAdjustKeyboardInsets
+                  contentContainerStyle={styles.content}
+                >
                   <Text style={[styles.title, { color: c.text }]}>{selected.title}</Text>
                   {selected.stories.map(({ id, name, description, story }) => (
                     <View key={id} style={styles.story}>

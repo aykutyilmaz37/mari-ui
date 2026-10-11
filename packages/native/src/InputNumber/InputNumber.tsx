@@ -92,12 +92,16 @@ interface StepButtonProps {
   iconSize: number;
   color: string;
   pressedBg: string;
+  /** Kutunun köşe yarıçapı — basılı zemin dış köşelerde kutudan taşmasın. */
+  radius: number;
   onStep: () => void;
   repeat: ReturnType<typeof useRepeat>;
 }
 
-function StepButton({ kind, label, disabled, size, iconSize, color, pressedBg, onStep, repeat }: StepButtonProps) {
+function StepButton({ kind, label, disabled, size, iconSize, color, pressedBg, radius, onStep, repeat }: StepButtonProps) {
   const Icon = kind === "inc" ? PlusIcon : MinusIcon;
+  // Kapsayıcıda overflow:hidden KULLANILMAZ — iOS'ta kırpılan kutudaki TextInput dokunuşla odak almıyordu (simülatörde ölçüldü).
+  const corners = kind === "dec" ? { borderTopLeftRadius: radius, borderBottomLeftRadius: radius } : { borderTopRightRadius: radius, borderBottomRightRadius: radius };
   return (
     <Pressable
       accessibilityRole="button"
@@ -108,7 +112,7 @@ function StepButton({ kind, label, disabled, size, iconSize, color, pressedBg, o
       onLongPress={() => repeat.start(onStep)}
       onPressOut={repeat.stop}
       delayLongPress={REPEAT_DELAY_MS}
-      style={({ pressed }) => ({ width: size, alignSelf: "stretch", alignItems: "center", justifyContent: "center", opacity: disabled ? 0.35 : 1, backgroundColor: pressed ? pressedBg : "transparent" })}
+      style={({ pressed }) => ({ width: size, alignSelf: "stretch", alignItems: "center", justifyContent: "center", ...corners, opacity: disabled ? 0.35 : 1, backgroundColor: pressed ? pressedBg : "transparent" })}
     >
       <Icon size={iconSize} color={color} strokeWidth={2.25} />
     </Pressable>
@@ -182,13 +186,14 @@ export function InputNumber({
   const atMax = current !== null && max !== undefined && current >= max;
   const buttonSize = typeof styles.container.height === "number" ? styles.container.height : 44;
   const pressedBg = theme.color.canvas.surfaceAlt;
+  const radius = typeof styles.container.borderRadius === "number" ? styles.container.borderRadius : 0;
   const fontSize = styles.input.fontSize;
   const text = focused ? draft : formatNumber(current, config);
   const centered = controls && prefix == null && suffix == null;
 
   return (
-    <Pressable onPress={() => inputRef.current?.focus()} disabled={field.disabled} hitSlop={styles.hitSlop} accessible={false} style={[styles.container, controls ? { paddingHorizontal: 0, gap: 0, overflow: "hidden" } : null, style]}>
-      {controls ? <StepButton kind="dec" label={decrementLabel} disabled={!editable || atMin} size={buttonSize} iconSize={styles.iconSize} color={theme.color.canvas.foreground} pressedBg={pressedBg} onStep={() => stepBy(-1)} repeat={repeat} /> : null}
+    <Pressable onPress={() => inputRef.current?.focus()} disabled={field.disabled} hitSlop={styles.hitSlop} accessible={false} style={[styles.container, controls ? { paddingHorizontal: 0, gap: 0 } : null, style]}>
+      {controls ? <StepButton kind="dec" label={decrementLabel} disabled={!editable || atMin} size={buttonSize} iconSize={styles.iconSize} color={theme.color.canvas.foreground} pressedBg={pressedBg} radius={radius} onStep={() => stepBy(-1)} repeat={repeat} /> : null}
       <View style={{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: controls ? 4 : 0 }}>
         <Adornment node={prefix} color={styles.mutedColor} fontSize={fontSize} />
         <TextInput
@@ -230,7 +235,7 @@ export function InputNumber({
         />
         <Adornment node={suffix} color={styles.mutedColor} fontSize={fontSize} />
       </View>
-      {controls ? <StepButton kind="inc" label={incrementLabel} disabled={!editable || atMax} size={buttonSize} iconSize={styles.iconSize} color={theme.color.canvas.foreground} pressedBg={pressedBg} onStep={() => stepBy(1)} repeat={repeat} /> : null}
+      {controls ? <StepButton kind="inc" label={incrementLabel} disabled={!editable || atMax} size={buttonSize} iconSize={styles.iconSize} color={theme.color.canvas.foreground} pressedBg={pressedBg} radius={radius} onStep={() => stepBy(1)} repeat={repeat} /> : null}
     </Pressable>
   );
 }
