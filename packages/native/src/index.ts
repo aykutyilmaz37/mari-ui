@@ -122,9 +122,6 @@ export type { TreeSelectProps, TreeSelectSingleProps, TreeSelectMultipleProps, T
 export { InputNumber } from "./InputNumber";
 export type { InputNumberProps } from "./InputNumber";
 
-export { AutoComplete } from "./AutoComplete";
-export type { AutoCompleteProps, AutoCompleteOption } from "./AutoComplete";
-
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize, NativeTreeSize } from "./nativeConfig";
 

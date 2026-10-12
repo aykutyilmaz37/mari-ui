@@ -15,7 +15,7 @@ import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
 import { Spinner } from "../lib/Spinner";
 import { useControllable } from "../lib/useControllable";
 import { useFieldControl } from "../lib/fieldContext";
-import { buildSections, flattenOptions, toggleValue, type SelectOption, type SelectOptionGroup, type SelectValue } from "./utils";
+import { buildSections, flattenOptions, foldForSearch, optionText, toggleValue, type SelectOption, type SelectOptionGroup, type SelectValue } from "./utils";
 
 export type { SelectOption, SelectOptionGroup, SelectValue };
 
@@ -24,6 +24,14 @@ interface SelectBaseProps extends SkeletonableProps {
   placeholder?: string;
   /** Panelin üstünde arama alanı (Türkçe/aksansız). */
   showSearch?: boolean;
+  /**
+   * Listede olmayan değer de seçilebilir: aramada birebir eşleşme yoksa en üstte
+   * "“…” kullan" satırı; klavyede "bitti" de yazılanı seçer. Aramayı kendiliğinden
+   * açar. Değer yazılan metin olur (alanda düz metin / etiket olarak görünür).
+   */
+  allowFreeText?: boolean;
+  /** Serbest metin satırının etiketi. Varsayılan: `(t) => "“t” kullan"`. */
+  freeTextLabel?: (text: string) => string;
   allowClear?: boolean;
   /** Varsayılan: `"Temizle"`. */
   clearLabel?: string;
@@ -123,6 +131,68 @@ function OptionRow({ option, selected, multiple, onPress, render }: OptionRowPro
   );
 }
 
+const defaultFreeTextLabel = (t: string) => `“${t}” kullan`;
+
+/** Değerler → seçenekler; serbest metinle seçilen (listede olmayan) değer düz metin seçeneği olur. */
+function resolveOptions(vals: SelectValue[], flat: SelectOption[], allowFreeText: boolean): SelectOption[] {
+  const out: SelectOption[] = [];
+  for (const v of vals) {
+    const found = flat.find((o) => o.value === v);
+    if (found) out.push(found);
+    else if (allowFreeText) out.push({ value: v, label: String(v) });
+  }
+  return out;
+}
+
+interface PanelInput {
+  options: Array<SelectOption | SelectOptionGroup>;
+  values: SelectValue[];
+  flat: SelectOption[];
+  allowFreeText: boolean;
+  freeText: string | null;
+  notFoundContent: React.ReactNode;
+}
+
+/**
+ * Paneldeki liste: serbest metinle seçilmiş (listede olmayan) değerler de ✓ ile
+ * görünür — oradan kaldırılabilsin. Serbest metin satırı varken "sonuç yok" gizli.
+ */
+function panelContent({ options, values, flat, allowFreeText, freeText, notFoundContent }: PanelInput) {
+  const extra = allowFreeText ? values.filter((v) => !flat.some((o) => o.value === v)).map((v) => ({ value: v, label: String(v) })) : [];
+  return { items: extra.length ? [...options, ...extra] : options, empty: freeText ? null : notFoundContent };
+}
+
+/** Yazılan, listede ya da seçililerde birebir yoksa serbest metin adayı. */
+function freeTextCandidate(search: string, flat: SelectOption[], values: SelectValue[]): string | null {
+  const trimmed = search.trim();
+  if (!trimmed) return null;
+  const q = foldForSearch(trimmed);
+  const exact = flat.some((o) => foldForSearch(optionText(o)) === q) || values.some((v) => foldForSearch(String(v)) === q);
+  return exact ? null : trimmed;
+}
+
+/** Serbest metinde arama alanı kendiliğinden odaklanır, "bitti" yazılanı seçer. */
+function freeTextSearchProps(allowFreeText: boolean, onEnter: () => void) {
+  return allowFreeText ? { autoFocus: true, returnKeyType: "done" as const, onPressEnter: onEnter } : null;
+}
+
+/** Aramada yazılan, listede birebir yoksa "“…” kullan" satırı (vurgu renginde). */
+function FreeTextRow({ text, label, onPress }: { text: string; label: string; onPress: () => void }) {
+  const theme = useTheme();
+  const s = useNativeConfig().select;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={`Listede olmayan "${text}" değerini seçer`}
+      onPress={onPress}
+      style={({ pressed }) => ({ minHeight: s.optionMinHeight, justifyContent: "center", paddingVertical: 8, paddingHorizontal: ROW_INSET, marginHorizontal: -ROW_INSET, borderRadius: 10, backgroundColor: pressed ? theme.color.canvas.surfaceAlt : "transparent" })}
+    >
+      <Text numberOfLines={2} style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: s.fontSize, lineHeight: s.lineHeight, fontWeight: "600", color: theme.color.primary.text }}>{label}</Text>
+    </Pressable>
+  );
+}
+
 /** Arama varken sabit durak (süzerken panel zıplamasın); sabit dizi — her çizimde yeni dizi sürüklemeyi bozuyordu. */
 const SEARCH_SNAPS: SnapPoint[] = ["85%"];
 
@@ -195,6 +265,7 @@ function OptionList({ sections, loading, notFoundContent, values, multiple, onCh
       </View>
     );
   }
+  if (sections.length === 0 && notFoundContent == null) return null;
   if (sections.length === 0) return <Text style={{ fontFamily: font, fontSize: s.fontSize, color: c.muted, paddingVertical: 24, textAlign: "center" }}>{notFoundContent}</Text>;
   const groupStyle: TextStyle = { fontFamily: font, fontSize: s.groupFontSize, fontWeight: "600", color: c.muted, letterSpacing: 0.5, textTransform: "uppercase", paddingTop: 12, paddingBottom: 4 };
   return (
@@ -217,8 +288,10 @@ function OptionList({ sections, loading, notFoundContent, values, multiple, onCh
  * seçilir ve panel kapanır; çoklu seçimde panel açık kalır ("Tamam" kapatır).
  */
 export function Select(props: SelectProps) {
-  const { options, placeholder = "Seçin", showSearch = false, allowClear = false, clearLabel = "Temizle", loading = false, notFoundContent = "Sonuç bulunamadı", size = "md", variant = "outline", shape = "default", color, title, open: openProp, onOpenChange, onSearch, optionRender, style } = props;
+  const { options, placeholder = "Seçin", showSearch: showSearchProp = false, allowFreeText = false, freeTextLabel = defaultFreeTextLabel, allowClear = false, clearLabel = "Temizle", loading = false, notFoundContent = "Sonuç bulunamadı", size = "md", variant = "outline", shape = "default", color, title, open: openProp, onOpenChange, onSearch, optionRender, style } = props;
   const multiple = props.mode === "multiple";
+  // Serbest metin aramasız anlamsız: aramayı kendiliğinden açar.
+  const showSearch = showSearchProp || allowFreeText;
   const field = useFieldControl({ disabled: props.disabled, skeleton: props.skeleton, accessibilityLabel: props.accessibilityLabel, accessibilityHint: props.accessibilityHint });
   const [open, setOpenState] = useControllable<boolean>(openProp, false);
   const styles = useStyles("input", { color: field.status ?? color, variant, size, shape, disabled: field.disabled, focused: open });
@@ -226,7 +299,7 @@ export function Select(props: SelectProps) {
   const flat = flattenOptions(options);
   const { initial, controlled } = resolveValues(props);
   const [values, setValues] = useControllable<SelectValue[]>(controlled, initial);
-  const optionsOf = (vals: SelectValue[]) => vals.map((v) => flat.find((o) => o.value === v)).filter((o): o is SelectOption => Boolean(o));
+  const optionsOf = (vals: SelectValue[]) => resolveOptions(vals, flat, allowFreeText);
   const selected = optionsOf(values);
 
   const setOpen = (next: boolean) => {
@@ -244,7 +317,12 @@ export function Select(props: SelectProps) {
     else props.onChange?.(next[0] ?? null, opts[0] ?? null);
   };
   const choose = (option: SelectOption) => {
-    if (multiple) return commit(toggleValue(values, option.value));
+    if (multiple) {
+      commit(toggleValue(values, option.value));
+      // Serbest metin eklenince arama temizlensin — sıradakini yazmaya hazır.
+      if (search) setSearch("");
+      return;
+    }
     commit([option.value]);
     setOpen(false);
   };
@@ -253,6 +331,11 @@ export function Select(props: SelectProps) {
   if (field.skeleton) return <SkeletonBox style={[styles.container, style]} />;
 
   const hasValue = selected.length > 0;
+  const freeText = allowFreeText ? freeTextCandidate(search, flat, values) : null;
+  const panel = panelContent({ options, values, flat, allowFreeText, freeText, notFoundContent });
+  const pickFreeText = () => {
+    if (freeText) choose({ value: freeText, label: freeText });
+  };
   const sheetTitle = title ?? field.accessibilityLabel?.replace(/, zorunlu$/, "") ?? placeholder;
   // Çoklu seçimde etiketler sarabilir: sabit yükseklik yerine en az yükseklik.
   const grow: ViewStyle | null = multiple && hasValue ? { height: undefined, minHeight: styles.container.height } : null;
@@ -298,11 +381,14 @@ export function Select(props: SelectProps) {
                 onSearch?.(t);
               }}
               allowClear
+              // Serbest metinde klavyenin "bitti"si yazılanı seçer; aramayı kendisi açtıysa odakla gelir.
+              {...freeTextSearchProps(allowFreeText, () => pickFreeText())}
               accessibilityLabel={`${plain(sheetTitle) ?? "Seçenekler"} içinde ara`}
             />
           </View>
         ) : null}
-        <OptionList sections={buildSections(options, search)} loading={loading} notFoundContent={notFoundContent} values={values} multiple={multiple} onChoose={choose} render={optionRender} />
+        {freeText ? <FreeTextRow text={freeText} label={freeTextLabel(freeText)} onPress={pickFreeText} /> : null}
+        <OptionList sections={buildSections(panel.items, search)} loading={loading} notFoundContent={panel.empty} values={values} multiple={multiple} onChoose={choose} render={optionRender} />
       </BottomSheet>
     </>
   );
