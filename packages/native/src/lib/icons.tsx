@@ -61,6 +61,16 @@ export function MinusIcon({ size = 16, color = "currentColor", strokeWidth = 3 }
   );
 }
 
+export function PlusIcon({ size = 16, color = "currentColor", strokeWidth = 2 }: IconProps & { strokeWidth?: number }) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M5 12h14" {...s} strokeWidth={strokeWidth} />
+      <Path d="M12 5v14" {...s} strokeWidth={strokeWidth} />
+    </Svg>
+  );
+}
+
 export function SearchIcon({ size = 16, color = "currentColor" }: IconProps) {
   const s = stroke(color);
   return (

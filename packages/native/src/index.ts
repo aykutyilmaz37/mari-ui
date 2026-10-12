@@ -119,6 +119,9 @@ export type { TreeProps, TreeNode, TreeCheckInfo } from "./Tree";
 export { TreeSelect } from "./TreeSelect";
 export type { TreeSelectProps, TreeSelectSingleProps, TreeSelectMultipleProps, TreeSelectCheckedStrategy } from "./TreeSelect";
 
+export { InputNumber } from "./InputNumber";
+export type { InputNumberProps } from "./InputNumber";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize, NativeTreeSize } from "./nativeConfig";
 
