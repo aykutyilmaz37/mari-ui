@@ -504,6 +504,9 @@ importers:
       '@mari-ui/tokens':
         specifier: workspace:*
         version: link:../tokens
+      qrcode-generator:
+        specifier: ^1.5.2
+        version: 1.5.2
     devDependencies:
       '@mari-ui/eslint-config':
         specifier: workspace:*
