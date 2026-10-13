@@ -15,7 +15,7 @@ const data: TransferItem[] = [
   { key: "i", title: "İzmir" },
 ];
 
-const list = (name: string) => within(screen.getByRole("region", { name }));
+const list = (name: string) => within(screen.getByRole("group", { name }));
 
 describe("Transfer", () => {
   it("işaretle → sağa taşı; onChange, sayaç ve duyuru", async () => {
