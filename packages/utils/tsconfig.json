@@ -1,8 +1,0 @@
-{
-  "extends": "@mari-ui/tsconfig/base.json",
-  "compilerOptions": {
-    "lib": ["ES2020", "DOM", "DOM.Iterable"]
-  },
-  "include": ["src", "vitest.config.ts", "tsup.config.ts"],
-  "exclude": ["dist", "node_modules"]
-}

@@ -135,16 +135,13 @@ export const WithLoader: Story = {
   name: "CDN ile (loader)",
   ...storyDoc(
     "Adres üretimi `loader`da: kaynak + istenen genişlik → URL. Duyarlı görselde `widths` adayları + `sizes`, sabit " +
-      "genişlikte 1x/2x üretilir. `@mari-ui/utils/asset`'in `createAssetResolver`ı ortam değişkenlerini uygulamada " +
-      "bağlar; kütüphane env okumaz. Tek satırlık bir sarmalayıcı tüm projede aynı ayarı kullandırır.",
+      "genişlikte 1x/2x üretilir. Asset prefix'i ve CDN adresi uygulamada bağlanır; " +
+      "kütüphane env okumaz. Tek satırlık bir sarmalayıcı tüm projede aynı ayarı kullandırır.",
     `
-import { createAssetResolver } from "@mari-ui/utils/asset";
 import { Image, type ImageLoader, type ImageProps } from "@mari-ui/components/image";
 
-const asset = createAssetResolver({
-  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX,
-  cdnUrl: process.env.NEXT_PUBLIC_CDN_ZONE === "true" ? process.env.NEXT_PUBLIC_CDN_URL : undefined,
-});
+const base = import.meta.env.VITE_CDN_URL ?? "";
+const asset = (src: string) => (src.startsWith("http") ? src : \`\${base}\${src}\`);
 const cdnLoader: ImageLoader = ({ src, width, quality = 75 }) => \`\${asset(src)}?w=\${width}&q=\${quality}\`;
 
 export const AppImage = (props: ImageProps) => <Image loader={cdnLoader} {...props} />;
