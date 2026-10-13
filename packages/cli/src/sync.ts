@@ -80,7 +80,7 @@ export function syncAgentRules(options: SyncOptions): SyncResult {
   const manifest = loadManifestSafe(targetDir, manifestPath);
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
-  const contentOptions = { manifest, theme: resolved.light };
+  const contentOptions = { manifest, theme: resolved.light, persona: config.persona };
   const targets = planAgentRuleTargets(agents, { rules: buildRulesContent(contentOptions), skill: buildSkillContent(contentOptions) });
   const result: SyncResult = { changed: [], upToDate: [] };
 

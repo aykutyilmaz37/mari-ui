@@ -1,4 +1,4 @@
-import type { Theme } from "@mari-ui/tokens";
+import { personas, type PersonaName, type Theme } from "@mari-ui/tokens";
 import type { Manifest } from "./manifest";
 import { SKILL_GUIDE, formatMustRules } from "./skillGuide";
 
@@ -100,6 +100,25 @@ function formatThemeTokens(theme: Theme): string {
 export interface BuildRulesContentOptions {
   manifest: Manifest;
   theme: Theme;
+  /** Faz 21 — `mari-ui.config.json` `persona`; yoksa varsayılan kişilik (Yumuşak iris). */
+  persona?: PersonaName;
+}
+
+const firstFamily = (stack: string) => stack.split(",")[0]?.trim().replace(/^["']|["']$/g, "") ?? stack;
+
+/** Faz 21 — projenin tasarım kişiliği: AI düzeni ve tonu buna göre seçsin. */
+function formatPersona(theme: Theme, persona: PersonaName | undefined): string {
+  const head = persona
+    ? `**${personas[persona].label}** (\`${persona}\`) — ${personas[persona].description}`
+    : "**Varsayılan (Yumuşak iris)** — yumuşak mor marka rengi, Geist arayüz + Manrope başlık; genel amaçlı, sakin ve modern.";
+  const f = theme.fontFamily;
+  return [
+    head,
+    "",
+    `- Fontlar: gövde \`${firstFamily(f.sans)}\`, başlık \`${firstFamily(f.heading ?? f.sans)}\`, kod \`${firstFamily(f.mono)}\``,
+    `- Köşe: \`rounded-md\` = ${theme.radius.md} · gölge: ${theme.effects.shadow} · hareket: ${theme.effects.motion}`,
+    "- Bu değerler tema CSS değişkenlerinden gelir; kodda tekrar yazma. Kişiliğin karakterini düzen ve içerik diliyle destekle (bkz. Serbest alanlar).",
+  ].join("\n");
 }
 
 /**
@@ -107,7 +126,7 @@ export interface BuildRulesContentOptions {
  * bu repo'nun tüm dokümantasyonu (Storybook, plan) Türkçe, aynı dil burada
  * da tutarlı.
  */
-export function buildRulesContent({ manifest, theme }: BuildRulesContentOptions): string {
+export function buildRulesContent({ manifest, theme, persona }: BuildRulesContentOptions): string {
   return `# mari-ui Tasarım Sistemi Kuralları
 
 Bu dosya \`npx mari-ui sync\` ile OTOMATİK üretilir — \`manifest.json\` (component envanteri + prop sözleşmesi) ve projenin çözümlenmiş temasından türetilir. Elle düzenlemeyin; değişiklik için \`mari-ui.config.json\`ı güncelleyip \`npx mari-ui sync\`i tekrar çalıştırın.
@@ -117,6 +136,18 @@ Bu dosya \`npx mari-ui sync\` ile OTOMATİK üretilir — \`manifest.json\` (com
 Bunlar her zaman geçerli; sapma yok.
 
 ${formatMustRules()}
+
+## Serbest alanlar
+
+Kesin kurallar yalnız component kullanımı, token'lar ve erişilebilirlik içindir. Bunların dışı **serbest** — her projeyi aynı iskelete dökme:
+
+- **Sayfa düzeni ve kompozisyon:** grid, sütun sayısı, asimetri, bölüm sırası, yoğunluk ritmi projeye göre seçilir; "başlık + kart grid'i + tablo" tek kalıp değildir.
+- **İfade alanları:** hero, arka plan desenleri/degradeleri, illüstrasyon ve görsel alanları, tipografi ağırlıklı büyük başlıklar, giriş hareketleri kalıplaşmaz — token renkleri (\`bg-mari-*\`, \`from-mari-primary-solid/…\`), font değişkenleri (\`font-heading\`) ve \`duration-*\` sınıflarıyla özgürce kurulur.
+- **İçerik dili:** metinler, görsel seçimi ve ton projenin hedef kitlesine göre; kişiliğin karakterini taşır.
+
+## Tasarım kişiliği
+
+${formatPersona(theme, persona)}
 
 ## Component envanteri
 

@@ -14,7 +14,7 @@ npx mari-ui sync     # paket sürümü ya da tema değişince kural dosyaların�
 npx mari-ui sync --check   # hiçbir şey yazmaz; bayat dosya varsa çıkış kodu 1 (CI için)
 ```
 
-Belirli araçlar için: `--agents claude,cursor`. `init` paket yöneticisini kendisi çalıştırmaz: kurulumdan sonra `npx mari-ui sync` ile kuralları gerçek manifest'ten tazeleyin.
+Belirli araçlar için: `--agents claude,cursor`. Tasarım kişiliğiyle başlamak için: `npx mari-ui init --persona editorial` (bkz. Tema). `init` paket yöneticisini kendisi çalıştırmaz: kurulumdan sonra `npx mari-ui sync` ile kuralları gerçek manifest'ten tazeleyin.
 
 ## Yazılan dosyalar
 
@@ -40,6 +40,10 @@ Kendi içeriğinizi de yazdığınız dosyalarda (`AGENTS.md`, `GEMINI.md`…) m
 6. Erişilebilirlik temeli — etiketler, rol, klavye.
 7. Linkler düz `<a href>` — sayfa geçişi `onNavigate` ile.
 
-**Sayfa kurma rehberi** (yalnız Claude skill'inde, ilgili işte yüklenir): iş akışı, uygulama iskeleti, sayfa kalıpları (panel, liste + detay, form…), "hangi durumda hangi component" tablosu, tema ve ölçek ipuçları.
+**Serbest alanlar** (her dosyada): kesin kurallar yalnız component kullanımı, token ve erişilebilirlik içindir. Sayfa düzeni, kompozisyon ve ifade alanları (hero, arka plan, illüstrasyon, tipografik başlıklar, hareket) projeye göre serbestçe kurulur — her proje aynı iskelete dökülmez.
+
+**Tasarım kişiliği** (her dosyada): projenin seçili kişiliği, fontları, köşe/gölge/hareket karakteri; AI düzeni ve tonu buna göre seçer.
+
+**Sayfa kurma rehberi** (yalnız Claude skill'inde, ilgili işte yüklenir): yeni projede önce **tasarım brief'i** (hedef kitle, ton, referanslar → kişilik + düzen yönü), sonra iş akışı, uygulama iskeleti, sayfa kalıpları (panel, liste + detay, form…), "hangi durumda hangi component" tablosu, tema ve ölçek ipuçları.
 
 Her component'in güncel prop listesi ve kaldırılmış prop'ları da dosyalara girer.
