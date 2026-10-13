@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AtSign, Lock, Phone, Search } from "lucide-react-native";
 import { Input } from "./Input";
 import { Field } from "../Field";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNarrow, withNativeTheme } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, jsxProps, storyDoc, withNarrow, withNativeTheme } from "../stories/storyMeta";
 import { useTheme } from "../theme/useTheme";
 
 const meta: Meta<typeof Input> = {
@@ -146,24 +146,19 @@ export const PressEnterAction: Story = {
 
 export const CustomCountFormatter: Story = {
   name: "Özel Karakter Sayacı",
-  ...storyDoc("`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir."),
-  args: { accessibilityLabel: "Ürün başlığı", placeholder: "Ürün başlığı", maxLength: 50, showCount: true, allowClear: false, count: { formatter: ({ count, maxLength }) => `${maxLength! - count} karakter kaldı` } },
-  render: (args) => (
-    <Narrow>
-      <Input {...args} />
-    </Narrow>
+  ...storyDoc(
+    "`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir.",
+    (args) => `<Input ${jsxProps(args, { skip: ["count"] })} count={{ formatter: ({ count, maxLength }) => \`\${maxLength - count} karakter kaldı\` }} />`
   ),
+  args: { accessibilityLabel: "Ürün başlığı", placeholder: "Ürün başlığı", maxLength: 50, showCount: true, allowClear: false, count: { formatter: ({ count, maxLength }) => `${maxLength! - count} karakter kaldı` } },
+  decorators: [(Story) => <Narrow><Story /></Narrow>],
 };
 
 export const MaskedInput: Story = {
   name: "Maskeli",
   ...storyDoc("`mask` + `replacement` ile girişi bir formata zorlar (ör. telefon numarası); maskeli alanda sayı klavyesi açılır."),
   args: { accessibilityLabel: "Cep telefonu", placeholder: "0(5__) ___ __ __", mask: "0(5__) ___ __ __", type: "tel", icon: <Phone />, allowClear: true, maxLength: undefined },
-  render: (args) => (
-    <Narrow>
-      <Input {...args} />
-    </Narrow>
-  ),
+  decorators: [(Story) => <Narrow><Story /></Narrow>],
 };
 
 export const AllVariants: Story = {
