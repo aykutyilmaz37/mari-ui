@@ -98,6 +98,14 @@ export function storyDoc(description: string, code?: string | StoryCode) {
  * studio çerçevesinin köşesi — zemin yuvarlanır, çerçeve kırpmaz (taşan
  * baloncuk/menü kesilmesin).
  */
+/**
+ * Web Storybook'ta font kişilikten gelir (temanın aileleri, sayfada yüklü) — `"brand"`.
+ * native-studio kendi `globals.fonts` anahtarını geçer (cihazda yüklü fontlara göre).
+ */
+function storyFonts(fonts: string | undefined): "brand" | "system" {
+  return fonts === "system" ? "system" : "brand";
+}
+
 const personaThemes = new Map<PersonaName, { light: Theme; dark: Theme }>();
 
 /** Faz 21 — kişilik teması (kimlik sabit kalsın diye kişilik başına bir kez çözülür). */
@@ -115,7 +123,7 @@ function storyTheme(mode: string | undefined, persona: string | undefined): Them
 
 export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; persona?: string; radius?: number; insets?: SafeAreaInsets } }) {
   return (
-    <ThemeProvider theme={storyTheme(context.globals?.theme, context.globals?.persona)} fonts={context.globals?.fonts === "brand" || personaNames.includes(context.globals?.persona as PersonaName) ? "brand" : "system"} insets={context.globals?.insets}>
+    <ThemeProvider theme={storyTheme(context.globals?.theme, context.globals?.persona)} fonts={storyFonts(context.globals?.fonts)} insets={context.globals?.insets}>
       <Canvas radius={context.globals?.radius}>
         <Story />
       </Canvas>

@@ -28,24 +28,9 @@ listenPersonaGlobals();
  * alıyor.
  */
 const preview: Preview = {
-  // Native story'lerinin font kipi (ThemeProvider `fonts`): "system" varsayılan,
-  // "brand" Geist/Manrope — web component'leriyle birebir karşılaştırmak için.
-  globalTypes: {
-    persona: personaToolbar,
-    fonts: {
-      description: "Native font kipi",
-      toolbar: {
-        title: "Native font",
-        icon: "paragraph",
-        items: [
-          { value: "system", title: "Sistem fontu" },
-          { value: "brand", title: "Marka fontu (Geist)" },
-        ],
-        dynamicTitle: true,
-      },
-    },
-  },
-  initialGlobals: { fonts: "system", persona: "default" },
+  // Fontu kişilik belirler (web ve native story'ler aynı aileleri kullanır).
+  globalTypes: { persona: personaToolbar },
+  initialGlobals: { persona: "default" },
   parameters: {
     docs: { container: DocsContainer },
     backgrounds: { disable: true },
