@@ -4,6 +4,7 @@ import type { HexColor } from "./contrast";
 import { buildSemanticColors, type ColorRole, type SemanticColorTokens } from "./semantic/colors";
 import type { ThemeMode } from "./semantic/deriveColorRole";
 import type { SpacingDensity } from "./runtimeTheme";
+import { applyPersona, type PersonaName } from "./personas";
 
 /** `sans`/`mono` burada bilinçli olarak `string` — Faz 6'nın tema stüdyosu tüketicinin kendi font ailesi string'ini geçirebilmeli, sabit iki literalle sınırlı kalamaz. */
 export interface ThemeFontFamily {
@@ -39,21 +40,31 @@ export interface Theme {
   fontSize: typeof primitives.fontSize;
   fontWeight: typeof primitives.fontWeight;
   lineHeight: typeof primitives.lineHeight;
-  shadow: typeof primitives.shadow;
+  shadow: primitives.ShadowTokens;
   zIndex: typeof primitives.zIndex;
-  duration: typeof primitives.duration;
-  easing: typeof primitives.easing;
+  duration: Record<keyof typeof primitives.duration, string>;
+  easing: Record<keyof typeof primitives.easing, string>;
   breakpoint: typeof primitives.breakpoint;
+  /** Faz 21 — gölge yoğunluğu ve hareket seviyesi; native bunlardan kendi gölge/süre değerlerini hesaplar. */
+  effects: { shadow: primitives.ShadowDensity; motion: primitives.MotionLevel };
 }
+
+/** Renk/fontdan bağımsız, tüm temalara (light, dark, isimli) ortak eksenler. */
+export type ThemeEffectOptions = Pick<BuildThemeOptions, "radiusDensity" | "shadowDensity" | "motion">;
 
 interface BuildThemeOptions {
   name?: string;
   rampOverrides?: Partial<Record<ColorRole, ColorRamp>>;
   fontFamily?: Partial<ThemeFontFamily>;
   radiusDensity?: primitives.RadiusDensity;
+  shadowDensity?: primitives.ShadowDensity;
+  motion?: primitives.MotionLevel;
 }
 
 function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
+  const shadowDensity = options.shadowDensity ?? "normal";
+  const motion = options.motion ?? "normal";
+  const { duration, easing } = primitives.scaleMotion(motion);
   return {
     mode,
     name: options.name ?? mode,
@@ -64,11 +75,12 @@ function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
     fontSize: primitives.fontSize,
     fontWeight: primitives.fontWeight,
     lineHeight: primitives.lineHeight,
-    shadow: primitives.shadow,
+    shadow: primitives.scaleShadow(shadowDensity),
     zIndex: primitives.zIndex,
-    duration: primitives.duration,
-    easing: primitives.easing,
+    duration,
+    easing,
     breakpoint: primitives.breakpoint,
+    effects: { shadow: shadowDensity, motion },
   };
 }
 
@@ -114,7 +126,16 @@ export interface MariUiThemeConfig {
      * bu yalnız hiç seçim yapılmamışken geçerli olan değer.
      */
     spacing?: SpacingDensity;
+    /** Faz 21 — gölge yoğunluğu (`none` = gölgesiz, kartlar kenarlıkla ayrışır). */
+    shadow?: primitives.ShadowDensity;
   };
+  /** Faz 21 — hareket seviyesi: süre çarpanı + eğri (`off` = animasyonsuz). */
+  motion?: primitives.MotionLevel;
+  /**
+   * Faz 21 — tasarım kişiliği. Kişiliğin renk/font/yoğunluk/gölge/hareket
+   * ayarları TABAN olur; bu config'te açıkça yazılan her alan onu ezer.
+   */
+  persona?: PersonaName;
   /**
    * Faz 16.8.2 — büyük ekran ölçeği. `fluid: true` iken kök yazı boyutu 1920px'ten
    * itibaren ekran genişliğiyle büyür, 3840px'te (4K) `max` px'e ulaşıp durur.
@@ -133,9 +154,10 @@ export interface MariUiThemeConfig {
 export const defaultThemeConfig = {
   color: { primary: primitives.primaryRamp[600], accent: primitives.accentRamp[600] },
   typography: { fontFamilySans: primitives.fontFamily.sans, fontFamilyMono: primitives.fontFamily.mono, fontFamilyHeading: primitives.fontFamily.heading },
-  density: { radius: "md", spacing: "normal" },
+  density: { radius: "md", spacing: "normal", shadow: "normal" },
+  motion: "normal",
   scale: { fluid: false as boolean, max: 22 },
-} satisfies Required<Omit<MariUiThemeConfig, "themes">>;
+} satisfies Required<Omit<MariUiThemeConfig, "themes" | "persona">>;
 
 export interface NamedThemeInput {
   base: ThemeMode;
@@ -174,8 +196,8 @@ function resolveBuildThemeOptions(config: { color?: MariUiThemeConfig["color"]; 
  * çağırmak isteyen bir tüketici (örn. `@mari-ui/native`de programatik bir
  * 3. tema kurmak isteyen biri) için de dışa açık.
  */
-export function createNamedTheme(name: string, base: ThemeMode, config: Omit<NamedThemeInput, "base"> = {}, radiusDensity?: primitives.RadiusDensity): Theme {
-  return buildTheme(base, { ...resolveBuildThemeOptions(config, name), radiusDensity });
+export function createNamedTheme(name: string, base: ThemeMode, config: Omit<NamedThemeInput, "base"> = {}, effects: ThemeEffectOptions = {}): Theme {
+  return buildTheme(base, { ...resolveBuildThemeOptions(config, name), ...effects });
 }
 
 /**
@@ -185,13 +207,15 @@ export function createNamedTheme(name: string, base: ThemeMode, config: Omit<Nam
  * AYNISINI çağırır — burada tek kaynak olarak duruyor ki CLI mantığı
  * ikinci kez yazmasın.
  */
-export function resolveThemeConfig(config: MariUiThemeConfig = {}): ResolvedMariUiTheme {
+export function resolveThemeConfig(input: MariUiThemeConfig = {}): ResolvedMariUiTheme {
+  const config = applyPersona(input);
   const radiusDensity = config.density?.radius ?? "md";
-  const baseOptions = { ...resolveBuildThemeOptions(config), radiusDensity };
+  const effects: ThemeEffectOptions = { radiusDensity, shadowDensity: config.density?.shadow, motion: config.motion };
+  const baseOptions = { ...resolveBuildThemeOptions(config), ...effects };
 
   const namedThemes: Record<string, Theme> = {};
   for (const [name, themeInput] of Object.entries(config.themes ?? {})) {
-    namedThemes[name] = createNamedTheme(name, themeInput.base, themeInput, radiusDensity);
+    namedThemes[name] = createNamedTheme(name, themeInput.base, themeInput, effects);
   }
 
   return {

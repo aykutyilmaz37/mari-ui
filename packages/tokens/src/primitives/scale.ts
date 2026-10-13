@@ -133,3 +133,43 @@ export function scaleRadius(density: RadiusDensity = "md"): RadiusTokens {
   const scale = (value: string) => (factor === 0 ? "0px" : `${Number.parseFloat(value) * factor}rem`);
   return { none: radius.none, sm: scale(radius.sm), md: scale(radius.md), lg: scale(radius.lg), xl: scale(radius.xl), full: radius.full };
 }
+
+/**
+ * Faz 21 — `density.shadow`. Gölge katmanlarının geometrisi aynı kalır, yalnız
+ * siyahın opaklığı ölçeklenir (`none` = hiç gölge; kartlar kenarlıkla ayrışır).
+ */
+export const shadowDensities = ["none", "soft", "normal", "strong"] as const;
+export type ShadowDensity = (typeof shadowDensities)[number];
+
+export const SHADOW_DENSITY_FACTOR: Record<ShadowDensity, number> = { none: 0, soft: 0.5, normal: 1, strong: 2 };
+
+export type ShadowTokens = Record<keyof typeof shadow, string>;
+
+export function scaleShadow(density: ShadowDensity = "normal"): ShadowTokens {
+  const factor = SHADOW_DENSITY_FACTOR[density];
+  if (factor === 1) return { ...shadow };
+  const scale = (value: string) =>
+    factor === 0 || value === "none" ? "none" : value.replace(/\/ ([\d.]+)\)/g, (_, alpha: string) => `/ ${Number((Number(alpha) * factor).toFixed(3))})`);
+  return Object.fromEntries(Object.entries(shadow).map(([key, value]) => [key, scale(value)])) as ShadowTokens;
+}
+
+/**
+ * Faz 21 — `motion`. Süreler bir çarpanla ölçeklenir; `lively` standart eğriyi
+ * hafif taşan (overshoot) bir eğriyle değiştirir. `off` tüm süreleri 0 yapar.
+ * İşletim sisteminin "hareketi azalt" tercihi bundan bağımsız olarak her zaman geçerlidir.
+ */
+export const motionLevels = ["off", "calm", "normal", "lively"] as const;
+export type MotionLevel = (typeof motionLevels)[number];
+
+export const MOTION_FACTOR: Record<MotionLevel, number> = { off: 0, calm: 1.4, normal: 1, lively: 0.85 };
+
+const OVERSHOOT_EASING = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+export function scaleMotion(level: MotionLevel = "normal"): { duration: Record<keyof typeof duration, string>; easing: Record<keyof typeof easing, string> } {
+  const factor = MOTION_FACTOR[level];
+  const scaled = Object.fromEntries(Object.entries(duration).map(([key, value]) => [key, `${Math.round(Number.parseFloat(value) * factor)}ms`])) as Record<keyof typeof duration, string>;
+  const motionEasing: Record<keyof typeof easing, string> = { ...easing };
+  if (level === "lively") Object.assign(motionEasing, { standard: OVERSHOOT_EASING, decelerate: OVERSHOOT_EASING });
+  if (level === "calm") motionEasing.standard = easing.decelerate;
+  return { duration: scaled, easing: motionEasing };
+}

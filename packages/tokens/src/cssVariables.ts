@@ -1,6 +1,7 @@
 import type { Theme } from "./theme";
 import type { SemanticColorRole } from "./semantic/deriveColorRole";
 import { chartPalette } from "./primitives/chartPalette";
+import { MOTION_FACTOR } from "./primitives/scale";
 
 /**
  * `--mari-space-0.5` gibi kesirli spacing anahtarlarındaki nokta bazı
@@ -63,6 +64,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   for (const [key, value] of Object.entries(theme.zIndex)) vars[`--mari-z-${key}`] = String(value);
   for (const [key, value] of Object.entries(theme.duration)) vars[`--mari-duration-${key}`] = value;
   for (const [key, value] of Object.entries(theme.easing)) vars[`--mari-easing-${key}`] = value;
+  // Faz 21 — `@utility duration-*` (components/styles.css) Tailwind sürelerini bu çarpanla ölçekler.
+  vars["--mari-motion-scale"] = String(MOTION_FACTOR[theme.effects.motion]);
   vars["--mari-font-sans"] = theme.fontFamily.sans;
   vars["--mari-font-mono"] = theme.fontFamily.mono;
   vars["--mari-font-heading"] = theme.fontFamily.heading ?? theme.fontFamily.sans;

@@ -134,3 +134,12 @@
     [data-density="compact"] { --spacing: 0.25rem; }
   }
 }
+
+/*
+ * Faz 21 — hareket seviyesi (`mari-ui.config.json` `motion` / kişilik). Tailwind'in
+ * `duration-*` sınıfları sabit ms yazar; bu tanım onlardan sonra üretildiği için
+ * kazanır ve süreyi `--mari-motion-scale` ile çarpar (`off` = 0, `calm` = 1.4 …).
+ */
+@utility duration-* {
+  transition-duration: calc(--value(integer) * 1ms * var(--mari-motion-scale, 1));
+}

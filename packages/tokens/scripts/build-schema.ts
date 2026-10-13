@@ -10,7 +10,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { accentRamp, primaryRamp } from "../src/primitives/ramps";
-import { radiusDensities, fontFamily } from "../src/primitives/scale";
+import { radiusDensities, fontFamily, shadowDensities, motionLevels } from "../src/primitives/scale";
+import { personaNames, personas } from "../src/personas";
 import { spacingDensities } from "../src/runtimeTheme";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -70,6 +71,25 @@ const schema = {
         options: [...spacingDensities],
         default: "normal",
       },
+      shadow: {
+        type: "select",
+        description: "Faz 21 — gölge yoğunluğu: katman geometrisi aynı, opaklık ölçeklenir (none = gölgesiz, soft = yarı, strong = iki kat).",
+        options: [...shadowDensities],
+        default: "normal",
+      },
+    },
+    motion: {
+      type: "select",
+      description: "Faz 21 — hareket seviyesi: tüm geçiş süreleri çarpılır (off = 0, calm = 1.4, normal = 1, lively = 0.85 + hafif taşan eğri). İşletim sisteminin \"hareketi azalt\" tercihi her zaman geçerli.",
+      options: [...motionLevels],
+      default: "normal",
+    },
+    persona: {
+      type: "select",
+      description: "Faz 21 — tasarım kişiliği: renk + font + radius + boşluk + gölge + hareket paketi. Taban olur; bu dosyada açıkça yazılan her alan onu ezer.",
+      options: [...personaNames],
+      labels: Object.fromEntries(personaNames.map((name) => [name, personas[name].label])),
+      default: null,
     },
     scale: {
       fluid: {

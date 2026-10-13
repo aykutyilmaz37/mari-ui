@@ -99,7 +99,7 @@ export function Segmented({
           block && "flex-1",
           selected ? "text-mari-foreground" : "text-mari-muted hover:text-mari-foreground",
           // Kayan zemin ölçülene kadar seçili dilim kendi zeminini çizer.
-          selected && !thumb && "bg-mari-surface shadow-sm ring-1 ring-mari-border/60",
+          selected && !thumb && "bg-mari-surface shadow-mari-sm ring-1 ring-mari-border/60",
           optionDisabled && "cursor-not-allowed opacity-50 hover:text-mari-muted",
           // Odak halkası dilimin kendisinde (radyo görünmez).
           "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-1 has-[:focus-visible]:outline-mari-ring"
@@ -149,7 +149,7 @@ export function Segmented({
       {thumb && selectedIndex >= 0 && (
         <span
           aria-hidden
-          className="absolute inset-y-0.5 -z-10 rounded-md bg-mari-surface shadow-sm ring-1 ring-mari-border/60 transition-[left,width] duration-200 ease-out motion-reduce:transition-none"
+          className="absolute inset-y-0.5 -z-10 rounded-md bg-mari-surface shadow-mari-sm ring-1 ring-mari-border/60 transition-[left,width] duration-200 ease-out motion-reduce:transition-none"
           style={{ left: thumb.left, width: thumb.width }}
         />
       )}
