@@ -155,9 +155,11 @@ export const AccountSettings: Story = {
     <TabsTrigger value="billing" icon={<CreditCardIcon />}>Faturalama</TabsTrigger>
     <TabsTrigger value="integrations" icon={<PlugIcon />}>Entegrasyonlar</TabsTrigger>
   </TabsList>
-  <TabsContent value="profile">…</TabsContent>
-  <TabsContent value="notifications">…</TabsContent>
-  …
+  <TabsContent value="profile"><Field label="Görünen ad"><Input defaultValue="Ayşe Kaya" /></Field></TabsContent>
+  <TabsContent value="notifications"><Switch label="E-posta bildirimleri" defaultChecked /></TabsContent>
+  <TabsContent value="security"><Button variant="outline">Şifreyi değiştir</Button></TabsContent>
+  <TabsContent value="billing">Ekip planı · 149 ₺ / ay</TabsContent>
+  <TabsContent value="integrations">Slack ve GitHub bağlı.</TabsContent>
 </Tabs>`
   ),
   render: () => {
@@ -323,7 +325,10 @@ export const ProductDetail: Story = {
     <TabsTrigger value="reviews" count={128}>Yorumlar</TabsTrigger>
     <TabsTrigger value="shipping">Kargo ve iade</TabsTrigger>
   </TabsList>
-  …
+  <TabsContent value="description">Aktif gürültü engelleme ve 30 saat pil ömrü.</TabsContent>
+  <TabsContent value="specs">Bluetooth 5.3 · USB-C · 250 g</TabsContent>
+  <TabsContent value="reviews">128 değerlendirme · ortalama 4,7</TabsContent>
+  <TabsContent value="shipping">Ücretsiz kargo, 14 gün içinde ücretsiz iade.</TabsContent>
 </Tabs>`
   ),
   render: () => (
@@ -500,7 +505,9 @@ export const CodePanel: Story = {
     <TabsTrigger value="button.css" icon={<PaletteIcon />}>button.css</TabsTrigger>
     <TabsTrigger value="README.md" icon={<FileTextIcon />}>README.md</TabsTrigger>
   </TabsList>
-  <TabsContent value="Button.tsx" className="pt-0">…</TabsContent>
+  <TabsContent value="Button.tsx" className="pt-0"><pre><code>export function Button() {}</code></pre></TabsContent>
+  <TabsContent value="button.css" className="pt-0"><pre><code>.button {}</code></pre></TabsContent>
+  <TabsContent value="README.md" className="pt-0"><pre><code># Button</code></pre></TabsContent>
 </Tabs>`
   ),
   render: () => {
@@ -543,7 +550,9 @@ export const VerticalSettings: Story = {
     <TabsTrigger value="security" icon={<ShieldIcon />}>Güvenlik</TabsTrigger>
     <TabsTrigger value="billing" icon={<CreditCardIcon />} disabled>Faturalama</TabsTrigger>
   </TabsList>
-  <TabsContent value="members">…</TabsContent>
+  <TabsContent value="general">Ekip adı: Ürün</TabsContent>
+  <TabsContent value="members">8 üye · 2 davet bekliyor</TabsContent>
+  <TabsContent value="security">İki adımlı doğrulama zorunlu</TabsContent>
 </Tabs>`
   ),
   render: () => {
@@ -642,8 +651,26 @@ export const Overflow: Story = {
 export const FillAndCenter: Story = {
   name: "Tam Genişlik ve Ortalı",
   ...storyDoc("`fill` — sekmeler genişliğe eşit dağılır (mobil segmented kontrol). `align=\"center\"` — ortalı.", `
-<Tabs variant="pills" fill defaultActiveTab="week">…</Tabs>
-<Tabs align="center" defaultActiveTab="week">…</Tabs>`),
+<Tabs variant="pills" fill defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>
+<Tabs align="center" defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>`),
   render: () => (
     <div className="flex max-w-md flex-col gap-8">
       <Tabs variant="pills" fill defaultActiveTab="week">
@@ -675,9 +702,36 @@ const simpleTabs = (
 export const Variants: Story = {
   name: "Görünüm: line / card / pills",
   ...storyDoc("Üç görünüm; son sekme `disabled`.", `
-<Tabs variant="line" defaultActiveTab="week">…</Tabs>
-<Tabs variant="card" defaultActiveTab="week">…</Tabs>
-<Tabs variant="pills" defaultActiveTab="week">…</Tabs>`),
+<Tabs variant="line" defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>
+<Tabs variant="card" defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>
+<Tabs variant="pills" defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>`),
   render: () => (
     <div className="flex flex-col gap-8">
       {(["line", "card", "pills"] as const).map((variant) => (
@@ -691,7 +745,16 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   name: "Boyutlar",
-  ...storyDoc("`sm` / `md` / `lg`.", `<Tabs size="sm" defaultActiveTab="week">…</Tabs>`),
+  ...storyDoc("`sm` / `md` / `lg`.", `<Tabs size="sm" defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>`),
   render: () => (
     <div className="flex flex-col gap-8">
       {(["sm", "md", "lg"] as const).map((size) => (
@@ -710,7 +773,16 @@ export const Sizes: Story = {
 
 export const Colors: Story = {
   name: "Renkler",
-  ...storyDoc("`color` — aktif sekme göstergesi ve metni.", `<Tabs color="success" defaultActiveTab="week">…</Tabs>`),
+  ...storyDoc("`color` — aktif sekme göstergesi ve metni.", `<Tabs color="success" defaultActiveTab="week">
+  <TabsList aria-label="Dönem">
+    <TabsTrigger value="day">Gün</TabsTrigger>
+    <TabsTrigger value="week">Hafta</TabsTrigger>
+    <TabsTrigger value="month">Ay</TabsTrigger>
+  </TabsList>
+  <TabsContent value="day">Bugünkü satışlar</TabsContent>
+  <TabsContent value="week">Bu haftaki satışlar</TabsContent>
+  <TabsContent value="month">Bu ayki satışlar</TabsContent>
+</Tabs>`),
   render: () => (
     <div className="flex flex-col gap-6">
       {(["primary", "accent", "success", "warning", "error", "neutral"] as const).map((color) => (
@@ -761,8 +833,8 @@ export const Skeleton: Story = {
     <TabsTrigger value="orders" count={account?.orderCount}>Siparişlerim</TabsTrigger>
     <TabsTrigger value="addresses">Adreslerim</TabsTrigger>
   </TabsList>
-  <TabsContent value="orders">…</TabsContent>
-  <TabsContent value="addresses">…</TabsContent>
+  <TabsContent value="orders">Son siparişiniz yolda.</TabsContent>
+  <TabsContent value="addresses">Ev · Moda Cad. No:12, Kadıköy</TabsContent>
 </Tabs>`
   ),
   render: () => <TabsSkeleton />,

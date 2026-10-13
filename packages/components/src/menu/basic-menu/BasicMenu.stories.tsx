@@ -211,7 +211,7 @@ export const StickyPosition: Story = {
   logo={<MariLogo size={36} />}
   logoHref="/"
 />
-<main>…</main>`
+<main className="p-6">Sayfa içeriği — menü kaydırırken üstte kalır.</main>`
   ),
   render: (args) => (
     <div className="h-96 overflow-y-auto">

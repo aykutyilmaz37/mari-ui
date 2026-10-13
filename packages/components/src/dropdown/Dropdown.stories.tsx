@@ -166,7 +166,13 @@ export const WithArrow: Story = {
 </Dropdown>
 
 {/* Küçük (ikon) tetikleyici: ok tetikleyicinin ortasını göstersin */}
-<DropdownContent placement="bottom-end" arrow={{ pointAtCenter: true }}>…</DropdownContent>`
+<Dropdown>
+  <DropdownTrigger aria-label="Diğer işlemler"><MoreVerticalIcon /></DropdownTrigger>
+  <DropdownContent placement="bottom-end" arrow={{ pointAtCenter: true }}>
+    <DropdownItem>Düzenle</DropdownItem>
+    <DropdownItem>Sil</DropdownItem>
+  </DropdownContent>
+</Dropdown>`
   ),
   render: () => (
     <div className="flex flex-col gap-24 py-8">
@@ -431,7 +437,10 @@ export const Skeleton: Story = {
     <Avatar size="sm" src={user?.avatar} />
     <span className="text-sm font-medium">{user?.name ?? "Kullanıcı adı"}</span>
   </DropdownTrigger>
-  <DropdownContent>…</DropdownContent>
+  <DropdownContent>
+    <DropdownItem>Profilim</DropdownItem>
+    <DropdownItem>Çıkış yap</DropdownItem>
+  </DropdownContent>
 </Dropdown>`
   ),
   render: () => <DropdownSkeleton />,

@@ -81,9 +81,15 @@ export const MailClient: Story = {
     "Üç panel: klasörler (daraltılabilir, 220px), liste (320px), okuma (kalan). `storageKey` ile ayarlanan düzen sayfa " +
       "yenilenince korunur. Dar ekranda paneller alt alta dizilir.",
     `<Splitter storageKey="mail-layout" className="h-[32rem]">
-  <SplitterPanel defaultSize={220} min={160} max={320} collapsible label="Klasörler">…</SplitterPanel>
-  <SplitterPanel defaultSize={320} min={240} label="Gelen kutusu">…</SplitterPanel>
-  <SplitterPanel min={320} label="Okuma">…</SplitterPanel>
+  <SplitterPanel defaultSize={220} min={160} max={320} collapsible label="Klasörler">
+    <nav aria-label="Klasörler">Gelen kutusu · Gönderilenler · Arşiv</nav>
+  </SplitterPanel>
+  <SplitterPanel defaultSize={320} min={240} label="Gelen kutusu">
+    <ul><li>Fatura hazır — Ekim 2026</li><li>Toplantı notları</li></ul>
+  </SplitterPanel>
+  <SplitterPanel min={320} label="Okuma">
+    <article>Ekim ayı faturanız hesabınıza yüklendi.</article>
+  </SplitterPanel>
 </Splitter>`
   ),
   render: () => {
@@ -129,9 +135,13 @@ export const EditorPreview: Story = {
   name: "Düzenleyici + Önizleme",
   ...storyDoc(
     "Yarı yarıya başlar; her iki panel en az %25. `onResizeEnd` oranları verir (ör. analitik ya da sunucuya kaydetmek için).",
-    `<Splitter onResizeEnd={(sizes) => save(sizes)}>
-  <SplitterPanel min="25%" label="Düzenleyici">…</SplitterPanel>
-  <SplitterPanel min="25%" label="Önizleme">…</SplitterPanel>
+    `<Splitter onResizeEnd={(sizes) => localStorage.setItem("editor-layout", JSON.stringify(sizes))}>
+  <SplitterPanel min="25%" label="Düzenleyici">
+    <Textarea aria-label="Markdown" defaultValue="# Başlık" />
+  </SplitterPanel>
+  <SplitterPanel min="25%" label="Önizleme">
+    <h1>Başlık</h1>
+  </SplitterPanel>
 </Splitter>`
   ),
   render: () => {
@@ -159,8 +169,12 @@ export const CodeConsole: Story = {
     "`orientation=\"vertical\"`: paneller üst üste. Konsol daraltılabilir; tutamaç odaktayken Enter ile kapat/aç. Dikey " +
       "splitter'ın kapsayıcısına yükseklik verin.",
     `<Splitter orientation="vertical" className="h-96">
-  <SplitterPanel min={120} label="Kod">…</SplitterPanel>
-  <SplitterPanel defaultSize={140} min={80} collapsible label="Konsol">…</SplitterPanel>
+  <SplitterPanel min={120} label="Kod">
+    <pre><code>console.log("merhaba");</code></pre>
+  </SplitterPanel>
+  <SplitterPanel defaultSize={140} min={80} collapsible label="Konsol">
+    <pre>merhaba</pre>
+  </SplitterPanel>
 </Splitter>`
   ),
   render: () => (
