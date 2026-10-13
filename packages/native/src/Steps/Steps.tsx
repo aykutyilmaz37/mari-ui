@@ -244,7 +244,7 @@ export function Steps({
 
   const renderers: Record<StepsLayout, (ctx: Ctx) => React.ReactNode> = {
     compact: (ctx) => (
-      <View key={ctx.step} style={{ flexDirection: "row", alignItems: "center", flex: ctx.isLast ? undefined : 1, minWidth: 0 }}>
+      <View key={ctx.step} role="listitem" style={{ flexDirection: "row", alignItems: "center", flex: ctx.isLast ? undefined : 1, minWidth: 0 }}>
         {/* Dokunma hedefi: göstergenin etrafında 6pt pay (32 → 44). */}
         {wrap(ctx, indicator(ctx), { padding: 6, margin: -6, borderRadius: 999 })}
         {ctx.isLast ? null : <View style={[railStyle(ctx), { flex: 1, minWidth: 12, height: 1, marginHorizontal: 12 }]} />}
@@ -253,7 +253,7 @@ export function Steps({
     vertical: (ctx) => {
       const gapBelow = size === "sm" ? 16 : 24;
       return (
-        <View key={ctx.step}>
+        <View key={ctx.step} role="listitem">
           {wrap(
             ctx,
             <>
@@ -276,14 +276,14 @@ export function Steps({
         <View style={[railStyle(ctx), { position: "absolute", height: dot ? 2 : 1, top: m.indicator / 2 - (dot ? 1 : 0.5), left: itemWidth / 2 + half + gap, width: Math.max(0, itemWidth - 2 * (half + gap)) }]} />
       ) : null;
       return (
-        <View key={ctx.step} style={{ flex: 1, minWidth: 0 }} onLayout={ctx.index === 0 ? (e) => setItemWidth(e.nativeEvent.layout.width) : undefined}>
+        <View key={ctx.step} role="listitem" style={{ flex: 1, minWidth: 0 }} onLayout={ctx.index === 0 ? (e) => setItemWidth(e.nativeEvent.layout.width) : undefined}>
           {rail}
           {wrap(ctx, <>{indicator(ctx)}{texts(ctx, false)}</>, { alignItems: "center", gap: 8, paddingHorizontal: 8 })}
         </View>
       );
     },
     inline: (ctx) => (
-      <View key={ctx.step} style={{ flexDirection: "row", minWidth: 0, flex: ctx.isLast ? undefined : 1 }}>
+      <View key={ctx.step} role="listitem" style={{ flexDirection: "row", minWidth: 0, flex: ctx.isLast ? undefined : 1 }}>
         {wrap(ctx, <>{indicator(ctx)}{texts(ctx, true)}</>, { flexDirection: "row", flex: 1, minWidth: 0, alignItems: "flex-start", gap: 12 })}
       </View>
     ),

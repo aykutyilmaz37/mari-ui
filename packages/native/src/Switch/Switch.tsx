@@ -101,7 +101,7 @@ function SwitchTrack({ on, m, color, disabled, loading, trueLabel, falseLabel }:
           elevation: 2,
         }}
       >
-        {loading ? <ActivityIndicator size="small" color={on ? onColor : theme.color.canvas.muted} style={{ transform: [{ scale: m.knob / 30 }] }} /> : null}
+        {loading ? <ActivityIndicator aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" size="small" color={on ? onColor : theme.color.canvas.muted} style={{ transform: [{ scale: m.knob / 30 }] }} /> : null}
       </Animated.View>
     </Animated.View>
   );

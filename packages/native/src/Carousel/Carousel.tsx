@@ -256,7 +256,7 @@ export function Carousel({
   const ind = indicators({ dots, n, index, color, skeleton, dotsPlacement, dotPosition, onSelect: (i) => motion.goTo(i), play: autoplay && live ? <PlayToggle playing={auto.playing} onPress={auto.toggle} /> : null });
 
   return (
-    <View style={style} aria-label={label} accessibilityLabel={label} accessibilityState={{ busy: skeleton }} aria-busy={skeleton}>
+    <View style={style} role="group" aria-label={label} accessibilityLabel={label} accessibilityState={{ busy: skeleton }} aria-busy={skeleton}>
       <View style={[{ overflow: "hidden" }, viewportStyle]} onLayout={(e) => setWidth(e.nativeEvent.layout.width)} {...pan.panHandlers}>
         <Track items={items} clones={looping && width > 0 ? cloneCount(show, scroll, count) : 0} show={show} pos={motion.pos} slideWidth={geo.slideWidth} inView={slidesInView(snaps[index] ?? 0, show, count, looping)} skeleton={skeleton} itemStyle={itemStyle} />
         {arrows && !skeleton && count > show ? <Arrows placement={arrowsPlacement} canPrev={canPrev} canNext={canNext} onPrev={() => step(-1)} onNext={() => step(1)} /> : null}
@@ -400,6 +400,7 @@ function Dots({ count, index, color, skeleton, placement, position, onSelect, le
   return (
     <View pointerEvents="box-none" style={wrapper} {...(skeleton ? HIDDEN : null)}>
       {lead}
+      <View pointerEvents="box-none" role={skeleton ? undefined : "tablist"} aria-label={skeleton ? undefined : "Slaytlar"} style={{ flexDirection: wrapper.flexDirection ?? "column", alignItems: "center", gap: 8 }}>
       {Array.from({ length: count }, (_, i) => {
         const active = i === index;
         const bar = { height: 4, borderRadius: 2, width: active && !skeleton ? 24 : 16 };
@@ -408,7 +409,7 @@ function Dots({ count, index, color, skeleton, placement, position, onSelect, le
           <Pressable
             key={i}
             onPress={() => onSelect(i)}
-            accessibilityRole="button"
+            accessibilityRole="tab"
             accessibilityLabel={`${i + 1}. slayta git`}
             accessibilityState={{ selected: active }}
             aria-selected={active}
@@ -417,6 +418,7 @@ function Dots({ count, index, color, skeleton, placement, position, onSelect, le
           />
         );
       })}
+      </View>
     </View>
   );
 }

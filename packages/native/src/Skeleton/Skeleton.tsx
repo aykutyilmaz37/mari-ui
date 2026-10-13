@@ -86,7 +86,7 @@ export function Skeleton({ active = true, label, avatar = false, loading, paragr
   const roundStyle: ViewStyle | undefined = round ? { borderRadius: 999 } : undefined;
 
   const a11y = label
-    ? { accessible: true, accessibilityLabel: label, accessibilityState: { busy: true }, "aria-busy": true }
+    ? { accessible: true, accessibilityRole: "progressbar" as const, accessibilityLabel: label, accessibilityState: { busy: true }, "aria-busy": true }
     : { accessibilityElementsHidden: true, "aria-hidden": true, importantForAccessibility: "no-hide-descendants" as const };
 
   return (

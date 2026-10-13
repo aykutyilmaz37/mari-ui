@@ -70,7 +70,7 @@ function Ring({ size, percent, fill, track }: { size: Size; percent: number; fil
 /** Belirsiz: platform göstergesi (HIG); belirli: dolan halka. */
 function DefaultMark({ size, percent, fill, track }: { size: Size; percent?: number; fill: string; track: string }) {
   if (percent !== undefined) return <Ring size={size} percent={percent} fill={fill} track={track} />;
-  return <ActivityIndicator size={size === "lg" ? "large" : "small"} color={fill} style={size === "sm" ? { transform: [{ scale: 0.8 }] } : undefined} />;
+  return <ActivityIndicator aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" size={size === "lg" ? "large" : "small"} color={fill} style={size === "sm" ? { transform: [{ scale: 0.8 }] } : undefined} />;
 }
 
 function Indicator({ size, color, trackColor, percent, tip, indicator, row }: { size: Size; color: ColorRole; trackColor?: ColorRole; percent?: number; tip?: React.ReactNode; indicator?: React.ReactNode; row: boolean }) {
@@ -93,7 +93,7 @@ function Indicator({ size, color, trackColor, percent, tip, indicator, row }: { 
 }
 
 function a11yFor(label: string, percent: number | undefined) {
-  if (percent === undefined) return { accessible: true, accessibilityLabel: label, accessibilityLiveRegion: "polite" as const, "aria-live": "polite" as const, "aria-busy": true };
+  if (percent === undefined) return { accessible: true, accessibilityRole: "progressbar" as const, accessibilityLabel: label, accessibilityLiveRegion: "polite" as const, "aria-live": "polite" as const, "aria-busy": true };
   const now = Math.round(clampPercent(percent));
   return { accessible: true, accessibilityRole: "progressbar" as const, accessibilityLabel: label, accessibilityValue: { min: 0, max: 100, now }, "aria-valuenow": now, "aria-valuemin": 0, "aria-valuemax": 100 };
 }
