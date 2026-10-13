@@ -20,7 +20,7 @@ const meta: Meta<typeof Select> = {
     summary: "Listeden bir (ya da `mode=\"multiple\"` ile birden çok) seçenek seçmek. Kapalıyken Input'la aynı kutu; dokununca seçenekler BottomSheet'te açılır. Arama (Türkçe/aksansız), gruplar, ikon + açıklama, temizleme, yükleniyor.",
     whenToUse: ["5'ten çok seçenek ya da yer dar (il, kategori, kişi).", "Aynı anda birkaç değer (etiketler, atananlar)."],
     whenNotToUse: ["2–5 seçenek, hepsi görünmeli — RadioGroup / Segmented.", "Serbest metin + öneri — AutoComplete."],
-    vsWeb: "Prop'lar aynı (`aria-label` → `accessibilityLabel`). Açılır panel yerine BottomSheet (kullanıcı kararı): tekli seçimde dokunulan seçenek seçilip panel kapanır; çoklu seçimde panel açık kalır, alttaki \"Tamam\" kapatır. `showSearch` panelin üstüne arama alanı koyar (panel %85 yükseklikte sabit, süzerken zıplamaz). Panel başlığı `title` → Field etiketi → `placeholder`. Klavye gezinmesi/harfle atlama yok; `placement`, `listHeight`, `name`, `id` web'e özgü. Ekran okuyucuda alan düğme (+ seçili değer), seçenekler radio/checkbox. **Klavye + ScrollView:** RN dokunuşu React ağacına göre dağıtır; panel Modal'da açılsa da onu açan ekranın ScrollView'unun çocuğu sayılır. O ScrollView'a `keyboardShouldPersistTaps=\"handled\"` verin — vermezseniz klavye açıkken paneldeki ilk dokunuş yalnız klavyeyi kapatır (ör. Select aramasında sonuç seçilmez).",
+    vsWeb: "Prop'lar aynı (`aria-label` → `accessibilityLabel`). Açılır panel yerine BottomSheet (kullanıcı kararı): tekli seçimde dokunulan seçenek seçilip panel kapanır; çoklu seçimde panel açık kalır, alttaki \"Tamam\" kapatır. `showSearch` panelin üstüne arama alanı koyar (panel %85 yükseklikte sabit, süzerken zıplamaz). Panel başlığı `title` → Field etiketi → `placeholder`. Web'deki AutoComplete'in native karşılığı `allowFreeText`: listede olmayan değer “… kullan” satırıyla ya da klavyede \"bitti\" ile seçilir (alan altında açılan öneri listesi klavyenin arkasında kaldığı için native'de ayrı AutoComplete yok). Klavye gezinmesi/harfle atlama yok; `placement`, `listHeight`, `name`, `id` web'e özgü. Ekran okuyucuda alan düğme (+ seçili değer), seçenekler radio/checkbox. **Klavye + ScrollView:** RN dokunuşu React ağacına göre dağıtır; panel Modal'da açılsa da onu açan ekranın ScrollView'unun çocuğu sayılır. O ScrollView'a `keyboardShouldPersistTaps=\"handled\"` verin — vermezseniz klavye açıkken paneldeki ilk dokunuş yalnız klavyeyi kapatır (ör. Select aramasında sonuç seçilmez).",
   }) } } },
   argTypes: {
     size: { control: "select", options: ["sm", "md", "lg"] },
@@ -156,6 +156,36 @@ export const Grouped: Story = {
 };
 
 const SMALL = CITIES.slice(0, 5);
+
+const CITY_NAMES = ["Adana", "Ankara", "Antalya", "Aydın", "Bursa", "Çanakkale", "Diyarbakır", "Eskişehir", "Iğdır", "İstanbul", "İzmir", "Kocaeli", "Konya", "Muğla", "Şanlıurfa", "Trabzon", "Uşak"];
+const CITY_OPTIONS: SelectOption[] = CITY_NAMES.map((c) => ({ value: c }));
+const TAGS: SelectOption[] = ["acil", "fatura", "iade", "kargo", "kampanya"].map((t) => ({ value: t }));
+
+function FreeTextDemo() {
+  const [city, setCity] = useState<SelectValue | null>(null);
+  const [tags, setTags] = useState<SelectValue[]>(["kargo"]);
+  return (
+    <Stack>
+      <Field label="Şehir" hint="Listede yoksa yazıp “kullan”a dokunun.">
+        <Select options={CITY_OPTIONS} value={city} onChange={setCity} allowFreeText allowClear placeholder="Şehir seçin" />
+      </Field>
+      <Field label="Etiketler">
+        <Select mode="multiple" options={TAGS} value={tags} onChange={setTags} allowFreeText freeTextLabel={(t) => `“${t}” etiketini ekle`} placeholder="Etiket ekleyin" />
+      </Field>
+      <Text muted>{`Şehir: ${city ?? "—"} · Etiketler: ${tags.join(", ") || "—"}`}</Text>
+    </Stack>
+  );
+}
+
+export const FreeText: Story = {
+  name: "Serbest Metin (allowFreeText)",
+  ...storyDoc(
+    "`allowFreeText`: aramada birebir eşleşme yoksa en üstte “… kullan” satırı; klavyede \"bitti\" de yazılanı seçer. Değer yazılan metin olur, alanda düz metin (çokluda etiket) görünür. Aramayı kendiliğinden açar ve odaklar. Web'deki AutoComplete'in native karşılığı.",
+    `<Select options={cities} value={city} onChange={setCity} allowFreeText />
+<Select mode="multiple" options={tags} value={tags} onChange={setTags} allowFreeText freeTextLabel={etiketEkle} />`
+  ),
+  render: () => <FreeTextDemo />,
+};
 
 export const SizesAndVariants: Story = {
   name: "Boyut ve Görünüm",

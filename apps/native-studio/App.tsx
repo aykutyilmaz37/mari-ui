@@ -5,6 +5,7 @@ import { useFonts } from "expo-font";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { STORY_CATEGORIES, STORY_ENTRIES, renderStory, type StoryContext, type StoryEntry } from "./src/stories";
 import { MariLogo } from "./src/MariLogo";
+import { pickImages } from "./src/picker";
 import { useStackTransition } from "./src/useStackTransition";
 
 /**
@@ -48,7 +49,7 @@ function Studio() {
 
   const c = SHELL[theme];
   // radius: çerçeve kırpmaz (taşan baloncuk kesilmesin), zemin köşesi story tarafında yuvarlanır.
-  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system", radius: FRAME_RADIUS, insets };
+  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system", radius: FRAME_RADIUS, insets, pickImages };
 
   return (
     <View style={[styles.screen, { backgroundColor: c.bg, paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>

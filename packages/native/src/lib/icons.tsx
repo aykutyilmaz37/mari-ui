@@ -268,3 +268,24 @@ export function InboxIcon({ size = 16, color = "currentColor" }: IconProps) {
     </Svg>
   );
 }
+
+export function UploadIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M12 3v12" {...s} />
+      <Path d="m17 8-5-5-5 5" {...s} />
+      <Path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" {...s} />
+    </Svg>
+  );
+}
+
+export function FileIcon({ size = 16, color = "currentColor" }: IconProps) {
+  const s = stroke(color);
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" {...s} />
+      <Path d="M14 2v4a2 2 0 0 0 2 2h4" {...s} />
+    </Svg>
+  );
+}

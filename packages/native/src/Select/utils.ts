@@ -1,4 +1,5 @@
 import type React from "react";
+import { foldForSearch } from "../lib/searchFold";
 
 /** Select'in saf mantığı — web `select/utils.ts` ile aynı kurallar (testli). */
 
@@ -36,10 +37,8 @@ export function flattenOptions(items: Array<SelectOption | SelectOptionGroup>): 
   return items.flatMap((item) => (isGroup(item) ? item.options : [item]));
 }
 
-/** Türkçe/aksansız eşleşme (web AutoComplete ile aynı): "mugla" → "Muğla", "IZMIR" → "İzmir". */
-export function foldForSearch(text: string): string {
-  return text.toLocaleLowerCase("tr").normalize("NFD").replace(/\p{M}/gu, "").replace(/ı/g, "i");
-}
+/** Türkçe/aksansız eşleşme: "mugla" → "Muğla", "IZMIR" → "İzmir" (Hermes'e güvenli, `lib/searchFold`). */
+export { foldForSearch };
 
 /** Aramada kullanılan düz metin: `searchText` → düz `label` → `value`. */
 export function optionText(option: SelectOption): string {

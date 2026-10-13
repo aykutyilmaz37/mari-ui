@@ -119,6 +119,14 @@ function StepButton({ kind, label, disabled, size, iconSize, color, pressedBg, r
   );
 }
 
+/** Düğme kutusu = alan yüksekliği; dış köşe = alanın köşe yarıçapı. */
+function boxMetrics(container: ViewStyle) {
+  return {
+    buttonSize: typeof container.height === "number" ? container.height : 44,
+    radius: typeof container.borderRadius === "number" ? container.borderRadius : 0,
+  };
+}
+
 /**
  * Sayı alanı: Türkçe biçim (1.234,56), min/max, adım, sabit ondalık, ön/son
  * ek. −/+ iki yanda (sepetteki adet gibi), basılı tutunca tekrarlar; VoiceOver /
@@ -184,9 +192,8 @@ export function InputNumber({
   const editable = !field.disabled && !readOnly;
   const atMin = current !== null && min !== undefined && current <= min;
   const atMax = current !== null && max !== undefined && current >= max;
-  const buttonSize = typeof styles.container.height === "number" ? styles.container.height : 44;
+  const { buttonSize, radius } = boxMetrics(styles.container);
   const pressedBg = theme.color.canvas.surfaceAlt;
-  const radius = typeof styles.container.borderRadius === "number" ? styles.container.borderRadius : 0;
   const fontSize = styles.input.fontSize;
   const text = focused ? draft : formatNumber(current, config);
   const centered = controls && prefix == null && suffix == null;

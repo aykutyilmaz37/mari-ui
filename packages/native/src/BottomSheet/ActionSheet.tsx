@@ -24,6 +24,11 @@ export interface ActionSheetProps {
   actions: ActionSheetAction[];
   /** En altta ayrı, kalın. Varsayılan: "Vazgeç". `null` → yok. */
   cancelLabel?: string | null;
+  /**
+   * Panel tamamen kapandıktan sonra (seçilen eylemin `onPress`inden SONRA).
+   * Vazgeçmeyi eylemden ayırmak için: eylem çalışmadıysa kullanıcı vazgeçmiştir.
+   */
+  onAfterClose?: () => void;
 }
 
 const ROW = 56;
@@ -55,7 +60,7 @@ function ActionRow({ action, onSelect }: { action: ActionSheetAction; onSelect: 
  * iki platformda aynı görünüm; sürükleyerek ya da karartmaya dokunarak kapanır.
  * Bir eyleme basılınca panel kapanır, kapanış bitince eylem çalışır.
  */
-export function ActionSheet({ open, onClose, title, message, actions, cancelLabel = "Vazgeç" }: ActionSheetProps) {
+export function ActionSheet({ open, onClose, title, message, actions, cancelLabel = "Vazgeç", onAfterClose }: ActionSheetProps) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const font = nativeFontFamily(theme.fontFamily.sans);
@@ -70,6 +75,7 @@ export function ActionSheet({ open, onClose, title, message, actions, cancelLabe
     const action = pending.current;
     pending.current = null;
     action?.onPress?.();
+    onAfterClose?.();
   };
   return (
     <BottomSheet open={open} onClose={onClose} onAfterClose={runPending} accessibilityLabel={title ?? "Eylemler"}>

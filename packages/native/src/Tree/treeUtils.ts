@@ -1,4 +1,5 @@
 import type { TreeCheckInfo, TreeNode } from "./types";
+import { foldForSearch } from "../lib/searchFold";
 
 /**
  * Tree ve TreeSelect'in saf mantığı — web `tree/utils` + `tree-select/utils`
@@ -159,12 +160,8 @@ export function nodeText(node: TreeNode): string {
   return typeof node.title === "string" || typeof node.title === "number" ? String(node.title) : "";
 }
 
-/**
- * Arama için harf katlama. `toLocaleLowerCase("tr")` Latin "I"yı "ı" yapar
- * ("API" → "apı") ve "api.ts"yi bulamaz; en-US ise "İ"yi iki karaktere böler.
- * tr ile küçültüp ı→i katlanır: "API", "İstanbul", "ılık" hepsi bulunur, uzunluk değişmez.
- */
-const normalize = (s: string) => s.toLocaleLowerCase("tr").replace(/ı/g, "i");
+// Hermes'e güvenli katlama (uzunluk korunur → splitMatch indeksleri geçerli); aksanları da atar ("sisli" → Şişli).
+const normalize = foldForSearch;
 
 export interface TreeSearchResult {
   /** Eşleşen düğümler. */

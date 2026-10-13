@@ -22,7 +22,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Upload örneklerinde galeriden fotoğraf seçmek için.",
+          "cameraPermission": "Upload örneklerinde fotoğraf çekmek için."
+        }
+      ]
     ]
   }
 }
