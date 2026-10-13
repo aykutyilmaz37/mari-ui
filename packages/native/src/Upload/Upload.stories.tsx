@@ -37,8 +37,62 @@ const MB = 1024 * 1024;
 type StoryPicker = (opts: { multiple: boolean; limit: number; camera?: boolean }) => Promise<UploadPickedFile[] | null>;
 const studioPicker = (ctx: unknown): StoryPicker | undefined => (ctx as { globals?: { pickImages?: StoryPicker } } | undefined)?.globals?.pickImages;
 
-/** Galeriden seçen `onPick` (gerçek uygulamada da aynısı: expo-image-picker). */
-const galleryPick = (picker: StoryPicker | undefined) => async (ctx: UploadPickContext) => (picker ? picker({ multiple: ctx.multiple, limit: ctx.remaining }) : null);
+/**
+ * "Fotoğraf çek / Galeriden seç" ActionSheet'li `onPick` — gerçek uygulamadaki kalıp.
+ * `onPick` bir söz döndürür, ActionSheet seçimiyle çözülür; eylem panel kapandıktan
+ * SONRA çalışır (iOS: kapanan Modal varken seçici açılmaz). Vazgeçilirse `null`.
+ */
+function useSourcePicker(picker: StoryPicker | undefined) {
+  const pending = useRef<((v: UploadPickedFile[] | null) => void) | null>(null);
+  const remaining = useRef(1);
+  const multiple = useRef(false);
+  const choosing = useRef(false);
+  const [open, setOpen] = useState(false);
+  const finish = (v: UploadPickedFile[] | null) => {
+    pending.current?.(v);
+    pending.current = null;
+  };
+  const choose = async (camera: boolean) => finish(picker ? await picker({ multiple: multiple.current && !camera, limit: remaining.current, camera }) : null);
+  const start = (camera: boolean) => {
+    choosing.current = true;
+    void choose(camera);
+  };
+  const onPick = (ctx: UploadPickContext) =>
+    new Promise<UploadPickedFile[] | null>((resolve) => {
+      pending.current = resolve;
+      remaining.current = ctx.remaining;
+      multiple.current = ctx.multiple;
+      setOpen(true);
+    });
+  const sheet = (
+    <ActionSheet
+      open={open}
+      onClose={() => setOpen(false)}
+      // Eylem seçilmediyse (Vazgeç / dışarı dokunma) seçim iptal.
+      onAfterClose={() => {
+        if (pending.current && !choosing.current) finish(null);
+        choosing.current = false;
+      }}
+      title="Fotoğraf ekle"
+      actions={[
+        { label: "Fotoğraf çek", onPress: () => start(true) },
+        { label: "Galeriden seç", onPress: () => start(false) },
+      ]}
+    />
+  );
+  return { onPick, sheet };
+}
+
+/** Tek bir Upload + kaynak seçimi (story'ler bileşen olarak kullanır; hook render içinde çağrılamaz). */
+function PickerUpload({ picker, ...props }: Omit<React.ComponentProps<typeof Upload>, "onPick"> & { picker?: StoryPicker }) {
+  const source = useSourcePicker(picker);
+  return (
+    <>
+      <Upload {...props} onPick={source.onPick} />
+      {source.sheet}
+    </>
+  );
+}
 
 function WebNote({ picker }: { picker?: StoryPicker }) {
   if (picker) return null;
@@ -46,12 +100,12 @@ function WebNote({ picker }: { picker?: StoryPicker }) {
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin. native-studio'da telefonun galerisi açılır."),
+  ...storyDoc("Tüm prop'ları canlı deneyin. native-studio'da \"Fotoğraf çek / Galeriden seç\" sorulur, telefonun kamerası ya da galerisi açılır."),
   render: (args, ctx) => {
     const picker = studioPicker(ctx);
     return (
       <Stack>
-        <Upload {...args} fileType="image/*" onPick={galleryPick(picker)} hint="Görsel · en fazla 5 MB" accessibilityLabel="Fotoğraf ekle" />
+        <PickerUpload {...args} picker={picker} fileType="image/*" hint="Görsel · en fazla 5 MB" accessibilityLabel="Fotoğraf ekle" />
         <WebNote picker={picker} />
       </Stack>
     );
@@ -60,48 +114,13 @@ export const Playground: Story = {
 
 function ListingDemo({ picker }: { picker?: StoryPicker }) {
   const [files, setFiles] = useState<UploadFile[]>([]);
-  // Kamera / galeri: onPick bir söz döndürür, ActionSheet seçimiyle çözülür.
-  const pending = useRef<((v: UploadPickedFile[] | null) => void) | null>(null);
-  const remaining = useRef(1);
-  const choosing = useRef(false);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const finish = (v: UploadPickedFile[] | null) => {
-    pending.current?.(v);
-    pending.current = null;
-  };
-  // Eylem panel kapandıktan SONRA çalışır (iOS: kapanan Modal varken seçici açılmaz).
-  const choose = async (camera: boolean) => finish(picker ? await picker({ multiple: !camera, limit: remaining.current, camera }) : null);
-  const startChoose = (camera: boolean) => {
-    choosing.current = true;
-    void choose(camera);
-  };
-  const onPick = (ctx: UploadPickContext) =>
-    new Promise<UploadPickedFile[] | null>((resolve) => {
-      pending.current = resolve;
-      remaining.current = ctx.remaining;
-      setSheetOpen(true);
-    });
   return (
     <Stack>
       <Field label="İlan fotoğrafları" hint="İlk fotoğraf kapak olur. En fazla 6.">
-        <Upload listType="review" max={6} fileType="image/*" value={files} onChange={setFiles} onPick={onPick} />
+        <PickerUpload picker={picker} listType="review" max={6} fileType="image/*" value={files} onChange={setFiles} />
       </Field>
       <Text muted>{`${files.length} fotoğraf`}</Text>
       <WebNote picker={picker} />
-      <ActionSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        // Eylem seçilmediyse (Vazgeç / dışarı dokunma) seçim iptal.
-        onAfterClose={() => {
-          if (pending.current && !choosing.current) finish(null);
-          choosing.current = false;
-        }}
-        title="Fotoğraf ekle"
-        actions={[
-          { label: "Fotoğraf çek", onPress: () => startChoose(true) },
-          { label: "Galeriden seç", onPress: () => startChoose(false) },
-        ]}
-      />
     </Stack>
   );
 }
@@ -133,7 +152,7 @@ export const Avatar: Story = {
   ...storyDoc("`reviewType=\"circle\"` + `max={1}`: tek, yuvarlak profil fotoğrafı. Kaldırınca yeniden \"Ekle\".", `<Upload listType="review" reviewType="circle" max={1} fileType="image/*" onPick={pickAvatar} />`),
   render: (_args, ctx) => (
     <Field label="Profil fotoğrafı">
-      <Upload listType="review" reviewType="circle" max={1} fileType="image/*" onPick={galleryPick(studioPicker(ctx))} />
+      <PickerUpload picker={studioPicker(ctx)} listType="review" reviewType="circle" max={1} fileType="image/*" />
     </Field>
   ),
 };
@@ -161,7 +180,7 @@ function ReturnDemo({ picker }: { picker?: StoryPicker }) {
   return (
     <Stack>
       <Field label="Ürün fotoğrafları" hint="En fazla 4 · 5 MB">
-        <Upload fileType="image/*" max={4} value={files} onChange={setFiles} onPick={galleryPick(picker)} onUpload={fakeUpload(failFirst)} triggerLabel="Fotoğraf ekle" />
+        <PickerUpload picker={picker} fileType="image/*" max={4} value={files} onChange={setFiles} onUpload={fakeUpload(failFirst)} triggerLabel="Fotoğraf ekle" />
       </Field>
       <Button size="sm" variant="ghost" onPress={() => setFailFirst((v) => !v)}>{failFirst ? "Sunucu hatası: açık" : "Sunucu hatası: kapalı"}</Button>
       <Button block disabled={files.length === 0 || uploading || failed}>
@@ -181,7 +200,7 @@ export const ReturnForm: Story = {
   max={4}
   value={files}
   onChange={setFiles}
-  onPick={pickFromGallery}
+  onPick={askCameraOrGalleryThenPick}
   onUpload={async (file, report) => {
     await api.upload(file.uri, { onProgress: (e) => report((e.loaded / e.total) * 100) });
   }}
@@ -196,7 +215,7 @@ export const Validation: Story = {
     "`fileSize` (bayt) ve `fileType` (web `accept` sözdizimi): uymayanlar eklenmez, nedeni alanın altında yazar (`onReject` ile de alınır). Bu örnekte sınır 1 MB — galeriden büyük bir fotoğraf seçerseniz reddedilir; 2'den fazla seçerseniz fazlası \"en fazla\" ile.",
     `<Upload fileType="image/*" fileSize={1 * 1024 * 1024} max={2} onReject={(reason, file) => log(reason, file.name)} />`
   ),
-  render: (_args, ctx) => <Upload fileType="image/*" fileSize={1 * MB} max={2} onPick={galleryPick(studioPicker(ctx))} hint="Görsel · en fazla 1 MB · en fazla 2" accessibilityLabel="Fotoğraf ekle" />,
+  render: (_args, ctx) => <PickerUpload picker={studioPicker(ctx)} fileType="image/*" fileSize={1 * MB} max={2} hint="Görsel · en fazla 1 MB · en fazla 2" accessibilityLabel="Fotoğraf ekle" />,
 };
 
 export const States: Story = {
@@ -204,8 +223,8 @@ export const States: Story = {
   ...storyDoc("Pasif: seçici açılmaz, kaldırma düğmeleri yok.", `<Upload disabled … />`),
   render: (_args, ctx) => (
     <View style={{ gap: 16 }}>
-      <Upload disabled onPick={galleryPick(studioPicker(ctx))} hint="Görsel · en fazla 5 MB" />
-      <Upload disabled listType="review" onPick={galleryPick(studioPicker(ctx))} />
+      <PickerUpload picker={studioPicker(ctx)} disabled hint="Görsel · en fazla 5 MB" />
+      <PickerUpload picker={studioPicker(ctx)} disabled listType="review" />
     </View>
   ),
 };
@@ -217,7 +236,7 @@ export const Skeleton: Story = {
     <SkeletonDemo>
       {(skeleton) => (
         <Field label="Fotoğraflar" skeleton={skeleton}>
-          <Upload onPick={galleryPick(studioPicker(ctx))} hint="Görsel · en fazla 5 MB" />
+          <PickerUpload picker={studioPicker(ctx)} hint="Görsel · en fazla 5 MB" />
         </Field>
       )}
     </SkeletonDemo>
