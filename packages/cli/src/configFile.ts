@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { defaultThemeConfig, type MariUiThemeConfig } from "@mari-ui/tokens";
+import { defaultThemeConfig, type MariUiThemeConfig, type PersonaName } from "@mari-ui/tokens";
 
 export const CONFIG_FILE_NAME = "mari-ui.config.json";
 
@@ -31,4 +31,23 @@ export function writeDefaultConfigIfMissing(targetDir: string): { created: boole
   if (existsSync(path)) return { created: false, path };
   writeFileSync(path, `${JSON.stringify(DEFAULT_CONFIG, null, 2)}\n`, "utf8");
   return { created: true, path };
+}
+
+/**
+ * Faz 21 — `init --persona`. Dosya yoksa YALNIZ `{ "persona": … }` yazılır: her şey
+ * kişilikten gelir, açıkça yazılan alanlar ileride onu ezer. Dosya varsa yalnız
+ * `persona` alanı eklenir/değişir — kullanıcının diğer seçimlerine dokunulmaz
+ * (bayrak açık bir istek olduğu için idempotent kuralın tek istisnası bu alan).
+ */
+export function writePersonaConfig(targetDir: string, persona: PersonaName): { created: boolean; updated: boolean; path: string } {
+  const path = configFilePath(targetDir);
+  if (!existsSync(path)) {
+    writeFileSync(path, `${JSON.stringify({ persona }, null, 2)}\n`, "utf8");
+    return { created: true, updated: false, path };
+  }
+  const current = JSON.parse(readFileSync(path, "utf8")) as MariUiThemeConfig;
+  if (current.persona === persona) return { created: false, updated: false, path };
+  // `persona` en üstte dursun (okunurluk): önce o, sonra mevcut alanlar, sonra yeni değer.
+  writeFileSync(path, `${JSON.stringify(Object.assign({ persona }, current, { persona }), null, 2)}\n`, "utf8");
+  return { created: false, updated: true, path };
 }

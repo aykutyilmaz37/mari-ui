@@ -75,3 +75,23 @@ describe("runThemeCommand", () => {
     expect(result.themeTsContent).toContain('"brand"');
   });
 });
+
+describe("runThemeCommand — kişilik (Faz 21)", () => {
+  let dir: string;
+  beforeEach(() => {
+    dir = makeTempDir();
+  });
+  afterEach(() => cleanupTempDir(dir));
+
+  it("kişiliğin rengini kullanır ve font adresini döndürür; CSS'e dış @import eklemez", () => {
+    writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ persona: "editorial" }), "utf8");
+    const result = runThemeCommand({ targetDir: dir });
+    expect(result.fontsUrl).toContain("family=Fraunces");
+    expect(result.cssContent).toContain("Fraunces");
+    expect(result.cssContent).not.toContain("@import");
+  });
+
+  it("kişilik yoksa font adresi yok", () => {
+    expect(runThemeCommand({ targetDir: dir }).fontsUrl).toBeUndefined();
+  });
+});

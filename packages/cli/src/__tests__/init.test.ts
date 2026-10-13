@@ -62,3 +62,33 @@ describe("runInit", () => {
     expect(second.alreadyHadDependencies).toHaveLength(3);
   });
 });
+
+describe("runInit — kişilik (Faz 21)", () => {
+  let dir: string;
+  beforeEach(() => {
+    dir = makeTempDir();
+  });
+  afterEach(() => cleanupTempDir(dir));
+
+  it("config yoksa yalnız { persona } yazar", () => {
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, persona: "playful" });
+    expect(result.configCreated).toBe(true);
+    expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "playful" });
+  });
+
+  it("config varsa yalnız persona alanını ekler, diğer seçimlere dokunmaz", () => {
+    writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ color: { primary: "#059669" }, density: { radius: "lg" } }), "utf8");
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, persona: "minimal" });
+    expect(result.configUpdated).toBe(true);
+    const config = JSON.parse(readFileSync(result.configPath, "utf8"));
+    expect(config).toEqual({ persona: "minimal", color: { primary: "#059669" }, density: { radius: "lg" } });
+    expect(Object.keys(config)[0]).toBe("persona");
+  });
+
+  it("aynı kişilik zaten yazılıysa dosyaya dokunmaz", () => {
+    writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ persona: "luxury" }), "utf8");
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, persona: "luxury" });
+    expect(result.configCreated).toBe(false);
+    expect(result.configUpdated).toBe(false);
+  });
+});

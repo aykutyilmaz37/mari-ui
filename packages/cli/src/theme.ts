@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { buildPlainThemeCss, resolveThemeConfig } from "@mari-ui/tokens";
+import { buildPlainThemeCss, personaFontsUrl, resolveThemeConfig } from "@mari-ui/tokens";
 import { readConfig } from "./configFile";
 
 export const THEME_CSS_FILE_NAME = "mari-ui-theme.css";
@@ -21,6 +21,8 @@ export interface ThemeCommandResult {
   themeTsContent: string;
   /** `check: true` iken: iki dosyadan en az biri bayatsa `true`. */
   stale?: boolean;
+  /** Faz 21 — config'te kişilik varsa fontlarının Google Fonts adresi (CSS'e eklenmez; uygulama bilerek yükler). */
+  fontsUrl?: string;
 }
 
 const CONFIG_FILE_HINT = "mari-ui.config.json";
@@ -63,16 +65,17 @@ export function runThemeCommand(options: ThemeCommandOptions): ThemeCommandResul
 
   const cssPath = join(outDir, THEME_CSS_FILE_NAME);
   const themeTsPath = join(outDir, THEME_TS_FILE_NAME);
+  const fontsUrl = config.persona ? personaFontsUrl(config.persona) : undefined;
 
   if (check) {
     const cssStale = !existsSync(cssPath) || readFileSync(cssPath, "utf8") !== cssContent;
     const tsStale = !existsSync(themeTsPath) || readFileSync(themeTsPath, "utf8") !== themeTsContent;
-    return { cssPath, themeTsPath, cssContent, themeTsContent, stale: cssStale || tsStale };
+    return { cssPath, themeTsPath, cssContent, themeTsContent, stale: cssStale || tsStale, fontsUrl };
   }
 
   mkdirSync(dirname(cssPath), { recursive: true });
   writeFileSync(cssPath, cssContent, "utf8");
   writeFileSync(themeTsPath, themeTsContent, "utf8");
 
-  return { cssPath, themeTsPath, cssContent, themeTsContent };
+  return { cssPath, themeTsPath, cssContent, themeTsContent, fontsUrl };
 }
