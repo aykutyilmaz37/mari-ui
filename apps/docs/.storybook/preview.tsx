@@ -1,3 +1,5 @@
+"use client";
+
 import React, { Suspense } from "react";
 import type { Preview } from "@storybook/react";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
@@ -8,7 +10,11 @@ import "@mari-ui/tokens/fonts.css";
 import "@mari-ui/components/styles.css";
 import "./preview.css";
 import { DocsContainer } from "./DocsContainer";
-import { personaToolbar, withPersona } from "./withPersona";
+import { listenPersonaGlobals, personaToolbar, withPersona } from "./withPersona";
+
+// Türkçe büyük/küçük harf dönüşümü (`uppercase` → "İRİS", "IRIS" değil) `lang`a bağlı.
+if (typeof document !== "undefined") document.documentElement.lang = "tr";
+listenPersonaGlobals();
 
 /**
  * Tema geçişi `data-theme` attribute'u üzerinden — `@mari-ui/tokens`'ın

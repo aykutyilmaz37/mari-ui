@@ -49,7 +49,8 @@ export function storyDoc(description: string, code?: string) {
 
 /**
  * Web Storybook'un tema düğmesi (`globals.theme`) ya da native-studio'nun
- * anahtarları (`globals.theme`, `globals.fonts`, `globals.persona`) → ThemeProvider. `globals.radius`:
+ * anahtarları (`globals.theme`, `globals.fonts`, `globals.persona`) → ThemeProvider. Kişilik seçiliyse
+ * kişiliğin fontları kullanılır (web'de Google Fonts'tan yüklenir; cihazda `expo-font` ile kaydedin). `globals.radius`:
  * studio çerçevesinin köşesi — zemin yuvarlanır, çerçeve kırpmaz (taşan
  * baloncuk/menü kesilmesin).
  */
@@ -70,7 +71,7 @@ function storyTheme(mode: string | undefined, persona: string | undefined): Them
 
 export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; persona?: string; radius?: number; insets?: SafeAreaInsets } }) {
   return (
-    <ThemeProvider theme={storyTheme(context.globals?.theme, context.globals?.persona)} fonts={context.globals?.fonts === "brand" ? "brand" : "system"} insets={context.globals?.insets}>
+    <ThemeProvider theme={storyTheme(context.globals?.theme, context.globals?.persona)} fonts={context.globals?.fonts === "brand" || personaNames.includes(context.globals?.persona as PersonaName) ? "brand" : "system"} insets={context.globals?.insets}>
       <Canvas radius={context.globals?.radius}>
         <Story />
       </Canvas>

@@ -3,19 +3,26 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowRight, Check, Moon, Sun } from "lucide-react";
-import { contrastRatio, darkTheme, lightTheme, type HexColor, type ThemeMode } from "@mari-ui/tokens";
+import { contrastRatio, darkTheme, lightTheme, personaNames, personas, resolveThemeConfig, type HexColor, type PersonaName, type Theme, type ThemeMode } from "@mari-ui/tokens";
 import { Button } from "../button";
 import { Input } from "../input";
 import { Checkbox } from "../checkbox";
 import { Tag } from "../tag";
 
-function IrisForm({ mode }: { mode: ThemeMode }) {
+/** Faz 21 — araç çubuğundaki Kişilik seçimine göre tema ve etiket (oranlar da o temadan hesaplanır). */
+function personaOf(globals: Record<string, unknown>): { label: string; themes: Record<ThemeMode, Theme> } {
+  const name = globals.persona as PersonaName;
+  if (!personaNames.includes(name)) return { label: "Yumuşak iris", themes: { light: lightTheme, dark: darkTheme } };
+  const resolved = resolveThemeConfig({ persona: name });
+  return { label: personas[name].label, themes: { light: resolved.light, dark: resolved.dark } };
+}
+
+function IrisForm({ mode, theme, label }: { mode: ThemeMode; theme: Theme; label: string }) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("Mari Studio");
   const [invalid, setInvalid] = useState(false);
   const [status, setStatus] = useState("");
-  const theme = mode === "light" ? lightTheme : darkTheme;
   const { canvas, primary } = theme.color;
   const modeLabel = mode === "light" ? "Açık tema" : "Koyu tema";
   const ModeIcon = mode === "light" ? Sun : Moon;
@@ -39,7 +46,7 @@ function IrisForm({ mode }: { mode: ThemeMode }) {
         <span className="flex items-center gap-2 text-xs text-mari-muted"><ModeIcon size={16} aria-hidden />{modeLabel}</span>
       </header>
       <div className="p-6">
-        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-mari-primary">Yumuşak iris</p>
+        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-mari-primary">{label}</p>
         <h2 className="mb-2 font-heading text-2xl font-semibold tracking-tight">Yeni bir başlangıç.</h2>
         <p className="mb-6 text-sm leading-relaxed text-mari-muted">Fikrini web ve mobilde aynı özenle hayata geçir.</p>
         <form onSubmit={submit} noValidate>
@@ -87,7 +94,7 @@ function IrisForm({ mode }: { mode: ThemeMode }) {
 const meta = {
   id: "foundations-soft-iris",
   title: "Foundations/Yumuşak İris",
-  parameters: { layout: "fullscreen", docs: { description: { component: "Geist arayüz, Manrope başlıklar. Açık ve koyu temalarda aynı gerçek bileşenler. Tab ile odağı; Temizle → Proje oluştur ile hata durumunu deneyin. Oranlar ortak token'lardan hesaplanır; tüm ürünün erişilebilirlik sertifikası değildir." } } },
+  parameters: { layout: "fullscreen", docs: { description: { component: "Varsayılan kişilik: Geist arayüz, Manrope başlıklar; araç çubuğundaki Kişilik seçimiyle diğer kişilikler aynı ekranda görülür. Açık ve koyu temalarda aynı gerçek bileşenler. Tab ile odağı; Temizle → Proje oluştur ile hata durumunu deneyin. Oranlar ortak token'lardan hesaplanır; tüm ürünün erişilebilirlik sertifikası değildir." } } },
   tags: ["autodocs"],
 } satisfies Meta;
 export default meta;
@@ -95,7 +102,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Karsilastirma: Story = {
   name: "Açık / koyu karşılaştırma",
-  render: () => <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2"><IrisForm mode="light" /><IrisForm mode="dark" /></div>,
+  render: (_args, { globals }) => {
+    const { label, themes } = personaOf(globals);
+    return <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2"><IrisForm mode="light" theme={themes.light} label={label} /><IrisForm mode="dark" theme={themes.dark} label={label} /></div>;
+  },
 };
-export const Acik: Story = { name: "Açık tema", render: () => <div className="max-w-md"><IrisForm mode="light" /></div> };
-export const Koyu: Story = { name: "Koyu tema", render: () => <div className="max-w-md"><IrisForm mode="dark" /></div> };
+export const Acik: Story = { name: "Açık tema", render: (_args, { globals }) => { const { label, themes } = personaOf(globals); return <div className="max-w-md"><IrisForm mode="light" theme={themes.light} label={label} /></div>; } };
+export const Koyu: Story = { name: "Koyu tema", render: (_args, { globals }) => { const { label, themes } = personaOf(globals); return <div className="max-w-md"><IrisForm mode="dark" theme={themes.dark} label={label} /></div>; } };

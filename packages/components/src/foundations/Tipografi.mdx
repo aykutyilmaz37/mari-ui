@@ -1,11 +1,16 @@
 import { Meta } from "@storybook/blocks";
+import { FontFamilies, PersonaNote } from "./PersonaDocs";
 
 <Meta title="Foundations/Tipografi" />
 
 # Tipografi
 
-**Geist** arayüz ve gövde, **Manrope** başlıklar, **Geist Mono** kod için kullanılır.
-Fontlar Türkçe karakterleri içerir; Storybook ve stüdyo yerel font dosyalarını yükler.
+<PersonaNote />
+
+Varsayılan kişilikte **Geist** arayüz ve gövde, **Manrope** başlıklar, **Geist Mono** kod için kullanılır;
+her kişilik kendi font eşleşmesini getirir. Tüm fontlar Türkçe karakterleri içerir.
+
+<FontFamilies />
 
 ```tsx
 import "@mari-ui/tokens/fonts.css"; // isteğe bağlı yerel fontlar

@@ -1,8 +1,11 @@
 import { Meta } from "@storybook/blocks";
+import { PersonaNote, RadiusTable, SpacingDensityNote } from "./PersonaDocs";
 
 <Meta title="Foundations/Spacing" />
 
 # Spacing
+
+<PersonaNote />
 
 `0.25rem` (4px @ 16px kök) taban birimi üzerine kurulu tek ölçek. Kaynak:
 `@mari-ui/tokens` `spacing`. Component'lerdeki `w-[32rem]`, `ml-[22px]`,
@@ -14,6 +17,8 @@ import { Meta } from "@storybook/blocks";
 
 ## Ölçek
 
+<SpacingDensityNote />
+
 <div style={{ margin: "16px 0" }}>
   {[
     ["0.5", "2px"], ["1", "4px"], ["1.5", "6px"], ["2", "8px"], ["2.5", "10px"],
@@ -23,21 +28,14 @@ import { Meta } from "@storybook/blocks";
     <div key={k} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "3px 0", fontSize: "13px" }}>
       <code style={{ width: "48px" }}>{k}</code>
       <code style={{ width: "56px", color: "var(--mari-color-muted)" }}>{px}</code>
-      <div style={{ height: "12px", width: `var(--mari-space-${k.replace(".", "_")})`, background: "var(--mari-color-primary-solid)", borderRadius: "2px" }} />
+      <div style={{ height: "12px", width: `calc(var(--spacing) * ${k})`, background: "var(--mari-color-primary-solid)", borderRadius: "2px" }} />
     </div>
   ))}
 </div>
 
 ## Radius
 
-| Anahtar | Değer | Kullanım |
-|---|---|---|
-| `none` | 0 | — |
-| `sm` | 4px | Küçük kontroller (xs/sm buton, tag) |
-| `md` | 8px | **Çoğu component'in varsayılanı** |
-| `lg` | 12px | Kart, modal |
-| `xl` | 16px | Büyük yüzeyler |
-| `full` | 9999px | Pill, avatar, switch |
+<RadiusTable />
 
 `mari-ui.config.json` `density.radius` ile tüketici tüm ölçeği bir preset olarak
 kaydırabilir.
