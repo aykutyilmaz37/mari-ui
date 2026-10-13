@@ -160,7 +160,16 @@ export const Appearance: Story = {
   ...storyDoc(
     "Boyut/varyant/şekil Input'la aynı ölçek. `controls={false}` düğmesiz (ok tuşları yine çalışır); `color=\"error\"` " +
       "doğrulama; `readOnly`, `disabled`.",
-    `<InputNumber size="sm" variant="soft" controls={false} … />`
+    `
+<InputNumber size="sm" aria-label="Adet" defaultValue={12} />
+<InputNumber size="md" aria-label="Adet" defaultValue={12} />
+<InputNumber size="lg" aria-label="Adet" defaultValue={12} />
+<InputNumber variant="soft" aria-label="Adet" defaultValue={12} />
+<InputNumber variant="underlined" aria-label="Adet" defaultValue={12} controls={false} />
+<InputNumber shape="pill" aria-label="Adet" defaultValue={12} />
+<InputNumber color="error" aria-label="Adet" defaultValue={0} min={1} />
+<InputNumber readOnly aria-label="Adet" defaultValue={12} />
+<InputNumber disabled aria-label="Adet" defaultValue={12} />`
   ),
   render: () => (
     <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
