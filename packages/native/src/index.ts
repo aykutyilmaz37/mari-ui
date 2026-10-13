@@ -125,6 +125,9 @@ export type { InputNumberProps } from "./InputNumber";
 export { Upload } from "./Upload";
 export type { UploadProps, UploadFile, UploadFileStatus, UploadPickContext, UploadPickedFile, UploadRejectReason, UploadListType, UploadReviewType } from "./Upload";
 
+export { Popover } from "./Popover";
+export type { PopoverProps, PopoverTrigger } from "./Popover";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize, NativeTreeSize } from "./nativeConfig";
 
