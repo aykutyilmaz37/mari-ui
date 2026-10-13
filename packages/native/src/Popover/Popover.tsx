@@ -41,6 +41,8 @@ export interface PopoverProps extends SkeletonableProps {
 const GAP = 8;
 const ARROW = 8;
 const EDGE = 12;
+/** Okun ortasının panel köşesinden en az uzaklığı — köşeye yapışık durmasın (kullanıcı: 20 hâlâ kenarda). */
+const ARROW_INSET = 32;
 const OPEN_MS = 160;
 
 type TriggerProps = { onPress?: (...a: unknown[]) => void; onLongPress?: (...a: unknown[]) => void };
@@ -108,7 +110,7 @@ function place(anchor: LayoutRectangle | null, panel: { width: number; height: n
   const gap = arrow ? GAP + ARROW / 2 : GAP;
   // Ok her zaman tetikleyicinin ortasını gösterir: panel ekrana sığsın diye kaydırılınca
   // ortalı hizada ok panelin ortasında kalıyor, tetikleyiciden kopuyordu (kullanıcı bulgusu).
-  const arrowOptions = arrow ? { inset: 20, pointAtCenter: true } : undefined;
+  const arrowOptions = arrow ? { inset: ARROW_INSET, pointAtCenter: true } : undefined;
   return computePanelPosition({ top: anchor.y, left: anchor.x, width: anchor.width, height: anchor.height }, panel, placement, viewport, gap, EDGE, arrowOptions);
 }
 
