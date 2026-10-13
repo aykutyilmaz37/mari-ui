@@ -22,7 +22,7 @@ import {
   TruckIcon,
   WatchIcon,
 } from "lucide-react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { List, ListItem, ListItemMeta } from ".";
 import { Avatar } from "../avatar";
@@ -103,6 +103,24 @@ const roleColor = { Yönetici: "primary", Editör: "accent", Görüntüleyici: "
 /* ─────────────────────────── Playground ─────────────────────────── */
 
 export const Playground: Story = {
+  ...storyDoc(
+    "Tüm props'ları canlı deneyin.",
+    (args) => `
+const members = [
+  { id: 1, name: "Ayşe Kaya", email: "ayse.kaya@ornek.com", color: "primary" },
+  { id: 2, name: "Mehmet Demir", email: "mehmet.demir@ornek.com", color: "accent" },
+] as const;
+
+<List
+  ${jsxProps(args)}
+  dataSource={members}
+  renderItem={(m) => (
+    <ListItem actions={[<Button key="edit" size="sm" variant="link">Düzenle</Button>]}>
+      <ListItemMeta avatar={<Avatar alt={m.name} color={m.color} />} title={m.name} description={m.email} />
+    </ListItem>
+  )}
+/>`
+  ),
   args: { bordered: true, header: "Ekip üyeleri", footer: "4 üye", size: "md", itemLayout: "horizontal", split: true },
   render: (args) => (
     <div className="max-w-2xl">

@@ -135,7 +135,10 @@ export const FormSubmit: Story = {
       "(çift gönderim yok). Bittiğinde her şey yeniden etkileşime açılır.",
     `
 <Loading spinning={saving} tip="Kaydediliyor…">
-  <form onSubmit={save}>…</form>
+  <form onSubmit={save}>
+    <Field label="Görünen ad"><Input defaultValue="Ayşe Kaya" /></Field>
+    <Button htmlType="submit">Kaydet</Button>
+  </form>
 </Loading>`
   ),
   render: () => {
@@ -302,7 +305,9 @@ export const Delay: Story = {
   ...storyDoc(
     "Aynı iki istek: 150 ms'de dönen hızlı istekte `delay={300}` spinner'ı HİÇ göstermez (göz kırpması yok); " +
       "`delay` olmayanda spinner bir an belirip kaybolur.",
-    `<Loading spinning={loading} delay={300}>…</Loading>`
+    `<Loading spinning={loading} delay={300}>
+  <p>Son 30 günde 1.284 sipariş.</p>
+</Loading>`
   ),
   render: () => {
     const [a, setA] = useState(false);

@@ -8,7 +8,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ImageIcon, RefreshCwIcon } from "lucide-react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { STORY_VIDEO, picsumLoader, storyPhotos } from "../lib/storyPhotos";
 import { Image, ImageViewer } from ".";
@@ -74,6 +74,13 @@ type Story = StoryObj<typeof Image>;
 const photos = storyPhotos(12);
 
 export const Playground: Story = {
+  ...storyDoc(
+    "Tüm props'ları canlı deneyin. Adres üretimi `loader`da; örnekteki CDN parametrelerini kendi servisinize göre değiştirin.",
+    (args) => `
+const cdnLoader: ImageLoader = ({ src, width, quality = 75 }) => \`\${src}?w=\${width}&q=\${quality}\`;
+
+<Image ${jsxProps(args, { skip: ["loader"] })} loader={cdnLoader} />`
+  ),
   args: {
     src: photos[0]!.src,
     alt: photos[0]!.alt,

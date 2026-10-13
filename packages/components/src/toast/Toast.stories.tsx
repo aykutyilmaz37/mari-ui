@@ -156,7 +156,7 @@ showToast({
 
 export const Positions: Story = {
   name: "Konumlar",
-  ...storyDoc("`position` — altı konum. Aynı konumdakiler istiflenir (en fazla 4); mobilde kenardan kenara.", `showToast({ title: "…", position: "topRight" })`),
+  ...storyDoc("`position` — altı konum. Aynı konumdakiler istiflenir (en fazla 4); mobilde kenardan kenara.", `showToast({ type: "info", title: "Dışa aktarma hazır", description: "rapor-eylul.csv · 1,2 MB", position: "topRight" })`),
   render: () => {
     const { showToast } = useToast();
     const positions: ToastPosition[] = ["topLeft", "top", "topRight", "bottomLeft", "bottom", "bottomRight"];
