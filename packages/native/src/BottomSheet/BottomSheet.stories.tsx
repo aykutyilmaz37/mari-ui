@@ -91,14 +91,19 @@ export const Filter: Story = {
   name: "Filtre Paneli (yarım / tam)",
   ...storyDoc(
     "İki durak: yarım ekranda açılır, yukarı çekince tam ekrana çıkar; içerik kendi içinde kayar, \"Uygula\" altta sabit. Tutamaca dokunmak duraklar arasında geçer.",
-    `<BottomSheet
+    `const [selected, setSelected] = useState<string[]>(["Apple"]);
+const toggle = (brand: string, on: boolean) => setSelected((cur) => (on ? [...cur, brand] : cur.filter((b) => b !== brand)));
+
+<BottomSheet
   open={open}
   onClose={close}
   title="Filtrele"
   snapPoints={["50%", "90%"]}
   footer={<Button block onPress={apply}>128 ürünü göster</Button>}
 >
-  {brands.map((b) => <Checkbox key={b} label={b} … />)}
+  {["Apple", "Samsung", "Xiaomi", "Huawei"].map((brand) => (
+    <Checkbox key={brand} label={brand} checked={selected.includes(brand)} onChange={(on) => toggle(brand, on)} />
+  ))}
 </BottomSheet>`
   ),
   render: () => <FilterDemo />,
@@ -113,7 +118,15 @@ const COMMENTS = [
 export const Comments: Story = {
   name: "Yorumlar (klavye)",
   ...storyDoc("Altta yorum alanı: klavye açılınca panel yukarı kayar, alan görünür kalır.", `<BottomSheet open={open} onClose={close} title="Yorumlar" snapPoints={["60%"]} footer={<Input placeholder="Yorum yaz…" />}>
-  <List data={comments} renderItem={…} />
+  <List
+    data={comments}
+    keyExtractor={(c) => c.id}
+    renderItem={(c) => (
+      <ListItem>
+        <ListItemMeta title={c.name} description={c.text} />
+      </ListItem>
+    )}
+  />
 </BottomSheet>`),
   render: () => (
     <Trigger label="Yorumları gör (3)">
@@ -128,7 +141,11 @@ export const Comments: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Önce durumu seçin, sonra paneli açın.", `<BottomSheet open={open} onClose={close} title="Sırala" skeleton={isLoading}>…</BottomSheet>`),
+  ...storyDoc(SKELETON_STORY_DOC + " Önce durumu seçin, sonra paneli açın.", `<BottomSheet open={open} onClose={close} title="Sırala" skeleton={isLoading}>
+  {["Önerilen", "En düşük fiyat", "En yüksek fiyat"].map((s) => (
+    <Text key={s} style={{ paddingVertical: 12 }}>{s}</Text>
+  ))}
+</BottomSheet>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (
