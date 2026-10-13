@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyPersona, personaFontsUrl, personaNames, personas } from "../personas";
+import { applyPersona, minimizeConfig, personaFontsUrl, personaNames, personas } from "../personas";
 import { scaleMotion, scaleShadow } from "../primitives/scale";
 import { resolveThemeConfig } from "../theme";
 import { meetsAA } from "../contrast";
@@ -46,5 +46,20 @@ describe("kişilik temaları", () => {
   it("Google Fonts adresi boşlukları + ile kodlar", () => {
     expect(personaFontsUrl("playful")).toContain("family=Baloo+2:wght@500;600;700");
     expect(personaFontsUrl("editorial")).toContain("family=Source+Sans+3:wght@400;500;600;700");
+  });
+});
+
+describe("minimizeConfig", () => {
+  const defaults = { color: { primary: "#6951ce" as const, accent: "#765991" as const }, density: { radius: "md" as const, spacing: "normal" as const, shadow: "normal" as const }, motion: "normal" as const };
+
+  it("kişilikle aynı alanları atar, farklı olanları tutar", () => {
+    const full = applyPersona({ persona: "playful" });
+    const minimized = minimizeConfig({ ...full, persona: "playful", density: { ...full.density, radius: "sm" } }, defaults);
+    expect(minimized).toEqual({ persona: "playful", density: { radius: "sm" } });
+  });
+
+  it("kişilik yoksa config aynen döner", () => {
+    const config = { density: { radius: "lg" as const } };
+    expect(minimizeConfig(config, defaults)).toBe(config);
   });
 });

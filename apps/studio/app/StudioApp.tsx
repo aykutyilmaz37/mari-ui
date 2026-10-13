@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   defaultThemeConfig,
   contrastRatio,
@@ -14,12 +14,40 @@ import {
   type RadiusDensity,
   spacingDensities,
   type SpacingDensity,
+  shadowDensities,
+  type ShadowDensity,
+  motionLevels,
+  type MotionLevel,
+  personaNames,
+  personas,
+  personaFontsUrl,
+  minimizeConfig,
+  type PersonaName,
 } from "@mari-ui/tokens";
 import { PreviewPanel } from "./PreviewPanel";
 
 const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const SPACING_LABELS: Record<SpacingDensity, string> = { compact: "Sıkı", normal: "Normal", comfortable: "Rahat" };
 const FLUID_MAX_OPTIONS = [18, 20, 22, 24, 26, 28, 32];
+const SHADOW_LABELS: Record<ShadowDensity, string> = { none: "Yok", soft: "Yumuşak", normal: "Normal", strong: "Belirgin" };
+const MOTION_LABELS: Record<MotionLevel, string> = { off: "Kapalı", calm: "Sakin", normal: "Normal", lively: "Canlı" };
+const FONT_LINK_ID = "studio-persona-fonts";
+
+/** Kişiliğin (ya da varsayılanın) tüm düzenlenebilir alanları — seçince sol panel bunlarla dolar. */
+function personaFields(name: PersonaName | undefined) {
+  const p = name ? personas[name].config : {};
+  return {
+    primary: p.color?.primary ?? defaultThemeConfig.color.primary,
+    accent: p.color?.accent ?? defaultThemeConfig.color.accent,
+    sans: p.typography?.fontFamilySans ?? lightTheme.fontFamily.sans,
+    mono: p.typography?.fontFamilyMono ?? lightTheme.fontFamily.mono,
+    heading: p.typography?.fontFamilyHeading ?? lightTheme.fontFamily.heading ?? lightTheme.fontFamily.sans,
+    radius: p.density?.radius ?? defaultThemeConfig.density.radius,
+    spacing: p.density?.spacing ?? defaultThemeConfig.density.spacing,
+    shadow: p.density?.shadow ?? defaultThemeConfig.density.shadow,
+    motion: p.motion ?? defaultThemeConfig.motion,
+  };
+}
 
 function ContrastRow({ label, bg, fg, threshold = 4.5 }: { label: string; bg: HexColor; fg: HexColor; threshold?: number }) {
   const ratio = contrastRatio(bg, fg);
@@ -64,6 +92,9 @@ function downloadJson(filename: string, data: unknown) {
 }
 
 export function StudioApp() {
+  const [persona, setPersona] = useState<PersonaName | undefined>();
+  const [shadowDensity, setShadowDensity] = useState<ShadowDensity>(defaultThemeConfig.density.shadow);
+  const [motion, setMotion] = useState<MotionLevel>(defaultThemeConfig.motion);
   const [primaryHex, setPrimaryHex] = useState<string>(defaultThemeConfig.color.primary);
   const [accentHex, setAccentHex] = useState<string>(defaultThemeConfig.color.accent);
   const [fontFamilySans, setFontFamilySans] = useState<string>(lightTheme.fontFamily.sans);
@@ -76,14 +107,48 @@ export function StudioApp() {
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
   const [previewSpacing, setPreviewSpacing] = useState<SpacingDensity>("normal");
 
-  const config: MariUiThemeConfig = useMemo(
+  // Kişilik seçilince tüm alanlar onun değerleriyle dolar; sonra her alan elle değiştirilebilir.
+  const choosePersona = (name: PersonaName | undefined) => {
+    const f = personaFields(name);
+    setPersona(name);
+    setPrimaryHex(f.primary);
+    setAccentHex(f.accent);
+    setFontFamilySans(f.sans);
+    setFontFamilyMono(f.mono);
+    setFontFamilyHeading(f.heading);
+    setRadiusDensity(f.radius);
+    setSpacingDensity(f.spacing);
+    setPreviewSpacing(f.spacing);
+    setShadowDensity(f.shadow);
+    setMotion(f.motion);
+  };
+
+  // Kişiliğin fontları önizlemede görünsün (Google Fonts).
+  useEffect(() => {
+    document.getElementById(FONT_LINK_ID)?.remove();
+    if (!persona) return;
+    const link = document.createElement("link");
+    link.id = FONT_LINK_ID;
+    link.rel = "stylesheet";
+    link.href = personaFontsUrl(persona);
+    document.head.appendChild(link);
+  }, [persona]);
+
+  const explicitConfig: MariUiThemeConfig = useMemo(
     () => ({
+      persona,
       color: { primary: primaryHex as HexColor, accent: accentHex as HexColor },
       typography: { fontFamilySans, fontFamilyMono, fontFamilyHeading },
-      density: { radius: radiusDensity, spacing: spacingDensity },
+      density: { radius: radiusDensity, spacing: spacingDensity, shadow: shadowDensity },
+      motion,
       scale: { fluid: fluidScale, max: fluidMax },
     }),
-    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, fluidScale, fluidMax]
+    [persona, primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, shadowDensity, motion, fluidScale, fluidMax]
+  );
+  // Dışa aktarılan dosya: kişilik + yalnız ondan farklı alanlar.
+  const config = useMemo(
+    () => minimizeConfig(explicitConfig, { ...defaultThemeConfig, typography: { fontFamilySans: lightTheme.fontFamily.sans, fontFamilyMono: lightTheme.fontFamily.mono, fontFamilyHeading: lightTheme.fontFamily.heading } }),
+    [explicitConfig]
   );
 
   const resolved = useMemo(() => resolveThemeConfig(config), [config]);
@@ -99,6 +164,24 @@ export function StudioApp() {
       <aside className="studio-sidebar">
         <h1 className="studio-title">mari-ui Tema Stüdyosu</h1>
         <p className="studio-subtitle">Renk, tipografi ve yoğunluk ayarlarını gerçek bileşenlerle canlı önizleyin.</p>
+
+        <div className="studio-section">
+          <h2 className="studio-section-title">Kişilik</h2>
+          <div className="studio-field">
+            <label htmlFor="persona">Tasarım kişiliği</label>
+            <select id="persona" className="studio-select" value={persona ?? ""} onChange={(e) => choosePersona((e.target.value || undefined) as PersonaName | undefined)}>
+              <option value="">Varsayılan (Yumuşak iris)</option>
+              {personaNames.map((name) => (
+                <option key={name} value={name}>
+                  {personas[name].label}
+                </option>
+              ))}
+            </select>
+            <p className="studio-field-hint">
+              {persona ? personas[persona].description : "Renk, font, köşe, boşluk, gölge ve hareketi birlikte seçen hazır paketler."} Seçince aşağıdaki alanlar dolar; değiştirdiğiniz alanlar kişiliği ezer.
+            </p>
+          </div>
+        </div>
 
         <div className="studio-section">
           <h2 className="studio-section-title">Renk</h2>
@@ -186,6 +269,32 @@ export function StudioApp() {
             <p className="studio-field-hint">
               Tüm yükseklik, iç boşluk ve aralıkları orantılı ölçekler; yazı boyutu değişmez. Son kullanıcı ThemeCustomizer ile kendi tercihini seçebilir — bu, seçim yokken geçerli olan değer.
             </p>
+          </div>
+        </div>
+
+        <div className="studio-section">
+          <h2 className="studio-section-title">Gölge ve hareket</h2>
+          <div className="studio-field">
+            <label htmlFor="shadow-density">Gölge yoğunluğu</label>
+            <select id="shadow-density" className="studio-select" value={shadowDensity} onChange={(e) => setShadowDensity(e.target.value as ShadowDensity)}>
+              {shadowDensities.map((option) => (
+                <option key={option} value={option}>
+                  {SHADOW_LABELS[option]}
+                </option>
+              ))}
+            </select>
+            <p className="studio-field-hint">Gölge geometrisi aynı, koyuluğu ölçeklenir. "Yok"ta yüzeyler yalnız kenarlıkla ayrışır.</p>
+          </div>
+          <div className="studio-field">
+            <label htmlFor="motion-level">Hareket</label>
+            <select id="motion-level" className="studio-select" value={motion} onChange={(e) => setMotion(e.target.value as MotionLevel)}>
+              {motionLevels.map((option) => (
+                <option key={option} value={option}>
+                  {MOTION_LABELS[option]}
+                </option>
+              ))}
+            </select>
+            <p className="studio-field-hint">Tüm geçiş süreleri çarpılır (Sakin ×1.4, Canlı ×0.85 + hafif taşan eğri, Kapalı = anında). İşletim sisteminin "hareketi azalt" tercihi her zaman geçerli.</p>
           </div>
         </div>
 

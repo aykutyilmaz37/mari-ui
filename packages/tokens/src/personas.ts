@@ -117,3 +117,30 @@ export function personaFontsUrl(name: PersonaName): string {
   const families = personas[name].googleFonts.map((family) => `family=${family.replace(/ /g, "+")}`).join("&");
   return `https://fonts.googleapis.com/css2?${families}&display=swap`;
 }
+
+type ConfigGroup = "color" | "typography" | "density";
+
+/**
+ * Kişilikli bir config'ten kişiliğin zaten verdiği değerleri çıkarır — geriye yalnız
+ * `persona` + gerçekten farklı alanlar kalır (stüdyo dışa aktarımı, CLI). Kişiliğin
+ * vermediği alan varsayılanla karşılaştırılır. Kişilik yoksa config aynen döner.
+ */
+export function minimizeConfig(config: MariUiThemeConfig, defaults: MariUiThemeConfig): MariUiThemeConfig {
+  if (!config.persona) return config;
+  const p = personas[config.persona].config;
+  const base: MariUiThemeConfig = {
+    color: { ...defaults.color, ...p.color },
+    typography: { ...defaults.typography, ...p.typography },
+    density: { ...defaults.density, ...p.density },
+    motion: p.motion ?? defaults.motion,
+  };
+  const out: MariUiThemeConfig = { persona: config.persona };
+  for (const group of ["color", "typography", "density"] as ConfigGroup[]) {
+    const changed = Object.entries(config[group] ?? {}).filter(([key, value]) => value !== undefined && (base[group] as Record<string, unknown> | undefined)?.[key] !== value);
+    if (changed.length) (out as Record<string, unknown>)[group] = Object.fromEntries(changed);
+  }
+  if (config.motion && config.motion !== base.motion) out.motion = config.motion;
+  if (config.scale) out.scale = config.scale;
+  if (config.themes) out.themes = config.themes;
+  return out;
+}
