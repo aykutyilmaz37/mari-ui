@@ -6,6 +6,7 @@ import { useControllable } from "../lib/useControllable";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
 import { useTheme } from "../theme/useTheme";
+import { motionMs } from "../theme/effects";
 import { ImageViewer } from "./ImageViewer";
 import type { ImagePreviewConfig, ImageProps, ImageSource, ImageStaticSource } from "./types";
 import { getBoxStyle, imageButtonRole, normalizeSource, resizeModeFor, resolveBlurSource, resolveUri } from "./utils";
@@ -157,7 +158,7 @@ export function Image({
             const s = e.nativeEvent.source;
             const size = s?.width && s.height ? { width: s.width, height: s.height } : null;
             setState({ key: resolved.key, status: "loaded", natural: size });
-            Animated.timing(opacity, { toValue: 1, duration: reduce ? 0 : FADE_MS, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+            Animated.timing(opacity, { toValue: 1, duration: reduce ? 0 : motionMs(theme, FADE_MS), easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
             if (size) onLoad?.(size);
           }}
           onError={() => {

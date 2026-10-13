@@ -10,7 +10,7 @@
  */
 import React from "react";
 import { View } from "react-native";
-import { darkTheme, lightTheme } from "@mari-ui/tokens";
+import { darkTheme, lightTheme, personaNames, resolveThemeConfig, type PersonaName, type Theme } from "@mari-ui/tokens";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import { SafeAreaInsetsProvider, type SafeAreaInsets } from "../theme/insets";
 import { useTheme } from "../theme/useTheme";
@@ -49,13 +49,28 @@ export function storyDoc(description: string, code?: string) {
 
 /**
  * Web Storybook'un tema düğmesi (`globals.theme`) ya da native-studio'nun
- * anahtarları (`globals.theme`, `globals.fonts`) → ThemeProvider. `globals.radius`:
+ * anahtarları (`globals.theme`, `globals.fonts`, `globals.persona`) → ThemeProvider. `globals.radius`:
  * studio çerçevesinin köşesi — zemin yuvarlanır, çerçeve kırpmaz (taşan
  * baloncuk/menü kesilmesin).
  */
-export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; radius?: number; insets?: SafeAreaInsets } }) {
+const personaThemes = new Map<PersonaName, { light: Theme; dark: Theme }>();
+
+/** Faz 21 — kişilik teması (kimlik sabit kalsın diye kişilik başına bir kez çözülür). */
+function storyTheme(mode: string | undefined, persona: string | undefined): Theme {
+  const dark = mode === "dark";
+  if (!personaNames.includes(persona as PersonaName)) return dark ? darkTheme : lightTheme;
+  const name = persona as PersonaName;
+  let resolved = personaThemes.get(name);
+  if (!resolved) {
+    resolved = resolveThemeConfig({ persona: name });
+    personaThemes.set(name, resolved);
+  }
+  return dark ? resolved.dark : resolved.light;
+}
+
+export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; persona?: string; radius?: number; insets?: SafeAreaInsets } }) {
   return (
-    <ThemeProvider theme={context.globals?.theme === "dark" ? darkTheme : lightTheme} fonts={context.globals?.fonts === "brand" ? "brand" : "system"} insets={context.globals?.insets}>
+    <ThemeProvider theme={storyTheme(context.globals?.theme, context.globals?.persona)} fonts={context.globals?.fonts === "brand" ? "brand" : "system"} insets={context.globals?.insets}>
       <Canvas radius={context.globals?.radius}>
         <Story />
       </Canvas>

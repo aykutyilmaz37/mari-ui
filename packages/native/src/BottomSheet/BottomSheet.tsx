@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AccessibilityInfo, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal as RNModal, PanResponder, Platform, Pressable, ScrollView, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from "react-native";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { useSafeInsets, type SafeAreaInsets } from "../theme/insets";
 import { toPx } from "../theme/toPx";
 import { overlaySurface, scrimColor } from "../lib/overlay";
@@ -76,6 +77,7 @@ function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onA
   const fresh = useRef(height);
   const current = useRef(0);
   const [mounted, setMounted] = useState(open);
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const afterClose = useRef(onAfterClose);
   afterClose.current = onAfterClose;
@@ -95,7 +97,7 @@ function useSheetMotion(open: boolean, snaps: number[], initialSnap: number, onA
     }
     const anim = velocity
       ? Animated.spring(height, { toValue: to, velocity: -velocity, damping: 26, stiffness: 260, overshootClamping: true, useNativeDriver: false })
-      : Animated.timing(height, { toValue: to, duration: OPEN_MS, easing: Easing.out(Easing.cubic), useNativeDriver: false });
+      : Animated.timing(height, { toValue: to, duration: Math.round(OPEN_MS * motion), easing: Easing.out(Easing.cubic), useNativeDriver: false });
     anim.start(({ finished }) => finished && done?.());
   };
 

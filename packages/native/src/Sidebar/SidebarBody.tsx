@@ -4,7 +4,8 @@ import type { ColorRole } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
 import { useNativeConfig, type NativeSidebarSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { useSafeInsets } from "../theme/insets";
 import { Badge } from "../Badge";
 import { ChevronLeftIcon, ChevronRightIcon, XIcon } from "../lib/icons";
@@ -26,12 +27,15 @@ export const isWeb = Platform.OS === "web";
  * Animated değeri grafikten kopar, aynı değerle ikinci açılış görünmez kalır.
  */
 export function useDrawerMotion(open: boolean) {
+  const motion = useMotionScale();
   const [progress, setProgress] = useState(() => new Animated.Value(0));
   const fresh = useRef(progress);
   const [mounted, setMounted] = useState(open);
   const reduce = useReduceMotion();
   const reduceRef = useRef(reduce);
   reduceRef.current = reduce;
+  const motionRef = useRef(motion);
+  motionRef.current = motion;
 
   const animateTo = (target: Animated.Value, to: number, done?: () => void) => {
     if (reduceRef.current) {
@@ -39,7 +43,7 @@ export function useDrawerMotion(open: boolean) {
       done?.();
       return;
     }
-    Animated.timing(target, { toValue: to, duration: OPEN_MS, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(({ finished }) => finished && done?.());
+    Animated.timing(target, { toValue: to, duration: Math.round(OPEN_MS * motionRef.current), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(({ finished }) => finished && done?.());
   };
 
   useEffect(() => {
@@ -115,11 +119,12 @@ interface LevelProps {
 
 /** Seviye geçişi: yeni seviye hafifçe yandan kayarak gelir (web `starting:` ile aynı). */
 function useLevelEnter() {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
   useEffect(() => {
-    Animated.timing(v, { toValue: 1, duration: reduce ? 0 : 200, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-  }, [v, reduce]);
+    Animated.timing(v, { toValue: 1, duration: reduce ? 0 : Math.round(200 * motion), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [v, reduce, motion]);
   return { opacity: v, transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] };
 }
 
@@ -232,10 +237,11 @@ const STAGGER_MAX = 10;
  * aralığında belirip yandan kayar (yerel sürücü, satır başına zamanlayıcı yok).
  */
 function useStagger(count: number, enabled: boolean) {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
-  const on = enabled && !reduce;
+  const on = enabled && !reduce && motion > 0;
   const v = useRef(new Animated.Value(on ? 0 : 1)).current;
-  const total = STAGGER_ROW_MS + STAGGER_STEP_MS * Math.min(count, STAGGER_MAX);
+  const total = Math.round((STAGGER_ROW_MS + STAGGER_STEP_MS * Math.min(count, STAGGER_MAX)) * motion);
   useEffect(() => {
     if (!on) return;
     Animated.timing(v, { toValue: 1, duration: total, easing: Easing.linear, useNativeDriver: true }).start();

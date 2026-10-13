@@ -3,7 +3,8 @@ import { AccessibilityInfo, Animated, Easing, Modal as RNModal, Pressable, Scrol
 import type { Placement } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { shadowStyle } from "../theme/effects";
+import { useMotionScale, useTheme } from "../theme/useTheme";
 import { toPx } from "../theme/toPx";
 import { overlaySurface } from "../lib/overlay";
 import { computePanelPosition, type Side } from "../lib/floating";
@@ -90,15 +91,16 @@ function Arrow({ side, offset, theme }: { side: Side; offset: number; theme: The
 
 /** Aç/kapa: kısa solma + 4pt kayma (hareket azaltmada anlık). Kapanış bitince Modal sökülür. */
 function usePopoverMotion(open: boolean) {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const v = useRef(new Animated.Value(0)).current;
   const [mounted, setMounted] = useState(open);
   useEffect(() => {
     if (open) setMounted(true);
-    Animated.timing(v, { toValue: open ? 1 : 0, duration: reduce ? 0 : OPEN_MS, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
+    Animated.timing(v, { toValue: open ? 1 : 0, duration: reduce ? 0 : Math.round(OPEN_MS * motion), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
       if (finished && !open) setMounted(false);
     });
-  }, [open, reduce, v]);
+  }, [open, reduce, v, motion]);
   return { v, mounted };
 }
 
@@ -203,7 +205,7 @@ export function Popover({ title, content, children, trigger = "click", placement
           }}
           style={[
             overlaySurface(theme),
-            { position: "absolute", maxWidth: Math.min(maxWidth, viewport.width - EDGE * 2), maxHeight: viewport.height * 0.6, borderRadius: toPx(theme.radius.lg), paddingHorizontal: 14, paddingVertical: 12, gap: 6, shadowOpacity: 0.12, shadowRadius: 12, elevation: 6 },
+            { position: "absolute", maxWidth: Math.min(maxWidth, viewport.width - EDGE * 2), maxHeight: viewport.height * 0.6, borderRadius: toPx(theme.radius.lg), paddingHorizontal: 14, paddingVertical: 12, gap: 6, ...shadowStyle(theme, { opacity: 0.12, radius: 12, offsetY: 6, elevation: 6 }) },
             placedStyle(pos, motion.v),
             style,
           ]}

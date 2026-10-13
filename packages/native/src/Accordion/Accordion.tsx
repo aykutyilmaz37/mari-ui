@@ -5,7 +5,8 @@ import type { Theme } from "@mari-ui/tokens";
 import { useNativeConfig, type NativeAccordionSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { ChevronDownIcon, ChevronRightIcon } from "../lib/icons";
 import { SkeletonBox, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
 import { useControllable } from "../lib/useControllable";
@@ -66,6 +67,7 @@ const HIDDEN_A11Y = { accessibilityElementsHidden: true, "aria-hidden": true, im
  * Ok aynı değerle döner.
  */
 function useExpand(open: boolean) {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const progress = useRef(new Animated.Value(open ? 1 : 0)).current;
   const [height, setHeight] = useState<number>();
@@ -84,8 +86,8 @@ function useExpand(open: boolean) {
       return;
     }
     setClip(true);
-    Animated.timing(progress, { toValue: open ? 1 : 0, duration: DURATION, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start(({ finished }) => finished && open && setClip(false));
-  }, [open, reduce, progress]);
+    Animated.timing(progress, { toValue: open ? 1 : 0, duration: Math.round(DURATION * motion), easing: Easing.out(Easing.cubic), useNativeDriver: false }).start(({ finished }) => finished && open && setClip(false));
+  }, [open, reduce, progress, motion]);
   const boxHeight = progress.interpolate({ inputRange: [0, 1], outputRange: [0, height ?? 0] });
   return { progress, boxHeight, clip, onMeasure: (h: number) => setHeight((prev) => (prev === h ? prev : h)) };
 }

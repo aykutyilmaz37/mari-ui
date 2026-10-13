@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, BackHandler, Platform, Pressable, View } from "react-native";
+import { shadowStyle } from "../theme/effects";
 import { useTheme } from "../theme/useTheme";
 import { scrimColor } from "../lib/overlay";
 import { DrawerBody, useDrawerMotion, useDrawerWidth, useSidebarInsets, useSidebarState, useSwipeToClose } from "./SidebarBody";
@@ -87,7 +88,7 @@ export function SidebarLayout(props: SidebarLayoutProps) {
         // Açıkken ekran ekran okuyucudan gizli — odak menüde kalsın.
         importantForAccessibility={open ? "no-hide-descendants" : "auto"}
         accessibilityElementsHidden={open}
-        style={[{ flex: 1, zIndex: 1 }, card ? { shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 24, shadowOffset: { width: 0, height: 8 }, elevation: 12 } : null, m.content]}
+        style={[{ flex: 1, zIndex: 1 }, card ? shadowStyle(theme, { opacity: 0.18, radius: 24, offsetY: 8, elevation: 12 }) : null, m.content]}
       >
         <View style={[{ flex: 1, backgroundColor: c.surface }, card ? { borderRadius: CARD_RADIUS, overflow: "hidden" } : null]}>
           {children}

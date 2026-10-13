@@ -3,7 +3,8 @@ import { AccessibilityInfo, Animated, Easing, Pressable, Text, View, type Layout
 import type { Size } from "@mari-ui/core";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { shadowStyle } from "../theme/effects";
+import { useMotionScale, useTheme } from "../theme/useTheme";
 import { useControllable } from "../lib/useControllable";
 import { useFieldControl } from "../lib/fieldContext";
 import { Hug } from "../lib/Hug";
@@ -42,6 +43,7 @@ const toOption = (option: SegmentedValue | SegmentedOption): SegmentedOption => 
 
 /** Seçili bölmenin altında kayan yüzey (iOS UISegmentedControl). */
 function useThumb(layout: LayoutRectangle | undefined) {
+  const motion = useMotionScale();
   const x = useRef(new Animated.Value(0)).current;
   const width = useRef(new Animated.Value(0)).current;
   const placed = useRef(false);
@@ -58,9 +60,9 @@ function useThumb(layout: LayoutRectangle | undefined) {
       placed.current = true;
       return;
     }
-    const timing = (v: Animated.Value, to: number) => Animated.timing(v, { toValue: to, duration: 220, easing: Easing.out(Easing.cubic), useNativeDriver: false });
+    const timing = (v: Animated.Value, to: number) => Animated.timing(v, { toValue: to, duration: Math.round(220 * motion), easing: Easing.out(Easing.cubic), useNativeDriver: false });
     Animated.parallel([timing(x, layout.x), timing(width, layout.width)]).start();
-  }, [layout, x, width]);
+  }, [layout, x, width, motion]);
   return { x, width };
 }
 
@@ -109,11 +111,7 @@ export function Segmented({ options, value, defaultValue, onChange, block = fals
           borderRadius: m.radius - PAD,
           backgroundColor: c.surface,
           opacity: selected !== undefined && layouts[String(selected)] ? 1 : 0,
-          shadowColor: "#000",
-          shadowOpacity: 0.1,
-          shadowRadius: 3,
-          shadowOffset: { width: 0, height: 1 },
-          elevation: 1,
+          ...shadowStyle(theme, { opacity: 0.1, radius: 3, offsetY: 1, elevation: 1 }),
         }}
       />
       {items.map((item) => {

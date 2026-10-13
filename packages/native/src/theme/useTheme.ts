@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useColorScheme } from "react-native";
-import { lightTheme, darkTheme, type Theme } from "@mari-ui/tokens";
+import { MOTION_FACTOR, lightTheme, darkTheme, type Theme } from "@mari-ui/tokens";
 import { ThemeContext } from "./ThemeContext";
 import { withFonts } from "./fonts";
 
@@ -19,4 +19,9 @@ export function useTheme(): Theme {
   if (provided) return provided;
   // Provider yok: sıfır kurulum — platform fontu (bkz. theme/fonts.ts).
   return withFonts(systemScheme === "dark" ? darkTheme : lightTheme, "system");
+}
+
+/** Faz 21 — temanın süre çarpanı (`theme.effects.motion`); sayı olduğu için effect bağımlılığına güvenle girer. */
+export function useMotionScale(): number {
+  return MOTION_FACTOR[useTheme().effects.motion];
 }

@@ -25,7 +25,8 @@ import { useReduceMotion } from "../lib/Skeleton";
 import { useControllable } from "../lib/useControllable";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { useSafeInsets } from "../theme/insets";
 import type { ImageLoader, ImageSource } from "./types";
 import { normalizeSource, resolveUri } from "./utils";
@@ -257,6 +258,7 @@ const FILL = { position: "absolute" as const, top: 0, left: 0, right: 0, bottom:
 
 /** Tüm canlandırılan değerler (bileşen her açılışta yeniden kurulduğu için taze). */
 function useViewerMotion() {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const anim = useRef<ViewerAnim>({
     appear: new Animated.Value(0),
@@ -269,7 +271,7 @@ function useViewerMotion() {
   }).current;
   const view = useRef<ViewState>(IDENTITY);
   const timing = (value: Animated.Value, toValue: number, ms = SETTLE_MS) =>
-    Animated.timing(value, { toValue, duration: reduce ? 0 : ms, easing: Easing.out(Easing.cubic), useNativeDriver: false });
+    Animated.timing(value, { toValue, duration: reduce ? 0 : Math.round(ms * motion), easing: Easing.out(Easing.cubic), useNativeDriver: false });
   const applyView = (next: ViewState, animated = false) => {
     view.current = next;
     if (animated) {
