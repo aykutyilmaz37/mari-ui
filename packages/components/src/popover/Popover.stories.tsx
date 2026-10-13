@@ -244,7 +244,10 @@ export const ColumnFilter: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Popover title="…" content={…} skeleton>…</Popover>`),
+  ...storyDoc(SKELETON_STORY_DOC, `
+<Popover title="Deniz Kaya" content={<p>Ürün tasarımcısı · İstanbul</p>} skeleton>
+  <Button variant="outline" color="neutral">Profili göster</Button>
+</Popover>`),
   render: () => <SkeletonDemo>{(skeleton) => (
         <Popover title="Deniz Kaya" content={<p>Ürün tasarımcısı · İstanbul</p>} skeleton={skeleton}>
           <Button variant="outline" color="neutral">Profili göster</Button>

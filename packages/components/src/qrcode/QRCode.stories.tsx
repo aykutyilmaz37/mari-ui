@@ -204,10 +204,11 @@ export const Styles: Story = {
     "Nokta tipi (`dotType`), konum işareti halkası (`cornerSquareType`) ve merkezi (`cornerDotType`), `colorEnd` ile " +
       "gradyan, `icon` ile logo (hata düzeyi otomatik H). Özel renkte koyu nokta + açık zemin kontrastını koruyun.",
     `
-<QRCode value="…" />                                                    // klasik
-<QRCode value="…" dotType="rounded" cornerSquareType="extra-rounded" cornerDotType="dot" />
-<QRCode value="…" dotType="dots" cornerSquareType="dot" cornerDotType="dot" color="#2f66a3" colorEnd="#557293" />
-<QRCode value="…" dotType="extra-rounded" cornerSquareType="extra-rounded" icon={logoUrl} />`
+{/* klasik */}
+<QRCode value="https://mari-ui.com" />
+<QRCode value="https://mari-ui.com" dotType="rounded" cornerSquareType="extra-rounded" cornerDotType="dot" />
+<QRCode value="https://mari-ui.com" dotType="dots" cornerSquareType="dot" cornerDotType="dot" color="#2f66a3" colorEnd="#557293" />
+<QRCode value="https://mari-ui.com" dotType="extra-rounded" cornerSquareType="extra-rounded" icon="/mari-ui-icon.svg" />`
   ),
   render: () => {
     const value = "https://mari-ui.dev";

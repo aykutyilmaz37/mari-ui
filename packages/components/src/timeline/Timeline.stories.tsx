@@ -92,8 +92,8 @@ export const ShipmentTracking: Story = {
   items={[
     { title: <time dateTime="2026-09-26T09:12">26 Eyl, 09:12</time>, content: "Siparişiniz alındı", icon: <CircleCheckIcon />, color: "success" },
     { title: <time dateTime="2026-09-26T14:40">26 Eyl, 14:40</time>, content: "Paketlendi — İstanbul deposu", icon: <PackageIcon /> },
-    { title: …, content: "Kargoya verildi (takip no: 7340 1182 55)", icon: <WarehouseIcon /> },
-    { title: …, content: "Transfer merkezinde — Ankara", icon: <TruckIcon /> },
+    { title: <time dateTime="2026-09-27T08:05">27 Eyl, 08:05</time>, content: "Kargoya verildi (takip no: 7340 1182 55)", icon: <WarehouseIcon /> },
+    { title: <time dateTime="2026-09-27T19:30">27 Eyl, 19:30</time>, content: "Transfer merkezinde — Ankara", icon: <TruckIcon /> },
   ]}
 />`
   ),
@@ -222,7 +222,16 @@ export const EndMode: Story = {
   name: "Sağa Hizalı (end)",
   ...storyDoc(
     "`mode=\"end\"`: nokta sağda, içerik sola hizalı — sağ kenardaki bir panelde ya da RTL'ye yakın düzenlerde.",
-    `<Timeline aria-label="Güvenlik olayları" mode="end" items={…} />`
+    `
+<Timeline
+  aria-label="Güvenlik olayları"
+  mode="end"
+  items={[
+    { title: "Bugün, 09:41", content: "Oturum açıldı", icon: <LogInIcon /> },
+    { title: "Dün, 22:10", content: "API anahtarı oluşturuldu", icon: <KeyRoundIcon />, color: "info" },
+    { title: "25 Eyl", content: "Şüpheli giriş engellendi", icon: <ShieldAlertIcon />, color: "error" },
+  ]}
+/>`
   ),
   render: () => (
     <div className="max-w-sm">

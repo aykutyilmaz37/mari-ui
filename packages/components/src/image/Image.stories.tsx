@@ -98,7 +98,7 @@ export const Progressive: Story = {
 
 // Next.js statik import — blurDataURL'i Next üretir, ek ayar gerekmez
 import hero from "./hero.jpg";
-<Image src={hero} alt="…" />`
+<Image src={hero} alt="Kapadokya'da gün doğumu" />`
   ),
   render: () => {
     const [round, setRound] = useState(0);
@@ -253,9 +253,9 @@ export const Fit: Story = {
     "`fit` = `object-fit` (varsayılan `cover`: kutuyu doldurur, taşanı kırpar; `contain`: tamamı görünür). Kutu " +
       "boyutu `aspectRatio` ya da `width`/`height` ile — sayı px, string herhangi bir CSS uzunluğu.",
     `
-<Image src={foto} alt="…" width={200} height={200} fit="cover" />
-<Image src={foto} alt="…" width={200} height={200} fit="contain" />
-<Image src={foto} alt="…" aspectRatio="16/9" />`
+<Image src="/urunler/canta.jpg" alt="Deri çanta" width={200} height={200} fit="cover" />
+<Image src="/urunler/canta.jpg" alt="Deri çanta" width={200} height={200} fit="contain" />
+<Image src="/urunler/canta.jpg" alt="Deri çanta" aspectRatio="16/9" />`
   ),
   render: () => (
     <div className="flex flex-wrap items-start gap-4">
@@ -277,7 +277,7 @@ export const Fit: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Image skeleton={loading} src={foto} alt="…" aspectRatio="4/3" />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Image skeleton={isLoading} src="/urunler/canta.jpg" alt="Deri çanta" aspectRatio="4/3" />`),
   render: () => (
     <SkeletonDemo className="grid w-full max-w-2xl grid-cols-2 gap-3 md:grid-cols-3">
       {(skeleton) =>

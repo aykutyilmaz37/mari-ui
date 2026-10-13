@@ -121,6 +121,6 @@ export const Varyantlar: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc("`skeleton` — ikon dairesi ve başlık/açıklama çizgileri.", `<Empty skeleton={isLoading} title="…" description="…" />`),
+  ...storyDoc("`skeleton` — ikon dairesi ve başlık/açıklama çizgileri.", `<Empty skeleton={isLoading} title="Sonuç bulunamadı" description="Kriterlerinize uyan herhangi bir veri bulamadık." />`),
   render: (args) => <SkeletonDemo>{(skeleton) => <Empty {...args} skeleton={skeleton} />}</SkeletonDemo>,
 };

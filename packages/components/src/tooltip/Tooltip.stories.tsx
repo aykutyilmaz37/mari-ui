@@ -166,7 +166,7 @@ export const AllPlacements: Story = {
   name: "Tüm Konumlar (12)",
   ...storyDoc(
     "12 yerleşim: ana yön + hiza (`-start`/`-end` balonu tetikleyicinin o kenarına yaslar). Ok her zaman tetikleyicinin ortasını gösterir. Tab ile gezinin.",
-    `<Tooltip placement="bottom-start" content="Dışa aktar" trigger={<Button>…</Button>} />`
+    `<Tooltip placement="bottom-start" content="Dışa aktar" trigger={<Button size="sm" variant="outline" color="neutral">Dışa aktar</Button>} />`
   ),
   render: () => (
     <div className="grid w-fit grid-cols-3 gap-x-10 gap-y-12 px-24 py-16">

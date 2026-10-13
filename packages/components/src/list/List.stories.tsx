@@ -360,7 +360,11 @@ const [loading, setLoading] = useState(false);
   <List
     aria-label="Etkinlik akışı"
     dataSource={items}
-    renderItem={(a) => <ListItem>…</ListItem>}
+    renderItem={(a) => (
+      <ListItem>
+        <ListItemMeta title={a.title} description={a.time} />
+      </ListItem>
+    )}
     infinite={{
       hasMore: items.length < total,
       loading,
@@ -491,14 +495,18 @@ export const PaginatedOrders: Story = {
   renderItem={(o) => (
     <ListItem extra={<a href={\`/siparis/\${o.id}\`}>Detay</a>}>
       <ListItemMeta title={\`#\${o.id}\`} description={o.date} />
-      <span className="font-medium">{tl(o.total)}</span>
+      <span className="font-medium">{o.total.toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}</span>
       <Tag color={o.status.color}>{o.status.label}</Tag>
     </ListItem>
   )}
 />
 
 // Sunucu tarafı:
-<List dataSource={pageRows} pagination={{ totalItems: 1240, currentPage: page, onPageChange: fetchPage }} … />`
+<List
+  dataSource={pageRows}
+  pagination={{ totalItems: 1240, currentPage: page, onPageChange: fetchPage }}
+  renderItem={(o) => <ListItem><ListItemMeta title={\`#\${o.id}\`} description={o.date} /></ListItem>}
+/>`
   ),
   render: () => (
     <div className="max-w-2xl">
@@ -534,8 +542,12 @@ export const EmptyState: Story = {
   ...storyDoc(
     "Kayıt yokken varsayılan olarak küçük bir Empty (\"Kayıt yok\") çizilir; `empty` ile bağlama uygun metin ve eylem verin.",
     `
-<List bordered header="Kayıtlı adresler" dataSource={[]} renderItem={…}
-  empty={<Empty size="sm" title="Kayıtlı adresiniz yok" description="Hızlı ödeme için bir teslimat adresi ekleyin." buttonText="Adres ekle" onClick={…} />}
+<List
+  bordered
+  header="Kayıtlı adresler"
+  dataSource={[] as { id: number; title: string }[]}
+  renderItem={(address) => <ListItem>{address.title}</ListItem>}
+  empty={<Empty size="sm" title="Kayıtlı adresiniz yok" description="Hızlı ödeme için bir teslimat adresi ekleyin." buttonText="Adres ekle" onClick={() => setAddressOpen(true)} />}
 />`
   ),
   render: () => (
@@ -570,10 +582,14 @@ export const Sizes: Story = {
     "`size` satır dolgusunu değiştirir (sm 8 / md 12 / lg 16px); `bordered` dış çerçeve ekler ve satırları yatayda içeri " +
       "çeker. Çerçevesiz liste bir kartın/panelin içine gömülür.",
     `
-<List size="sm" bordered header="Güvenlik" dataSource={settings} renderItem={(s) => <ListItem extra={<Switch aria-label={s} />}>{s}</ListItem>} />
-<List size="md" bordered … />
-<List size="lg" bordered … />
-<List split={false} … />  // ayırıcısız, çerçevesiz`
+const settings = ["İki adımlı doğrulama", "Oturum açma bildirimleri", "Haftalık özet e-postası"];
+const renderSetting = (s: string) => <ListItem extra={<Switch aria-label={s} />}>{s}</ListItem>;
+
+<List size="sm" bordered header="Güvenlik" dataSource={settings} renderItem={renderSetting} />
+<List size="md" bordered header="Güvenlik" dataSource={settings} renderItem={renderSetting} />
+<List size="lg" bordered header="Güvenlik" dataSource={settings} renderItem={renderSetting} />
+{/* ayırıcısız, çerçevesiz */}
+<List split={false} dataSource={settings} renderItem={renderSetting} />`
   ),
   render: () => (
     <div className="grid max-w-5xl gap-6 md:grid-cols-2">
@@ -605,9 +621,18 @@ export const SkeletonState: Story = {
     "`skeleton`: veri varsa (yenileme) satırlar kendi şeklinde, yoksa (ilk yükleme) sayfa boyu kadar genel satır çizilir; " +
       "başlık, alt bilgi ve sayfalama da iskelete döner. Bir EYLEM sürerken (sayfa değişimi) `loading` kullanın.",
     `
-<List skeleton bordered header="Ekip üyeleri" dataSource={members} renderItem={…} />
-<List skeleton bordered header="Ekip üyeleri" dataSource={[]} renderItem={…} />  // ilk yükleme
-<List loading dataSource={members} renderItem={…} />`
+const members = [
+  { id: 1, name: "Ayşe Kaya", email: "ayse.kaya@ornek.com" },
+  { id: 2, name: "Mehmet Demir", email: "mehmet.demir@ornek.com" },
+];
+const renderMember = (m: (typeof members)[number]) => (
+  <ListItem><ListItemMeta title={m.name} description={m.email} /></ListItem>
+);
+
+<List skeleton bordered header="Ekip üyeleri" dataSource={members} renderItem={renderMember} />
+{/* ilk yükleme: veri yokken satır iskeletleri */}
+<List skeleton bordered header="Ekip üyeleri" dataSource={[] as typeof members} renderItem={renderMember} />
+<List loading dataSource={members} renderItem={renderMember} />`
   ),
   render: () => {
     const row = (m: Member) => (
