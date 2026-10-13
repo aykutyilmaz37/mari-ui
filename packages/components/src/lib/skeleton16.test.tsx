@@ -39,7 +39,7 @@ describe("Faz 16 iskeletleri", () => {
   it("Transfer: iki liste yapısı korunur, satırlar ve düğmeler yer tutucu; grup gizli", () => {
     const { container } = render(<Transfer aria-label="Yetkiler" dataSource={[{ key: "a", title: "A" }]} showSearch skeleton footer={() => "Alt"} />);
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
-    expect(container.querySelectorAll("section")).toHaveLength(2);
+    expect(container.querySelectorAll("[role=group][aria-labelledby]")).toHaveLength(2);
     expect(container.querySelectorAll("li [data-skeleton]").length).toBeGreaterThan(0);
     expect(screen.queryByText("A")).toBeNull();
     expect(noInteractive(container)).toBe(0);
