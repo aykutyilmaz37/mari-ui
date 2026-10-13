@@ -44,6 +44,7 @@ describe("kişilik temaları", () => {
   });
 
   it("Google Fonts adresi boşlukları + ile kodlar", () => {
+    expect(personaFontsUrl("playful")).toContain("family=Baloo+2:wght@500;600;700");
     expect(personaFontsUrl("editorial")).toContain("family=Source+Sans+3:wght@400;500;600;700");
   });
 });

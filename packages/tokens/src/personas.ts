@@ -10,6 +10,10 @@ import type { MariUiThemeConfig } from "./theme";
  * Fontlar yalnız aile adıdır; yüklemek tüketicinin işi (web: `googleFonts`
  * listesinden `<link>`, native: `expo-font`). Yüklenmemişse yığındaki sistem
  * fontuna düşer — bozulmaz, yalnız kişilik zayıflar.
+ *
+ * Türkçe: her aile ğ Ğ ı İ ş Ş ç Ç ö Ö ü Ü glifleri tarayıcıda ölçülerek seçildi
+ * (yalnız `unicode-range`e bakmak yetmez — Fredoka aralığı bildirip ğ/İ/Ş çizmiyordu).
+ * Yeni font eklerken aynı ölçümü yapın.
  */
 export const personaNames = ["corporate", "playful", "minimal", "editorial", "luxury"] as const;
 export type PersonaName = (typeof personaNames)[number];
@@ -47,10 +51,10 @@ export const personas: Record<PersonaName, Persona> = {
     name: "playful",
     label: "Oyunbaz",
     description: "Enerjik, samimi ürünler: tüketici uygulamaları, eğitim, çocuk, oyun, topluluk. Canlı pembe + camgöbeği, yuvarlak hatlar, sıçrayan hareket.",
-    googleFonts: ["Nunito:wght@400;600;700;800", "Fredoka:wght@500;600;700", MONO_FONT],
+    googleFonts: ["Nunito:wght@400;600;700;800", "Baloo 2:wght@500;600;700", MONO_FONT],
     config: {
       color: { primary: "#db2777", accent: "#0891b2" },
-      typography: { fontFamilySans: `"Nunito", ${SANS_FALLBACK}`, fontFamilyHeading: `"Fredoka", "Nunito", ${SANS_FALLBACK}`, fontFamilyMono: MONO },
+      typography: { fontFamilySans: `"Nunito", ${SANS_FALLBACK}`, fontFamilyHeading: `"Baloo 2", "Nunito", ${SANS_FALLBACK}`, fontFamilyMono: MONO },
       density: { radius: "lg", spacing: "comfortable", shadow: "strong" },
       motion: "lively",
     },
