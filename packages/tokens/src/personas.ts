@@ -46,10 +46,10 @@ export const personas: Record<PersonaName, Persona> = {
   playful: {
     name: "playful",
     label: "Oyunbaz",
-    description: "Enerjik, samimi ürünler: tüketici uygulamaları, eğitim, çocuk, oyun, topluluk. Canlı renk, yuvarlak hatlar, sıçrayan hareket.",
+    description: "Enerjik, samimi ürünler: tüketici uygulamaları, eğitim, çocuk, oyun, topluluk. Canlı pembe + camgöbeği, yuvarlak hatlar, sıçrayan hareket.",
     googleFonts: ["Nunito:wght@400;600;700;800", "Fredoka:wght@500;600;700", MONO_FONT],
     config: {
-      color: { primary: "#7c3aed", accent: "#ea580c" },
+      color: { primary: "#db2777", accent: "#0891b2" },
       typography: { fontFamilySans: `"Nunito", ${SANS_FALLBACK}`, fontFamilyHeading: `"Fredoka", "Nunito", ${SANS_FALLBACK}`, fontFamilyMono: MONO },
       density: { radius: "lg", spacing: "comfortable", shadow: "strong" },
       motion: "lively",
