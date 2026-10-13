@@ -8,7 +8,7 @@ import { Button } from "../Button";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
 import { picsumLoader, storyPhotos } from "../stories/storyPhotos";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 /** Örnek albüm: fotoğraflar + her 11. sırada bir video (kapak + süre). */
 function album(count: number): ImageGalleryItem[] {
@@ -61,13 +61,19 @@ function Note({ children }: { children: React.ReactNode }) {
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
-  args: { items: ALBUM.slice(0, 60), loader: picsumLoader, title: "Fotoğraflar", selectable: true, toolbar: true, skeleton: false },
-  render: (args) => (
-    <Frame>
-      <ImageGallery {...args} />
-    </Frame>
+  ...storyDoc(
+    "Tüm prop'ları canlı deneyin. `items` tarih (`date`) taşır; galeri bunlarla bölümlenir.",
+    (args) => `
+const cdnLoader: ImageLoader = ({ src, width, quality = 75 }) => \`\${src}?w=\${width}&q=\${quality}\`;
+const items = [
+  { key: "p0", src: "/fotograflar/kapadokya.jpg", alt: "Kapadokya — gün doğumu", caption: "Kapadokya", date: new Date("2026-10-01") },
+  { key: "p1", src: "/fotograflar/efes.jpg", alt: "Efes antik kenti", caption: "Efes", date: new Date("2026-09-28") },
+];
+
+<ImageGallery ${jsxProps(args, { skip: ["items", "loader"] })} items={items} loader={cdnLoader} />`
   ),
+  args: { items: ALBUM.slice(0, 60), loader: picsumLoader, title: "Fotoğraflar", selectable: true, toolbar: true, skeleton: false },
+  decorators: [(Story) => <Frame><Story /></Frame>],
 };
 
 export const Album: Story = {

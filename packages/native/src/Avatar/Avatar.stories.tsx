@@ -79,7 +79,10 @@ function Assignees() {
 export const Group: Story = {
   name: "Görev Sorumluları",
   ...storyDoc("`max` üstü tek bir \"+N\" avatarında toplanır (\"2 kişi daha\" diye okunur).", `<AvatarGroup max={3}>
-  <Avatar alt="Ayşe Demir" />…
+  <Avatar alt="Ayşe Demir" />
+  <Avatar alt="İlker Şahin" color="primary" />
+  <Avatar alt="Mert Kaya" color="success" />
+  <Avatar alt="Elif Can" color="accent" />
 </AvatarGroup>`),
   render: () => <Assignees />,
 };
@@ -122,7 +125,10 @@ export const Sizes: Story = {
 export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc(SKELETON_STORY_DOC, `<Avatar skeleton={isLoading} alt="Elif Can" />
-<AvatarGroup skeleton={isLoading} max={3}>…</AvatarGroup>`),
+<AvatarGroup skeleton={isLoading} max={2}>
+  <Avatar alt="Ayşe Demir" color="primary" />
+  <Avatar alt="Mert Kaya" color="success" />
+</AvatarGroup>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

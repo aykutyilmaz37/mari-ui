@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Check, LogIn, MapPin, Package, ShieldCheck, Truck } from "lucide-react-native";
 import { Timeline, type TimelineItem } from "./Timeline";
 import { Text } from "../Typography";
-import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, Stack, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 const meta: Meta<typeof Timeline> = {
   title: "Native/Veri Gösterimi/Timeline",
@@ -39,7 +39,18 @@ const SHIPPING: TimelineItem[] = [
 ];
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc(
+    "Tüm prop'ları canlı deneyin.",
+    (args) => `
+const icon = (Icon: typeof Truck) => (color: string) => <Icon size={18} color={color} />;
+const steps = [
+  { title: "8 Eki · 09:12", content: "Sipariş alındı", icon: icon(Check), color: "success" },
+  { title: "8 Eki · 14:40", content: "Hazırlandı ve paketlendi", icon: icon(Package), color: "success" },
+  { title: "9 Eki · 08:05", content: "Kargoya verildi — İstanbul aktarma merkezi", icon: icon(Truck), color: "primary" },
+];
+
+<Timeline ${jsxProps(args, { skip: ["items"] })} items={steps} accessibilityLabel="Kargo durumu" />`
+  ),
   render: (args) => <Timeline {...args} items={SHIPPING} accessibilityLabel="Kargo durumu" />,
 };
 

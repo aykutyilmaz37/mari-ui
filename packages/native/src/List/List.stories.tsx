@@ -239,7 +239,11 @@ export const InfiniteScroll: Story = {
     onLoadMore: fetchNextPage,
     endMessage: "Tüm etkinlikler gösterildi",
   }}
-  renderItem={(activity) => <ListItem>…</ListItem>}
+  renderItem={(activity) => (
+    <ListItem>
+      <ListItemMeta title={activity.title} description={activity.time} />
+    </ListItem>
+  )}
 />`
   ),
   render: () => <InfiniteActivityFeed />,
