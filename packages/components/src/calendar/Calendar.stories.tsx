@@ -209,13 +209,38 @@ export const AddEvent: Story = {
     "Calendar etkinlik KAYDETMEZ — bu uygulamanın işi (alanlar, kayıt yeri, çakışma kuralı). Kalıp: `onSelect` gün seçimini " +
       "verir → Modal'da form (Input + TimePicker aralık + Segmented) → kaydedince etkinlik listenize eklenir, `cellRender` " +
       "onu hücreye çizer. Tam özellikli etkinlik takvimi (hafta/gün görünümü, sürükleme, tekrar) `@mari-ui/modules` kapsamındadır.",
-    `const [draftDay, setDraftDay] = useState<Date | null>(null);
+    `const [events, setEvents] = useState<{ date: Date; title: string }[]>([]);
+const [draftDay, setDraftDay] = useState<Date | null>(null);
+const [title, setTitle] = useState("");
+const [time, setTime] = useState<[Date | null, Date | null] | null>(null);
+const [tone, setTone] = useState("primary");
 
-<Calendar onSelect={(date, { source }) => source === "date" && setDraftDay(date)} cellRender={(date) => <Events date={date} />} />
-<Modal open={!!draftDay} title={\`Etkinlik ekle — \${formatDate(draftDay, "d MMMM")}\`} onConfirm={save} onClose={() => setDraftDay(null)}>
-  <Field label="Başlık"><Input value={title} onChange={…} /></Field>
+const save = () => {
+  if (draftDay && title.trim()) setEvents((prev) => [...prev, { date: draftDay, title: title.trim() }]);
+  setDraftDay(null);
+  setTitle("");
+};
+
+<Calendar
+  onSelect={(date, { source }) => source === "date" && setDraftDay(date)}
+  cellRender={(date, info) =>
+    info.type === "date" && (
+      <ul>
+        {events.filter((e) => e.date.toDateString() === date.toDateString()).map((e) => <li key={e.title}>{e.title}</li>)}
+      </ul>
+    )
+  }
+/>
+<Modal open={!!draftDay} title="Etkinlik ekle" onConfirm={save} onClose={() => setDraftDay(null)}>
+  <Field label="Başlık"><Input value={title} onChange={(event) => setTitle(event.target.value)} /></Field>
   <Field label="Saat"><TimePicker range minuteStep={15} value={time} onChange={setTime} /></Field>
-  <Field label="Tür"><Segmented options={types} value={tone} onChange={setTone} /></Field>
+  <Field label="Tür">
+    <Segmented
+      options={[{ value: "primary", label: "Toplantı" }, { value: "success", label: "Sosyal" }, { value: "warning", label: "Son tarih" }]}
+      value={tone}
+      onChange={setTone}
+    />
+  </Field>
 </Modal>`
   ),
   render: () => {

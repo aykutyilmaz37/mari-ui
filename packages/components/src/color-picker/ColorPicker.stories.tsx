@@ -132,7 +132,28 @@ export const LabelColors: Story = {
   ...storyDoc(
     "Listede her satırın kendi küçük seçicisi. Opaklık kapalı (`disabledAlpha`) — etiket zemini hep opak; tetikleyici " +
       "yalnız renk kutusu, adı satırdaki etikete göre verilir.",
-    `<ColorPicker size="sm" aria-label={\`\${label.name} etiketinin rengi\`} value={label.color} onChange={…} disabledAlpha presets={presets} />`
+    `
+const [labels, setLabels] = useState([
+  { name: "Hata", color: "#be123c" },
+  { name: "Özellik", color: "#2f66a3" },
+  { name: "Belge", color: "#0f766e" },
+]);
+
+<ul>
+  {labels.map((label, i) => (
+    <li key={label.name} className="flex items-center gap-3">
+      <ColorPicker
+        size="sm"
+        aria-label={\`\${label.name} etiketinin rengi\`}
+        value={label.color}
+        disabledAlpha
+        presets={[{ label: "Önerilen", colors: ["#2f66a3", "#0f766e", "#15803d", "#b45309", "#be123c", "#7c3aed"] }]}
+        onChange={(color) => color && setLabels((prev) => prev.map((l, j) => (j === i ? { ...l, color } : l)))}
+      />
+      <span className="rounded-full px-2 py-0.5 text-xs text-white" style={{ backgroundColor: label.color }}>{label.name}</span>
+    </li>
+  ))}
+</ul>`
   ),
   render: () => {
     const [labels, setLabels] = useState(LABELS);

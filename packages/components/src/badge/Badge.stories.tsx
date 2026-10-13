@@ -78,11 +78,20 @@ export const AppBar: Story = {
     "Sayı düğmenin ADINA katılır (\"Bildirimler, 3 okunmamış\") — ekran okuyucu tek parça okur. Sepete ekledikçe sayaç " +
       "artar; 99'dan sonra \"99+\". Okunmamış mesaj varlığı için sayı yerine nokta.",
     `
-<Badge count={unread}>
-  <Button variant="ghost" color="neutral" shape="circle" aria-label={\`Bildirimler, \${unread} okunmamış\`} icon={<BellIcon />} />
-</Badge>
+const [unread, setUnread] = useState(3);
+
 <Badge dot color="primary">
-  <Button … aria-label="Mesajlar, yeni mesaj var" icon={<MessageSquareIcon />} />
+  <Button variant="ghost" color="neutral" shape="circle" aria-label="Mesajlar, yeni mesaj var" icon={<MessageSquareIcon size={18} aria-hidden />} />
+</Badge>
+<Badge count={unread}>
+  <Button
+    variant="ghost"
+    color="neutral"
+    shape="circle"
+    aria-label={unread ? \`Bildirimler, \${unread} okunmamış\` : "Bildirimler"}
+    icon={<BellIcon size={18} aria-hidden />}
+    onClick={() => setUnread(0)}
+  />
 </Badge>`
   ),
   render: () => {
@@ -236,7 +245,9 @@ export const Appearance: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Badge count={5} skeleton>…</Badge>
+  ...storyDoc(SKELETON_STORY_DOC, `<Badge count={5} skeleton>
+  <Avatar alt="Ayşe Kaya" />
+</Badge>
 <StatusBadge skeleton>Hazırlanıyor</StatusBadge>`),
   render: () => <SkeletonDemo>{(skeleton) => (
         <div className="flex items-center gap-6">
