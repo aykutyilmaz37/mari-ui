@@ -8,6 +8,7 @@ import { Button } from "../button";
 import { Input } from "../input";
 import { Checkbox } from "../checkbox";
 import { Tag } from "../tag";
+import { storyDoc } from "../lib/storyMeta";
 
 /** Faz 21 — araç çubuğundaki Kişilik seçimine göre tema ve etiket (oranlar da o temadan hesaplanır). */
 function personaOf(globals: Record<string, unknown>): { label: string; themes: Record<ThemeMode, Theme> } {
@@ -100,12 +101,63 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const IRIS_CODE = (themes: string) => `
+import { useState, type FormEvent } from "react";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@mari-ui/components/button";
+import { Checkbox } from "@mari-ui/components/checkbox";
+import { Input } from "@mari-ui/components/input";
+import { Tag } from "@mari-ui/components/tag";
+
+export function NewProjectForm({ theme }: { theme: "light" | "dark" }) {
+  const [name, setName] = useState("Mari Studio");
+  const [invalid, setInvalid] = useState(false);
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setInvalid(!name.trim());
+  };
+
+  return (
+    <form data-theme={theme} noValidate onSubmit={submit} className="rounded-xl border border-mari-border bg-mari-surface p-6 text-mari-foreground">
+      <p className="mb-2 text-xs font-medium uppercase tracking-widest text-mari-primary">Yumuşak iris</p>
+      <h2 className="mb-2 font-heading text-2xl font-semibold tracking-tight">Yeni bir başlangıç.</h2>
+      <label htmlFor="project-name" className="mb-2 block text-sm font-medium">Proje adı *</label>
+      <Input
+        id="project-name"
+        required
+        size="lg"
+        value={name}
+        color={invalid ? "error" : undefined}
+        aria-describedby="project-name-hint"
+        onChange={(event) => { setName(event.target.value); setInvalid(false); }}
+      />
+      <p id="project-name-hint" className={invalid ? "mt-2 text-xs text-mari-error" : "mt-2 text-xs text-mari-muted"}>
+        {invalid ? "Hata: Proje adı gerekli." : "Daha sonra değiştirebilirsin."}
+      </p>
+      <div className="my-5"><Checkbox defaultChecked label="Koyu tema desteğini etkinleştir" /></div>
+      <div className="flex gap-2">
+        <Button htmlType="submit" size="lg" className="flex-1" icon={<ArrowRight size={16} aria-hidden />} iconPosition="end">Proje oluştur</Button>
+        <Button variant="outline" color="neutral" size="lg" onClick={() => setName("")}>Temizle</Button>
+      </div>
+      <div className="mt-4 flex gap-2">
+        <Tag color="primary" variant="soft">React</Tag>
+        <Tag color="primary" variant="soft">React Native</Tag>
+      </div>
+    </form>
+  );
+}
+
+${themes}
+`;
+
 export const Karsilastirma: Story = {
   name: "Açık / koyu karşılaştırma",
+  ...storyDoc("Aynı form açık ve koyu temada; renkler ve fontlar seçili kişilikten gelir.", IRIS_CODE(`<NewProjectForm theme="light" />\n<NewProjectForm theme="dark" />`)),
   render: (_args, { globals }) => {
     const { label, themes } = personaOf(globals);
     return <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2"><IrisForm mode="light" theme={themes.light} label={label} /><IrisForm mode="dark" theme={themes.dark} label={label} /></div>;
   },
 };
-export const Acik: Story = { name: "Açık tema", render: (_args, { globals }) => { const { label, themes } = personaOf(globals); return <div className="max-w-md"><IrisForm mode="light" theme={themes.light} label={label} /></div>; } };
-export const Koyu: Story = { name: "Koyu tema", render: (_args, { globals }) => { const { label, themes } = personaOf(globals); return <div className="max-w-md"><IrisForm mode="dark" theme={themes.dark} label={label} /></div>; } };
+export const Acik: Story = { name: "Açık tema", ...storyDoc("Açık tema.", IRIS_CODE(`<NewProjectForm theme="light" />`)), render: (_args, { globals }) => { const { label, themes } = personaOf(globals); return <div className="max-w-md"><IrisForm mode="light" theme={themes.light} label={label} /></div>; } };
+export const Koyu: Story = { name: "Koyu tema", ...storyDoc("Koyu tema.", IRIS_CODE(`<NewProjectForm theme="dark" />`)), render: (_args, { globals }) => { const { label, themes } = personaOf(globals); return <div className="max-w-md"><IrisForm mode="dark" theme={themes.dark} label={label} /></div>; } };

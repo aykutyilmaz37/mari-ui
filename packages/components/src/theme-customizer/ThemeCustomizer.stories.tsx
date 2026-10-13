@@ -9,7 +9,7 @@
 import React, { useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { SettingsIcon } from "lucide-react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { ThemeCustomizer } from "./ThemeCustomizer";
 import { loadTheme, saveTheme } from "@mari-ui/tokens";
@@ -92,7 +92,16 @@ const PreviewSurface = React.forwardRef<HTMLDivElement, { className?: string }>(
 });
 
 export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin. Tema sağdaki önizleme yüzeyine uygulanır."),
+  ...storyDoc(
+    "Tüm props'ları canlı deneyin. Tema sağdaki önizleme yüzeyine uygulanır.",
+    (args) => `
+const preview = useRef<HTMLDivElement>(null);
+
+<ThemeCustomizer ${jsxProps(args)} target={preview} />
+<main ref={preview} className="rounded-xl border border-mari-border bg-mari-surface p-5 text-mari-foreground">
+  <Button>Kaydet</Button>
+</main>`
+  ),
   args: { apply: true, sections: ["mode", "color", "spacing"], allowCustom: true, disabled: false, skeleton: false },
   render: (args) => {
     const ref = useRef<HTMLDivElement>(null);
