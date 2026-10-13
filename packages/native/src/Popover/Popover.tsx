@@ -106,7 +106,9 @@ type Placed = ReturnType<typeof computePanelPosition> | null;
 function place(anchor: LayoutRectangle | null, panel: { width: number; height: number } | null, placement: Placement, viewport: { width: number; height: number }, arrow: boolean): Placed {
   if (!anchor || !panel) return null;
   const gap = arrow ? GAP + ARROW / 2 : GAP;
-  const arrowOptions = arrow ? { inset: 16, pointAtCenter: false } : undefined;
+  // Ok her zaman tetikleyicinin ortasını gösterir: panel ekrana sığsın diye kaydırılınca
+  // ortalı hizada ok panelin ortasında kalıyor, tetikleyiciden kopuyordu (kullanıcı bulgusu).
+  const arrowOptions = arrow ? { inset: 20, pointAtCenter: true } : undefined;
   return computePanelPosition({ top: anchor.y, left: anchor.x, width: anchor.width, height: anchor.height }, panel, placement, viewport, gap, EDGE, arrowOptions);
 }
 
@@ -140,7 +142,7 @@ export function Popover({ title, content, children, trigger = "click", placement
   const theme = useTheme();
   const viewport = useWindowDimensions();
   const [open, setOpenState] = useControllable<boolean>(openProp, defaultOpen);
-  const anchorRef = useRef<React.ComponentRef<typeof View>>(null);
+  const anchorRef = useRef<React.ComponentRef<typeof Pressable>>(null);
   const [anchor, setAnchor] = useState<LayoutRectangle | null>(null);
   const [panel, setPanel] = useState<{ width: number; height: number } | null>(null);
   const motion = usePopoverMotion(open);
@@ -174,9 +176,17 @@ export function Popover({ title, content, children, trigger = "click", placement
     <>
       {/* Dış kutu ebeveynin hizasını izler (ortalı satırda ortada kalır); ölçülen iç kutu tetikleyici kadar. */}
       <View style={{ alignItems: "flex-start", maxWidth: "100%" }}>
-        <View ref={anchorRef} collapsable={false}>
+        {/* Dokunulamayan tetikleyici (Avatar, ikon) de çalışsın: dış Pressable olayı yakalar.
+            Dokunulabilir çocukta (Button) olay çocuğa gider — ona da bağlanır. */}
+        <Pressable
+          ref={anchorRef}
+          collapsable={false}
+          accessible={false}
+          onPress={trigger === "click" ? show : undefined}
+          onLongPress={trigger === "longPress" ? show : undefined}
+        >
           {bindTrigger(children, trigger, show, open)}
-        </View>
+        </Pressable>
       </View>
       <RNModal transparent visible={motion.mounted} animationType="none" statusBarTranslucent onRequestClose={close}>
         <Pressable accessibilityLabel="Kapat" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} onPress={close} />
