@@ -131,6 +131,18 @@ export type { PopoverProps, PopoverTrigger } from "./Popover";
 export { FloatButton, FloatButtonGroup, BackTop } from "./FloatButton";
 export type { FloatButtonProps, FloatButtonGroupProps, FloatButtonGroupStaticProps, FloatButtonGroupMenuProps, FloatButtonShape, FloatButtonPlacement, FloatButtonBadge, FloatButtonIconState, BackTopProps } from "./FloatButton";
 
+export { Timeline } from "./Timeline";
+export type { TimelineProps, TimelineItem } from "./Timeline";
+
+export { Masonry } from "./Masonry";
+export type { MasonryProps, MasonryItem, MasonryColumns } from "./Masonry";
+
+export { QRCode } from "./QRCode";
+export type { QRCodeProps, QRCornerDotType, QRCornerSquareType, QRDotType, QRErrorLevel, QRStatus } from "./QRCode";
+
+export { Pagination } from "./Pagination";
+export type { PaginationProps, PaginationVariant } from "./Pagination";
+
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize, NativeTreeSize } from "./nativeConfig";
 

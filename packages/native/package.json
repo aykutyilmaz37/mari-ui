@@ -39,18 +39,19 @@
   },
   "dependencies": {
     "@mari-ui/core": "workspace:*",
-    "@mari-ui/tokens": "workspace:*"
+    "@mari-ui/tokens": "workspace:*",
+    "qrcode-generator": "^1.5.2"
   },
   "devDependencies": {
     "@mari-ui/eslint-config": "workspace:*",
     "@mari-ui/tsconfig": "workspace:*",
     "@storybook/react": "^8.6.18",
-    "lucide-react-native": "^1.52.0",
-    "react-native-svg": "15.15.4",
     "@types/react": "^19.0.2",
     "eslint": "^9.17.0",
+    "lucide-react-native": "^1.52.0",
     "react": "^19.2.8",
     "react-native": "^0.87.1",
+    "react-native-svg": "15.15.4",
     "tsup": "^8.3.5",
     "typescript": "^5.7.0",
     "vitest": "^3.2.7"

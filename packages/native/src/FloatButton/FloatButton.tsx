@@ -182,7 +182,9 @@ export function FloatButton({ icon, label, description, tooltip, color, shape: o
       </View>
     );
   }
-  return <View style={[floating ? cornerStyle(placement, offset, insets) : { alignSelf: "flex-start" }, style]}>{button}</View>;
+  // Akışta: ebeveynin hizasını izler (alignSelf vermez) — menüde etiketler sütunu genişletince
+  // ana düğme sola kayıyordu; içerik kendi boyutunda kalır (Hug deseni).
+  return <View style={[floating ? cornerStyle(placement, offset, insets) : { alignItems: "flex-start", maxWidth: "100%" }, style]}>{button}</View>;
 }
 
 interface FloatButtonGroupBaseProps extends SkeletonableProps {
