@@ -8,6 +8,7 @@ import "@mari-ui/tokens/fonts.css";
 import "@mari-ui/components/styles.css";
 import "./preview.css";
 import { DocsContainer } from "./DocsContainer";
+import { personaToolbar, withPersona } from "./withPersona";
 
 /**
  * Tema geçişi `data-theme` attribute'u üzerinden — `@mari-ui/tokens`'ın
@@ -24,6 +25,7 @@ const preview: Preview = {
   // Native story'lerinin font kipi (ThemeProvider `fonts`): "system" varsayılan,
   // "brand" Geist/Manrope — web component'leriyle birebir karşılaştırmak için.
   globalTypes: {
+    persona: personaToolbar,
     fonts: {
       description: "Native font kipi",
       toolbar: {
@@ -37,7 +39,7 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { fonts: "system" },
+  initialGlobals: { fonts: "system", persona: "default" },
   parameters: {
     docs: { container: DocsContainer },
     backgrounds: { disable: true },
@@ -81,6 +83,7 @@ const preview: Preview = {
       defaultTheme: "light",
       attributeName: "data-theme",
     }),
+    withPersona,
     // Story ve gömülü docs örnekleri aynı tema ve font kaynağını kullanır.
     (Story, context) => {
       const isDocs = context.viewMode === "docs";
