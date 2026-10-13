@@ -7,7 +7,7 @@ import { AppBar, AppBarAction } from "../AppBar";
 import { Empty } from "../Empty";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
 
 const meta: Meta<typeof BottomNavigation> = {
   title: "Native/Navigasyon/BottomNavigation",
@@ -46,7 +46,18 @@ const SHOP: BottomNavigationItem[] = [
 ];
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc("Tüm prop'ları canlı deneyin.", (args) => `const filled = (Icon: typeof Home) => ({ active, color, size }: BottomNavigationIconState) => (
+  <Icon size={size} color={color} fill={active ? color : "none"} />
+);
+const items: BottomNavigationItem[] = [
+  { key: "home", label: "Ana Sayfa", icon: filled(Home) },
+  { key: "categories", label: "Kategoriler", icon: filled(LayoutGrid) },
+  { key: "cart", label: "Sepet", icon: filled(ShoppingBag), badge: 3, accessibilityLabel: "Sepet, 3 ürün" },
+  { key: "favorites", label: "Favoriler", icon: filled(Heart) },
+  { key: "account", label: "Hesabım", icon: filled(User) },
+];
+
+<BottomNavigation ${jsxProps(args, { skip: ["items"] })} items={items} accessibilityLabel="Ana gezinme" />`),
   render: (args: Omit<BottomNavigationProps, "items">) => <BottomNavigation {...args} items={SHOP} accessibilityLabel="Ana gezinme" />,
 };
 
@@ -77,18 +88,24 @@ export const Shop: Story = {
   name: "Alışveriş Uygulaması",
   ...storyDoc(
     "Beş bölüm, sepette sayı rozeti; aktif sekmede dolu ikon (`icon` fonksiyonu `active` alır). Aktif sekmeye yeniden dokunmak `onReselect` çağırır — listeyi başa kaydırmak için. Ev çubuğu payı kökteki `ThemeProvider insets`ten gelir.",
-    `const [tab, setTab] = useState("home");
+    `const filled = (Icon: typeof Home) => ({ active, color, size }: BottomNavigationIconState) => (
+  <Icon size={size} color={color} fill={active ? color : "none"} />
+);
+const items: BottomNavigationItem[] = [
+  { key: "home", label: "Ana Sayfa", icon: filled(Home) },
+  { key: "categories", label: "Kategoriler", icon: filled(LayoutGrid) },
+  { key: "cart", label: "Sepet", icon: filled(ShoppingBag), badge: 3, accessibilityLabel: "Sepet, 3 ürün" },
+  { key: "favorites", label: "Favoriler", icon: filled(Heart) },
+  { key: "account", label: "Hesabım", icon: filled(User) },
+];
+const [tab, setTab] = useState("home");
 
 <BottomNavigation
   value={tab}
   onChange={setTab}
   onReselect={() => listRef.current?.scrollToOffset({ offset: 0 })}
   accessibilityLabel="Ana gezinme"
-  items={[
-    { key: "home", label: "Ana Sayfa", icon: ({ active, color, size }) => <Home size={size} color={color} fill={active ? color : "none"} /> },
-    { key: "cart", label: "Sepet", icon: …, badge: 3, accessibilityLabel: "Sepet, 3 ürün" },
-    …
-  ]}
+  items={items}
 />`
   ),
   render: () => <ShopDemo />,
@@ -144,13 +161,28 @@ export const Colors: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("Pasif sekme (`disabled`) soluk ve dokunulamaz.", `{ key: "favorites", label: "Favoriler", icon: …, disabled: true }`),
+  ...storyDoc("Pasif sekme (`disabled`) soluk ve dokunulamaz.", `const filled = (Icon: typeof Home) => ({ active, color, size }: BottomNavigationIconState) => (
+  <Icon size={size} color={color} fill={active ? color : "none"} />
+);
+const items: BottomNavigationItem[] = [
+  { key: "home", label: "Ana Sayfa", icon: filled(Home) },
+  { key: "categories", label: "Kategoriler", icon: filled(LayoutGrid) },
+  { key: "cart", label: "Sepet", icon: filled(ShoppingBag), badge: 3, accessibilityLabel: "Sepet, 3 ürün" },
+  { key: "favorites", label: "Favoriler", icon: filled(Heart) },
+  { key: "account", label: "Hesabım", icon: filled(User) },
+];
+
+<BottomNavigation
+  accessibilityLabel="Ana gezinme"
+  defaultValue="home"
+  items={items.map((item) => (item.key === "favorites" ? { ...item, disabled: true } : item))}
+/>`),
   render: () => <BottomNavigation items={SHOP.map((i) => (i.key === "favorites" ? { ...i, disabled: true } : i))} defaultValue="home" accessibilityLabel="Ana gezinme" />,
 };
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " İkonlar daire, etiketler kendi metin kutularında; gösterge ve rozetler gizli, sekmeler dokunulamaz.", `<BottomNavigation skeleton={isLoading} items={items} />`),
+  ...storyDoc(SKELETON_STORY_DOC + " İkonlar daire, etiketler kendi metin kutularında; gösterge ve rozetler gizli, sekmeler dokunulamaz.", `<BottomNavigation skeleton={isLoading} items={items} defaultValue="home" accessibilityLabel="Ana gezinme" />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

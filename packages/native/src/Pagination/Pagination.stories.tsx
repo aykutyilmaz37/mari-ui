@@ -92,7 +92,10 @@ export const Sizes: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("İlk / son sayfada ilgili ok pasif; `disabled` tümü.", `<Pagination disabled … />`),
+  ...storyDoc("İlk / son sayfada ilgili ok pasif; `disabled` tümü.", `
+<Pagination totalItems={30} defaultPage={1} />
+<Pagination totalItems={30} defaultPage={3} />
+<Pagination totalItems={30} defaultPage={2} disabled />`),
   render: () => (
     <Stack>
       <Pagination totalItems={30} defaultPage={1} />
