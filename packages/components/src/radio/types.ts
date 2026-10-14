@@ -2,9 +2,6 @@ import type React from "react";
 import type { ColorRole, SlotClassNames, Size, Variant } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 
-/** @deprecated Eski `type` prop'unun değerleri. "secondary" -> `neutral`. */
-export type LegacyRadioType = "primary" | "secondary";
-
 export type RadioSlot = "wrapper" | "label" | "radio";
 export type RadioClassNames = SlotClassNames<RadioSlot>;
 export type RadioChangeEvent = React.ChangeEvent<HTMLInputElement>;
@@ -36,10 +33,6 @@ export interface RadioProps extends SkeletonableProps {
   variant?: Extract<Variant, "solid" | "outline">;
   /** Semantik renk. Varsayılan: `primary`. `error`/`warning` doğrulama durumu olarak da işlev görür. */
   color?: ColorRole;
-  /** @deprecated `color` kullanın. */
-  status?: "error" | "warning";
-  /** @deprecated `color` kullanın. */
-  type?: LegacyRadioType;
   name?: string;
 }
 
@@ -52,8 +45,6 @@ export interface RadioGroupProps extends SkeletonableProps {
   onChange?: (value: string | number) => void;
   variant?: Extract<Variant, "solid" | "outline">;
   color?: ColorRole;
-  /** @deprecated `color` kullanın. */
-  type?: LegacyRadioType;
   size?: Size;
   block?: boolean;
   /** Yerleşim. Açıklamalı seçeneklerde `vertical` daha okunaklı. Varsayılan: `horizontal`. */

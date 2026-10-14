@@ -18,14 +18,6 @@ export function getTextareaSizeClasses(size: Size): string {
   return cn(sizeClass[size], "h-auto");
 }
 
-/** Eski "outlined"/"filled"/"borderless" değerlerini yeni eksene çevirir. */
-export function resolveLegacyInputVariant(variant: InputVariant | "outlined" | "filled" | "borderless" | undefined): InputVariant {
-  if (variant === "outlined") return "outline";
-  if (variant === "filled") return "soft";
-  if (variant === "borderless") return "ghost";
-  return variant ?? "outline";
-}
-
 /**
  * Odakta kenarlık ROL RENGİNE döner (Faz 15): eskiden açık `-border` tonuydu
  * (#93c6f6 ≈ 1.8:1 beyazda — WCAG 1.4.11'in 3:1'ini geçmiyordu; outline
@@ -116,14 +108,3 @@ export function clearNativeValue(el: HTMLInputElement | HTMLTextAreaElement | nu
   el.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-/**
- * Checkbox/Radio'dakiyle aynı birleştirme: `status` artık ayrı bir eksen
- * değil, `color`'ın kendisi. `undefined` dönebilir — bu "renk AÇIKÇA
- * verilmedi, varsayılan (nötr/gri dinlenme + odakta primary) davranış
- * geçerli" anlamına gelir (bkz. `getVariantClasses`). Eskiden burada
- * `?? "primary"` vardı, bu da "verilmedi" ile "primary açıkça seçildi"
- * ayrımını kaybediyor, her input'u sürekli mavi gösteriyordu.
- */
-export function resolveInputColor(color: ColorRole | undefined, status: "error" | "warning" | undefined): ColorRole | undefined {
-  return status ?? color;
-}

@@ -7,7 +7,6 @@ import type { SkeletonableProps } from "../lib/skeleton";
 import { Input } from "./Input";
 import { OtpSingleField } from "./_components/OtpSingleField";
 import type { InputShape, InputVariant } from "./types";
-import { resolveLegacyInputVariant } from "./utils";
 
 export interface OtpInputProps extends SkeletonableProps {
   length?: number;
@@ -16,10 +15,8 @@ export interface OtpInputProps extends SkeletonableProps {
   disabled?: boolean;
   size?: Size;
   shape?: InputShape;
-  variant?: InputVariant | "outlined" | "filled" | "borderless";
+  variant?: InputVariant;
   color?: ColorRole;
-  /** @deprecated `color` kullanın. */
-  status?: "error" | "warning";
   onChange?: (value: string) => void;
   onInput?: (value: string[]) => void;
   mask?: boolean;
@@ -63,9 +60,8 @@ export function OtpInput({
   disabled = false,
   size = "md",
   shape = "default",
-  variant,
+  variant = "outline",
   color,
-  status,
   onChange,
   onInput,
   mask = false,
@@ -83,7 +79,7 @@ export function OtpInput({
   const inField = useContext(FieldContext) !== null;
   const group = useFieldGroup({ "aria-label": ariaLabelProp, disabled }, layout === "separated");
   const skeleton = useFieldSkeleton(ownSkeleton);
-  const control = useFieldControl({ disabled, color: color ?? status });
+  const control = useFieldControl({ disabled, color });
   const ariaLabel = ariaLabelProp ?? (inField ? undefined : "Doğrulama kodu");
   const [otpValues, setOtpValues] = useState<string[]>(Array.from({ length }, (_, i) => value?.[i] ?? defaultValue[i] ?? ""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -172,7 +168,7 @@ export function OtpInput({
         disabled={!!control.disabled}
         size={size}
         shape={shape}
-        variant={resolveLegacyInputVariant(resolvedVariant)}
+        variant={resolvedVariant}
         color={control.color}
         id={control.id}
         describedBy={control["aria-describedby"]}
@@ -238,8 +234,7 @@ export function OtpInput({
               size={size}
               shape={shape}
               variant={resolvedVariant}
-              color={group["aria-invalid"] ? (color ?? status ?? "error") : color}
-              status={status}
+              color={group["aria-invalid"] ? (color ?? "error") : color}
               className={cn(WIDTH_CLASS[size], className)}
               classNames={{ input: "w-full text-center font-medium" }}
             />

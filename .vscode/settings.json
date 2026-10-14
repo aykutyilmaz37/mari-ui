@@ -1,0 +1,6 @@
+{
+  "sonarlint.rules": {
+    "javascript:S3800": { "level": "off" },
+    "typescript:S3800": { "level": "off" }
+  }
+}

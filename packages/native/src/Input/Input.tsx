@@ -72,13 +72,11 @@ export function Input({
   visibilityIconRender,
   mask,
   replacement,
-  secureTextEntry,
   autoFocus,
   autoComplete,
   returnKeyType,
   onFocus,
   onBlur,
-  onSubmitEditing,
   style,
   inputStyle,
   testID,
@@ -98,7 +96,7 @@ export function Input({
   // Aynı kutu: yükseklik, köşe, kenarlık kalınlığı; tam genişlik (alan da öyle).
   if (skeleton) return <SkeletonBox style={[styles.container, style]} />;
 
-  const isPassword = type === "password" || secureTextEntry === true;
+  const isPassword = type === "password";
   const showToggle = isPassword && visibilityToggle;
   const clearable = Boolean(allowClear);
   const showClear = clearable && current.length > 0 && !disabled && !readOnly;
@@ -143,10 +141,7 @@ export function Input({
           setFocused(false);
           onBlur?.(e);
         }}
-        onSubmitEditing={(e) => {
-          onPressEnter?.(current);
-          onSubmitEditing?.(e);
-        }}
+        onSubmitEditing={() => onPressEnter?.(current)}
         style={[styles.input, inputStyle]}
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}

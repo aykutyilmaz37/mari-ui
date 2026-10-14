@@ -62,12 +62,9 @@ export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   disabled?: boolean;
   size?: Size;
   shape?: InputShape;
-  /** @remarks Eski `"outlined"`/`"filled"`/`"borderless"` değerleri de kabul edilir (deprecated). */
-  variant?: InputVariant | "outlined" | "filled" | "borderless";
+  variant?: InputVariant;
   /** Semantik renk. Varsayılan: `primary`. `error`/`warning` doğrulama durumu olarak da işlev görür. */
   color?: ColorRole;
-  /** @deprecated `color` kullanın — "error"/"warning" zaten birer ColorRole. */
-  status?: "error" | "warning";
   maxLength?: number;
   showCount?: boolean;
   count?: InputCountConfig;

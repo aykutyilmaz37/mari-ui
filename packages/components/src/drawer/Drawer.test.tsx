@@ -126,16 +126,6 @@ describe("Drawer", () => {
     expect(screen.getByRole("dialog", { name: "Filtreler" })).toBeInTheDocument();
   });
 
-  it("loading (eski ad) hâlâ iskelet gösterir", () => {
-    render(
-      <Drawer open onClose={() => {}} title="Sipariş" loading>
-        Gizli içerik
-      </Drawer>
-    );
-    // İçerik ölçülmek için görünmez kopya olarak yerinde; erişilebilirlik ağacında yok.
-    expect(screen.getByText("Gizli içerik").closest('[data-skeleton][aria-hidden="true"]')).not.toBeNull();
-  });
-
   it("skeleton başlık/extra/alt çubuğu da gizler; dialog adını ve Kapat'ı korur, meşgul bildirir", () => {
     render(
       <Drawer open onClose={() => {}} title="Sipariş #42" extra={<button>Sil</button>} footer={<button>Kaydet</button>} skeleton>

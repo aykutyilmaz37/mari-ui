@@ -17,7 +17,6 @@ export function RadioGroup({
   onChange,
   variant = "outline",
   color,
-  type,
   size = "md",
   block = false,
   orientation = "horizontal",
@@ -77,7 +76,6 @@ export function RadioGroup({
           size={size}
           variant={variant}
           color={groupColor}
-          type={type}
         />
       ))}
     </div>

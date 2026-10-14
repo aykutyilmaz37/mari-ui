@@ -93,15 +93,6 @@ describe("Card", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("eski `loading` adı skeleton'ın takma adı olarak çalışmaya devam eder", () => {
-    render(
-      <Card title="Gelir" loading>
-        Gizli içerik
-      </Card>
-    );
-    expect(screen.getByText("Gizli içerik").closest(".invisible")).not.toBeNull();
-  });
-
   it("CardMeta avatar, başlık ve açıklama gösterir", () => {
     render(<CardMeta avatar={<span>AY</span>} title="Aykut Yılmaz" description="Geliştirici" />);
     expect(screen.getByText("Aykut Yılmaz")).toBeInTheDocument();

@@ -280,7 +280,9 @@ function GalleryTile({
         )}
       />
       {isVideo && (
-        <span className="pointer-events-none absolute right-1 bottom-1 inline-flex items-center gap-0.5 rounded-sm bg-mari-scrim px-1 text-xs font-medium text-white tabular-nums">
+        // Fotoğrafa bağlı, temadan bağımsız (native VIDEO_BADGE_BG ile aynı): açık temanın
+        // yarı saydam scrim'i açık karede beyaz metni AA'nın altına düşürüyordu.
+        <span className="pointer-events-none absolute right-1 bottom-1 inline-flex items-center gap-0.5 rounded-sm bg-black/72 px-1 text-xs font-medium text-white tabular-nums">
           <PlayIcon aria-hidden className="size-3 fill-current" />
           {item.duration !== undefined ? formatDuration(item.duration) : <span className="sr-only">Video</span>}
           {item.duration !== undefined && <span className="sr-only">, video</span>}

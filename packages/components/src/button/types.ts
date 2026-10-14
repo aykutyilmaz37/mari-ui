@@ -20,19 +20,6 @@ export type ButtonLoading =
     };
 
 /**
- * @deprecated Eski `type` prop'u — bir sürüm boyunca çalışmaya devam eder.
- * `resolveLegacyButtonProps` bunu yeni `color`/`variant` eksenine çevirir.
- * "secondary" -> `neutral`; "text"/"link" değerleri artık birer renk değil,
- * `variant` (ghost/link) anlamına geldiği için variant'ı da etkiler.
- */
-export type LegacyButtonType = "primary" | "secondary" | "link" | "text" | "success" | "error" | "warning" | "info";
-
-export interface LegacyButtonProps {
-  /** @deprecated `color` kullanın (ve gerekirse `variant`). */
-  type?: LegacyButtonType;
-}
-
-/**
  * `aria-*`, `id`, `data-*` gibi native attribute'lar — eskiden Button
  * bunları hiç desteklemiyordu (kapalı bir prop objesiydi), bu yüzden
  * `aria-label` gibi temel erişilebilirlik prop'ları bile geçirilemiyordu.
@@ -47,15 +34,11 @@ type NativeCommonAttributes = React.AriaAttributes & {
   [dataAttribute: `data-${string}`]: unknown;
 };
 
-export interface ButtonProps extends LegacyButtonProps, NativeCommonAttributes, SkeletonableProps {
+export interface ButtonProps extends NativeCommonAttributes, SkeletonableProps {
   /** Semantik renk. Varsayılan: `primary`. */
   color?: ColorRole;
-  /**
-   * Dolgu stili. Varsayılan: `solid`.
-   * @remarks Eski `"outlined"`/`"filled"` değerleri de kabul edilir (deprecated) —
-   * `"outlined"` -> `"outline"`, `"filled"` -> `"solid"`.
-   */
-  variant?: Variant | "outlined" | "filled";
+  /** Dolgu stili. Varsayılan: `solid`. */
+  variant?: Variant;
   size?: ExtendedSize;
   shape?: ButtonShape;
   block?: boolean;

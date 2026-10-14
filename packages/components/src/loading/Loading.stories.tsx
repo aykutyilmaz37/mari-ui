@@ -52,7 +52,6 @@ const meta: Meta<typeof Loading> = {
     percent: { control: { type: "range", min: 0, max: 100 }, description: "Belirli ilerleme (0-100)." },
     fullscreen: { control: "boolean", description: "Tüm ekranı kaplayan örtü." },
     color: { ...colorArgType, description: "Dönen yay rengi. Varsayılan: `primary`." },
-    trackColor: { table: { disable: true } },
     indicator: { control: false },
     children: { control: false, description: "Verilirse sarmalama modu." },
   },

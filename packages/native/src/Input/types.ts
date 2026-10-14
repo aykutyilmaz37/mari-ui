@@ -55,16 +55,12 @@ export interface InputProps extends SkeletonableProps {
   /** Biçim maskesi (ör. `"0(5__) ___ __ __"`); `_` yerine rakam yazılır. */
   mask?: string;
   replacement?: Record<string, RegExp>;
-  /** @deprecated `type="password"` kullanın (web ile aynı). */
-  secureTextEntry?: boolean;
   autoFocus?: boolean;
   autoComplete?: Exclude<TextInputProps["autoComplete"], undefined>;
   /** Klavyedeki eylem tuşu (web `enterKeyHint`). */
   returnKeyType?: Exclude<TextInputProps["returnKeyType"], undefined>;
   onFocus?: Exclude<TextInputProps["onFocus"], undefined>;
   onBlur?: Exclude<TextInputProps["onBlur"], undefined>;
-  /** @deprecated `onPressEnter` kullanın. */
-  onSubmitEditing?: Exclude<TextInputProps["onSubmitEditing"], undefined>;
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   testID?: string;

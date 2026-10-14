@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
@@ -20,8 +21,8 @@ describe("cleanTypeText", () => {
 });
 
 // Her test gerçek kaynakla bir ts-morph projesi kurar; coverage (v8) açıkken 5 sn'yi aşıyordu.
-describe("resolveComponents (gerçek kaynak kodu üzerinde — fixture değil)", { timeout: 30_000 }, () => {
-  it("Button: gerçek prop'ları ve terk edilmiş `type`'ı JSDoc'tan doğru çıkarır", () => {
+describe("resolveComponents (gerçek kaynak kodu; deprecated için fixture)", { timeout: 30_000 }, () => {
+  it("Button: gerçek prop'ları doğru çıkarır", () => {
     const project = buildProject();
     const [button] = resolveComponents(project, "button", join(PACKAGE_ROOT, "src/button/index.ts"));
     expect(button?.name).toBe("Button");
@@ -31,10 +32,6 @@ describe("resolveComponents (gerçek kaynak kodu üzerinde — fixture değil)",
     const colorProp = button?.props.find((p) => p.name === "color");
     expect(colorProp?.type).toBe("ColorRole | undefined");
     expect(colorProp?.deprecated).toBe(false);
-
-    const legacyType = button?.props.find((p) => p.name === "type");
-    expect(legacyType?.deprecated).toBe(true);
-    expect(legacyType?.deprecatedReason).toContain("color");
   });
 
   it("React'ten miras alınan ARIA/DOM property'lerini (kendi kaynağımızda deklare edilmemiş) dışarıda bırakır", () => {
@@ -62,14 +59,17 @@ describe("resolveComponents (gerçek kaynak kodu üzerinde — fixture değil)",
     expect(components.every((c) => c.importPath === "@mari-ui/components/input")).toBe(true);
   });
 
-  it("Card: eskiden hiç uygulanmayan `styles` prop'unun kaldırılma gerekçesini JSDoc'tan taşır", () => {
+  it("@deprecated prop'u gerekçesiyle işaretler; çok satırlı JSDoc tek satıra iner (fixture)", () => {
     const project = buildProject();
-    const [card] = resolveComponents(project, "card", join(PACKAGE_ROOT, "src/card/index.ts"));
-    const stylesProp = card?.props.find((p) => p.name === "styles");
-    expect(stylesProp?.deprecated).toBe(true);
-    expect(stylesProp?.deprecatedReason).toMatch(/classNames/);
-    // JSDoc kaynakta birden fazla satıra bölünmüş olsa bile tek satıra normalize edilmeli.
-    expect(stylesProp?.deprecatedReason).not.toMatch(/\n/);
+    // Yalnız `src/` altındaki tanımlar "kendi" sayılır: fixture diske yazılmadan o yola bellekte konur.
+    const virtualPath = join(PACKAGE_ROOT, "src/__ornek__/index.ts");
+    project.createSourceFile(virtualPath, readFileSync(join(__dirname, "fixtures/deprecated/index.ts"), "utf8"));
+    const [ornek] = resolveComponents(project, "ornek", virtualPath);
+    expect(ornek?.props.find((p) => p.name === "yeniAd")?.deprecated).toBe(false);
+    const eski = ornek?.props.find((p) => p.name === "eskiAd");
+    expect(eski?.deprecated).toBe(true);
+    expect(eski?.deprecatedReason).toMatch(/yeniAd/);
+    expect(eski?.deprecatedReason).not.toMatch(/\n/);
   });
 
   it("Type-only export'ları (interface/type alias) component sanmaz", () => {

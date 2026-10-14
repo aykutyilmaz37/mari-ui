@@ -5,7 +5,7 @@ import { bgSubtleHoverClass, colorVariantToClassName } from "../lib/colorClasses
 import { skeletonBoxProps } from "../lib/skeleton";
 import { iconSizeClass, sizeClass, touchTargetClass, touchTargetSquareClass } from "../lib/sizeClasses";
 import type { ButtonProps } from "./types";
-import { getShapeClasses, resolveLegacyButtonProps, resolveLoading } from "./utils";
+import { getShapeClasses, resolveLoading } from "./utils";
 
 export type { ButtonProps };
 
@@ -18,9 +18,8 @@ export type { ButtonProps };
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const {
-    type,
-    color,
-    variant,
+    color = "primary",
+    variant = "solid",
     size = "md",
     shape = "default",
     block = false,
@@ -45,11 +44,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     ...rest
   } = props;
 
-  const { color: resolvedColor, variant: resolvedVariant } = resolveLegacyButtonProps({
-    type,
-    color,
-    variant,
-  });
   const { isLoading, loadingIcon, loadingIconPosition, loadingDelay } = resolveLoading(loading);
 
   // Yükleniyor durumunda buton HER ZAMAN devre dışıdır — çift gönderim /
@@ -71,13 +65,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     console.warn("[@mari-ui/components] Button: metinsiz (ikon-only) butona `aria-label` verin — ekran okuyucu aksi halde adsız bir buton okur.");
   }
 
-  const colorClasses = colorVariantToClassName(resolveColorVariant(resolvedColor, resolvedVariant));
+  const colorClasses = colorVariantToClassName(resolveColorVariant(color, variant));
   // `solid` hover'ını `resolveColorVariant` zaten veriyor; `outline`/`ghost`in
   // ise HİÇ hover durumu yoktu — tıklanabilir bir öğe için geri bildirim
   // eksikti. Etkileşim geri bildirimi bilinçli olarak burada: aynı `outline`
   // varyantını `Tag` gibi STATİK component'ler de kullanıyor, onlara hover
   // dolgusu vermek yanlış olurdu.
-  const interactiveHoverClass = resolvedVariant === "outline" || resolvedVariant === "ghost" ? bgSubtleHoverClass[resolvedColor] : undefined;
+  const interactiveHoverClass = variant === "outline" || variant === "ghost" ? bgSubtleHoverClass[color] : undefined;
 
   // Geometri (boyut + şekil + genişlik) iskeletle ORTAK — yüklenince kutu zıplamaz.
   const geometryClasses = cn(
@@ -126,7 +120,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     // Etiket ve ikon şeffaf olarak YERİNDE kalır → iskelet gerçek butonla aynı genişlikte.
     return (
       // `outline`'ın 1px kenarlığı kutuyu 2px genişletir — iskelet de aynı (şeffaf) kenarlığı taşır.
-      <span {...skeletonBoxProps(cn(geometryClasses, resolvedVariant === "outline" && "border border-transparent", className, classNames.wrapper))}>
+      <span {...skeletonBoxProps(cn(geometryClasses, variant === "outline" && "border border-transparent", className, classNames.wrapper))}>
         {icon && <span className={iconClass}>{icon}</span>}
         {children && <span className="min-w-0 truncate">{children}</span>}
       </span>

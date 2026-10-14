@@ -47,6 +47,11 @@ export const baseConfig = [
       // dallanması olan sunum bileşenleri barındırıyor (bkz. Faz 3);
       // 15 daha gerçekçi, gerçek karmaşık kod parçalarını yine de yakalar.
       "sonarjs/cognitive-complexity": ["warn", 15],
+      // Kapalı (S3800): `React.ReactNode` döndüren yardımcılar (null | öğe |
+      // metin) bildirilen dönüş tipine rağmen işaretleniyordu; tek tipe
+      // zorlamak gereksiz fragment sarmalı demek. VS Code eklentisinde de
+      // kapalı — bkz. kökteki .vscode/settings.json (`sonarlint.rules`).
+      "sonarjs/function-return-type": "off",
     },
   },
 ];

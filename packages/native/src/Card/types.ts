@@ -21,8 +21,6 @@ export interface CardProps extends SkeletonableProps {
   bordered?: boolean;
   /** Basılma geri bildirimi. onPress/onLongPress varsa varsayılan açık; etkileşimi kapatmaz. */
   hoverable?: boolean;
-  /** @deprecated skeleton kullanın. Açıkça verilen skeleton bu değeri geçersiz kılar. */
-  loading?: boolean;
   /** Native yazı ölçeği; dolgu sm: 12, md: 16, lg: 20. Varsayılan: md. */
   size?: Size;
   /** Tonlu zemin ve kenarlık. */

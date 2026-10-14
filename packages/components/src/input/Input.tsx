@@ -18,8 +18,6 @@ import {
   getVariantClasses,
   clearNativeValue,
   isClearable,
-  resolveInputColor,
-  resolveLegacyInputVariant,
 } from "./utils";
 
 export type { InputProps };
@@ -49,13 +47,12 @@ const InputInner = (
       icon,
       iconPosition = "start",
       showCount,
-      status,
       color,
       size = "md",
       shape = "default",
       type = "text",
       value,
-      variant,
+      variant = "outline",
       onChange,
       onPressEnter,
       onClear,
@@ -80,12 +77,11 @@ const InputInner = (
       if (typeof ref === "function") ref(el);
       else if (ref) ref.current = el;
     };
-    const resolvedVariant = resolveLegacyInputVariant(variant);
-    const resolvedColor = resolveInputColor(color, status);
+    // `color` varsayılansız: verilmezse dinlenmede nötr, odakta primary (bkz. `getVariantClasses`).
     // `error` rengi aynı zamanda gerçek bir doğrulama durumudur — ekran
     // okuyucuya da bildirilsin diye `aria-invalid` otomatik eklenir
     // (tüketici zaten kendi `aria-invalid`'ini verdiyse o kazanır).
-    const ariaInvalid = nativeProps["aria-invalid"] ?? (resolvedColor === "error" || undefined);
+    const ariaInvalid = nativeProps["aria-invalid"] ?? (color === "error" || undefined);
     // `onChange` burada hook'a geçirilmiyor — tam ChangeEvent'i tüketiciye
     // iletmek için `handleChange` içinde ayrıca çağrılıyor.
     const [currentValue, setCurrentValue] = useControllableState<string>({ value, defaultValue });
@@ -127,7 +123,7 @@ const InputInner = (
     };
 
     // Geometri iskeletle ORTAK (boyut + şekil) — yüklenince kutu zıplamaz.
-    const geometryClass = cn("flex w-full items-center gap-2", getSizeClasses(size), getShapeClasses(shape, resolvedVariant));
+    const geometryClass = cn("flex w-full items-center gap-2", getSizeClasses(size), getShapeClasses(shape, variant));
 
     if (skeleton) {
       return <div {...skeletonBoxProps(cn(geometryClass, classNames.wrapper, className))} style={style} />;
@@ -138,7 +134,7 @@ const InputInner = (
       "group relative cursor-text",
       touchTargetClass[size],
       FIELD_BASE_CLASS,
-      getVariantClasses(resolvedVariant, resolvedColor),
+      getVariantClasses(variant, color),
       disabled && FIELD_DISABLED_CLASS,
       classNames.wrapper,
       className

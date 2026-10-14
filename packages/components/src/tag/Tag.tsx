@@ -3,15 +3,14 @@ import { X } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import type { TagProps } from "./types";
 import { skeletonBoxProps } from "../lib/skeleton";
-import { getTagClass, resolveLegacyTagColor, TAG_GEOMETRY_CLASS } from "./utils";
+import { getTagClass, TAG_GEOMETRY_CLASS } from "./utils";
 
 export type { TagProps };
 
 // Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
 export function Tag({
   children,
-  statu,
-  color,
+  color = "neutral",
   variant = "soft",
   icon,
   closeIcon,
@@ -31,8 +30,7 @@ export function Tag({
     );
   }
 
-  const resolvedColor = resolveLegacyTagColor(statu, color);
-  const tagClass = getTagClass(resolvedColor, variant, bordered, className);
+  const tagClass = getTagClass(color, variant, bordered, className);
 
   // Eski davranış her Tag'de varsayılan olarak bir X gösteriyordu — `onClose`
   // verilmese bile. Artık kapatılabilirlik `onClose` VEYA açık `closeIcon`

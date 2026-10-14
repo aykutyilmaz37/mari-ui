@@ -183,7 +183,7 @@ export const DeleteConfirm: Story = {
               </>
             }
           >
-            <Input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={name} status={typed && !matches ? "error" : undefined} />
+            <Input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={name} color={typed && !matches ? "error" : undefined} />
           </Field>
         </Modal>
       </>

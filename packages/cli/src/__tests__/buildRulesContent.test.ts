@@ -20,9 +20,20 @@ describe("buildRulesContent (gerçek manifest.json üzerinde)", () => {
     expect(content).toContain("Placement");
   });
 
-  it("terk edilmiş prop'ları GERÇEK JSDoc gerekçesiyle listeler", () => {
-    expect(content).toMatch(/Button\.type/);
-    expect(content).toMatch(/Tag\.statu/);
+  it("terk edilmiş prop yokken (bugünkü kütüphane) bölümü hiç yazmaz", () => {
+    expect(manifest.components.some((c) => c.props.some((p) => p.deprecated))).toBe(false);
+    expect(content).not.toContain("Terk edilmiş (deprecated)");
+  });
+
+  it("terk edilmiş prop'u JSDoc gerekçesiyle listeler", () => {
+    const [first, ...rest] = manifest.components;
+    const withDeprecated = {
+      ...manifest,
+      components: [{ ...first!, props: [...first!.props, { name: "eskiAd", type: "string", optional: true, deprecated: true, deprecatedReason: "`yeniAd` kullanın." }] }, ...rest],
+    };
+    const out = buildRulesContent({ manifest: withDeprecated, theme: lightTheme });
+    expect(out).toContain("### Terk edilmiş (deprecated) prop'lar");
+    expect(out).toContain(`\`${first!.name}.eskiAd\` — \`yeniAd\` kullanın.`);
   });
 
   it("çözümlenmiş tema renklerini (gerçek hex değerleri) tabloya koyar", () => {

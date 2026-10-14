@@ -74,8 +74,6 @@ export interface TabsListProps {
   /** Ekran okuyucu için sekme grubunun adı. */
   "aria-label"?: string;
   className?: string;
-  /** @deprecated `<Tabs variant="card">` kullanın. */
-  cardTabs?: boolean;
 }
 
 export interface TabsTriggerProps {
@@ -87,8 +85,6 @@ export interface TabsTriggerProps {
   count?: number;
   disabled?: boolean;
   className?: string;
-  /** @deprecated `<Tabs variant="card">` kullanın — artık yok sayılıyor. */
-  cardTabs?: boolean;
 }
 
 export interface TabsContentProps {

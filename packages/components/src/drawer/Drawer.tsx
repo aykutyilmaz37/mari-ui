@@ -66,7 +66,7 @@ function getCustomSizeStyle(side: boolean, custom: boolean, width?: number | str
  * - Başlık ortalıydı; yan çekmece mobilde ekranı taşıyordu (`w-96` sabit).
  * - `loading` düz "Yükleniyor..." metniydi.
  *
- * Faz 15.6 — `skeleton` (eski `loading` takma adı) artık yalnız gövdeyi değil
+ * Faz 15.6 — `skeleton` artık yalnız gövdeyi değil
  * başlık/açıklama/extra/alt çubuğu da iskelete çevirir; Kapat düğmesi canlı
  * kalır. Her bölge `ContentSkeleton` ile içeriğin kendi şeklinde (satır satır
  * metin, alan alan form, düğme düğme alt çubuk) iskelete döner; gerçek içerik
@@ -83,13 +83,11 @@ export function Drawer({
   title,
   description,
   extra,
-  header,
   footer,
   children,
   showCloseButton = true,
   closeButtonPosition = "right",
-  loading = false,
-  skeleton = loading,
+  skeleton = false,
   mask = true,
   maskClosable = true,
   keyboard = true,
@@ -113,7 +111,7 @@ export function Drawer({
   const side = isSide(position);
   const customSize = side ? width !== undefined : height !== undefined;
   const sizeStyle = getCustomSizeStyle(side, customSize, width, height);
-  const hasHeader = Boolean(header || title || extra || showCloseButton);
+  const hasHeader = Boolean(title || extra || showCloseButton);
 
   const closeButton = showCloseButton && (
     <button
@@ -167,19 +165,15 @@ export function Drawer({
             {closeButtonPosition === "left" && closeButton}
             <ContentSkeleton on={skeleton} fallback={TITLE_PLACEHOLDER} className="min-w-0 flex-1 self-center">
               <div className="min-w-0 flex-1 self-center">
-                {header ?? (
-                  <>
-                    {title && (
-                      <h2 id={titleId} className="truncate text-base font-semibold leading-6 text-mari-foreground">
-                        {title}
-                      </h2>
-                    )}
-                    {description && (
-                      <p id={descriptionId} className="mt-0.5 text-sm text-mari-muted">
-                        {description}
-                      </p>
-                    )}
-                  </>
+                {title && (
+                  <h2 id={titleId} className="truncate text-base font-semibold leading-6 text-mari-foreground">
+                    {title}
+                  </h2>
+                )}
+                {description && (
+                  <p id={descriptionId} className="mt-0.5 text-sm text-mari-muted">
+                    {description}
+                  </p>
                 )}
               </div>
             </ContentSkeleton>

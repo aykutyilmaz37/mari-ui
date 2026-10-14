@@ -11,8 +11,9 @@
  *    Sidebar) arasında bölünmüştü.
  *
  * Bu dosyadan sonra her component aynı beş eksenden birini kullanır:
- * `color`, `size`, `variant`, `radius`, `placement`. Eski prop isimleri
- * Faz 3'te `@deprecated` alias olarak bir sürüm boyunca yaşamaya devam eder.
+ * `color`, `size`, `variant`, `radius`, `placement`. Faz 3'te bir süre
+ * `@deprecated` alias olarak yaşayan eski prop isimleri (paket yayınlanmadan
+ * önce) kaldırıldı.
  */
 
 /** Semantik renk rolü. `neutral` "renksiz" bileşenler (Card, Divider) içindir. */

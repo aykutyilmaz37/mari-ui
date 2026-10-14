@@ -67,7 +67,7 @@ function CardContent({ props, styles, skeleton }: Readonly<{ props: CardProps; s
 
 /** Web slotları + native onPress; hoverable sadece basılma görünümünü belirler. */
 export const Card: ForwardRefExoticComponent<CardProps & RefAttributes<ComponentRef<typeof View>>> = forwardRef<ComponentRef<typeof View>, CardProps>(function Card(props, ref) {
-  const { bordered = true, inset = false, size = "md", loading = false, skeleton = loading, disabled = false, hoverable = true, style, onPress, onLongPress, testID, accessibilityLabel, accessibilityHint } = props;
+  const { bordered = true, inset = false, size = "md", skeleton = false, disabled = false, hoverable = true, style, onPress, onLongPress, testID, accessibilityLabel, accessibilityHint } = props;
   const styles = useStyles("card", { size, bordered, inset });
   const interactive = Boolean(onPress || onLongPress);
   const content = <CardContent props={props} styles={styles} skeleton={skeleton} />;
