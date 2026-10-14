@@ -84,7 +84,23 @@ export const ShareLink: Story = {
 
 export const UserCard: Story = {
   name: "Kullanıcı Kartı (basılı tut)",
-  ...storyDoc("`trigger=\"longPress\"`: basılı tutunca açılan bilgi balonu — dokunmak avatarın kendi işini yapar (profil).", `<Popover trigger="longPress" content={<UserCard />}><Avatar … /></Popover>`),
+  ...storyDoc("`trigger=\"longPress\"`: basılı tutunca açılan bilgi balonu — dokunmak avatarın kendi işini yapar (profil).", `<Popover
+  trigger="longPress"
+  placement="top-start"
+  accessibilityLabel="Deniz Kaya"
+  content={
+    <View style={{ flexDirection: "row", gap: 12, alignItems: "center", width: 240 }}>
+      <Avatar alt="Deniz Kaya" color="primary" />
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text weight="semibold">Deniz Kaya</Text>
+        <Text muted style={{ fontSize: 13 }}>Ürün Tasarımcısı · İstanbul</Text>
+        <Tag color="success">Çevrimiçi</Tag>
+      </View>
+    </View>
+  }
+>
+  <Avatar alt="Deniz Kaya" color="primary" />
+</Popover>`),
   render: () => (
     <View style={{ paddingTop: 140, alignItems: "flex-start" }}>
       <Popover
@@ -136,13 +152,33 @@ function FilterDemo() {
 
 export const ColumnFilter: Story = {
   name: "Tablo Sütun Filtresi (form)",
-  ...storyDoc("`placement=\"bottom-end\"`: sağ kenara hizalı, aşağı açılır. İçerik küçük bir form.", `<Popover placement="bottom-end" title="Görünen sütunlar" content={(close) => <ColumnChecks onDone={close} />}>…</Popover>`),
+  ...storyDoc("`placement=\"bottom-end\"`: sağ kenara hizalı, aşağı açılır. İçerik küçük bir form.", `const columns = ["Sipariş no", "Müşteri", "Tutar", "Durum", "Tarih"];
+const [visible, setVisible] = useState(["Sipariş no", "Müşteri", "Tutar"]);
+const toggle = (c: string) => setVisible((v) => (v.includes(c) ? v.filter((x) => x !== c) : [...v, c]));
+
+<Popover
+  placement="bottom-end"
+  title="Görünen sütunlar"
+  content={(close) => (
+    <View style={{ gap: 8, width: 220 }}>
+      {columns.map((c) => <Checkbox key={c} label={c} checked={visible.includes(c)} onChange={() => toggle(c)} />)}
+      <Button size="sm" onPress={close}>Uygula</Button>
+    </View>
+  )}
+>
+  <Button variant="outline">{\`Sütunlar (\${visible.length})\`}</Button>
+</Popover>`),
   render: () => <FilterDemo />,
 };
 
 export const Placements: Story = {
   name: "Konumlar",
-  ...storyDoc("`placement`: 12 değer (web ile aynı). Sığmazsa karşı yöne döner; ok tetikleyiciyi gösterir.", `<Popover placement="bottom-start" … />`),
+  ...storyDoc("`placement`: 12 değer (web ile aynı). Sığmazsa karşı yöne döner; ok tetikleyiciyi gösterir.", `<Popover placement="bottom-start" content="Dışa aktarma seçenekleri">
+  <Button size="sm" variant="outline">Dışa aktar</Button>
+</Popover>
+<Popover placement="top" content="Son güncelleme: 2 dk önce">
+  <Button size="sm" variant="outline">Bilgi</Button>
+</Popover>`),
   render: () => (
     <Stack>
       {(["top", "bottom", "left", "right"] as const).map((p) => (
@@ -158,7 +194,9 @@ export const Placements: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Panel açılınca içerik kendi şeklinde yer tutucu (ör. kart verisi yüklenirken).", `<Popover skeleton={isLoading} content={<UserCard />}>…</Popover>`),
+  ...storyDoc(SKELETON_STORY_DOC + " Panel açılınca içerik kendi şeklinde yer tutucu (ör. kart verisi yüklenirken).", `<Popover skeleton={isLoading} title="Deniz Kaya" content="Ürün Tasarımcısı · İstanbul · 12 proje">
+  <Avatar alt="Deniz Kaya" color="primary" />
+</Popover>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

@@ -94,7 +94,8 @@ export function TransferList(props: TransferListProps) {
   const empty = query.trim() ? "Sonuç bulunamadı" : notFoundContent;
 
   return (
-    <section
+    <div
+      role="group"
       aria-labelledby={titleId}
       className={cn(
         "flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border bg-mari-surface text-sm",
@@ -230,6 +231,6 @@ export function TransferList(props: TransferListProps) {
           </SkeletonSlot>
         </div>
       )}
-    </section>
+    </div>
   );
 }

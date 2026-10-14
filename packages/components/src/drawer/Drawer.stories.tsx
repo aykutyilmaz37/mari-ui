@@ -298,7 +298,15 @@ export const Filters: Story = {
   extra={<Button variant="link" size="sm" onClick={reset}>Temizle</Button>}
   footer={<Button block onClick={apply}>128 ürünü göster</Button>}
 >
-  …
+  <Field label="Marka">
+    <div className="flex flex-col gap-2">
+      <Checkbox label="Apple" defaultChecked />
+      <Checkbox label="Samsung" />
+    </div>
+  </Field>
+  <Field label="Fiyat üst sınırı">
+    <Slider min={0} max={50000} step={500} defaultValue={25000} />
+  </Field>
 </Drawer>`
   ),
   render: () => {
@@ -418,7 +426,7 @@ export const EditRecord: Story = {
   }
 >
   <Field label="Ad">
-    <Input data-autofocus … />
+    <Input data-autofocus value={name} onChange={(e) => setName(e.target.value)} />
   </Field>
 </Drawer>`
   ),
@@ -609,7 +617,11 @@ export const ShareSheet: Story = {
       "(`height=\"auto\"`), iPhone ana ekran çubuğu için güvenli alan boşluğu.",
     `
 <Drawer position="bottom" height="auto" open={open} onClose={close} title="Paylaş">
-  …
+  <div className="grid grid-cols-3 gap-3">
+    <Button variant="outline" color="neutral" icon={<LinkIcon />}>Bağlantıyı kopyala</Button>
+    <Button variant="outline" color="neutral" icon={<MailIcon />}>E-posta</Button>
+    <Button variant="outline" color="neutral" icon={<MessageCircleIcon />}>Mesaj</Button>
+  </div>
 </Drawer>`
   ),
   render: () => {
@@ -665,7 +677,9 @@ export const ShareSheet: Story = {
 
 export const Positions: Story = {
   name: "Konumlar ve Boyutlar",
-  ...storyDoc("Dört kenar × üç boyut.", `<Drawer position="left" size="lg" open={open} onClose={close} title="Başlık">…</Drawer>`),
+  ...storyDoc("Dört kenar × üç boyut.", `<Drawer position="left" size="lg" open={open} onClose={close} title="Başlık">
+  <p>Çekmece içeriği.</p>
+</Drawer>`),
   render: () => {
     // Açık/kapalı ayrı state: kapanırken konum/boyut sabit kalsın (yoksa
     // kapanış animasyonu varsayılan sağ/md çekmecede oynuyordu).
@@ -722,6 +736,10 @@ function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Drawer open title="Siparişi düzenle" skeleton>…</Drawer>`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Drawer open title="Siparişi düzenle" skeleton>
+  <Field label="Teslimat adresi">
+    <Input defaultValue="Moda Cad. No:12, Kadıköy" />
+  </Field>
+</Drawer>`),
   render: () => <SkeletonDemo>{(skeleton) => <SkeletonOverlayDemo skeleton={skeleton} />}</SkeletonDemo>,
 };

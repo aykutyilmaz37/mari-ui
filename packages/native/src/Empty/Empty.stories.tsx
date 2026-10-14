@@ -85,7 +85,7 @@ export const InCard: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Empty skeleton={isLoading} title="Sepetiniz boş" description="…" buttonText="Alışverişe başla" onPress={shop} />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Empty skeleton={isLoading} icon={<ShoppingCart />} title="Sepetiniz boş" description="Beğendiğiniz ürünleri sepete ekleyin, burada görünsün." buttonText="Alışverişe başla" onPress={goShopping} />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => <Empty skeleton={skeleton} icon={<ShoppingCart />} title="Sepetiniz boş" description="Beğendiğiniz ürünleri sepete ekleyin, burada görünsün." buttonText="Alışverişe başla" onPress={() => undefined} />}

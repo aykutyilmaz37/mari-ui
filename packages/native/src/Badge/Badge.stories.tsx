@@ -153,7 +153,9 @@ export const Colors: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Badge skeleton={isLoading} count={3}>…</Badge>
+  ...storyDoc(SKELETON_STORY_DOC, `<Badge skeleton={isLoading} count={3}>
+  <Avatar alt="Mert Kaya" skeleton={isLoading} />
+</Badge>
 <StatusBadge skeleton={isLoading} color="success">Çevrimiçi</StatusBadge>`),
   render: () => (
     <SkeletonDemo>

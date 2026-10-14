@@ -323,13 +323,19 @@ export const ProfileCard: Story = {
       "(ant.design `actions`).",
     `
 <Card
-  cover={<div className="h-20 bg-gradient-to-r …" />}
+  cover={<div className="h-24 bg-gradient-to-r from-mari-primary-solid/85 via-mari-info-solid/70 to-mari-accent-solid/60" />}
+  classNames={{ body: "px-6 pb-6 pt-0" }}
   actions={[
-    <Button variant="ghost" icon={<MessageSquareIcon />}>Mesaj</Button>,
-    <Button variant="ghost" icon={<UserPlusIcon />}>Takip et</Button>,
+    <Button key="msg" variant="ghost" color="neutral" icon={<MessageSquareIcon size={16} aria-hidden />}>Mesaj</Button>,
+    <Button key="follow" variant="ghost" icon={<UserPlusIcon size={16} aria-hidden />}>Takip et</Button>,
   ]}
 >
-  …
+  <div className="-mt-10 mb-3 w-fit rounded-full ring-4 ring-mari-surface">
+    <Avatar size={72} alt="Elif Can" />
+  </div>
+  <h3 className="text-lg font-semibold">Elif Can</h3>
+  <p className="text-sm text-mari-muted">Ürün Tasarımcısı · İstanbul</p>
+  <p className="mt-3 text-sm">Tasarım sistemleri ve erişilebilir arayüzler üzerine çalışıyorum.</p>
 </Card>`
   ),
   render: () => {
@@ -399,7 +405,13 @@ export const Pricing: Story = {
   className="border-mari-primary shadow-mari-lg"
   footer={<Button block>14 gün dene</Button>}
 >
-  …
+  <p className="text-3xl font-semibold tracking-tight">149 ₺</p>
+  <p className="text-sm text-mari-muted">kullanıcı başı / ay</p>
+  <ul className="mt-6 space-y-2.5 text-sm">
+    <li className="flex items-center gap-2"><CheckIcon size={16} className="text-mari-success" aria-hidden />Sınırsız proje</li>
+    <li className="flex items-center gap-2"><CheckIcon size={16} className="text-mari-success" aria-hidden />Tema stüdyosu</li>
+    <li className="flex items-center gap-2"><CheckIcon size={16} className="text-mari-success" aria-hidden />E-posta desteği</li>
+  </ul>
 </Card>`
   ),
   render: () => (
@@ -506,12 +518,17 @@ export const ProjectCards: Story = {
   title="Mobil uygulama v3"
   extra={<Tag color="success">Yolunda</Tag>}
   actions={[
-    <Button variant="ghost" aria-label="Düzenle" icon={<PencilIcon />} />,
-    <Button variant="ghost" aria-label="Paylaş" icon={<Share2Icon />} />,
-    <Button variant="ghost" aria-label="Diğer" icon={<MoreHorizontalIcon />} />,
+    <Button key="edit" variant="ghost" color="neutral" size="sm" aria-label="Düzenle" icon={<PencilIcon size={16} aria-hidden />} />,
+    <Button key="share" variant="ghost" color="neutral" size="sm" aria-label="Paylaş" icon={<Share2Icon size={16} aria-hidden />} />,
+    <Button key="more" variant="ghost" color="neutral" size="sm" aria-label="Diğer işlemler" icon={<MoreHorizontalIcon size={16} aria-hidden />} />,
   ]}
 >
-  …
+  <Progress percent={72} />
+  <AvatarGroup max={3}>
+    <Avatar size={28} alt="Ayşe Yılmaz" />
+    <Avatar size={28} alt="Mert Yıldız" />
+  </AvatarGroup>
+  <span className="text-xs text-mari-muted">Teslim: 12 Kas</span>
 </Card>`
   ),
   render: () => (
@@ -555,9 +572,9 @@ export const ProjectCards: Story = {
 export const Sizes: Story = {
   name: "Boyutlar",
   ...storyDoc("`sm` (12px) / `md` (24px, varsayılan) / `lg` (32px) dolgu; başlık yüksekliği de ölçeklenir.", `
-<Card size="sm" title="Küçük">…</Card>
-<Card title="Orta">…</Card>
-<Card size="lg" title="Büyük">…</Card>`),
+<Card size="sm" title="Küçük"><p>Kart gövdesi — dolgu boyutla birlikte büyür.</p></Card>
+<Card title="Orta"><p>Kart gövdesi — dolgu boyutla birlikte büyür.</p></Card>
+<Card size="lg" title="Büyük"><p>Kart gövdesi — dolgu boyutla birlikte büyür.</p></Card>`),
   render: () => (
     <div className="grid max-w-5xl gap-4 md:grid-cols-3 md:items-start">
       {(["sm", "md", "lg"] as const).map((size) => (
@@ -572,10 +589,10 @@ export const Sizes: Story = {
 export const Surfaces: Story = {
   name: "Yüzeyler",
   ...storyDoc("Varsayılan (kenarlıklı), `bordered={false}`, `inset` (gömülü) ve `hoverable`.", `
-<Card title="Varsayılan">…</Card>
-<Card title="Kenarlıksız" bordered={false}>…</Card>
-<Card title="Gömülü" inset>…</Card>
-<Card title="Hoverable" hoverable>…</Card>`),
+<Card title="Varsayılan"><p>Kenarlık + yüzey.</p></Card>
+<Card title="Kenarlıksız" bordered={false}><p>Tonlu zemin üstünde.</p></Card>
+<Card title="Gömülü" inset><p>İç içe kullanım için.</p></Card>
+<Card title="Hoverable" hoverable><p>Üzerine gelin.</p></Card>`),
   render: () => (
     <div className="grid max-w-5xl gap-4 rounded-xl bg-mari-surface-alt p-4 sm:grid-cols-2 lg:grid-cols-4">
       <Card title="Varsayılan" size="sm">
@@ -607,9 +624,12 @@ export const SkeletonState: Story = {
   title="Mobil uygulama v3"
   extra={<Tag color="success">Yolunda</Tag>}
   footer="Son güncelleme: 2 saat önce"
-  actions={[…]}
+  actions={[
+    <Button key="edit" variant="ghost" color="neutral" size="sm" aria-label="Düzenle" icon={<PencilIcon size={16} aria-hidden />} />,
+    <Button key="share" variant="ghost" color="neutral" size="sm" aria-label="Paylaş" icon={<Share2Icon size={16} aria-hidden />} />,
+  ]}
 >
-  …
+  <Progress percent={72} />
 </Card>`
   ),
   render: () => (

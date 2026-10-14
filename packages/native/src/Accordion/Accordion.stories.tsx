@@ -60,8 +60,9 @@ export const Playground: Story = {
 export const Faq: Story = {
   name: "Sıkça Sorulan Sorular",
   ...storyDoc("SSS: `separated` her soruyu ayrı kart yapar, `single` aynı anda tek cevap açık tutar, ok sağda (`iconPlacement=\"end\"`).", `<Accordion variant="separated" single iconPlacement="end" defaultActiveKey="kargo" items={[
-  { key: "kargo", label: "Siparişim ne zaman kargoya verilir?", children: "Saat 15:00'e kadar…" },
-  …
+  { key: "kargo", label: "Siparişim ne zaman kargoya verilir?", children: "Saat 15:00'e kadar verilen siparişler aynı gün kargoya verilir." },
+  { key: "iade", label: "İade ve değişim nasıl yapılır?", children: "Teslimattan itibaren 14 gün içinde ücretsiz iade kodu alabilirsiniz." },
+  { key: "taksit", label: "Taksit seçenekleri nelerdir?", children: "Anlaşmalı banka kartlarına 3, 6 ve 9 taksit." },
 ]} />`),
   render: () => (
     <View style={{ gap: 12 }}>
@@ -78,10 +79,10 @@ export const OrderSummary: Story = {
   ...storyDoc(
     "`extra` başlığın sağında, açma düğmesinin DIŞINDA: tutar, durum etiketi ya da düğme — dokunması bölümü açıp kapatmaz. Devre dışı bölüm soluk.",
     `<Accordion defaultActiveKey="urunler" items={[
-  { key: "urunler", label: "Ürünler (3)", extra: <Text weight="medium">5.697,00 ₺</Text>, children: … },
-  { key: "teslimat", label: "Teslimat adresi", extra: <Button size="sm" variant="link">Değiştir</Button>, children: … },
-  { key: "odeme", label: "Ödeme", extra: <Tag color="success">Onaylandı</Tag>, children: … },
-  { key: "fatura", label: "Fatura", disabled: true, extra: <Tag>Kargodan sonra</Tag>, children: … },
+  { key: "urunler", label: "Ürünler (3)", extra: <Text weight="medium">5.697,00 ₺</Text>, children: "Kablosuz Kulaklık Pro · Mekanik Klavye TKL · USB-C Hub" },
+  { key: "teslimat", label: "Teslimat adresi", extra: <Button size="sm" variant="link" accessibilityLabel="Teslimat adresini değiştir">Değiştir</Button>, children: "Ayşe Kaya · Moda Cad. No:12 D:4, Kadıköy / İstanbul" },
+  { key: "odeme", label: "Ödeme", extra: <Tag color="success">Onaylandı</Tag>, children: "Kredi kartı (**** 4411) · Tek çekim" },
+  { key: "fatura", label: "Fatura", disabled: true, extra: <Tag>Kargodan sonra</Tag>, children: "Fatura kargoya verildiğinde e-posta ile gönderilir." },
 ]} />`
   ),
   render: () => (
@@ -119,8 +120,13 @@ export const FilterPanel: Story = {
   name: "Filtre Paneli (ghost)",
   ...storyDoc("`ghost` zeminsiz ve çerçevesiz, kartın kendi çerçevesine gömülür; `extra`'da seçili filtre sayısı.", `<Card>
   <Accordion variant="ghost" size="sm" defaultActiveKey={["marka", "fiyat"]} items={[
-    { key: "marka", label: "Marka", extra: <Badge count={2} color="primary" />, children: <Checkbox label="Apple" /> … },
-    { key: "fiyat", label: "Fiyat", children: <Slider … /> },
+    { key: "marka", label: "Marka", extra: <Badge count={2} color="primary" />, children: (
+      <View style={{ gap: 8 }}>
+        <Checkbox label="Apple" defaultChecked />
+        <Checkbox label="Samsung" />
+      </View>
+    ) },
+    { key: "fiyat", label: "Fiyat", children: <Slider accessibilityLabel="Fiyat üst sınırı" min={0} max={50000} step={500} defaultValue={25000} /> },
     { key: "kargo", label: "Kargo", children: <Switch label="Ücretsiz kargo" /> },
   ]} />
 </Card>`),
@@ -182,10 +188,15 @@ export const Controlled: Story = {
 
 export const Variants: Story = {
   name: "Görünümler ve Boyutlar",
-  ...storyDoc("Dört görünüm ve üç boyut (başlık dolgusu sm 10·12 / md 12·16 / lg 16·20).", `<Accordion variant="borderless" … />
-<Accordion variant="ghost" … />
-<Accordion variant="separated" … />
-<Accordion size="sm" … />`),
+  ...storyDoc("Dört görünüm ve üç boyut (başlık dolgusu sm 10·12 / md 12·16 / lg 16·20).", `const items = [
+  { key: "ekran", label: "Ekran", children: "14,2 inç Liquid Retina XDR · 120 Hz" },
+  { key: "pil", label: "Pil", children: "72,4 Wh · 18 saate kadar video oynatma" },
+];
+
+<Accordion variant="borderless" items={items} />
+<Accordion variant="ghost" items={items} />
+<Accordion variant="separated" items={items} />
+<Accordion size="sm" items={items} />`),
   render: () => (
     <View style={{ gap: 24 }}>
       {(["bordered", "borderless", "ghost", "separated"] as const).map((variant, i) => (

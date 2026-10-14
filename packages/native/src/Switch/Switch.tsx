@@ -3,7 +3,8 @@ import { AccessibilityInfo, ActivityIndicator, Animated, Easing, Pressable, Text
 import type { ColorRole, Size } from "@mari-ui/core";
 import { useNativeConfig, type NativeSwitchSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { switchTrackColor } from "../lib/selectionColors";
 import { useControllable } from "../lib/useControllable";
 import { useFieldControl } from "../lib/fieldContext";
@@ -36,6 +37,7 @@ const INSET = 2;
 
 /** 0 (kapalı) → 1 (açık) ilerleme; hareket azaltmada anlık. */
 function useToggleProgress(on: boolean): Animated.Value {
+  const motion = useMotionScale();
   const progress = useRef(new Animated.Value(on ? 1 : 0)).current;
   const reduce = useRef(false);
   useEffect(() => {
@@ -43,8 +45,8 @@ function useToggleProgress(on: boolean): Animated.Value {
   }, []);
   useEffect(() => {
     if (reduce.current) progress.setValue(on ? 1 : 0);
-    else Animated.timing(progress, { toValue: on ? 1 : 0, duration: 200, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
-  }, [on, progress]);
+    else Animated.timing(progress, { toValue: on ? 1 : 0, duration: Math.round(200 * motion), easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+  }, [on, progress, motion]);
   return progress;
 }
 
@@ -99,7 +101,7 @@ function SwitchTrack({ on, m, color, disabled, loading, trueLabel, falseLabel }:
           elevation: 2,
         }}
       >
-        {loading ? <ActivityIndicator size="small" color={on ? onColor : theme.color.canvas.muted} style={{ transform: [{ scale: m.knob / 30 }] }} /> : null}
+        {loading ? <ActivityIndicator aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" size="small" color={on ? onColor : theme.color.canvas.muted} style={{ transform: [{ scale: m.knob / 30 }] }} /> : null}
       </Animated.View>
     </Animated.View>
   );

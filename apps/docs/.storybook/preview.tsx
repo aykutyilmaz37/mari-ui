@@ -1,3 +1,5 @@
+"use client";
+
 import React, { Suspense } from "react";
 import type { Preview } from "@storybook/react";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
@@ -8,6 +10,11 @@ import "@mari-ui/tokens/fonts.css";
 import "@mari-ui/components/styles.css";
 import "./preview.css";
 import { DocsContainer } from "./DocsContainer";
+import { listenPersonaGlobals, personaToolbar, withPersona } from "./withPersona";
+
+// Türkçe büyük/küçük harf dönüşümü (`uppercase` → "İRİS", "IRIS" değil) `lang`a bağlı.
+if (typeof document !== "undefined") document.documentElement.lang = "tr";
+listenPersonaGlobals();
 
 /**
  * Tema geçişi `data-theme` attribute'u üzerinden — `@mari-ui/tokens`'ın
@@ -21,23 +28,9 @@ import { DocsContainer } from "./DocsContainer";
  * alıyor.
  */
 const preview: Preview = {
-  // Native story'lerinin font kipi (ThemeProvider `fonts`): "system" varsayılan,
-  // "brand" Geist/Manrope — web component'leriyle birebir karşılaştırmak için.
-  globalTypes: {
-    fonts: {
-      description: "Native font kipi",
-      toolbar: {
-        title: "Native font",
-        icon: "paragraph",
-        items: [
-          { value: "system", title: "Sistem fontu" },
-          { value: "brand", title: "Marka fontu (Geist)" },
-        ],
-        dynamicTitle: true,
-      },
-    },
-  },
-  initialGlobals: { fonts: "system" },
+  // Fontu kişilik belirler (web ve native story'ler aynı aileleri kullanır).
+  globalTypes: { persona: personaToolbar },
+  initialGlobals: { persona: "default" },
   parameters: {
     docs: { container: DocsContainer },
     backgrounds: { disable: true },
@@ -81,6 +74,7 @@ const preview: Preview = {
       defaultTheme: "light",
       attributeName: "data-theme",
     }),
+    withPersona,
     // Story ve gömülü docs örnekleri aynı tema ve font kaynağını kullanır.
     (Story, context) => {
       const isDocs = context.viewMode === "docs";

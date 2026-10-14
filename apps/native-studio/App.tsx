@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Animated, Pressable, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { personaNames, personas, type PersonaName } from "@mari-ui/tokens";
 import { useFonts } from "expo-font";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { STORY_CATEGORIES, STORY_ENTRIES, renderStory, type StoryContext, type StoryEntry } from "./src/stories";
@@ -41,7 +42,7 @@ function Studio() {
   const insets = useSafeAreaInsets();
   const system = useColorScheme();
   const [theme, setTheme] = useState<StoryContext["globals"]["theme"]>(system === "dark" ? "dark" : "light");
-  const [brandFonts, setBrandFonts] = useState(false);
+  const [persona, setPersona] = useState<PersonaName | undefined>();
   const stack = useStackTransition<StoryEntry>();
   const selected = stack.item;
   const [fontsLoaded, fontError] = useFonts(FONTS);
@@ -49,7 +50,9 @@ function Studio() {
 
   const c = SHELL[theme];
   // radius: çerçeve kırpmaz (taşan baloncuk kesilmesin), zemin köşesi story tarafında yuvarlanır.
-  const globals: StoryContext["globals"] = { theme, fonts: brandFonts ? "brand" : "system", radius: FRAME_RADIUS, insets, pickImages };
+  // Font kişilikten: varsayılan kişilik Geist/Manrope (yüklü); diğer kişiliklerin font dosyaları
+  // henüz gömülü değil → sistem fontu (renk, radius, gölge ve hareket yine kişilikten).
+  const globals: StoryContext["globals"] = { theme, persona, fonts: persona ? "system" : "brand", radius: FRAME_RADIUS, insets, pickImages };
 
   return (
     <View style={[styles.screen, { backgroundColor: c.bg, paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left, paddingRight: insets.right }]}>
@@ -64,9 +67,9 @@ function Studio() {
         )}
         <View style={styles.toggles}>
           <Toggle label="Koyu" value={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} color={c.muted} />
-          <Toggle label="Marka fontu" value={brandFonts} onChange={setBrandFonts} color={c.muted} />
         </View>
       </View>
+      <PersonaPicker value={persona} onChange={setPersona} colors={c} />
 
       <View style={styles.stage}>
         {/* Liste her zaman altta; detay üstüne kayar (iOS yığın geçişi). */}
@@ -176,6 +179,29 @@ function Toggle({ label, value, onChange, color }: { label: string; value: boole
   );
 }
 
+/** Tasarım kişiliği — web Storybook araç çubuğundaki "Kişilik" ile aynı seçenekler. */
+function PersonaPicker({ value, onChange, colors: c }: { value: PersonaName | undefined; onChange: (v: PersonaName | undefined) => void; colors: (typeof SHELL)["light"] }) {
+  const options: { key: PersonaName | undefined; label: string }[] = [{ key: undefined, label: "Varsayılan" }, ...personaNames.map((name) => ({ key: name, label: personas[name].label }))];
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.personas} style={[styles.personaBar, { borderColor: c.border }]} accessibilityRole="tablist" accessibilityLabel="Tasarım kişiliği">
+      {options.map((o) => {
+        const active = o.key === value;
+        return (
+          <Pressable
+            key={o.label}
+            onPress={() => onChange(o.key)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: active }}
+            style={[styles.personaChip, { borderColor: active ? c.accent : c.border, backgroundColor: active ? c.accent : c.card }]}
+          >
+            <Text style={{ fontSize: 13, fontWeight: "500", color: active ? c.bg : c.text }}>{o.label}</Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
 /** Story açıklamalarındaki `kod` işaretlerini düz metne çevirir. */
 const stripMarkdown = (text: string) => text.replace(/`/g, "").replace(/\*\*/g, "");
 
@@ -189,6 +215,9 @@ const styles = StyleSheet.create({
   top: { shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 12, shadowOffset: { width: -4, height: 0 }, elevation: 8 },
   back: { fontSize: 16, fontWeight: "500" },
   toggles: { flexDirection: "row", gap: 12 },
+  personaBar: { flexGrow: 0, borderBottomWidth: StyleSheet.hairlineWidth },
+  personas: { paddingHorizontal: 16, paddingVertical: 8, gap: 8 },
+  personaChip: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 12, minHeight: 32, justifyContent: "center" },
   toggle: { alignItems: "center", gap: 2 },
   content: { padding: 16, gap: 16 },
   title: { fontSize: 24, fontWeight: "700" },

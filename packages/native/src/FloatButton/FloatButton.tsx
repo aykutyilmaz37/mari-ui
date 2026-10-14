@@ -3,7 +3,8 @@ import { Animated, Easing, Pressable, Text, View, type StyleProp, type ViewStyle
 import type { ColorRole } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { shadowStyle } from "../theme/effects";
+import { useMotionScale, useTheme } from "../theme/useTheme";
 import { toPx } from "../theme/toPx";
 import { useSafeInsets } from "../theme/insets";
 import { Badge } from "../Badge";
@@ -104,11 +105,7 @@ function surface(theme: Theme, shape: FloatButtonShape, extended: boolean, bg: s
     alignItems: "center",
     justifyContent: "center",
     gap: extended ? 10 : 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    ...shadowStyle(theme, { opacity: 0.16, radius: 10, offsetY: 4, elevation: 6 }),
   };
 }
 
@@ -221,15 +218,16 @@ export type FloatButtonGroupProps = FloatButtonGroupStaticProps | FloatButtonGro
 
 /** Menü öğeleri ana düğmeden çıkıp sırayla belirir; ana ikon × olacak şekilde döner. */
 function useMenuMotion(open: boolean) {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const v = useRef(new Animated.Value(open ? 1 : 0)).current;
   const [mounted, setMounted] = useState(open);
   useEffect(() => {
     if (open) setMounted(true);
-    Animated.timing(v, { toValue: open ? 1 : 0, duration: reduce ? 0 : 200, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
+    Animated.timing(v, { toValue: open ? 1 : 0, duration: reduce ? 0 : Math.round(200 * motion), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
       if (finished && !open) setMounted(false);
     });
-  }, [open, reduce, v]);
+  }, [open, reduce, v, motion]);
   return { v, mounted };
 }
 

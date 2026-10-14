@@ -247,9 +247,17 @@ export const SizesAndStates: Story = {
   name: "Boyutlar ve Durumlar",
   ...storyDoc(
     "Yükseklik Input/Select ile aynı (sm 24 / md 32 / lg 40px). Devre dışı ve hata rengi.",
-    `<TreeSelect size="sm" … />
-<TreeSelect color="error" … />
-<TreeSelect disabled … />`
+    `
+const regions = [
+  { key: "marmara", title: "Marmara", children: [{ key: "istanbul", title: "İstanbul" }, { key: "bursa", title: "Bursa" }] },
+  { key: "ege", title: "Ege", children: [{ key: "izmir", title: "İzmir" }, { key: "aydin", title: "Aydın" }] },
+  { key: "ic-anadolu", title: "İç Anadolu", children: [{ key: "ankara", title: "Ankara" }, { key: "eskisehir", title: "Eskişehir" }] },
+];
+
+<TreeSelect size="sm" aria-label="Bölge" treeData={regions} defaultValue="izmir" />
+<TreeSelect size="lg" aria-label="Bölge" treeData={regions} defaultValue="izmir" />
+<TreeSelect aria-label="Bölge" color="error" treeData={regions} placeholder="Bölge seçin" />
+<TreeSelect aria-label="Bölge" disabled treeData={regions} defaultValue="eskisehir" />`
   ),
   render: () => (
     <div className="flex max-w-xs flex-col gap-3">
@@ -266,6 +274,13 @@ export const SizesAndStates: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<TreeSelect treeData={regions} skeleton />`),
+  ...storyDoc(SKELETON_STORY_DOC, `
+const regions = [
+  { key: "marmara", title: "Marmara", children: [{ key: "istanbul", title: "İstanbul" }, { key: "bursa", title: "Bursa" }] },
+  { key: "ege", title: "Ege", children: [{ key: "izmir", title: "İzmir" }, { key: "aydin", title: "Aydın" }] },
+  { key: "ic-anadolu", title: "İç Anadolu", children: [{ key: "ankara", title: "Ankara" }, { key: "eskisehir", title: "Eskişehir" }] },
+];
+
+<TreeSelect aria-label="Bölge" treeData={regions} defaultValue="izmir" skeleton />`),
   render: () => <SkeletonDemo>{(skeleton) => <TreeSelect aria-label="Bölge" treeData={REGIONS} defaultValue="izmir" skeleton={skeleton} className="max-w-xs" />}</SkeletonDemo>,
 };

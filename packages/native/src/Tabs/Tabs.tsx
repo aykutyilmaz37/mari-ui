@@ -5,7 +5,8 @@ import type { Theme } from "@mari-ui/tokens";
 import { useNativeConfig, type NativeTabsSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
-import { useTheme } from "../theme/useTheme";
+import { shadowStyle } from "../theme/effects";
+import { useMotionScale, useTheme } from "../theme/useTheme";
 import { SkeletonBox, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
 import { useControllable } from "../lib/useControllable";
 
@@ -164,6 +165,7 @@ export function Tabs({
 
 /** Aktif sekmenin altında kayan gösterge (çizgi) ya da zemin (pills); ilk yerleşim ve hareket azaltmada anlık. */
 function useIndicator(rect: LayoutRectangle | undefined, vertical: boolean) {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const pos = useRef(new Animated.Value(0)).current;
   const len = useRef(new Animated.Value(0)).current;
@@ -177,9 +179,9 @@ function useIndicator(rect: LayoutRectangle | undefined, vertical: boolean) {
       placed.current = true;
       return;
     }
-    const timing = (v: Animated.Value, toValue: number) => Animated.timing(v, { toValue, duration: 220, easing: Easing.out(Easing.cubic), useNativeDriver: false });
+    const timing = (v: Animated.Value, toValue: number) => Animated.timing(v, { toValue, duration: Math.round(220 * motion), easing: Easing.out(Easing.cubic), useNativeDriver: false });
     Animated.parallel([timing(pos, to.p), timing(len, to.l)]).start();
-  }, [rect, vertical, reduce, pos, len]);
+  }, [rect, vertical, reduce, pos, len, motion]);
   return { pos, len };
 }
 
@@ -212,7 +214,7 @@ function Indicator({ rect, vertical, variant, color, theme }: { rect: LayoutRect
       <Animated.View
         pointerEvents="none"
         style={[
-          { position: "absolute", borderRadius: toPx(theme.radius.md), backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 3, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
+          { position: "absolute", borderRadius: toPx(theme.radius.md), backgroundColor: c.surface, borderWidth: 1, borderColor: c.border, ...shadowStyle(theme, { opacity: 0.08, radius: 3, offsetY: 1, elevation: 1 }) },
           vertical ? { left: rect.x, width: rect.width, top: pos, height: len } : { top: rect.y, height: rect.height, left: pos, width: len },
         ]}
       />

@@ -4,7 +4,8 @@ import type { ColorRole } from "@mari-ui/core";
 import type { Theme } from "@mari-ui/tokens";
 import { useNativeConfig, type NativeBottomNavigationSize } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { useSafeInsets } from "../theme/insets";
 import { Badge } from "../Badge";
 import { SkeletonBox, SkeletonText, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
@@ -55,6 +56,7 @@ export interface BottomNavigationProps extends SkeletonableProps {
 
 /** M3 göstergesi: seçilince ortadan yanlara açılır (hareket azaltmada anlık). */
 function usePillAnim(active: boolean) {
+  const motion = useMotionScale();
   const reduce = useReduceMotion();
   const v = useRef(new Animated.Value(active ? 1 : 0)).current;
   useEffect(() => {
@@ -62,8 +64,8 @@ function usePillAnim(active: boolean) {
       v.setValue(active ? 1 : 0);
       return;
     }
-    Animated.timing(v, { toValue: active ? 1 : 0, duration: 200, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-  }, [active, reduce, v]);
+    Animated.timing(v, { toValue: active ? 1 : 0, duration: Math.round(200 * motion), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [active, reduce, v, motion]);
   return v;
 }
 

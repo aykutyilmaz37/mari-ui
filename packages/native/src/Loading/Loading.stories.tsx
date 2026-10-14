@@ -57,7 +57,10 @@ function RefreshCard() {
 export const Wrap: Story = {
   name: "Kart Yenileme (Sarmalama)",
   ...storyDoc("İçerik yerinde kalır (düzen kaymaz), soluklaşır; gösterge üstünde.", `<Loading spinning={refreshing} tip="Güncelleniyor">
-  <Card title="Bugünkü satışlar">…</Card>
+  <Card title="Bugünkü satışlar">
+    <Text weight="semibold">₺48.250</Text>
+    <Text muted>Dünden %12 fazla</Text>
+  </Card>
 </Loading>`),
   render: () => <RefreshCard />,
 };

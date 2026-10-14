@@ -105,13 +105,37 @@ export const Checkout: Story = {
   name: "Ödeme Akışı",
   ...storyDoc(
     "Telefonda tipik sihirbaz: `responsiveLayout=\"compact\"` — yalnız göstergeler + \"Adım 2/4 · Teslimat\", içerik altta (`StepsContent`), Geri/İleri/Tamamla çubuğu. Henüz varılmamış adımlar `disabled`; geçilmiş adıma dokunarak dönülür.",
-    `<Steps
+    `const checkout = [
+  { title: "Sepet", icon: ShoppingBag },
+  { title: "Teslimat", icon: Truck },
+  { title: "Ödeme", icon: CreditCard },
+  { title: "Onay", icon: BadgeCheck },
+];
+const [step, setStep] = useState(1);
+const [maxReached, setMaxReached] = useState(1);
+const go = (s: number) => {
+  setStep(s);
+  setMaxReached((m) => Math.max(m, s));
+};
+
+<Steps
   currentStep={step}
-  onChange={setStep}
-  onComplete={submit}
+  onChange={go}
+  onComplete={submitOrder}
   responsiveLayout="compact"
-  data={[{ title: "Sepet", icon: ShoppingBag }, { title: "Teslimat", icon: Truck, disabled: maxReached < 2 }, …]}
-  content={<StepsContent value={2} currentSteps={step}>…</StepsContent>}
+  data={checkout.map((s, i) => ({ ...s, disabled: i + 1 > maxReached }))}
+  content={
+    <>
+      <StepsContent value={1} currentSteps={step}><Text>2 ürün · 6.298 ₺</Text></StepsContent>
+      <StepsContent value={2} currentSteps={step}>
+        <Field label="Teslimat adresi"><Input placeholder="Mahalle, sokak, no" /></Field>
+      </StepsContent>
+      <StepsContent value={3} currentSteps={step}>
+        <Field label="Kart üzerindeki ad"><Input placeholder="Ad Soyad" /></Field>
+      </StepsContent>
+      <StepsContent value={4} currentSteps={step}><Text>Her şey hazır. "Tamamla"ya dokunun.</Text></StepsContent>
+    </>
+  }
 />`
   ),
   render: () => <CheckoutDemo />,
@@ -138,7 +162,15 @@ function SetupDemo() {
 
 export const AccountSetup: Story = {
   name: "Hesap Kurulumu (Dikey)",
-  ...storyDoc("`vertical` — açıklamalı dikey liste; her adım dokunulabilir.", `<Steps vertical currentStep={step} onChange={setStep} data={[{ title: "Profil", description: "Adınız ve rolünüz", icon: UserRound }, …]} />`),
+  ...storyDoc("`vertical` — açıklamalı dikey liste; her adım dokunulabilir.", `const setup = [
+  { title: "Profil", description: "Adınız ve rolünüz", icon: UserRound },
+  { title: "Çalışma alanı", description: "Şirket adı ve adres", icon: Building2 },
+  { title: "Ekibi davet et", description: "İsteğe bağlı", icon: UsersRound },
+  { title: "Plan seçimi", description: "14 gün ücretsiz", icon: Sparkles },
+];
+const [step, setStep] = useState(2);
+
+<Steps vertical currentStep={step} onChange={setStep} data={setup} />`),
   render: () => <SetupDemo />,
 };
 
@@ -152,7 +184,15 @@ const TRACKING: StepData = [
 
 export const OrderTracking: Story = {
   name: "Sipariş Takibi (Salt Okunur)",
-  ...storyDoc("`onChange` yok → salt okunur; `subTitle` tarih, `description` ayrıntı. `size=\"sm\"`.", `<Steps vertical size="sm" currentStep={4} data={[{ title: "Sipariş alındı", subTitle: "24 Eyl, 14:02", description: "Ödemeniz onaylandı." }, …]} />`),
+  ...storyDoc("`onChange` yok → salt okunur; `subTitle` tarih, `description` ayrıntı. `size=\"sm\"`.", `const tracking = [
+  { title: "Sipariş alındı", subTitle: "24 Eyl, 14:02", description: "Ödemeniz onaylandı." },
+  { title: "Hazırlanıyor", subTitle: "24 Eyl, 17:45", description: "Ürünleriniz paketlendi." },
+  { title: "Kargoya verildi", subTitle: "25 Eyl, 09:10", description: "Yurtiçi Kargo · Takip no: 4821 3390 17" },
+  { title: "Dağıtımda", subTitle: "Bugün, 08:30", description: "Kurye bugün 13:00-17:00 arasında teslim edecek." },
+  { title: "Teslim edildi", description: "Tahmini: bugün" },
+];
+
+<Steps vertical size="sm" currentStep={4} data={tracking} />`),
   render: () => (
     <Card>
       <Steps vertical size="sm" currentStep={4} data={TRACKING} />
@@ -169,7 +209,19 @@ const KYC: StepData = [
 
 export const ErrorState: Story = {
   name: "Hata Durumu",
-  ...storyDoc("`status=\"error\"` — geçerli adım hata rengiyle ve × ikonuyla; ekran okuyucu \"(hata)\" der.", `<Steps vertical currentStep={3} status="error" data={[…, { title: "Yüz doğrulama", description: "Işık yetersiz — tekrar deneyin" }, …]} />`),
+  ...storyDoc("`status=\"error\"` — geçerli adım hata rengiyle ve × ikonuyla; ekran okuyucu \"(hata)\" der.", `
+<Steps
+  vertical
+  currentStep={3}
+  status="error"
+  data={[
+    { title: "Kişisel bilgiler", icon: UserRound },
+    { title: "Kimlik belgesi", icon: FileText },
+    { title: "Yüz doğrulama", description: "Işık yetersiz — tekrar deneyin", icon: ScanFace },
+    { title: "Onay", icon: BadgeCheck },
+  ]}
+/>
+<Button color="error" variant="soft" onPress={retry}>Tekrar dene</Button>`),
   render: () => (
     <Card>
       <Stack>
@@ -214,7 +266,19 @@ function PipelineDemo() {
 
 export const ProgressRing: Story = {
   name: "İlerleme Halkası (Dağıtım Hattı)",
-  ...storyDoc("`percent` — geçerli adımın göstergesinde halka; ekran okuyucu \"devam ediyor, %64\". Üç kısa adım telefonda da yatay sığar: `responsive={false}` + `labelPlacement=\"vertical\"`.", `<Steps responsive={false} labelPlacement="vertical" size="sm" currentStep={2} percent={64} data={[{ title: "Derleme", subTitle: "42 sn", icon: Hammer }, …]} />`),
+  ...storyDoc("`percent` — geçerli adımın göstergesinde halka; ekran okuyucu \"devam ediyor, %64\". Üç kısa adım telefonda da yatay sığar: `responsive={false}` + `labelPlacement=\"vertical\"`.", `
+<Steps
+  responsive={false}
+  labelPlacement="vertical"
+  size="sm"
+  currentStep={2}
+  percent={64}
+  data={[
+    { title: "Derleme", subTitle: "42 sn", icon: Hammer },
+    { title: "Testler", subTitle: "184/286", icon: FlaskConical },
+    { title: "Yayına alma", icon: Rocket },
+  ]}
+/>`),
   render: () => <PipelineDemo />,
 };
 
@@ -226,8 +290,16 @@ export const LabelBelow: Story = {
 
 export const Dot: Story = {
   name: "Nokta",
-  ...storyDoc("`dot` — numara yerine nokta. Yatayda başlık hep altta; dikeyde sade zaman çizelgesi.", `<Steps dot responsive={false} currentStep={2} data={…} />
-<Steps dot vertical currentStep={3} data={…} />`),
+  ...storyDoc("`dot` — numara yerine nokta. Yatayda başlık hep altta; dikeyde sade zaman çizelgesi.", `const tracking = [
+  { title: "Sipariş alındı", subTitle: "24 Eyl, 14:02", description: "Ödemeniz onaylandı." },
+  { title: "Hazırlanıyor", subTitle: "24 Eyl, 17:45", description: "Ürünleriniz paketlendi." },
+  { title: "Kargoya verildi", subTitle: "25 Eyl, 09:10", description: "Yurtiçi Kargo · Takip no: 4821 3390 17" },
+  { title: "Dağıtımda", subTitle: "Bugün, 08:30", description: "Kurye bugün 13:00-17:00 arasında teslim edecek." },
+  { title: "Teslim edildi", description: "Tahmini: bugün" },
+];
+
+<Steps dot responsive={false} currentStep={2} data={[{ title: "Gönderildi" }, { title: "Yolda" }, { title: "Teslim" }]} />
+<Steps dot vertical size="sm" currentStep={3} data={tracking} />`),
   render: () => (
     <View style={{ gap: 24 }}>
       <Steps dot responsive={false} currentStep={2} data={[{ title: "Gönderildi" }, { title: "Yolda" }, { title: "Teslim" }]} />
@@ -240,8 +312,15 @@ export const Responsive: Story = {
   name: "Duyarlı",
   ...storyDoc(
     "Varsayılan `responsive={520}`: kapsayıcı 520pt'nin altında yatay Steps dikey listeye (ya da `compact`a) geçer — telefonda her zaman. `responsive={false}` yatayda tutar (yalnız 2–3 kısa adımda).",
-    `<Steps currentStep={2} data={HIRING} />                          {/* telefonda dikey */}
-<Steps currentStep={2} data={HIRING} responsiveLayout="compact" />`
+    `const hiring = [
+  { title: "Başvuru", description: "Form gönderildi" },
+  { title: "İnceleme", description: "Ekip değerlendiriyor" },
+  { title: "Mülakat", description: "Takvim bekleniyor" },
+];
+
+{/* telefonda dikey */}
+<Steps currentStep={2} data={hiring} />
+<Steps currentStep={2} data={hiring} responsiveLayout="compact" />`
   ),
   render: () => (
     <View style={{ gap: 24 }}>
@@ -253,7 +332,15 @@ export const Responsive: Story = {
 
 export const Variants: Story = {
   name: "Görünüm: filled / outlined",
-  ...storyDoc("`filled` (varsayılan): geçerli adım dolu, tamamlanan tonlu. `outlined`: hepsi çerçeveli.", `<Steps variant="outlined" currentStep={2} data={…} />`),
+  ...storyDoc("`filled` (varsayılan): geçerli adım dolu, tamamlanan tonlu. `outlined`: hepsi çerçeveli.", `const checkout = [
+  { title: "Sepet", icon: ShoppingBag },
+  { title: "Teslimat", icon: Truck },
+  { title: "Ödeme", icon: CreditCard },
+  { title: "Onay", icon: BadgeCheck },
+];
+
+<Steps responsiveLayout="compact" currentStep={2} data={checkout} />
+<Steps responsiveLayout="compact" variant="outlined" currentStep={2} data={checkout} />`),
   render: () => (
     <View style={{ gap: 24 }}>
       <Steps responsiveLayout="compact" currentStep={2} data={CHECKOUT} />
@@ -264,7 +351,14 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   name: "Boyut: md / sm",
-  ...storyDoc("`md` (32, varsayılan) ve `sm` (24) — kartlar ve yoğun listeler için.", `<Steps size="sm" vertical currentStep={2} data={…} />`),
+  ...storyDoc("`md` (32, varsayılan) ve `sm` (24) — kartlar ve yoğun listeler için.", `const hiring = [
+  { title: "Başvuru", description: "Form gönderildi" },
+  { title: "İnceleme", description: "Ekip değerlendiriyor" },
+  { title: "Mülakat", description: "Takvim bekleniyor" },
+];
+
+<Steps vertical currentStep={2} data={hiring} />
+<Steps vertical size="sm" currentStep={2} data={hiring} />`),
   render: () => (
     <View style={{ gap: 24 }}>
       <Steps vertical currentStep={2} data={HIRING.slice(0, 3)} />
@@ -275,7 +369,14 @@ export const Sizes: Story = {
 
 export const Colors: Story = {
   name: "Renkler",
-  ...storyDoc("`color` — aktif/tamamlanan adımların rolü. Hata her zaman `error` renginde.", `<Steps color="success" currentStep={3} data={…} />`),
+  ...storyDoc("`color` — aktif/tamamlanan adımların rolü. Hata her zaman `error` renginde.", `const checkout = [
+  { title: "Sepet", icon: ShoppingBag },
+  { title: "Teslimat", icon: Truck },
+  { title: "Ödeme", icon: CreditCard },
+  { title: "Onay", icon: BadgeCheck },
+];
+
+<Steps color="success" responsiveLayout="compact" currentStep={3} data={checkout} />`),
   render: () => (
     <View style={{ gap: 20 }}>
       {(["primary", "accent", "success", "info", "neutral"] as const).map((color) => (
@@ -287,6 +388,13 @@ export const Colors: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Göstergeler aynı dairelerde, başlık/açıklama kendi metin kutularında; çizgiler nötr; eylem düğmeleri iskelet.", `<Steps skeleton={isLoading} vertical currentStep={2} onChange={setStep} data={…} />`),
+  ...storyDoc(SKELETON_STORY_DOC + " Göstergeler aynı dairelerde, başlık/açıklama kendi metin kutularında; çizgiler nötr; eylem düğmeleri iskelet.", `const setup = [
+  { title: "Profil", description: "Adınız ve rolünüz", icon: UserRound },
+  { title: "Çalışma alanı", description: "Şirket adı ve adres", icon: Building2 },
+  { title: "Ekibi davet et", description: "İsteğe bağlı", icon: UsersRound },
+  { title: "Plan seçimi", description: "14 gün ücretsiz", icon: Sparkles },
+];
+
+<Steps skeleton={isLoading} vertical currentStep={2} onChange={setStep} data={setup} />`),
   render: () => <SkeletonDemo>{(skeleton) => <Steps skeleton={skeleton} vertical currentStep={2} onChange={() => undefined} data={SETUP} />}</SkeletonDemo>,
 };

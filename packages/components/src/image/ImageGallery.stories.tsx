@@ -8,7 +8,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Share2Icon, Trash2Icon } from "lucide-react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { STORY_VIDEO, picsumLoader, storyPhotos } from "../lib/storyPhotos";
 import { Button } from "../button";
@@ -81,6 +81,17 @@ export default meta;
 type Story = StoryObj<typeof ImageGallery>;
 
 export const Playground: Story = {
+  ...storyDoc(
+    "Tüm props'ları canlı deneyin. `items` tarih (`date`) taşır; galeri bunlarla bölümlenir.",
+    (args) => `
+const cdnLoader: ImageLoader = ({ src, width, quality = 75 }) => \`\${src}?w=\${width}&q=\${quality}\`;
+const items = [
+  { key: "p0", src: "/fotograflar/kapadokya.jpg", alt: "Kapadokya — gün doğumu", caption: "Kapadokya", date: new Date("2026-10-01") },
+  { key: "p1", src: "/fotograflar/efes.jpg", alt: "Efes antik kenti", caption: "Efes", date: new Date("2026-09-28") },
+];
+
+<ImageGallery ${jsxProps(args, { skip: ["items", "loader"] })} items={items} loader={cdnLoader} />`
+  ),
   args: { items: ALBUM.slice(0, 60), loader: picsumLoader, title: "Fotoğraflar", selectable: true },
 };
 

@@ -1,6 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { DownloadIcon } from "lucide-react";
+import { Button } from "@mari-ui/components/button";
+import { ColorPicker } from "@mari-ui/components/color-picker";
+import { Field } from "@mari-ui/components/field";
+import { Input } from "@mari-ui/components/input";
+import { MariLogo } from "@mari-ui/components/logo";
+import { Segmented } from "@mari-ui/components/segmented";
+import { Select } from "@mari-ui/components/select";
+import { Switch } from "@mari-ui/components/switch";
+import { Table, type ColumnDef } from "@mari-ui/components/table";
+import { Tag } from "@mari-ui/components/tag";
+import { Text, Title } from "@mari-ui/components/typography";
 import {
   defaultThemeConfig,
   contrastRatio,
@@ -14,43 +26,41 @@ import {
   type RadiusDensity,
   spacingDensities,
   type SpacingDensity,
+  shadowDensities,
+  type ShadowDensity,
+  motionLevels,
+  type MotionLevel,
+  personaNames,
+  personas,
+  personaFontsUrl,
+  minimizeConfig,
+  type PersonaName,
 } from "@mari-ui/tokens";
 import { PreviewPanel } from "./PreviewPanel";
 
-const HEX_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const SPACING_LABELS: Record<SpacingDensity, string> = { compact: "Sıkı", normal: "Normal", comfortable: "Rahat" };
 const FLUID_MAX_OPTIONS = [18, 20, 22, 24, 26, 28, 32];
+const SHADOW_LABELS: Record<ShadowDensity, string> = { none: "Yok", soft: "Yumuşak", normal: "Normal", strong: "Belirgin" };
+const MOTION_LABELS: Record<MotionLevel, string> = { off: "Kapalı", calm: "Sakin", normal: "Normal", lively: "Canlı" };
+const FONT_LINK_ID = "studio-persona-fonts";
+const RADIUS_LABELS: Record<RadiusDensity, string> = { none: "Keskin", sm: "Az", md: "Orta", lg: "Çok" };
+const DEFAULT_PERSONA = "default";
+const PERSONA_OPTIONS = [{ value: DEFAULT_PERSONA, label: "Varsayılan (Yumuşak iris)" }, ...personaNames.map((name) => ({ value: name, label: personas[name].label }))];
 
-function ContrastRow({ label, bg, fg, threshold = 4.5 }: { label: string; bg: HexColor; fg: HexColor; threshold?: number }) {
-  const ratio = contrastRatio(bg, fg);
-  const pass = meetsAA(bg, fg, threshold);
-  return (
-    <tr>
-      <td>{label}</td>
-      <td>
-        <span
-          style={{
-            display: "inline-block",
-            width: 14,
-            height: 14,
-            borderRadius: 4,
-            background: bg,
-            border: "1px solid rgba(0,0,0,0.15)",
-            marginRight: 6,
-            verticalAlign: "middle",
-          }}
-        />
-        {bg}
-      </td>
-      <td>{fg}</td>
-      <td>{ratio.toFixed(2)}:1</td>
-      <td>
-        <span className="studio-badge" data-pass={pass}>
-          {pass ? "AA ✓" : "AA ✗"}
-        </span>
-      </td>
-    </tr>
-  );
+/** Kişiliğin (ya da varsayılanın) tüm düzenlenebilir alanları — seçince sol panel bunlarla dolar. */
+function personaFields(name: PersonaName | undefined) {
+  const p = name ? personas[name].config : {};
+  return {
+    primary: p.color?.primary ?? defaultThemeConfig.color.primary,
+    accent: p.color?.accent ?? defaultThemeConfig.color.accent,
+    sans: p.typography?.fontFamilySans ?? lightTheme.fontFamily.sans,
+    mono: p.typography?.fontFamilyMono ?? lightTheme.fontFamily.mono,
+    heading: p.typography?.fontFamilyHeading ?? lightTheme.fontFamily.heading ?? lightTheme.fontFamily.sans,
+    radius: p.density?.radius ?? defaultThemeConfig.density.radius,
+    spacing: p.density?.spacing ?? defaultThemeConfig.density.spacing,
+    shadow: p.density?.shadow ?? defaultThemeConfig.density.shadow,
+    motion: p.motion ?? defaultThemeConfig.motion,
+  };
 }
 
 function downloadJson(filename: string, data: unknown) {
@@ -64,6 +74,9 @@ function downloadJson(filename: string, data: unknown) {
 }
 
 export function StudioApp() {
+  const [persona, setPersona] = useState<PersonaName | undefined>();
+  const [shadowDensity, setShadowDensity] = useState<ShadowDensity>(defaultThemeConfig.density.shadow);
+  const [motion, setMotion] = useState<MotionLevel>(defaultThemeConfig.motion);
   const [primaryHex, setPrimaryHex] = useState<string>(defaultThemeConfig.color.primary);
   const [accentHex, setAccentHex] = useState<string>(defaultThemeConfig.color.accent);
   const [fontFamilySans, setFontFamilySans] = useState<string>(lightTheme.fontFamily.sans);
@@ -76,202 +89,210 @@ export function StudioApp() {
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
   const [previewSpacing, setPreviewSpacing] = useState<SpacingDensity>("normal");
 
-  const config: MariUiThemeConfig = useMemo(
+  // Kişilik seçilince tüm alanlar onun değerleriyle dolar; sonra her alan elle değiştirilebilir.
+  const choosePersona = (name: PersonaName | undefined) => {
+    const f = personaFields(name);
+    setPersona(name);
+    setPrimaryHex(f.primary);
+    setAccentHex(f.accent);
+    setFontFamilySans(f.sans);
+    setFontFamilyMono(f.mono);
+    setFontFamilyHeading(f.heading);
+    setRadiusDensity(f.radius);
+    setSpacingDensity(f.spacing);
+    setPreviewSpacing(f.spacing);
+    setShadowDensity(f.shadow);
+    setMotion(f.motion);
+  };
+
+  // Kişiliğin fontları önizlemede görünsün (Google Fonts).
+  useEffect(() => {
+    document.getElementById(FONT_LINK_ID)?.remove();
+    if (!persona) return;
+    const link = document.createElement("link");
+    link.id = FONT_LINK_ID;
+    link.rel = "stylesheet";
+    link.href = personaFontsUrl(persona);
+    document.head.appendChild(link);
+  }, [persona]);
+
+  const explicitConfig: MariUiThemeConfig = useMemo(
     () => ({
+      persona,
       color: { primary: primaryHex as HexColor, accent: accentHex as HexColor },
       typography: { fontFamilySans, fontFamilyMono, fontFamilyHeading },
-      density: { radius: radiusDensity, spacing: spacingDensity },
+      density: { radius: radiusDensity, spacing: spacingDensity, shadow: shadowDensity },
+      motion,
       scale: { fluid: fluidScale, max: fluidMax },
     }),
-    [primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, fluidScale, fluidMax]
+    [persona, primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, shadowDensity, motion, fluidScale, fluidMax]
+  );
+  // Dışa aktarılan dosya: kişilik + yalnız ondan farklı alanlar.
+  const config = useMemo(
+    () => minimizeConfig(explicitConfig, { ...defaultThemeConfig, typography: { fontFamilySans: lightTheme.fontFamily.sans, fontFamilyMono: lightTheme.fontFamily.mono, fontFamilyHeading: lightTheme.fontFamily.heading } }),
+    [explicitConfig]
   );
 
   const resolved = useMemo(() => resolveThemeConfig(config), [config]);
   const activeTheme = previewMode === "light" ? resolved.light : resolved.dark;
   const cssVars = useMemo(() => themeToCssVariables(activeTheme), [activeTheme]);
-
-  const handleHexChange = (raw: string, setter: (v: string) => void) => {
-    if (HEX_PATTERN.test(raw)) setter(raw);
-  };
+  const contrastRows: ContrastRowData[] = [
+    contrastRow("surface", "Gövde metni", activeTheme.color.canvas.surface, activeTheme.color.canvas.foreground),
+    contrastRow("muted", "Yardımcı metin", activeTheme.color.canvas.surface, activeTheme.color.canvas.muted),
+    contrastRow("input", "Alan sınırı (3:1)", activeTheme.color.canvas.surface, activeTheme.color.canvas.input, 3),
+    contrastRow("ring", "Odak halkası (3:1)", activeTheme.color.canvas.surface, activeTheme.color.canvas.ring, 3),
+    contrastRow("primary-hover", "primary hover", activeTheme.color.primary.solidHover, activeTheme.color.primary.solidContrast),
+    contrastRow("primary-solid", "primary solid", activeTheme.color.primary.solid, activeTheme.color.primary.solidContrast),
+    contrastRow("primary-subtle", "primary subtle", activeTheme.color.primary.subtle, activeTheme.color.primary.subtleContrast),
+    contrastRow("accent-solid", "accent solid", activeTheme.color.accent.solid, activeTheme.color.accent.solidContrast),
+    contrastRow("accent-subtle", "accent subtle", activeTheme.color.accent.subtle, activeTheme.color.accent.subtleContrast),
+  ];
 
   return (
     <div className="studio-layout">
       <aside className="studio-sidebar">
-        <h1 className="studio-title">mari-ui Tema Stüdyosu</h1>
-        <p className="studio-subtitle">Renk, tipografi ve yoğunluk ayarlarını gerçek bileşenlerle canlı önizleyin.</p>
+        <header className="studio-header">
+          <MariLogo size={36} label="mari-ui" />
+          <Text muted className="studio-hint">Tema stüdyosu — ayarları gerçek bileşenlerle canlı önizleyin.</Text>
+        </header>
 
-        <div className="studio-section">
-          <h2 className="studio-section-title">Renk</h2>
-          <p className="studio-section-hint">Her iki rengin solid/subtle metin kontrastı otomatik WCAG AA'ya göre yeniden hesaplanır.</p>
+        <Section title="Kişilik">
+          <Field label="Tasarım kişiliği" hint={`${persona ? personas[persona].description : "Renk, font, köşe, boşluk, gölge ve hareketi birlikte seçen hazır paketler."} Seçince aşağıdaki alanlar dolar; değiştirdiğiniz alanlar kişiliği ezer.`}>
+            <Select
+              value={persona ?? DEFAULT_PERSONA}
+              options={PERSONA_OPTIONS}
+              onChange={(value) => choosePersona(value === DEFAULT_PERSONA ? undefined : (value as PersonaName))}
+            />
+          </Field>
+        </Section>
 
-          <div className="studio-field">
-            <label htmlFor="primary-color">Birincil (primary)</label>
-            <div className="studio-color-row">
-              <input id="primary-color" type="color" value={primaryHex} onChange={(e) => setPrimaryHex(e.target.value)} />
-              <input
-                className="studio-input"
-                type="text"
-                value={primaryHex}
-                onChange={(e) => handleHexChange(e.target.value, setPrimaryHex)}
-                spellCheck={false}
-              />
-            </div>
-          </div>
+        <Section title="Renk" hint="Her iki rengin dolgu/metin kontrastı WCAG AA'ya göre otomatik hesaplanır.">
+          <Field label="Birincil (primary)">
+            <ColorPicker value={primaryHex} onChange={(value) => value && setPrimaryHex(value)} showText disabledAlpha />
+          </Field>
+          <Field label="Vurgu (accent)">
+            <ColorPicker value={accentHex} onChange={(value) => value && setAccentHex(value)} showText disabledAlpha />
+          </Field>
+        </Section>
 
-          <div className="studio-field">
-            <label htmlFor="accent-color">Vurgu (accent)</label>
-            <div className="studio-color-row">
-              <input id="accent-color" type="color" value={accentHex} onChange={(e) => setAccentHex(e.target.value)} />
-              <input
-                className="studio-input"
-                type="text"
-                value={accentHex}
-                onChange={(e) => handleHexChange(e.target.value, setAccentHex)}
-                spellCheck={false}
-              />
-            </div>
-          </div>
-        </div>
+        <Section title="Tipografi">
+          <Field label="Gövde / arayüz font ailesi">
+            <Input value={fontFamilySans} onChange={(e) => setFontFamilySans(e.target.value)} />
+          </Field>
+          <Field label="Başlık / marka font ailesi">
+            <Input value={fontFamilyHeading} onChange={(e) => setFontFamilyHeading(e.target.value)} />
+          </Field>
+          <Field label="Kod / monospace font ailesi">
+            <Input value={fontFamilyMono} onChange={(e) => setFontFamilyMono(e.target.value)} />
+          </Field>
+        </Section>
 
-        <div className="studio-section">
-          <h2 className="studio-section-title">Tipografi</h2>
-          <div className="studio-field">
-            <label htmlFor="font-sans">Gövde/UI font ailesi</label>
-            <input id="font-sans" className="studio-input" type="text" value={fontFamilySans} onChange={(e) => setFontFamilySans(e.target.value)} />
-          </div>
-          <div className="studio-field">
-            <label htmlFor="font-heading">Başlık / marka font ailesi</label>
-            <input id="font-heading" className="studio-input" type="text" value={fontFamilyHeading} onChange={(e) => setFontFamilyHeading(e.target.value)} />
-          </div>
-          <div className="studio-field">
-            <label htmlFor="font-mono">Kod/monospace font ailesi</label>
-            <input id="font-mono" className="studio-input" type="text" value={fontFamilyMono} onChange={(e) => setFontFamilyMono(e.target.value)} />
-
-          </div>
-        </div>
-
-        <div className="studio-section">
-          <h2 className="studio-section-title">Yoğunluk</h2>
-          <div className="studio-field">
-            <label htmlFor="radius-density">Köşe yuvarlaklığı (radius)</label>
-            <select id="radius-density" className="studio-select" value={radiusDensity} onChange={(e) => setRadiusDensity(e.target.value as RadiusDensity)}>
-              {radiusDensities.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <p className="studio-field-hint">
-              Tüm radius skalasını orantılı ölçekler: `none` tamamen keskin, `md` varsayılan. Avatar/switch gibi geometrik olarak yuvarlak öğeler etkilenmez.
-            </p>
-          </div>
-          <div className="studio-field">
-            <label htmlFor="spacing-density">Varsayılan boşluk yoğunluğu</label>
-            <select
-              id="spacing-density"
-              className="studio-select"
+        <Section title="Yoğunluk">
+          <Field label="Köşe yuvarlaklığı" hint="Tüm radius skalasını orantılı ölçekler; avatar/switch gibi yuvarlak öğeler etkilenmez.">
+            <Select value={radiusDensity} options={radiusDensities.map((value) => ({ value, label: RADIUS_LABELS[value] }))} onChange={(value) => setRadiusDensity(value as RadiusDensity)} />
+          </Field>
+          <Field label="Varsayılan boşluk" hint="Yükseklik, iç boşluk ve aralıklar ölçeklenir; yazı boyutu değişmez. Son kullanıcı ThemeCustomizer ile kendi tercihini seçebilir.">
+            <Select
               value={spacingDensity}
-              onChange={(e) => {
-                const next = e.target.value as SpacingDensity;
-                setSpacingDensity(next);
-                setPreviewSpacing(next);
+              options={spacingDensities.map((value) => ({ value, label: SPACING_LABELS[value] }))}
+              onChange={(value) => {
+                setSpacingDensity(value as SpacingDensity);
+                setPreviewSpacing(value as SpacingDensity);
               }}
-            >
-              {spacingDensities.map((option) => (
-                <option key={option} value={option}>
-                  {SPACING_LABELS[option]}
-                </option>
-              ))}
-            </select>
-            <p className="studio-field-hint">
-              Tüm yükseklik, iç boşluk ve aralıkları orantılı ölçekler; yazı boyutu değişmez. Son kullanıcı ThemeCustomizer ile kendi tercihini seçebilir — bu, seçim yokken geçerli olan değer.
-            </p>
-          </div>
-        </div>
+            />
+          </Field>
+        </Section>
 
-        <div className="studio-section">
-          <h2 className="studio-section-title">Büyük ekran</h2>
-          <div className="studio-field">
-            <label>
-              <input type="checkbox" checked={fluidScale} onChange={(e) => setFluidScale(e.target.checked)} /> Büyük ekranlarda büyüt
-            </label>
-            <p className="studio-field-hint">
-              Kök yazı boyutu 1920px'ten itibaren ekran genişliğiyle büyür, 4K'de (3840px) aşağıdaki değere ulaşır. Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür; 1920px ve altı değişmez. Bu önizleme panelinde görünmez — ekran genişliğine bağlı.
-            </p>
-          </div>
-          <div className="studio-field">
-            <label htmlFor="fluid-max">4K'de kök yazı boyutu (px)</label>
-            <select id="fluid-max" className="studio-select" value={fluidMax} disabled={!fluidScale} onChange={(e) => setFluidMax(Number(e.target.value))}>
-              {FLUID_MAX_OPTIONS.map((px) => (
-                <option key={px} value={px}>
-                  {px}px (×{(px / 16).toFixed(2)})
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <Section title="Gölge ve hareket">
+          <Field label="Gölge yoğunluğu" hint={'Geometri aynı, koyuluk ölçeklenir. "Yok"ta yüzeyler kenarlıkla ayrışır.'}>
+            <Select value={shadowDensity} options={shadowDensities.map((value) => ({ value, label: SHADOW_LABELS[value] }))} onChange={(value) => setShadowDensity(value as ShadowDensity)} />
+          </Field>
+          <Field label="Hareket" hint={'Geçiş süreleri çarpılır (Sakin ×1,4 · Canlı ×0,85 + hafif taşan eğri · Kapalı anında). "Hareketi azalt" tercihi her zaman geçerli.'}>
+            <Select value={motion} options={motionLevels.map((value) => ({ value, label: MOTION_LABELS[value] }))} onChange={(value) => setMotion(value as MotionLevel)} />
+          </Field>
+        </Section>
 
-        <button className="studio-download-btn" onClick={() => downloadJson("mari-ui.config.json", config)}>
+        <Section title="Büyük ekran">
+          <Switch label="Büyük ekranlarda büyüt" checked={fluidScale} onChange={setFluidScale} />
+          <Text muted className="studio-hint">
+            Kök yazı boyutu 1920px'ten itibaren ekranla büyür, 4K'de (3840px) aşağıdaki değere ulaşır; 1920px ve altı değişmez. Bu önizlemede görünmez — ekran genişliğine bağlı.
+          </Text>
+          <Field label="4K'de kök yazı boyutu" disabled={!fluidScale}>
+            <Select
+              value={fluidMax}
+              disabled={!fluidScale}
+              options={FLUID_MAX_OPTIONS.map((px) => ({ value: px, label: `${px}px (×${(px / 16).toFixed(2)})` }))}
+              onChange={(value) => setFluidMax(Number(value))}
+            />
+          </Field>
+        </Section>
+
+        <Button block icon={<DownloadIcon size={16} aria-hidden />} onClick={() => downloadJson("mari-ui.config.json", config)}>
           mari-ui.config.json indir
-        </button>
+        </Button>
       </aside>
 
       <main className="studio-main">
         <div className="studio-toggle-row">
-          <div className="studio-mode-toggle" role="group" aria-label="Önizleme modu">
-            <button data-active={previewMode === "light"} onClick={() => setPreviewMode("light")}>
-              Açık
-            </button>
-            <button data-active={previewMode === "dark"} onClick={() => setPreviewMode("dark")}>
-              Koyu
-            </button>
-          </div>
-          {/* Son kullanıcının ThemeCustomizer'da seçebileceği yoğunluk — config'e yazılmaz, yalnız önizleme (varsayılanı soldaki config seçimi). */}
-          <div className="studio-mode-toggle" role="group" aria-label="Yoğunluk önizlemesi (son kullanıcı)">
-            {spacingDensities.map((option) => (
-              <button key={option} data-active={previewSpacing === option} onClick={() => setPreviewSpacing(option)}>
-                {SPACING_LABELS[option]}
-              </button>
-            ))}
-          </div>
+          <Segmented aria-label="Önizleme modu" value={previewMode} options={[{ value: "light", label: "Açık" }, { value: "dark", label: "Koyu" }]} onChange={(value) => setPreviewMode(value as "light" | "dark")} />
+          {/* Son kullanıcının ThemeCustomizer'da seçebileceği yoğunluk — config'e yazılmaz, yalnız önizleme. */}
+          <Segmented
+            aria-label="Yoğunluk önizlemesi (son kullanıcı)"
+            value={previewSpacing}
+            options={spacingDensities.map((value) => ({ value, label: SPACING_LABELS[value] }))}
+            onChange={(value) => setPreviewSpacing(value as SpacingDensity)}
+          />
         </div>
 
         <PreviewPanel mode={previewMode} spacing={previewSpacing} cssVars={cssVars} fontFamilySans={fontFamilySans} />
 
-        <div className="studio-section" style={{ marginTop: "2rem" }}>
-          <h2 className="studio-section-title">WCAG Kontrast Kontrolü</h2>
-          <p className="studio-section-hint">
-            Metin için en az 4,5:1; kontrol sınırları ve odak halkası için en az 3:1 kontrast kontrol edilir.
-          </p>
-          <table className="studio-contrast-table">
-            <thead>
-              <tr>
-                <th>Çift</th>
-                <th>Arka plan</th>
-                <th>Metin</th>
-                <th>Oran</th>
-                <th>Sonuç</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ContrastRow label="Gövde metni" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.foreground as HexColor} />
-              <ContrastRow label="Yardımcı metin" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.muted as HexColor} />
-              <ContrastRow label="Alan sınırı (3:1)" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.input as HexColor} threshold={3} />
-              <ContrastRow label="Odak halkası (3:1)" bg={activeTheme.color.canvas.surface as HexColor} fg={activeTheme.color.canvas.ring as HexColor} threshold={3} />
-              <ContrastRow label="primary hover" bg={activeTheme.color.primary.solidHover} fg={activeTheme.color.primary.solidContrast} />
-              <ContrastRow label="primary solid" bg={activeTheme.color.primary.solid} fg={activeTheme.color.primary.solidContrast} />
-              <ContrastRow label="primary subtle" bg={activeTheme.color.primary.subtle} fg={activeTheme.color.primary.subtleContrast} />
-              <ContrastRow label="accent solid" bg={activeTheme.color.accent.solid} fg={activeTheme.color.accent.solidContrast} />
-              <ContrastRow label="accent subtle" bg={activeTheme.color.accent.subtle} fg={activeTheme.color.accent.subtleContrast} />
-            </tbody>
-          </table>
-        </div>
+        <Section title="WCAG kontrast kontrolü" hint="Metin için en az 4,5:1; kontrol sınırları ve odak halkası için en az 3:1.">
+          <Table<ContrastRowData> label="Kontrast oranları" data={contrastRows} columns={CONTRAST_COLUMNS} />
+        </Section>
 
-        <div className="studio-section">
-          <h2 className="studio-section-title">mari-ui.config.json önizleme</h2>
+        <Section title="mari-ui.config.json önizleme">
           <pre className="studio-json-preview">{JSON.stringify(config, null, 2)}</pre>
-        </div>
+        </Section>
       </main>
     </div>
   );
 }
+
+/** Kenar çubuğu / ana alan bölümü: başlık + isteğe bağlı açıklama + içerik. */
+function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+  return (
+    <section className="studio-section">
+      <Title level={6}>{title}</Title>
+      {hint ? <Text muted className="studio-hint">{hint}</Text> : null}
+      <div className="studio-section-body">{children}</div>
+    </section>
+  );
+}
+
+interface ContrastRowData {
+  id: string;
+  label: string;
+  bg: string;
+  fg: string;
+  ratio: string;
+  pass: boolean;
+}
+
+function contrastRow(id: string, label: string, bg: string, fg: string, threshold = 4.5): ContrastRowData {
+  return { id, label, bg, fg, ratio: `${contrastRatio(bg as HexColor, fg as HexColor).toFixed(2)}:1`, pass: meetsAA(bg as HexColor, fg as HexColor, threshold) };
+}
+
+const swatch = (color: string) => (
+  <span className="studio-swatch-cell">
+    <span className="studio-swatch" style={{ background: color }} aria-hidden />
+    {color}
+  </span>
+);
+
+const CONTRAST_COLUMNS: ColumnDef<ContrastRowData>[] = [
+  { header: "Çift", columnName: "label" },
+  { header: "Arka plan", columnName: "bg", render: (_, row) => swatch(row.bg) },
+  { header: "Metin", columnName: "fg", render: (_, row) => swatch(row.fg) },
+  { header: "Oran", columnName: "ratio", align: "end" },
+  { header: "Sonuç", columnName: "pass", render: (_, row) => <Tag color={row.pass ? "success" : "error"}>{row.pass ? "AA ✓" : "AA ✗"}</Tag> },
+];

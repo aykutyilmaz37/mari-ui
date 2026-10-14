@@ -93,7 +93,7 @@ function VerticalRow({ item, last, nextLoading, side, threeColumn, balanced, opp
   // Karşı sütun (opposite başlığı) içeriği kadar, en az 48; gövde sütunu esner.
   const sideCol = (node: React.ReactNode, isBody: boolean, align: "flex-start" | "flex-end") => <View style={[isBody || balanced ? { flex: 1, minWidth: 0 } : { minWidth: 48, maxWidth: "35%" }, { alignItems: align }]}>{node}</View>;
   return (
-    <View style={{ flexDirection: "row", gap: 12 }}>
+    <View role="listitem" style={{ flexDirection: "row", gap: 12 }}>
       {threeColumn || side === "before" ? sideCol(left, side === "before", "flex-end") : null}
       <View style={{ width: RAIL, alignItems: "center" }}>
         {/* İşaret ilk metin satırının ortasına hizalı. */}
@@ -112,7 +112,7 @@ const H_ITEM = 168;
 /** Yatay: üstte işaret + sağa ray, altında başlık ve içerik. */
 function HorizontalItem({ item, last, nextLoading, ctx }: Omit<RowProps, "side" | "threeColumn" | "balanced" | "opposite">) {
   return (
-    <View style={{ width: H_ITEM, gap: 8 }}>
+    <View role="listitem" style={{ width: H_ITEM, gap: 8 }}>
       <View style={{ flexDirection: "row", alignItems: "center", height: 20, gap: 6 }}>
         <View style={{ width: 20, alignItems: "center" }}>
           <Marker item={item} ctx={ctx} />

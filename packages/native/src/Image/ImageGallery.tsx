@@ -415,10 +415,13 @@ function GalleryTile({ item, index, cell, loader, selection, onOpen, onLongPress
   );
 }
 
+/** Fotoğrafa bağlı, temadan bağımsız: en açık karede bile beyaz metin AA'yı geçer. */
+const VIDEO_BADGE_BG = "rgba(0, 0, 0, 0.72)";
+
 function VideoBadge({ duration }: { duration?: number }) {
   const theme = useTheme();
   return (
-    <View pointerEvents="none" style={{ position: "absolute", right: 4, bottom: 4, flexDirection: "row", alignItems: "center", gap: 2, borderRadius: 4, paddingHorizontal: 4, backgroundColor: scrimColor(theme) }}>
+    <View pointerEvents="none" style={{ position: "absolute", right: 4, bottom: 4, flexDirection: "row", alignItems: "center", gap: 2, borderRadius: 4, paddingHorizontal: 4, backgroundColor: VIDEO_BADGE_BG }}>
       <PlayIcon size={12} color="#fff" />
       {duration !== undefined ? <Text style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: 12, lineHeight: 16, fontWeight: "500", color: "#fff", fontVariant: ["tabular-nums"] }}>{formatDuration(duration)}</Text> : null}
     </View>

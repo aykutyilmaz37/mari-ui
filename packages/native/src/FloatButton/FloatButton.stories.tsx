@@ -7,7 +7,7 @@ import { useAppBarScroll } from "../AppBar";
 import { ListItem, ListItemMeta } from "../List";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
 
 const meta: Meta<typeof FloatButton> = {
   title: "Native/Genel/FloatButton",
@@ -41,7 +41,7 @@ function Screen({ children, height = 300 }: { children: React.ReactNode; height?
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc("Tüm prop'ları canlı deneyin.", (args) => `<FloatButton ${jsxProps(args, { skip: ["icon"] })} icon={({ color, size }) => <Plus color={color} size={size} />} accessibilityLabel="Yeni" onPress={create} />`),
   render: (args) => (
     <Screen>
       <FloatButton {...args} icon={icon(Plus)} accessibilityLabel="Yeni" />
@@ -65,7 +65,7 @@ export const Support: Story = {
 
 export const Extended: Story = {
   name: "Genişletilmiş (label)",
-  ...storyDoc("`label`: ikon + metin, hap şeklinde — ilk kez gelen kullanıcıya eylemi açıkça söyler. Liste kaydırılınca `label`ı kaldırıp daraltmak yaygın kalıptır.", `<FloatButton color="primary" icon={…} label="Yeni gönderi" />`),
+  ...storyDoc("`label`: ikon + metin, hap şeklinde — ilk kez gelen kullanıcıya eylemi açıkça söyler. Liste kaydırılınca `label`ı kaldırıp daraltmak yaygın kalıptır.", `<FloatButton color="primary" icon={({ color, size }) => <Pencil color={color} size={size} />} label="Yeni gönderi" onPress={openComposer} />`),
   render: () => (
     <Screen height={200}>
       <FloatButton color="primary" icon={icon(Pencil)} label="Yeni gönderi" onPress={() => undefined} />
@@ -75,10 +75,10 @@ export const Extended: Story = {
 
 export const QuickActions: Story = {
   name: "Hızlı İşlemler (Menü)",
-  ...storyDoc("`FloatButtonGroup trigger=\"click\"`: ana düğme menüyü açar, ikonu × olur; öğeler etiketleriyle (`tooltip`) sırayla çıkar. Öğeye dokununca menü kapanır.", `<FloatButtonGroup trigger="click" icon={…} accessibilityLabel="Oluştur">
-  <FloatButton icon={…} tooltip="Fotoğraf" onPress={…} />
-  <FloatButton icon={…} tooltip="Belge" onPress={…} />
-  <FloatButton icon={…} tooltip="Kişi ekle" onPress={…} />
+  ...storyDoc("`FloatButtonGroup trigger=\"click\"`: ana düğme menüyü açar, ikonu × olur; öğeler etiketleriyle (`tooltip`) sırayla çıkar. Öğeye dokununca menü kapanır.", `<FloatButtonGroup trigger="click" icon={({ color, size }) => <Plus color={color} size={size} />} accessibilityLabel="Oluştur">
+  <FloatButton icon={({ color, size }) => <Camera color={color} size={size} />} tooltip="Fotoğraf" onPress={takePhoto} />
+  <FloatButton icon={({ color, size }) => <FileText color={color} size={size} />} tooltip="Belge" onPress={pickDocument} />
+  <FloatButton icon={({ color, size }) => <UserPlus color={color} size={size} />} tooltip="Kişi ekle" onPress={addContact} />
 </FloatButtonGroup>`),
   render: () => (
     <Screen height={360}>
@@ -94,8 +94,8 @@ export const QuickActions: Story = {
 export const SquareGroup: Story = {
   name: "Yardım + Sohbet (Kare Grup)",
   ...storyDoc("`shape=\"square\"` grup: kare düğmeler alt alta, `description` ikonun altında.", `<FloatButtonGroup shape="square">
-  <FloatButton icon={…} description="Yardım" />
-  <FloatButton icon={…} description="Sohbet" badge={{ dot: true }} />
+  <FloatButton icon={({ color, size }) => <HelpCircle color={color} size={size} />} description="Yardım" onPress={openHelp} />
+  <FloatButton icon={({ color, size }) => <MessageCircle color={color} size={size} />} description="Sohbet" badge={{ dot: true }} onPress={openChat} />
 </FloatButtonGroup>`),
   render: () => (
     <Screen height={260}>
@@ -128,10 +128,11 @@ function BackTopDemo() {
 
 export const BackToTop: Story = {
   name: "Başa Dön",
-  ...storyDoc("`BackTop`: `visibilityHeight` kadar kaydırılınca solarak belirir; dokununca başa dönme işini siz yaparsınız (`scrollTo` / `scrollToOffset`).", `const { scrollY, onScroll } = useAppBarScroll();
+  ...storyDoc("`BackTop`: `visibilityHeight` kadar kaydırılınca solarak belirir; dokununca başa dönme işini siz yaparsınız (`scrollTo` / `scrollToOffset`).", `const listRef = useRef<FlatList>(null);
+const { scrollY, onScroll } = useAppBarScroll();
 
-<Animated.FlatList ref={listRef} onScroll={onScroll} … />
-<BackTop scrollY={scrollY} visibilityHeight={300} icon={…} onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })} />`),
+<Animated.FlatList ref={listRef} data={messages} renderItem={({ item }) => <Text>{item.title}</Text>} onScroll={onScroll} />
+<BackTop scrollY={scrollY} visibilityHeight={300} icon={({ color, size }) => <ArrowUp color={color} size={size} />} onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })} />`),
   render: () => <BackTopDemo />,
 };
 
@@ -151,7 +152,7 @@ export const Variants: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Düğme kendi şeklinde yer tutucu, dokunulamaz.", `<FloatButton skeleton={isLoading} … />`),
+  ...storyDoc(SKELETON_STORY_DOC + " Düğme kendi şeklinde yer tutucu, dokunulamaz.", `<FloatButton floating={false} skeleton={isLoading} color="primary" icon={({ color, size }) => <Pencil color={color} size={size} />} label="Yeni gönderi" />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

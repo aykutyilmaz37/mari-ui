@@ -97,11 +97,23 @@ export const SignupForm: Story = {
     "Hatalar \"Hesap oluştur\"a basınca görünür ve alanlara bağlanır; düzelttikçe kaybolur. Doğrulama story'nin kendi " +
       "basit fonksiyonu — gerçek projede react-hook-form/zod. Field yalnız `error`ı gösterir.",
     `
+const [email, setEmail] = useState("");
+const [country, setCountry] = useState<string | number | null>(null);
+const errors = {
+  email: email.includes("@") ? undefined : "Geçerli bir e-posta girin",
+  country: country === null ? "Ülke seçin" : undefined,
+};
+
 <Field label="E-posta" hint="Faturalar bu adrese gelir" required error={errors.email}>
-  <Input type="email" value={email} onChange={…} />
+  <Input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
 </Field>
 <Field label="Ülke" required error={errors.country}>
-  <Select showSearch options={countries} value={country} onChange={setCountry} />
+  <Select
+    showSearch
+    options={[{ value: "TR", label: "Türkiye" }, { value: "DE", label: "Almanya" }, { value: "NL", label: "Hollanda" }]}
+    value={country}
+    onChange={setCountry}
+  />
 </Field>
 <Field label="Ekip büyüklüğü" hint="Planı buna göre öneririz">
   <InputNumber min={1} max={500} precision={0} />
@@ -203,7 +215,25 @@ export const AllControls: Story = {
   ...storyDoc(
     "Tek alanlı kontroller `<label htmlFor>` ile, gruplar (RadioGroup, Segmented, kutucuklu OtpInput) grubun adıyla " +
       "bağlanır. Hata ve devre dışı her birinde. Switch/Checkbox gibi kendi etiketi olanlarda Field gerekmez.",
-    `<Field label="Teslimat" error="Bir seçenek seçin"><RadioGroup options={…} /></Field>`
+    `
+<Field label="Not" hint="İsteğe bağlı">
+  <Textarea rows={2} />
+</Field>
+<Field label="Adet" error="Stokta en fazla 8 adet var">
+  <InputNumber defaultValue={12} max={8} />
+</Field>
+<Field label="Teslimat" required error="Bir teslimat seçeneği seçin">
+  <RadioGroup options={["Standart", "Hızlı (+49 ₺)"]} />
+</Field>
+<Field label="Faturalama" hint="Yıllıkta %20 indirim">
+  <Segmented options={["Aylık", "Yıllık"]} />
+</Field>
+<Field label="Doğrulama kodu" hint="Telefonunuza gelen 4 haneli kod">
+  <OtpInput length={4} />
+</Field>
+<Field label="Ülke" disabled hint="Hesap ülkesi değiştirilemez">
+  <Select defaultValue="TR" options={[{ value: "TR", label: "Türkiye" }, { value: "DE", label: "Almanya" }]} />
+</Field>`
   ),
   render: () => (
     <div className="grid max-w-3xl gap-x-6 gap-y-5 sm:grid-cols-2">
@@ -236,7 +266,7 @@ export const AllControls: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Field label="Ad soyad" hint="…" skeleton>
+  ...storyDoc(SKELETON_STORY_DOC, `<Field label="Ad soyad" hint="Faturada görünecek ad." skeleton>
   <Input />
 </Field>`),
   render: () => <SkeletonDemo>{(skeleton) => (

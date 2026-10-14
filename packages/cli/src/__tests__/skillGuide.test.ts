@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lightTheme } from "@mari-ui/tokens";
+import { lightTheme, resolveThemeConfig } from "@mari-ui/tokens";
 import { buildRulesContent, buildSkillContent } from "../buildRulesContent";
 import { loadManifest } from "../manifest";
 import { GUIDE_COMPONENTS, MUST_RULES, SKILL_GUIDE } from "../skillGuide";
@@ -42,5 +42,23 @@ describe("Faz 17 — kesin kurallar ve skill rehberi", () => {
     expect(claudeMd.body).toContain(".claude/skills/mari-ui/SKILL.md");
     for (const r of MUST_RULES) expect(claudeMd.body).toContain(r.title);
     expect(claudeMd.body).not.toContain("## Component envanteri");
+  });
+});
+
+describe("Faz 21 — kişilik ve serbest alanlar", () => {
+  const manifest = loadManifest(process.cwd(), REAL_MANIFEST_PATH);
+
+  it("kurallar serbest alanları ve projenin kişiliğini anlatır", () => {
+    const rules = buildRulesContent({ manifest, theme: resolveThemeConfig({ persona: "luxury" }).light, persona: "luxury" });
+    expect(rules).toContain("## Serbest alanlar");
+    expect(rules).toContain("**Lüks** (`luxury`)");
+    expect(rules).toContain("Cormorant Garamond");
+  });
+
+  it("kişilik yoksa varsayılan anlatılır; SKILL tasarım brief'i adımını içerir", () => {
+    const skill = buildSkillContent({ manifest, theme: lightTheme });
+    expect(skill).toContain("Varsayılan (Yumuşak iris)");
+    expect(skill).toContain("### Proje tasarım brief'i");
+    expect(skill).toContain("init --persona");
   });
 });

@@ -106,7 +106,19 @@ export const GUIDE_COMPONENTS = [
 
 export const SKILL_GUIDE = `## Sayfa kurma rehberi (öneri)
 
-Aşağıdakiler öneri: projenin ihtiyacı farklıysa sapabilirsin, ama yukarıdaki kesin kurallar her zaman geçerli.
+Aşağıdakiler öneri: projenin ihtiyacı ve kişiliği farklıysa sapabilirsin (bkz. Serbest alanlar), ama yukarıdaki kesin kurallar her zaman geçerli.
+
+### Proje tasarım brief'i (yeni projede ya da ilk sayfada bir kez)
+
+Kopya görünümün kaynağı component'ler değil, her projede aynı tema + aynı sayfa iskeletidir. Bu yüzden ilk sayfadan önce kısa bir brief çıkar (kullanıcıya sor ya da isteğinden türet ve onaylat):
+
+1. **Hedef kitle ve amaç:** kim kullanacak, ne yapmaya geliyor (B2B panel, tüketici uygulaması, içerik sitesi, marka vitrini…).
+2. **Ton:** güven veren / enerjik / sade / okumaya odaklı / prestijli.
+3. **Referanslar:** kullanıcının beğendiği 2–3 site ya da uygulama; neyini beğendiği (renk, tipografi, boşluk, hareket).
+4. **Kişilik seç:** tona en yakın kişilik — \`corporate\` (Kurumsal), \`playful\` (Oyunbaz), \`minimal\` (Minimal), \`editorial\` (Editoryal), \`luxury\` (Lüks) ya da varsayılan. \`npx mari-ui init --persona <ad>\` (ya da \`mari-ui.config.json\`'a \`"persona"\`), marka rengi farklıysa yalnız \`color.primary\`'yi ez; sonra \`npx mari-ui theme\` ve \`npx mari-ui sync\`.
+5. **Düzen yönü:** kişiliğe uygun bir sayfa dili seç ve tüm sayfalarda tutarlı uygula — ör. Editoryal: geniş tipografik başlık, dar okuma sütunu, az kart; Oyunbaz: büyük yuvarlak kartlar, renkli vurgular, canlı giriş hareketleri; Kurumsal: sıkı tablolar, yan menü, az süs; Minimal: bol boşluk, çerçevesiz bölümler; Lüks: büyük görsel alanlar, serif başlık, yavaş geçişler.
+
+Brief'i projenin README'sine (ya da bir \`docs/design-brief.md\`ye) kısa not olarak yaz; sonraki sayfalar ona uysun.
 
 ### Bir sayfa isteğinde iş akışı
 
@@ -156,6 +168,7 @@ Aşağıdakiler öneri: projenin ihtiyacı farklıysa sapabilirsin, ama yukarıd
 
 ### Tema ve ölçek
 
+- Tasarım kişiliği (\`persona\`) renk, font, köşe, boşluk, gölge ve hareketi birlikte seçer; config'te açıkça yazılan alanlar onu ezer.
 - Renkleri, fontları, köşe yuvarlaklığını, varsayılan yoğunluğu ve büyük ekran ölçeğini \`mari-ui.config.json\` belirler; değişince \`npx mari-ui theme\` ve \`npx mari-ui sync\`. Kodda tema değeri sabitleme.
 - Son kullanıcının görünüm tercihi (mod, vurgu rengi, yoğunluk) için \`ThemeCustomizer\` + \`saveTheme\`/\`loadTheme\`; açılışta yanıp sönmeyi önlemek için \`getThemeScript()\` çıktısını \`<head>\`e satır içi script olarak koy.
 - Koyu modu ayrıca kodlama: token sınıfları her iki modda doğru renge döner; \`dark:\` varyantı gerekmez.

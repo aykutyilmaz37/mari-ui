@@ -126,7 +126,9 @@ export const LongContent: Story = {
 
 export const Sizes: Story = {
   name: "Boyutlar",
-  ...storyDoc("sm 320 · md 400 · lg 520; telefonda ekran genişliğini aşmaz (16pt kenar boşluğu).", `<Modal size="sm" … />`),
+  ...storyDoc("sm 320 · md 400 · lg 520; telefonda ekran genişliğini aşmaz (16pt kenar boşluğu).", `<Modal open={open} onClose={close} size="sm" title="Boyut sm" confirmButtonText="Tamam" onConfirm={close}>Pencere genişliği boyuta göre değişir.</Modal>
+<Modal open={open} onClose={close} size="md" title="Boyut md" confirmButtonText="Tamam" onConfirm={close}>Pencere genişliği boyuta göre değişir.</Modal>
+<Modal open={open} onClose={close} size="lg" title="Boyut lg" confirmButtonText="Tamam" onConfirm={close}>Pencere genişliği boyuta göre değişir.</Modal>`),
   render: () => (
     <Row>
       {(["sm", "md", "lg"] as const).map((size) => (
@@ -140,7 +142,9 @@ export const Sizes: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Önce durumu seçin, sonra pencereyi açın.", `<Modal open={open} title="Sipariş #48213" description="3 ürün · ₺1.240" skeleton={isLoading}>…</Modal>`),
+  ...storyDoc(SKELETON_STORY_DOC + " Önce durumu seçin, sonra pencereyi açın.", `<Modal open={open} onClose={close} title="Sipariş #48213" description="3 ürün · ₺1.240" skeleton={isLoading} confirmButtonText="Takip et" onConfirm={close}>
+  <Text>Kargo yarın teslim edilecek.</Text>
+</Modal>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

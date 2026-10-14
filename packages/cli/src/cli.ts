@@ -2,6 +2,7 @@
 import { runInit } from "./init";
 import { ALL_AGENTS, syncAgentRules, type AgentName } from "./sync";
 import { runThemeCommand } from "./theme";
+import { personaNames, personas, type PersonaName } from "@mari-ui/tokens";
 
 /**
  * Kasıtlı olarak hiçbir argv-parsing kütüphanesi (commander/yargs/...) YOK —
@@ -19,6 +20,14 @@ interface ParsedArgs {
   config?: string;
   out?: string;
   manifest?: string;
+  persona?: PersonaName;
+}
+
+function parsePersona(value: string | undefined): PersonaName | undefined {
+  if (value && (personaNames as readonly string[]).includes(value)) return value as PersonaName;
+  console.warn(`[@mari-ui/cli] Bilinmeyen kişilik: ${value ?? "(boş)"}. Geçerli: ${personaNames.join(", ")}`);
+  process.exitCode = 1;
+  return undefined;
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -49,6 +58,9 @@ function parseArgs(argv: string[]): ParsedArgs {
       case "--manifest":
         parsed.manifest = rest[++i];
         break;
+      case "--persona":
+        parsed.persona = parsePersona(rest[++i]);
+        break;
       default:
         console.warn(`[@mari-ui/cli] Bilinmeyen bayrak yok sayıldı: ${arg}`);
     }
@@ -71,6 +83,9 @@ function printHelp() {
       "  --dir <yol>       Hedef proje kökü (varsayılan: mevcut dizin)",
       "  --agents <liste>  Virgülle ayrılmış: claude,codex,cursor,gemini,copilot (varsayılan: hepsi)",
       "  --check           Hiçbir şey YAZMAZ; bayat dosya varsa çıkış kodu 1 (CI için)",
+      "",
+      "init bayrakları:",
+      "  --persona <ad>    Tasarım kişiliği: " + personaNames.map((n) => n + " (" + personas[n].label + ")").join(", "),
     ].join("\n")
   );
 }
@@ -81,17 +96,24 @@ function printHelp() {
  * karmaşıklık 25'e çıkıp izin verilen 15'i aşıyordu.
  */
 function runInitCommand(args: ParsedArgs) {
-  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest });
+  if (process.exitCode) return;
+  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, persona: args.persona });
   if (result.addedDependencies.length > 0) {
     console.log(`✓ package.json'a eklendi: ${result.addedDependencies.join(", ")}`);
   }
-  console.log(result.configCreated ? `✓ ${result.configPath} oluşturuldu.` : `• ${result.configPath} zaten vardı, dokunulmadı.`);
+  console.log(configMessage(result));
   if (result.ruleFiles) {
     console.log(`✓ AI ajan kural dosyaları yazıldı: ${result.ruleFiles.changed.join(", ") || "(hepsi zaten güncel)"}`);
   } else {
     console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx mari-ui sync");
   }
   console.log('\nSon adım: "@mari-ui/components/styles.css"i projenizin global CSS giriş noktasına import edin.');
+}
+
+function configMessage(result: ReturnType<typeof runInit>): string {
+  if (result.configCreated) return `✓ ${result.configPath} oluşturuldu.`;
+  if (result.configUpdated) return `✓ ${result.configPath} içinde kişilik güncellendi (diğer alanlara dokunulmadı).`;
+  return `• ${result.configPath} zaten vardı, dokunulmadı.`;
 }
 
 function runSyncCommand(args: ParsedArgs) {
@@ -112,6 +134,7 @@ function runThemeCliCommand(args: ParsedArgs) {
   if (!args.check) {
     console.log(`✓ Yazıldı: ${result.cssPath}`);
     console.log(`✓ Yazıldı: ${result.themeTsPath}`);
+    if (result.fontsUrl) console.log(`\nKişilik fontları (web): <link rel="stylesheet" href="${result.fontsUrl}">`);
     return;
   }
   if (result.stale) {

@@ -114,7 +114,7 @@ export function PieChart({
       emptyText={emptyText}
       legend={legend}
       legendPosition="bottom"
-      table={{ columns: ["", "Değer", "Oran"], rows: arcs.map((a) => [a.name, fmt.value(a.value), percent.format(a.value / total)]) }}
+      table={{ columns: ["Dilim", "Değer", "Oran"], rows: arcs.map((a) => [a.name, fmt.value(a.value), percent.format(a.value / total)]) }}
       tooltip={tooltip}
       plotRef={plotRef}
       plotWidth={size.width}

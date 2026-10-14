@@ -268,7 +268,15 @@ export const Equalizer: Story = {
 export const IconMarks: Story = {
   name: "İkonlu İşaretler",
   ...storyDoc("`iconList` — geçilen noktalar rol renginde, ilerideki noktalar soluk.", `
-<Slider defaultValue={60} aria-label="Ses" iconList={[{ icon: <VolumeXIcon />, value: 0 }, …]} />`),
+<Slider
+  defaultValue={60}
+  aria-label="Ses"
+  iconList={[
+    { icon: <VolumeXIcon size={16} />, value: 0 },
+    { icon: <Volume1Icon size={16} />, value: 50 },
+    { icon: <Volume2Icon size={16} />, value: 100 },
+  ]}
+/>`),
   args: {
     defaultValue: 60,
     "aria-label": "Ses düzeyi",

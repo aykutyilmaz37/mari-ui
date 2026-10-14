@@ -95,7 +95,7 @@ export function BarChart<T>({
       emptyText={emptyText}
       legend={legend}
       table={{
-        columns: ["", ...series.map((s) => s.name)],
+        columns: [String(xKey), ...series.map((s) => s.name)],
         rows: data.map((row, i) => [categories[i]!, ...series.map((s) => fmt.value(num(row[s.key])))]),
       }}
       tooltip={active !== null && data[active] ? tooltipAt(active) : null}

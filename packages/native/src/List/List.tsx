@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
 import type { Size } from "@mari-ui/core";
 import { Button } from "../Button";
 import { useNativeConfig } from "../nativeConfig";
@@ -107,6 +107,11 @@ function renderListSlot(slot: React.ComponentType | React.ReactElement | null | 
   return React.isValidElement(slot) ? slot : React.createElement(slot);
 }
 
+/** Alt bilgi / boş durum da `list` rolünün çocuğu: liste öğesi olarak sarılır. */
+function asListItem(slot: React.ComponentType | React.ReactElement | null | undefined) {
+  return slot == null ? undefined : <View role="listitem">{renderListSlot(slot)}</View>;
+}
+
 function ListInner<ItemT>(
   {
     data,
@@ -180,11 +185,12 @@ function ListInner<ItemT>(
         ref={ref}
         data={skeleton ? [] : data}
         renderItem={({ item, index }) => (skeleton ? null : renderItem(item, index))}
+        CellRendererComponent={ListCell}
         keyExtractor={keyExtractor}
         ItemSeparatorComponent={separator}
         ListHeaderComponent={ListHeaderComponent}
-        ListFooterComponent={footerComponent}
-        ListEmptyComponent={emptyComponent}
+        ListFooterComponent={asListItem(footerComponent)}
+        ListEmptyComponent={asListItem(emptyComponent)}
         onEndReached={(info) => {
           onEndReached?.(info);
           requestMore();
@@ -202,6 +208,11 @@ function ListInner<ItemT>(
 export const List = React.forwardRef(ListInner) as <ItemT>(props: ListProps<ItemT> & React.RefAttributes<FlatList<ItemT>>) => React.ReactElement;
 
 /** A padded row rendered by `List`. */
+/** Her hücre bir liste öğesi: `list` rolünün altında `listitem` (web'de ekran okuyucu "öğe 3/12" der). */
+function ListCell(props: ViewProps) {
+  return <View {...props} role="listitem" />;
+}
+
 export function ListItem({ children, actions, extra, style, ...viewProps }: ListItemProps) {
   const config = useNativeConfig();
   const { size, itemLayout } = useContext(ListContext);

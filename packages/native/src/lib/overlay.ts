@@ -1,6 +1,7 @@
 import type { ViewStyle } from "react-native";
 import type { Theme } from "@mari-ui/tokens";
 import { nativeColor } from "../theme/nativeColor";
+import { shadowStyle } from "../theme/effects";
 
 /** Pencere arkasındaki karartma — token RN'nin anladığı biçimde. */
 export function scrimColor(theme: Theme): string {
@@ -17,10 +18,6 @@ export function overlaySurface(theme: Theme): ViewStyle {
     backgroundColor: theme.color.canvas.surface,
     borderWidth: 1,
     borderColor: theme.color.canvas.border,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 12 },
-    elevation: 12,
+    ...shadowStyle(theme, { opacity: 0.2, radius: 24, offsetY: 12, elevation: 12 }),
   };
 }

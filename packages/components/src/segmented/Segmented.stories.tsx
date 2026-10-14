@@ -183,7 +183,12 @@ export const BillingCycle: Story = {
 
 export const Appearance: Story = {
   name: "Boyutlar ve Durumlar",
-  ...storyDoc("sm / md / lg (24 / 32 / 40px), devre dışı seçenek, tümü devre dışı, iskelet.", `<Segmented size="sm" options={…} />`),
+  ...storyDoc("sm / md / lg (24 / 32 / 40px), devre dışı seçenek, tümü devre dışı, iskelet.", `
+<Segmented size="sm" aria-label="Dönem" options={["Gün", "Hafta", "Ay"]} defaultValue="Hafta" />
+<Segmented size="md" aria-label="Dönem" options={["Gün", "Hafta", "Ay"]} defaultValue="Hafta" />
+<Segmented size="lg" aria-label="Dönem" options={["Gün", "Hafta", "Ay"]} defaultValue="Hafta" />
+<Segmented aria-label="Plan" options={[{ value: "free", label: "Ücretsiz" }, { value: "pro", label: "Pro", disabled: true }, { value: "team", label: "Ekip" }]} />
+<Segmented aria-label="Dönem" options={["Gün", "Hafta", "Ay"]} disabled />`),
   render: () => (
     <div className="flex flex-col items-start gap-4">
       {(["sm", "md", "lg"] as const).map((size) => (

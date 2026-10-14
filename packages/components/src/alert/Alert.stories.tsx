@@ -141,7 +141,19 @@ export const SavedClosable: Story = {
   ...storyDoc(
     "Kaydedince formun üstünde başarı mesajı; kullanıcı kapatabilir (`closable`, `onClose`). Kısa ve kendiliğinden " +
       "kaybolacaksa Toast daha uygun — burada ayrıntı (hangi cihazlar) okunması gereken bir bilgi.",
-    `{saved && <Alert color="success" closable onClose={() => setSaved(false)} title="Bildirim ayarları kaydedildi" description="…" />}`
+    `
+const [saved, setSaved] = useState(false);
+
+{saved && (
+  <Alert
+    color="success"
+    closable
+    onClose={() => setSaved(false)}
+    title="Bildirim ayarları kaydedildi"
+    description="Değişiklikler 2 cihazınızda da (iPhone, MacBook) bir dakika içinde geçerli olur."
+  />
+)}
+<Button onClick={() => setSaved(true)}>Kaydet</Button>`
   ),
   render: () => {
     const [saved, setSaved] = useState(false);
@@ -168,7 +180,12 @@ export const SavedClosable: Story = {
 
 export const Colors: Story = {
   name: "Renkler",
-  ...storyDoc("Dört durum + başlıksız kısa mesaj.", `<Alert color="info" title="…" description="…" />`),
+  ...storyDoc("Dört durum + başlıksız kısa mesaj.", `
+<Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." />
+<Alert color="success" title="Alan adı doğrulandı" description="mari-ui.com artık e-posta gönderebilir." />
+<Alert color="warning" title="Depolamanın %90'ı dolu" description="Eski dosyaları silin ya da planınızı yükseltin." />
+<Alert color="error" title="Senkronizasyon başarısız" description="Son 2 saatteki değişiklikler eşitlenmedi." />
+<Alert color="neutral" description="Bu proje arşivlendi; yalnız görüntüleyebilirsiniz." />`),
   render: () => (
     <div className="flex max-w-xl flex-col gap-3">
       <Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." />
@@ -184,6 +201,6 @@ export const Colors: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Alert color="info" title="Planlı bakım" description="…" skeleton />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." skeleton />`),
   render: () => <SkeletonDemo>{(skeleton) => <Alert color="info" title="Planlı bakım" description="Cumartesi 02:00–04:00 arasında raporlar güncellenmeyecek." skeleton={skeleton} />}</SkeletonDemo>,
 };

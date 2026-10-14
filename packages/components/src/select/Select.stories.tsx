@@ -248,13 +248,27 @@ export const PaymentMethod: Story = {
     "Seçenekler `{ label, options }` ile gruplanır — ekran okuyucu \"Kart grubu, Kredi kartı\" diye okur. Kullanılamayan " +
       "seçenek `disabled` + nedeni `description`da; klavye gezinmesi onu atlar.",
     `
-<Select
-  defaultValue="credit"
-  options={[
-    { label: "Kart", options: [{ value: "credit", label: "Kredi kartı", description: "Taksit seçenekli", icon: <CreditCardIcon /> }, …] },
-    { label: "Diğer", options: [{ value: "cod", label: "Kapıda ödeme", disabled: true, … }, …] },
-  ]}
-/>`
+<Field label="Ödeme yöntemi">
+  <Select
+    defaultValue="credit"
+    options={[
+      {
+        label: "Kart",
+        options: [
+          { value: "credit", label: "Kredi kartı", description: "Taksit seçenekli", icon: <CreditCardIcon aria-hidden /> },
+          { value: "debit", label: "Banka kartı", icon: <CreditCardIcon aria-hidden /> },
+        ],
+      },
+      {
+        label: "Diğer",
+        options: [
+          { value: "transfer", label: "Havale / EFT", description: "1 iş günü içinde onaylanır", icon: <LandmarkIcon aria-hidden /> },
+          { value: "cod", label: "Kapıda ödeme", description: "Bu teslimat adresinde kullanılamıyor", icon: <BanknoteIcon aria-hidden />, disabled: true },
+        ],
+      },
+    ]}
+  />
+</Field>`
   ),
   render: () => (
     <div className="max-w-sm">
@@ -277,7 +291,19 @@ export const Appearance: Story = {
   name: "Boyut ve Görünüm",
   ...storyDoc(
     "Boyut, varyant ve şekil Input'la aynı ölçekten — bir formda Input ile yan yana aynı hizada durur.",
-    `<Select size="sm" variant="soft" options={…} />`
+    `
+const statuses = [
+  { value: "draft", label: "Taslak" },
+  { value: "review", label: "İncelemede" },
+  { value: "published", label: "Yayında" },
+];
+
+<Select size="sm" aria-label="Durum" defaultValue="review" options={statuses} />
+<Select size="lg" aria-label="Durum" defaultValue="review" options={statuses} />
+<Select variant="soft" aria-label="Durum" placeholder="Durum seçin" options={statuses} />
+<Select variant="ghost" aria-label="Durum" placeholder="Durum seçin" options={statuses} />
+<Select variant="underlined" aria-label="Durum" placeholder="Durum seçin" options={statuses} />
+<Select shape="pill" aria-label="Durum" defaultValue="published" options={statuses} />`
   ),
   render: () => (
     <div className="grid max-w-2xl gap-4 sm:grid-cols-3">
@@ -298,10 +324,18 @@ export const States: Story = {
     "Doğrulama hatası: `Field`'a `error` verin — Select kırmızı kenarlık + `aria-invalid` alır, hata metni ona bağlanır " +
       "(Field dışında: `color=\"error\"` + kendi `aria-describedby`niz). Devre dışı.",
     `
+const statuses = [
+  { value: "draft", label: "Taslak" },
+  { value: "review", label: "İncelemede" },
+  { value: "published", label: "Yayında" },
+];
+
 <Field label="Kategori" error="Bir kategori seçin">
-  <Select options={…} />
+  <Select options={statuses} />
 </Field>
-<Select disabled … />`
+<Field label="Durum" hint="Yayındaki içerik değiştirilemez">
+  <Select disabled defaultValue="published" options={statuses} />
+</Field>`
   ),
   render: () => (
     <div className="grid max-w-2xl gap-4 sm:grid-cols-2">
@@ -319,6 +353,6 @@ export const States: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Select options={cities} defaultValue="istanbul" skeleton />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Select aria-label="Şehir" options={[{ value: "istanbul", label: "İstanbul" }, { value: "ankara", label: "Ankara" }]} defaultValue="istanbul" skeleton />`),
   render: () => <SkeletonDemo>{(skeleton) => <Select aria-label="Şehir" options={smallOptions} defaultValue={smallOptions[0]!.value} className="max-w-xs" skeleton={skeleton} />}</SkeletonDemo>,
 };

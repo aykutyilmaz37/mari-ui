@@ -109,7 +109,7 @@ export const States: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Checkbox skeleton={isLoading} label="Konum" description="…" />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Checkbox skeleton={isLoading} defaultChecked label="Konum" description="Yakındaki mağazaları göstermek için" />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

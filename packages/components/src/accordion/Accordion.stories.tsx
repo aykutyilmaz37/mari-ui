@@ -109,12 +109,19 @@ export const Faq: Story = {
     "SSS sayfası: `separated` her soruyu ayrı bir kart yapar, `single` aynı anda tek cevap açık tutar, ok sağda " +
       "(`iconPlacement=\"end\"`). Sayfada `<h2>Sıkça sorulan sorular</h2>` varsa sorular `<h3>` (varsayılan).",
     `
+const faq = [
+  { key: "kargo", label: "Siparişim ne zaman kargoya verilir?", children: "Saat 15:00'e kadar verilen siparişler aynı gün kargoya verilir. Hafta sonu verilen siparişler pazartesi çıkar." },
+  {
+    key: "iade",
+    label: "İade ve değişim nasıl yapılır?",
+    children: <>Teslimattan itibaren 14 gün içinde <strong>Hesabım › Siparişlerim</strong> sayfasından ücretsiz iade kodu alabilirsiniz.</>,
+  },
+  { key: "taksit", label: "Taksit seçenekleri nelerdir?", children: "Anlaşmalı banka kartlarına 3, 6 ve 9 taksit; 1.000 ₺ üzeri alışverişlerde vade farksız 3 taksit." },
+  { key: "fatura", label: "Kurumsal fatura alabilir miyim?", children: "Evet. Ödeme adımında “Kurumsal fatura” seçeneğini işaretleyip vergi bilgilerinizi girin." },
+];
+
 <h2>Sıkça sorulan sorular</h2>
-<Accordion variant="separated" single iconPlacement="end" defaultActiveKey="kargo" items={[
-  { key: "kargo", label: "Siparişim ne zaman kargoya verilir?", children: "Saat 15:00'e kadar…" },
-  { key: "iade", label: "İade ve değişim nasıl yapılır?", children: <>…</> },
-  …
-]} />`
+<Accordion variant="separated" single iconPlacement="end" defaultActiveKey="kargo" items={faq} />`
   ),
   render: () => (
     <div className="max-w-2xl">
@@ -135,10 +142,26 @@ export const OrderSummary: Story = {
       "tıklaması bölümü açıp kapatmaz. Devre dışı bölüm (`disabled`) soluk görünür ve klavyede atlanır.",
     `
 <Accordion defaultActiveKey="urunler" items={[
-  { key: "urunler", label: "Ürünler (3)", extra: <span className="font-medium">5.697,00 ₺</span>, children: <ul>…</ul> },
-  { key: "teslimat", label: "Teslimat adresi", extra: <Button size="sm" variant="link">Değiştir</Button>, children: … },
-  { key: "odeme", label: "Ödeme", extra: <Tag color="success">Onaylandı</Tag>, children: … },
-  { key: "fatura", label: "Fatura", disabled: true, extra: <Tag>Kargodan sonra</Tag>, children: … },
+  {
+    key: "urunler",
+    label: "Ürünler (3)",
+    extra: <span className="font-medium tabular-nums">5.697,00 ₺</span>,
+    children: (
+      <ul className="flex flex-col gap-2">
+        <li className="flex justify-between"><span>Kablosuz Kulaklık Pro</span><span>2.499,00 ₺</span></li>
+        <li className="flex justify-between"><span>Mekanik Klavye TKL</span><span>1.899,00 ₺</span></li>
+        <li className="flex justify-between"><span>USB-C Hub 7'si 1 arada</span><span>1.299,00 ₺</span></li>
+      </ul>
+    ),
+  },
+  {
+    key: "teslimat",
+    label: "Teslimat adresi",
+    extra: <Button size="sm" variant="link" aria-label="Teslimat adresini değiştir">Değiştir</Button>,
+    children: "Ayşe Kaya · Moda Cad. No:12 D:4, Kadıköy / İstanbul",
+  },
+  { key: "odeme", label: "Ödeme", extra: <Tag color="success">Onaylandı</Tag>, children: "Kredi kartı (**** 4411) · Tek çekim" },
+  { key: "fatura", label: "Fatura", disabled: true, extra: <Tag>Kargodan sonra</Tag>, children: "Fatura kargoya verildiğinde e-posta ile gönderilir." },
 ]} />`
   ),
   render: () => (
@@ -191,12 +214,28 @@ export const FilterPanel: Story = {
     "Kenar çubuğundaki filtreler: `ghost` zeminsiz ve çerçevesizdir, kartın kendi çerçevesine gömülür. `extra`'da seçili " +
       "filtre sayısı. Gövde form alanları içerir — kapalıyken `inert` olduğu için Tab gizli alanlara gitmez.",
     `
-<aside className="rounded-xl border p-2">
-  <Accordion variant="ghost" size="sm" defaultActiveKey={["marka", "fiyat"]} items={[
-    { key: "marka", label: "Marka", extra: <Badge count={2} color="primary" />, children: <Checkbox label="Apple" /> … },
-    { key: "fiyat", label: "Fiyat", children: <Slider range … /> },
-    { key: "kargo", label: "Kargo", children: <Switch label="Ücretsiz kargo" /> },
-  ]} />
+<aside aria-label="Filtreler" className="rounded-xl border border-mari-border p-2">
+  <Accordion
+    variant="ghost"
+    size="sm"
+    defaultActiveKey={["marka", "fiyat"]}
+    items={[
+      {
+        key: "marka",
+        label: "Marka",
+        extra: <Badge count={2} color="primary" />,
+        children: (
+          <div className="flex flex-col gap-2">
+            <Checkbox label="Apple" defaultChecked />
+            <Checkbox label="Samsung" defaultChecked />
+            <Checkbox label="Xiaomi" />
+          </div>
+        ),
+      },
+      { key: "fiyat", label: "Fiyat", children: <Slider aria-label="Fiyat üst sınırı" min={0} max={50000} step={500} defaultValue={25000} /> },
+      { key: "kargo", label: "Kargo", children: <Switch label="Ücretsiz kargo" /> },
+    ]}
+  />
 </aside>`
   ),
   render: () => (
@@ -276,11 +315,17 @@ export const Variants: Story = {
   ...storyDoc(
     "Dört görünüm ve üç boyut (başlık dolgusu sm 8·12 / md 12·16 / lg 16·24px; lg'de başlık 16px).",
     `
-<Accordion variant="bordered" … />
-<Accordion variant="borderless" … />
-<Accordion variant="ghost" … />
-<Accordion variant="separated" … />
-<Accordion size="sm" … /> <Accordion size="lg" … />`
+const items = [
+  { key: "kargo", label: "Siparişim ne zaman kargoya verilir?", children: "Saat 15:00'e kadar verilen siparişler aynı gün kargoya verilir." },
+  { key: "iade", label: "İade ve değişim nasıl yapılır?", children: "Teslimattan itibaren 14 gün içinde ücretsiz iade kodu alabilirsiniz." },
+];
+
+<Accordion variant="bordered" items={items} />
+<Accordion variant="borderless" items={items} />
+<Accordion variant="ghost" items={items} />
+<Accordion variant="separated" items={items} />
+<Accordion size="sm" items={items} />
+<Accordion size="lg" items={items} />`
   ),
   // Her demo farklı bir bölümü açık tutar: aynı sayfada aynı adlı iki region
   // (landmark) olmasın — gerçek sayfada da aynı başlıklı iki Accordion'dan kaçının.

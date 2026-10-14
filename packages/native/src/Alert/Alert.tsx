@@ -4,6 +4,7 @@ import type { ColorRole } from "@mari-ui/core";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
+import { motionMs } from "../theme/effects";
 import { toPx } from "../theme/toPx";
 import { XIcon } from "../lib/icons";
 import { ROLE_ICON } from "../lib/roleIcon";
@@ -104,7 +105,7 @@ export function Alert({ title, description, color = "info", icon = true, action,
       setClosed(true);
       return;
     }
-    Animated.timing(opacity, { toValue: 0, duration: EXIT_MS, useNativeDriver: true }).start(() => setClosed(true));
+    Animated.timing(opacity, { toValue: 0, duration: motionMs(theme, EXIT_MS), useNativeDriver: true }).start(() => setClosed(true));
   };
 
   const iconNode = resolveIcon(icon, color, roleColor.text);

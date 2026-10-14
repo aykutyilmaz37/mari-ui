@@ -104,7 +104,7 @@ export const Colors: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Alert skeleton={isLoading} color="info" title="…" description="…" />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Alert skeleton={isLoading} closable color="info" title="Yeni sürüm hazır" description="Uygulamayı yeniden başlattığınızda güncellenecek." />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => <Alert skeleton={skeleton} closable color="info" title="Yeni sürüm hazır" description="Uygulamayı yeniden başlattığınızda güncellenecek." />}

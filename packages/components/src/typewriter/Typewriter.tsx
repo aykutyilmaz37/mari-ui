@@ -44,7 +44,13 @@ export function Typewriter({
 
   if (skeleton) {
     // Yer tutucu ilk metnin kendi genişliğinde (satır kaymaz).
-    return <Tag {...skeletonBoxProps(cn("rounded-sm", className))} style={style}>{texts[0]}</Tag>;
+    // Yer tutucu ekran okuyucudan gizli; başlık içinde boş kalmasın diye kısa bir durum metni okunur.
+    return (
+      <>
+        <Tag {...skeletonBoxProps(cn("rounded-sm", className))} style={style}>{texts[0]}</Tag>
+        <span className="sr-only">Yükleniyor</span>
+      </>
+    );
   }
 
   // Animasyon yok: düz metin (dizide son metin — döngü dışı bitiş hali).

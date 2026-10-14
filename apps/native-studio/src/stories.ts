@@ -1,6 +1,7 @@
 import { createElement } from "react";
 import type React from "react";
 import { storyModules } from "@mari-ui/native/stories";
+import type { PersonaName } from "@mari-ui/tokens";
 import type { pickImages } from "./picker";
 
 /**
@@ -11,7 +12,7 @@ import type { pickImages } from "./picker";
 
 export interface StoryContext {
   args: Record<string, unknown>;
-  globals: { theme: "light" | "dark"; fonts: "system" | "brand"; radius?: number; insets?: { top: number; bottom: number; left: number; right: number }; pickImages?: typeof pickImages };
+  globals: { theme: "light" | "dark"; fonts: "system" | "brand"; persona?: PersonaName; radius?: number; insets?: { top: number; bottom: number; left: number; right: number }; pickImages?: typeof pickImages };
 }
 
 type Decorator = (Story: () => React.ReactElement, context: StoryContext) => React.ReactElement;

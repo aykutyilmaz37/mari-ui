@@ -10,7 +10,7 @@
  */
 import React from "react";
 import { View } from "react-native";
-import { darkTheme, lightTheme } from "@mari-ui/tokens";
+import { darkTheme, lightTheme, personaNames, resolveThemeConfig, type PersonaName, type Theme } from "@mari-ui/tokens";
 import { ThemeProvider } from "../theme/ThemeProvider";
 import { SafeAreaInsetsProvider, type SafeAreaInsets } from "../theme/insets";
 import { useTheme } from "../theme/useTheme";
@@ -35,13 +35,57 @@ export function componentDoc(input: ComponentDocInput): string {
   return input.summary + bullets("Ne Zaman Kullanılır", input.whenToUse) + bullets("Ne Zaman Kullanılmaz", input.whenNotToUse) + (input.vsWeb ? `\n\n### Web'den farkı\n\n${input.vsWeb}` : "");
 }
 
+/**
+ * Faz 21 — Playground gibi argümanla değişen story'ler için kodu argümandan üreten
+ * fonksiyon. Storybook'un kendi JSX dökümü ref'leri `[Circular]`, ikon/loader gibi
+ * fonksiyonları `() => {}` diye basıyordu; bu fonksiyon `source.transform`a bağlanır,
+ * kod o anki argümanlarla temiz yazılır.
+ */
+export type StoryCode = (args: Record<string, unknown>) => string;
+
+function literal(value: unknown, indent: string): string {
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((v) => literal(v, indent)).join(", ")}]`;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value).filter(([, v]) => v !== undefined && typeof v !== "function");
+    const key = (k: string) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k));
+    const fields = entries.map(([k, v]) => key(k) + ": " + literal(v, indent));
+    return "{ " + fields.join(", ") + " }";
+  }
+  return String(value);
+}
+
+/**
+ * Argümanları JSX prop dizisine çevirir: `true` → `ad`, `false`/`undefined`/fonksiyon
+ * atlanır, metin → `ad="…"`, diğerleri → `ad={…}`. `skip` ile elle yazılacak
+ * prop'lar (ikon, handler, ref) çıkarılır; `defaults` ile varsayılana eşit değerler gizlenir.
+ */
+function propString(key: string, value: unknown): string {
+  if (value === true) return key;
+  if (typeof value === "string") return `${key}=${JSON.stringify(value)}`;
+  return `${key}={${literal(value, "")}}`;
+}
+
+export function jsxProps(args: Record<string, unknown>, { skip = [], defaults = {} }: { skip?: string[]; defaults?: Record<string, unknown> } = {}): string {
+  return Object.entries(args)
+    .filter(([key, value]) => !skip.includes(key) && key !== "children" && value !== undefined && value !== false && typeof value !== "function" && !(key in defaults && defaults[key] === value))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => propString(key, value))
+    .join(" ");
+}
+
 /** Story açıklaması + "Show code" kodu. Story seviyesinde `parameters` yazmayın — bunu ezer. */
-export function storyDoc(description: string, code?: string) {
+function sourceOf(code: string | StoryCode | undefined) {
+  if (typeof code === "function") return { source: { language: "tsx", transform: (_src: string, ctx: { args: Record<string, unknown> }) => code(ctx.args).trim() } };
+  return code ? { source: { code: code.trim(), language: "tsx" } } : {};
+}
+
+export function storyDoc(description: string, code?: string | StoryCode) {
   return {
     parameters: {
       docs: {
         description: { story: description },
-        ...(code ? { source: { code: code.trim(), language: "tsx" } } : {}),
+        ...sourceOf(code),
       },
     },
   };
@@ -49,13 +93,37 @@ export function storyDoc(description: string, code?: string) {
 
 /**
  * Web Storybook'un tema düğmesi (`globals.theme`) ya da native-studio'nun
- * anahtarları (`globals.theme`, `globals.fonts`) → ThemeProvider. `globals.radius`:
+ * anahtarları (`globals.theme`, `globals.fonts`, `globals.persona`) → ThemeProvider. Kişilik seçiliyse
+ * kişiliğin fontları kullanılır (web'de Google Fonts'tan yüklenir; cihazda `expo-font` ile kaydedin). `globals.radius`:
  * studio çerçevesinin köşesi — zemin yuvarlanır, çerçeve kırpmaz (taşan
  * baloncuk/menü kesilmesin).
  */
-export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; radius?: number; insets?: SafeAreaInsets } }) {
+/**
+ * Web Storybook'ta font kişilikten gelir (temanın aileleri, sayfada yüklü) — `"brand"`.
+ * native-studio kendi `globals.fonts` anahtarını geçer (cihazda yüklü fontlara göre).
+ */
+function storyFonts(fonts: string | undefined): "brand" | "system" {
+  return fonts === "system" ? "system" : "brand";
+}
+
+const personaThemes = new Map<PersonaName, { light: Theme; dark: Theme }>();
+
+/** Faz 21 — kişilik teması (kimlik sabit kalsın diye kişilik başına bir kez çözülür). */
+function storyTheme(mode: string | undefined, persona: string | undefined): Theme {
+  const dark = mode === "dark";
+  if (!personaNames.includes(persona as PersonaName)) return dark ? darkTheme : lightTheme;
+  const name = persona as PersonaName;
+  let resolved = personaThemes.get(name);
+  if (!resolved) {
+    resolved = resolveThemeConfig({ persona: name });
+    personaThemes.set(name, resolved);
+  }
+  return dark ? resolved.dark : resolved.light;
+}
+
+export function withNativeTheme(Story: () => React.ReactElement, context: { globals?: { theme?: string; fonts?: string; persona?: string; radius?: number; insets?: SafeAreaInsets } }) {
   return (
-    <ThemeProvider theme={context.globals?.theme === "dark" ? darkTheme : lightTheme} fonts={context.globals?.fonts === "brand" ? "brand" : "system"} insets={context.globals?.insets}>
+    <ThemeProvider theme={storyTheme(context.globals?.theme, context.globals?.persona)} fonts={storyFonts(context.globals?.fonts)} insets={context.globals?.insets}>
       <Canvas radius={context.globals?.radius}>
         <Story />
       </Canvas>

@@ -9,8 +9,9 @@ export function createMariTheme(mode: ThemeMode) {
     brandImage: "/mari-ui-logo.svg",
     brandUrl: "/",
     brandTarget: "_self",
-    fontBase: fontFamily.sans,
-    fontCode: fontFamily.mono,
+    // Faz 21 — doküman metni kişiliğin fontunu izlesin (manager'da değişken yok → yedek aile).
+    fontBase: `var(--mari-font-sans, ${fontFamily.sans})`,
+    fontCode: `var(--mari-font-mono, ${fontFamily.mono})`,
     colorPrimary: color.primary.text,
     colorSecondary: color.primary.text,
     appBg: color.canvas.surface,

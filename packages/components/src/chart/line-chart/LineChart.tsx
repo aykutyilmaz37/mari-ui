@@ -101,7 +101,7 @@ export function LineChart<T>({
       emptyText={emptyText}
       legend={legend}
       table={{
-        columns: ["", ...series.map((s) => s.name)],
+        columns: [String(xKey), ...series.map((s) => s.name)],
         rows: data.map((row, i) => [xLabels[i]!, ...series.map((s) => {
           const v = toNumber(row[s.key]);
           return v === null ? "—" : fmt.value(v);

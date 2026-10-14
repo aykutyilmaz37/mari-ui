@@ -6,10 +6,32 @@ import { Meta } from "@storybook/blocks";
 
 Tema iki katmanlıdır:
 
-1. **Proje teması** — marka rengi, font, köşe ve boşluk yoğunluğu. Geliştirici `mari-ui.config.json`da tanımlar, `npx mari-ui theme` CSS'e çevirir.
+1. **Proje teması** — tasarım kişiliği, marka rengi, font, köşe, boşluk, gölge ve hareket. Geliştirici `mari-ui.config.json`da tanımlar, `npx mari-ui theme` CSS'e çevirir.
 2. **Son kullanıcı ayarı** — açık/koyu/sistem, vurgu rengi, yoğunluk. Kullanıcı `ThemeCustomizer` ile seçer; tarayıcıda saklanır.
 
 İkisi de `--mari-*` CSS değişkenleri üzerinden akar: component'ler yeniden derlenmez, değişiklik anında uygulanır.
+
+## Tasarım kişilikleri
+
+Aynı component'lerle kurulan projeler birbirinin kopyası gibi görünmesin diye hazır kombinasyonlar. Bir kişilik renk + font eşleşmesi + köşe + boşluk + gölge + hareketi **birlikte** seçer; Storybook araç çubuğundaki **Kişilik** menüsünden hepsini canlı görebilirsiniz.
+
+| Kişilik | `persona` | Uygun olduğu yerler | Karakter |
+|---|---|---|---|
+| Kurumsal | `corporate` | Yönetim paneli, finans, B2B, kamu | Lacivert, IBM Plex Sans, küçük köşe, sıkı, yumuşak gölge, sakin hareket |
+| Oyunbaz | `playful` | Tüketici uygulaması, eğitim, çocuk, topluluk | Pembe + camgöbeği, Nunito / Baloo 2, büyük köşe, rahat, belirgin gölge, canlı hareket |
+| Minimal | `minimal` | Geliştirici araçları, portfolyo, verimlilik | Nötr, Inter, keskin köşe, bol boşluk, gölgesiz |
+| Editoryal | `editorial` | Haber, blog, dergi, içerik platformu | Kırmızı vurgu, Source Sans 3 / Fraunces (serif başlık), gölgesiz |
+| Lüks | `luxury` | Moda, mücevher, otel, premium hizmet | Altın / koyu, Jost / Cormorant Garamond, keskin köşe, yavaş hareket |
+
+```bash
+npx mari-ui init --persona playful   # config'e "persona" yazar (varsa yalnız bu alanı değiştirir)
+```
+
+```json
+{ "persona": "playful", "color": { "primary": "#0f766e" } }
+```
+
+Kişilik **taban** olur; config'te açıkça yazdığınız her alan onu ezer (yukarıdaki örnekte yalnız marka rengi değişir). Fontlar yalnız aile adıdır: web'de `npx mari-ui theme` çıktısındaki Google Fonts bağlantısını `<head>`e ekleyin (tüm aileler Türkçe karakterleri içerir); yüklenmezse sistem fontuna düşülür. React Native'de kişilik fontları henüz paketle gelmiyor — renk, köşe, gölge ve hareket uygulanır, font sistem fontunda kalır.
 
 ## Proje teması: `mari-ui.config.json`
 
@@ -21,7 +43,8 @@ Tema iki katmanlıdır:
     "fontFamilyMono": "\"Geist Mono\", ui-monospace, monospace",
     "fontFamilyHeading": "\"Manrope\", \"Geist\", ui-sans-serif, sans-serif"
   },
-  "density": { "radius": "md", "spacing": "normal" },
+  "density": { "radius": "md", "spacing": "normal", "shadow": "normal" },
+  "motion": "normal",
   "scale": { "fluid": false, "max": 22 }
 }
 ```
@@ -32,6 +55,9 @@ Tema iki katmanlıdır:
 | `typography.*` | CSS font ailesi | Gövde, kod ve başlık aileleri. |
 | `density.radius` | `none` · `sm` · `md` · `lg` | Tüm köşe skalası orantılı (×0 · ×0,5 · ×1 · ×1,5). Daire/hap şekilleri etkilenmez. |
 | `density.spacing` | `compact` · `normal` · `comfortable` | Varsayılan boşluk yoğunluğu (kullanıcı ayarı her zaman önce gelir). |
+| `density.shadow` | `none` · `soft` · `normal` · `strong` | Gölgelerin koyuluğu (geometri aynı); `none`da yüzeyler kenarlıkla ayrışır. |
+| `motion` | `off` · `calm` · `normal` · `lively` | Tüm geçiş süreleri çarpılır (×0 · ×1,4 · ×1 · ×0,85 + hafif taşan eğri). "Hareketi azalt" tercihi her zaman geçerli. |
+| `persona` | `corporate` · `playful` · `minimal` · `editorial` · `luxury` | Yukarıdaki alanların hazır kombinasyonu; açık alanlar onu ezer. |
 | `scale.fluid`, `scale.max` | `true` / px | Büyük ekranda kök yazı boyutu akışkan büyür (4K'de `max` px'e kadar). |
 
 ```bash

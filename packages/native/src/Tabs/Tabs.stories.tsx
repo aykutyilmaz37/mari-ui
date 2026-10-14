@@ -10,7 +10,7 @@ import { Rate } from "../Rate";
 import { Switch } from "../Switch";
 import { Tag } from "../Tag";
 import { Text, Title } from "../Typography";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 const meta: Meta<typeof Tabs> = {
   title: "Native/Navigasyon/Tabs",
@@ -54,7 +54,16 @@ function ProductTabs(props: Omit<TabsProps, "children">) {
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc("Tüm prop'ları canlı deneyin.", (args) => `<Tabs ${jsxProps(args)}>
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>`),
   render: (args) => <ProductTabs {...args} />,
 };
 
@@ -133,11 +142,20 @@ export const AccountSettings: Story = {
   <TabsList accessibilityLabel="Hesap ayarları">
     <TabsTrigger value="profile" icon={({ color }) => <User size={16} color={color} />}>Profil</TabsTrigger>
     <TabsTrigger value="notifications" icon={({ color }) => <Bell size={16} color={color} />}>Bildirimler</TabsTrigger>
-    …
+    <TabsTrigger value="security" icon={({ color }) => <Shield size={16} color={color} />}>Güvenlik</TabsTrigger>
   </TabsList>
-  <TabsContent value="profile">…</TabsContent>
-  …
-</Tabs>`
+  <TabsContent value="profile">
+    <Field label="Ad"><Input defaultValue="Deniz" /></Field>
+    <Field label="E-posta" hint="Değiştirirseniz doğrulama e-postası gönderilir."><Input type="email" defaultValue="deniz@mari-ui.com" /></Field>
+  </TabsContent>
+  <TabsContent value="notifications">
+    <Switch checked={comments} onChange={setComments} accessibilityLabel="Yorum bildirimleri" />
+  </TabsContent>
+  <TabsContent value="security">
+    <Field label="Yeni şifre" hint="En az 12 karakter."><Input type="password" /></Field>
+  </TabsContent>
+</Tabs>
+<Button block onPress={save}>Kaydet</Button>`
   ),
   render: () => <AccountDemo />,
 };
@@ -194,18 +212,33 @@ function TasksDemo() {
 
 export const Pills: Story = {
   name: "Görev Takibi (Pills)",
-  ...storyDoc("`pills` + `fill`: telefonda segmented kontrol gibi tam genişlik; zemin seçilene kayar.", `<Tabs activeTab={tab} onChange={setTab} variant="pills" fill>
+  ...storyDoc("`pills` + `fill`: telefonda segmented kontrol gibi tam genişlik; zemin seçilene kayar.", `const [tab, setTab] = useState("todo");
+
+<Tabs activeTab={tab} onChange={setTab} variant="pills" fill>
   <TabsList accessibilityLabel="Görev durumu">
     <TabsTrigger value="todo" count={5}>Yapılacak</TabsTrigger>
-    …
+      <TabsTrigger value="doing" count={2}>Sürüyor</TabsTrigger>
+    <TabsTrigger value="done">Bitti</TabsTrigger>
   </TabsList>
+  <TabsContent value="todo">Sprint planlaması · Ödeme ekranı metinleri</TabsContent>
+  <TabsContent value="doing">Tema yapıcı dışa aktarma</TabsContent>
+  <TabsContent value="done">Toast · BottomSheet · Steps</TabsContent>
 </Tabs>`),
   render: () => <TasksDemo />,
 };
 
 export const CardTabs: Story = {
   name: "Kod Paneli (Card)",
-  ...storyDoc("`card`: aktif sekme içerik yüzeyiyle birleşir.", `<Tabs variant="card" defaultActiveTab="tsx">…</Tabs>`),
+  ...storyDoc("`card`: aktif sekme içerik yüzeyiyle birleşir.", `<Tabs variant="card" defaultActiveTab="tsx">
+  <TabsList accessibilityLabel="Kod dili">
+    <TabsTrigger value="tsx">React</TabsTrigger>
+    <TabsTrigger value="native">React Native</TabsTrigger>
+    <TabsTrigger value="cli">CLI</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tsx">{'import { Button } from "@mari-ui/components";'}</TabsContent>
+  <TabsContent value="native">{'import { Button } from "@mari-ui/native";'}</TabsContent>
+  <TabsContent value="cli">npx mari-ui init</TabsContent>
+</Tabs>`),
   render: () => (
     <Tabs variant="card" defaultActiveTab="tsx">
       <TabsList accessibilityLabel="Kod dili">
@@ -224,8 +257,28 @@ export const Vertical: Story = {
   name: "Dikey (Ekip Ayarları)",
   ...storyDoc(
     "`orientation=\"vertical\"`: sekmeler solda. Varsayılan `responsive={640}` telefonda yataya çevirir (üstteki); `responsive={false}` dikeyde tutar (alttaki — dar ekranda yalnız kısa etiketlerle).",
-    `<Tabs orientation="vertical" defaultActiveTab="members">…</Tabs>
-<Tabs orientation="vertical" responsive={false} defaultActiveTab="members">…</Tabs>`
+    `{/* telefonda yataya döner */}
+<Tabs orientation="vertical" defaultActiveTab="members">
+  <TabsList accessibilityLabel="Ekip ayarları">
+    <TabsTrigger value="members">Üyeler</TabsTrigger>
+    <TabsTrigger value="roles">Roller</TabsTrigger>
+    <TabsTrigger value="audit">Kayıtlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="members">Deniz Kaya · Aykut Yılmaz · Elif Can</TabsContent>
+  <TabsContent value="roles">Yönetici · Geliştirici · Tasarımcı</TabsContent>
+  <TabsContent value="audit">Son 30 günde 12 değişiklik.</TabsContent>
+</Tabs>
+{/* her zaman dikey */}
+<Tabs orientation="vertical" responsive={false} defaultActiveTab="members">
+  <TabsList accessibilityLabel="Ekip ayarları">
+    <TabsTrigger value="members">Üyeler</TabsTrigger>
+    <TabsTrigger value="roles">Roller</TabsTrigger>
+    <TabsTrigger value="audit">Kayıtlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="members">Deniz Kaya · Aykut Yılmaz · Elif Can</TabsContent>
+  <TabsContent value="roles">Yönetici · Geliştirici · Tasarımcı</TabsContent>
+  <TabsContent value="audit">Son 30 günde 12 değişiklik.</TabsContent>
+</Tabs>`
   ),
   render: () => (
     <View style={{ gap: 32 }}>
@@ -266,8 +319,26 @@ export const Overflow: Story = {
 
 export const FillAndCenter: Story = {
   name: "Tam Genişlik ve Ortalı",
-  ...storyDoc("`fill`: sekmeler genişliği eşit paylaşır. `align=\"center\"`: ortalı.", `<Tabs fill …>…</Tabs>
-<Tabs align="center" …>…</Tabs>`),
+  ...storyDoc("`fill`: sekmeler genişliği eşit paylaşır. `align=\"center\"`: ortalı.", `<Tabs fill defaultActiveTab="aciklama">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>
+<Tabs align="center" defaultActiveTab="ozellikler">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>`),
   render: () => (
     <View style={{ gap: 24 }}>
       <ProductTabs fill defaultActiveTab="aciklama" />
@@ -278,7 +349,36 @@ export const FillAndCenter: Story = {
 
 export const Variants: Story = {
   name: "Görünüm: line / card / pills",
-  ...storyDoc("Üç görünüm aynı içerikle.", `<Tabs variant="line" />  <Tabs variant="card" />  <Tabs variant="pills" />`),
+  ...storyDoc("Üç görünüm aynı içerikle.", `<Tabs variant="line" defaultActiveTab="ozellikler">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>
+<Tabs variant="card" defaultActiveTab="ozellikler">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>
+<Tabs variant="pills" defaultActiveTab="ozellikler">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>`),
   render: () => (
     <View style={{ gap: 24 }}>
       {(["line", "card", "pills"] as const).map((variant) => (
@@ -290,7 +390,26 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   name: "Boyutlar",
-  ...storyDoc("Sekme yüksekliği sm 36 · md 44 · lg 48.", `<Tabs size="sm" />  <Tabs size="lg" />`),
+  ...storyDoc("Sekme yüksekliği sm 36 · md 44 · lg 48.", `<Tabs size="sm" defaultActiveTab="aciklama">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>
+<Tabs size="lg" defaultActiveTab="aciklama">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>`),
   render: () => (
     <View style={{ gap: 24 }}>
       {(["sm", "md", "lg"] as const).map((size) => (
@@ -302,7 +421,13 @@ export const Sizes: Story = {
 
 export const Colors: Story = {
   name: "Renkler",
-  ...storyDoc("`color`: aktif sekme metni ve göstergesi.", `<Tabs color="success" />`),
+  ...storyDoc("`color`: aktif sekme metni ve göstergesi.", `<Tabs color="success" defaultActiveTab="b">
+  <TabsList accessibilityLabel="Arşiv">
+    <TabsTrigger value="a">Genel</TabsTrigger>
+    <TabsTrigger value="b" icon={({ color }) => <Star size={16} color={color} />}>Yıldızlı</TabsTrigger>
+    <TabsTrigger value="c">Arşiv</TabsTrigger>
+  </TabsList>
+</Tabs>`),
   render: () => (
     <View style={{ gap: 20 }}>
       {(["primary", "accent", "success", "info", "neutral"] as const).map((color) => (
@@ -320,7 +445,16 @@ export const Colors: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Sekme etiketleri kendi metin kutularında, aktif panel kendi şeklinde; gösterge gizli, sekmeler dokunulamaz.", `<Tabs skeleton={isLoading} defaultActiveTab="aciklama">…</Tabs>`),
+  ...storyDoc(SKELETON_STORY_DOC + " Sekme etiketleri kendi metin kutularında, aktif panel kendi şeklinde; gösterge gizli, sekmeler dokunulamaz.", `<Tabs skeleton={isLoading} defaultActiveTab="aciklama">
+  <TabsList accessibilityLabel="Ürün bilgileri">
+    <TabsTrigger value="aciklama">Açıklama</TabsTrigger>
+    <TabsTrigger value="ozellikler">Özellikler</TabsTrigger>
+    <TabsTrigger value="yorumlar" count={128}>Yorumlar</TabsTrigger>
+  </TabsList>
+  <TabsContent value="aciklama">Hibrit aktif gürültü engelleme ve 32 saat pil ömrü.</TabsContent>
+  <TabsContent value="ozellikler">40 mm dinamik sürücü · Bluetooth 5.3 · 254 g</TabsContent>
+  <TabsContent value="yorumlar">Ortalama 4,6 / 5 (128 değerlendirme)</TabsContent>
+</Tabs>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

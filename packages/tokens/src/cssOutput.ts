@@ -178,6 +178,9 @@ function buildThemeInlineBlock(theme: Theme): string {
     "  --font-heading: var(--mari-font-heading);",
     "  --default-font-family: var(--mari-font-sans);",
     "  --default-mono-font-family: var(--mari-font-mono);",
+    // Faz 21 — süresiz `transition` sınıfları da hareket seviyesine uyar.
+    "  --default-transition-duration: calc(150ms * var(--mari-motion-scale, 1));",
+    "  --default-transition-timing-function: var(--mari-easing-standard);",
     ...["sm", "md", "lg", "xl"].map((key) => `  --radius-${key}: var(--mari-radius-${key});`),
     "}"].join("\n");
 }

@@ -103,7 +103,10 @@ export const CustomScale: Story = {
   name: "Uygulamaya Özel Ölçek",
   ...storyDoc(
     "`NativeConfigProvider` ile yalnız verilen satırlar değişir; diğer metin stilleri varsayılanda kalır.",
-    `<NativeConfigProvider config={{ typography: { body: { fontSize: 15, lineHeight: 20 }, h1: { fontSize: 30, lineHeight: 36 } } }}>…</NativeConfigProvider>`
+    `<NativeConfigProvider config={{ typography: { body: { fontSize: 15, lineHeight: 20 }, h1: { fontSize: 30, lineHeight: 36 } } }}>
+  <Title level={1}>Kompakt uygulama</Title>
+  <Paragraph>Yoğun içerikli ekranlarda gövde 15/20 kullanılır; başlık seviyeleri yerinde kalır.</Paragraph>
+</NativeConfigProvider>`
   ),
   render: () => (
     <NativeConfigProvider config={{ typography: { body: { fontSize: 15, lineHeight: 20 }, h1: { fontSize: 30, lineHeight: 36 } } }}>
@@ -119,7 +122,9 @@ export const Skeleton: Story = {
   name: "İskelet",
   ...storyDoc(SKELETON_STORY_DOC, `<Title skeleton={isLoading}>Sipariş #4821</Title>
 <Text skeleton={isLoading} muted>3 Ekim · 2 ürün</Text>
-<Paragraph skeleton={isLoading} skeletonRows={3}>…</Paragraph>`),
+<Paragraph skeleton={isLoading} skeletonRows={3}>
+  Kargonuz 6 Ekim Pazartesi tarihinde teslim edilecek.
+</Paragraph>`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

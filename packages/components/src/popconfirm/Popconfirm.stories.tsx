@@ -179,7 +179,10 @@ export const Publish: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Popconfirm title="…" description="…" skeleton>…</Popconfirm>`),
+  ...storyDoc(SKELETON_STORY_DOC, `
+<Popconfirm title="Bu bağlantı iptal edilsin mi?" description="Bağlantıyı kullanan herkes erişimini kaybeder." okText="İptal et" color="warning" skeleton>
+  <Button variant="outline" color="warning">Bağlantıyı iptal et</Button>
+</Popconfirm>`),
   render: () => <SkeletonDemo>{(skeleton) => (
         <Popconfirm title="Bu bağlantı iptal edilsin mi?" description="Bağlantıyı kullanan herkes erişimini kaybeder." okText="İptal et" color="warning" skeleton={skeleton} onConfirm={() => undefined}>
           <Button variant="outline" color="warning">Bağlantıyı iptal et</Button>

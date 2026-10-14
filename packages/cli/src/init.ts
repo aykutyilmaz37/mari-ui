@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { ALL_AGENTS, syncAgentRules, type AgentName, type SyncResult } from "./sync";
-import { writeDefaultConfigIfMissing } from "./configFile";
+import type { PersonaName } from "@mari-ui/tokens";
+import { writeDefaultConfigIfMissing, writePersonaConfig } from "./configFile";
 import { ManifestNotFoundError } from "./manifest";
 
 const REQUIRED_DEPENDENCIES = ["@mari-ui/components", "@mari-ui/core", "@mari-ui/tokens"] as const;
@@ -13,6 +14,8 @@ export interface InitOptions {
   targetDir: string;
   agents?: readonly AgentName[];
   manifestPath?: string;
+  /** Faz 21 — tasarım kişiliği; config'e `persona` olarak yazılır. */
+  persona?: PersonaName;
 }
 
 export interface InitResult {
@@ -20,6 +23,8 @@ export interface InitResult {
   alreadyHadDependencies: string[];
   configCreated: boolean;
   configPath: string;
+  /** `persona` verildi ve var olan config'te bu alan eklendi/değişti. */
+  configUpdated: boolean;
   /**
    * `null` olması şu anlama gelir: bağımlılıklar `package.json`a EKLENDİ ama
    * henüz KURULMADI (`pnpm install` çalıştırılmadı) — bu yüzden `@mari-ui/
@@ -52,7 +57,7 @@ interface PackageJsonShape {
  * (bkz. `cli.ts`teki `runInitCommand` çağrısının çıktısı).
  */
 export function runInit(options: InitOptions): InitResult {
-  const { targetDir, agents = ALL_AGENTS, manifestPath } = options;
+  const { targetDir, agents = ALL_AGENTS, manifestPath, persona } = options;
   const packageJsonPath = join(targetDir, "package.json");
   const packageJsonMissing = !existsSync(packageJsonPath);
 
@@ -76,7 +81,8 @@ export function runInit(options: InitOptions): InitResult {
     }
   }
 
-  const { created: configCreated, path: configPath } = writeDefaultConfigIfMissing(targetDir);
+  const written = persona ? writePersonaConfig(targetDir, persona) : { ...writeDefaultConfigIfMissing(targetDir), updated: false };
+  const { created: configCreated, path: configPath, updated: configUpdated } = written;
 
   let ruleFiles: SyncResult | null;
   try {
@@ -89,5 +95,5 @@ export function runInit(options: InitOptions): InitResult {
     }
   }
 
-  return { addedDependencies, alreadyHadDependencies, configCreated, configPath, ruleFiles, packageJsonMissing };
+  return { addedDependencies, alreadyHadDependencies, configCreated, configUpdated, configPath, ruleFiles, packageJsonMissing };
 }

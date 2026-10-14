@@ -9,7 +9,7 @@ import { Button } from "../Button";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
 import { picsumLoader, storyPhotos } from "../stories/storyPhotos";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNarrow, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNarrow, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 const meta: Meta<typeof Image> = {
   title: "Native/Veri Gösterimi/Image",
@@ -53,7 +53,13 @@ function Caption({ children }: { children: React.ReactNode }) {
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc(
+    "Tüm prop'ları canlı deneyin. Adres üretimi `loader`da; CDN parametrelerini kendi servisinize göre değiştirin.",
+    (args) => `
+const cdnLoader: ImageLoader = ({ src, width, quality = 75 }) => \`\${src}?w=\${width}&q=\${quality}\`;
+
+<Image ${jsxProps(args, { skip: ["loader"] })} loader={cdnLoader} />`
+  ),
   decorators: [withNarrow],
   args: { src: photos[0]!.src, alt: photos[0]!.alt, loader: picsumLoader, aspectRatio: "3/2", placeholder: true, preview: true, fit: "cover", skeleton: false },
 };
@@ -89,7 +95,7 @@ export const Progressive: Story = {
   ...storyDoc(
     "`placeholder`: önce küçük boy (`loader` ile 24px) bulanık gösterilir, asıl görsel yüklenince üstüne solarak gelir. `{ src, blurDataURL }` kaynaklarında `blurDataURL` kendiliğinden kullanılır. \"Yeniden yükle\" önbelleği atlayıp geçişi tekrar gösterir.",
     `<Image src="/seed/kapadokya/1600/1067" alt="Kapadokya" aspectRatio="3/2" loader={cdnLoader} placeholder />
-<Image src={foto} alt="…" aspectRatio="3/2" loader={cdnLoader} placeholder={<ImageIcon size={32} />} />`
+<Image src="/fotograflar/efes.jpg" alt="Efes antik kenti" aspectRatio="3/2" loader={cdnLoader} placeholder={<ImageIcon size={32} />} />`
   ),
   render: () => <ProgressiveDemo />,
 };
@@ -200,9 +206,9 @@ export const Fit: Story = {
   name: "Sığdırma ve Oran",
   ...storyDoc(
     "`fit` (varsayılan `cover`: kutuyu doldurur, taşanı kırpar; `contain`: tamamı görünür). Kutu boyutu `aspectRatio` ya da `width`/`height` ile — sayı pt, yüzde kaba göre.",
-    `<Image src={foto} alt="…" width={140} height={140} fit="cover" />
-<Image src={foto} alt="…" width={140} height={140} fit="contain" />
-<Image src={foto} alt="…" aspectRatio="16/9" />`
+    `<Image src="/urunler/canta.jpg" alt="Deri çanta" width={140} height={140} fit="cover" />
+<Image src="/urunler/canta.jpg" alt="Deri çanta" width={140} height={140} fit="contain" />
+<Image src="/urunler/canta.jpg" alt="Deri çanta" aspectRatio="16/9" />`
   ),
   render: () => (
     <View style={{ gap: 16 }}>
@@ -220,7 +226,7 @@ export const Fit: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Image skeleton={loading} src={foto} alt="…" aspectRatio="4/3" preview />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Image skeleton={isLoading} src="/urunler/canta.jpg" alt="Deri çanta" aspectRatio="4/3" preview />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

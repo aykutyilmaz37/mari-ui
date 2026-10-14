@@ -6,7 +6,7 @@ import { AppBar, AppBarAction, useAppBarScroll, type AppBarProps } from "./AppBa
 import { ListItem, ListItemMeta } from "../List";
 import { Paragraph, Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch, withoutInsets } from "../stories/storyMeta";
 
 const meta: Meta<typeof AppBar> = {
   title: "Native/Navigasyon/AppBar",
@@ -43,7 +43,7 @@ function Screen({ children, height = 420 }: { children: React.ReactNode; height?
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc("Tüm prop'ları canlı deneyin.", (args) => `<AppBar ${jsxProps(args, { skip: ["onBack", "actions"] })} onBack={goBack} actions={<AppBarAction icon={({ color, size }) => <Search color={color} size={size} />} accessibilityLabel="Ara" onPress={openSearch} />} />`),
   render: (args: AppBarProps) => <AppBar {...args} onBack={noop} actions={<AppBarAction icon={icon(Search)} accessibilityLabel="Ara" onPress={noop} />} />,
 };
 
@@ -142,9 +142,13 @@ export const LargeCollapsing: Story = {
     "`size=\"large\"` + `useAppBarScroll`: büyük başlık kaydırdıkça kısalır ve solar, küçük başlık üst sırada belirir, alt çizgi daralınca çıkar. iOS Mail / Ayarlar düzeni.",
     `const { scrollY, onScroll, scrollEventThrottle } = useAppBarScroll();
 
-<AppBar size="large" title="Mesajlar" scrollY={scrollY} actions={…} />
+<AppBar size="large" title="Mesajlar" scrollY={scrollY} actions={<AppBarAction icon={({ color, size }) => <Search color={color} size={size} />} accessibilityLabel="Ara" onPress={openSearch} />} />
 <Animated.ScrollView onScroll={onScroll} scrollEventThrottle={scrollEventThrottle}>
-  …
+  {messages.map((m) => (
+    <ListItem key={m.id} extra={<Text muted>{m.time}</Text>}>
+      <ListItemMeta title={m.name} description={m.text} />
+    </ListItem>
+  ))}
 </Animated.ScrollView>`
   ),
   render: () => <LargeDemo />,
@@ -176,8 +180,22 @@ export const Alignment: Story = {
   name: "Başlık Hizası",
   ...storyDoc(
     "Varsayılan platforma göre: iOS'ta ortalı, Android / web'de sola. Ortalı başlık iki ucun genişini kadar içeri çekilir — uçlar farklı genişlikte olsa da tam ortada kalır.",
-    `<AppBar titleAlign="start" … />
-<AppBar titleAlign="center" … />`
+    `<AppBar title="Profil Düzenle" titleAlign="start" bordered onBack={goBack}
+  actions={
+    <>
+      <AppBarAction icon={({ color, size }) => <Share2 color={color} size={size} />} accessibilityLabel="Paylaş" onPress={share} />
+      <AppBarAction icon={({ color, size }) => <MoreVertical color={color} size={size} />} accessibilityLabel="Daha fazla" onPress={openMenu} />
+    </>
+  }
+/>
+<AppBar title="Profil Düzenle" titleAlign="center" bordered onBack={goBack}
+  actions={
+    <>
+      <AppBarAction icon={({ color, size }) => <Share2 color={color} size={size} />} accessibilityLabel="Paylaş" onPress={share} />
+      <AppBarAction icon={({ color, size }) => <MoreVertical color={color} size={size} />} accessibilityLabel="Daha fazla" onPress={openMenu} />
+    </>
+  }
+/>`
   ),
   render: () => (
     <View style={{ gap: 16, alignSelf: "stretch" }}>
@@ -215,7 +233,7 @@ export const Sizes: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Başlıklar kendi metin kutularında, eylemler daire; eylemler dokunulamaz.", `<AppBar skeleton={isLoading} title={order?.title ?? "Sipariş"} … />`),
+  ...storyDoc(SKELETON_STORY_DOC + " Başlıklar kendi metin kutularında, eylemler daire; eylemler dokunulamaz.", `<AppBar skeleton={isLoading} title={order?.title ?? "Sipariş"} subtitle="Kargoda" onBack={goBack} bordered actions={<AppBarAction icon={({ color, size }) => <Share2 color={color} size={size} />} accessibilityLabel="Paylaş" onPress={share} />} />`),
   render: () => (
     <SkeletonDemo>
       {(skeleton) => (

@@ -8,7 +8,7 @@ import { Rate } from "../Rate";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
 import { picsumLoader, storyPhotos } from "../stories/storyPhotos";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 const meta: Meta<typeof Masonry> = {
   title: "Native/Veri Gösterimi/Masonry",
@@ -48,7 +48,16 @@ const photoItems = (count: number, offset = 0): MasonryItem[] =>
   }));
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc(
+    "Tüm prop'ları canlı deneyin.",
+    (args) => `
+const items = photos.map((photo) => ({
+  key: photo.id,
+  children: <Image src={photo.src} alt={photo.alt} aspectRatio={photo.ratio} />,
+}));
+
+<Masonry ${jsxProps(args, { skip: ["items"] })} items={items} accessibilityLabel="Fotoğraflar" contentContainerStyle={{ padding: 8 }} />`
+  ),
   render: (args) => (
     <Screen>
       <Masonry {...args} items={photoItems(12)} accessibilityLabel="Fotoğraflar" contentContainerStyle={{ padding: 8 }} />
@@ -77,7 +86,27 @@ const REVIEWS = [
 
 export const Reviews: Story = {
   name: "Müşteri Yorumları (kartlar)",
-  ...storyDoc("Farklı uzunlukta metin kartları — kısa yorum uzunun altında boşluk bırakmaz.", `<Masonry items={reviews.map((r) => ({ key: r.id, children: <Card>…</Card> }))} gutter="md" />`),
+  ...storyDoc("Farklı uzunlukta metin kartları — kısa yorum uzunun altında boşluk bırakmaz.", `
+const reviews = [
+  { id: "1", name: "Selin A.", rating: 5, text: "Gürültü engelleme metroda bile çok başarılı." },
+  { id: "2", name: "Mert Y.", rating: 4, text: "Ses çok iyi, kılıf biraz daha küçük olabilirdi. Pil gerçekten iki gün gidiyor." },
+  { id: "3", name: "Deniz K.", rating: 5, text: "Harika." },
+];
+
+<Masonry
+  gutter="md"
+  accessibilityLabel="Yorumlar"
+  items={reviews.map((r) => ({
+    key: r.id,
+    children: (
+      <Card>
+        <Text weight="semibold">{r.name}</Text>
+        <Rate readOnly value={r.rating} characterSize={14} accessibilityLabel={\`\${r.rating} yıldız\`} />
+        <Text muted>{r.text}</Text>
+      </Card>
+    ),
+  }))}
+/>`),
   render: () => (
     <Screen>
       <Masonry

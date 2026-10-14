@@ -11,7 +11,7 @@ import { Segmented } from "../Segmented";
 import { Switch } from "../Switch";
 import { Text } from "../Typography";
 import { useTheme } from "../theme/useTheme";
-import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
+import { SKELETON_STORY_DOC, SkeletonDemo, componentDoc, jsxProps, storyDoc, withNativeTheme, withStretch } from "../stories/storyMeta";
 
 const meta: Meta<typeof Sidebar> = {
   title: "Native/Navigasyon/Sidebar",
@@ -100,7 +100,22 @@ function MenuButton({ onPress }: { onPress: () => void }) {
 }
 
 export const Playground: Story = {
-  ...storyDoc("Tüm prop'ları canlı deneyin."),
+  ...storyDoc("Tüm prop'ları canlı deneyin.", (args) => `const icon = (Icon: typeof Inbox) => ({ color, size }: SidebarIconState) => <Icon size={size} color={color} />;
+const mailItems: SidebarItem[] = [
+  { key: "inbox", title: "Gelen Kutusu", icon: icon(Inbox), route: "/inbox", badge: 24 },
+  { key: "starred", title: "Yıldızlı", icon: icon(Star), route: "/starred" },
+  { key: "drafts", title: "Taslaklar", icon: icon(FileText), route: "/drafts", badge: 3 },
+  { key: "labels", title: "Etiketler", heading: true },
+  { key: "work", title: "İş", route: "/label/is" },
+  { key: "family", title: "Aile", route: "/label/aile" },
+  { key: "more", title: "Diğer", heading: true },
+  { key: "archive", title: "Arşiv", icon: icon(Archive), route: "/archive" },
+  { key: "help", title: "Yardım", icon: icon(HelpCircle), route: "/help", disabled: true },
+];
+const [open, setOpen] = useState(false);
+
+<Button onPress={() => setOpen(true)}>Menüyü aç</Button>
+<Sidebar ${jsxProps(args, { skip: ["data", "open"] })} data={mailItems} open={open} onOpenChange={setOpen} currentPath="/inbox" />`),
   render: function PlaygroundStory(args: Omit<SidebarProps, "data" | "open" | "onOpenChange">) {
     const [open, setOpen] = useState(false);
     return (
@@ -157,7 +172,26 @@ export const Shop: Story = {
     "Amazon çekmecesi düzeni: rol renginde başlık bandı (`emphasizedHeader`), kalın bölüm başlıkları, çocuklu satır bir seviye içeri girer — üstte geri satırı, seviye başlığı ve (yolu varsa) \"Tümünü gör\". Aktif yaprağın üst satırları da vurgulu. Android geri tuşu alt seviyede önce bir seviye yukarı çıkar.",
     `const [open, setOpen] = useState(false);
 
-<AppBar title="mari-ui Market" leading={<AppBarAction icon={…} accessibilityLabel="Menüyü aç" onPress={() => setOpen(true)} />} />
+const categories: SidebarItem[] = [
+  { key: "trending", title: "Trendler", heading: true },
+  { key: "best", title: "Çok Satanlar", route: "/cok-satanlar" },
+  { key: "cats", title: "Kategorilere Göre Alışveriş", heading: true },
+  {
+    key: "electronics",
+    title: "Elektronik",
+    route: "/elektronik",
+    children: [
+      { key: "laptop", title: "Laptop", route: "/elektronik/laptop" },
+      { key: "phones", title: "Telefon", route: "/elektronik/telefon" },
+    ],
+  },
+  { key: "orders", title: "Siparişlerim", route: "/siparisler", badge: 2 },
+];
+
+<AppBar
+  title="mari-ui Market"
+  leading={<AppBarAction icon={({ color }) => <Menu size={24} color={color} />} accessibilityLabel="Menüyü aç" onPress={() => setOpen(true)} />}
+/>
 <Sidebar
   data={categories}
   open={open}
@@ -166,7 +200,7 @@ export const Shop: Story = {
   onNavigate={(path) => navigation.navigate(path)}
   emphasizedHeader
   header={(ink) => <Text style={{ color: ink.color }}>Merhaba, Deniz</Text>}
-  footer={<LogoutRow />}
+  footer={<Button variant="ghost" color="neutral" icon={<LogOut size={20} />} onPress={signOut}>Çıkış yap</Button>}
 />`
   ),
   render: () => <ShopDemo />,
@@ -207,18 +241,36 @@ export const Mail: Story = {
   name: "Uygulama Menüsü (İkon ve Rozet)",
   ...storyDoc(
     "Material 3 düzeni: ikonlu satırlar, sayı rozeti, bölüm başlıkları; ikonu olmayan satırlar (etiketler) ikon yerini ayırır — başlıklar tek hizada. Pasif öğe (`disabled`) soluk.",
-    `<Sidebar
-  data={[
-    { key: "inbox", title: "Gelen Kutusu", icon: ({ color, size }) => <Inbox size={size} color={color} />, route: "/inbox", badge: 24 },
-    { key: "labels", title: "Etiketler", heading: true },
-    { key: "work", title: "İş", route: "/label/is" },
-    …
-  ]}
+    `const icon = (Icon: typeof Inbox) => ({ color, size }: SidebarIconState) => <Icon size={size} color={color} />;
+const mailItems: SidebarItem[] = [
+  { key: "inbox", title: "Gelen Kutusu", icon: icon(Inbox), route: "/inbox", badge: 24 },
+  { key: "starred", title: "Yıldızlı", icon: icon(Star), route: "/starred" },
+  { key: "drafts", title: "Taslaklar", icon: icon(FileText), route: "/drafts", badge: 3 },
+  { key: "labels", title: "Etiketler", heading: true },
+  { key: "work", title: "İş", route: "/label/is" },
+  { key: "family", title: "Aile", route: "/label/aile" },
+  { key: "more", title: "Diğer", heading: true },
+  { key: "archive", title: "Arşiv", icon: icon(Archive), route: "/archive" },
+  { key: "help", title: "Yardım", icon: icon(HelpCircle), route: "/help", disabled: true },
+];
+const [open, setOpen] = useState(false);
+const [path, setPath] = useState("/inbox");
+
+<Sidebar
+  data={mailItems}
   open={open}
   onOpenChange={setOpen}
   currentPath={path}
   onNavigate={setPath}
-  header={<AccountHeader />}
+  header={
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+      <Avatar alt="Deniz Kaya" size="sm" color="primary" />
+      <View>
+        <Text weight="semibold">Deniz Kaya</Text>
+        <Text muted style={{ fontSize: 13 }}>deniz@mari-ui.com</Text>
+      </View>
+    </View>
+  }
 />`
   ),
   render: () => <MailDemo />,
@@ -226,7 +278,22 @@ export const Mail: Story = {
 
 export const Right: Story = {
   name: "Sağdan",
-  ...storyDoc("`position=\"right\"`: çekmece sağdan gelir, sağa kaydırınca kapanır.", `<Sidebar position="right" … />`),
+  ...storyDoc("`position=\"right\"`: çekmece sağdan gelir, sağa kaydırınca kapanır.", `const icon = (Icon: typeof Inbox) => ({ color, size }: SidebarIconState) => <Icon size={size} color={color} />;
+const mailItems: SidebarItem[] = [
+  { key: "inbox", title: "Gelen Kutusu", icon: icon(Inbox), route: "/inbox", badge: 24 },
+  { key: "starred", title: "Yıldızlı", icon: icon(Star), route: "/starred" },
+  { key: "drafts", title: "Taslaklar", icon: icon(FileText), route: "/drafts", badge: 3 },
+  { key: "labels", title: "Etiketler", heading: true },
+  { key: "work", title: "İş", route: "/label/is" },
+  { key: "family", title: "Aile", route: "/label/aile" },
+  { key: "more", title: "Diğer", heading: true },
+  { key: "archive", title: "Arşiv", icon: icon(Archive), route: "/archive" },
+  { key: "help", title: "Yardım", icon: icon(HelpCircle), route: "/help", disabled: true },
+];
+const [open, setOpen] = useState(false);
+
+<AppBar title="Posta" actions={<AppBarAction icon={({ color }) => <Menu size={24} color={color} />} accessibilityLabel="Menüyü aç" onPress={() => setOpen(true)} />} />
+<Sidebar position="right" data={mailItems} open={open} onOpenChange={setOpen} currentPath="/inbox" />`),
   render: () => <MailDemo position="right" />,
 };
 
@@ -283,13 +350,30 @@ export const Animations: Story = {
   name: "Açılış Animasyonları",
   ...storyDoc(
     "`Sidebar` ekranın üstünde açılır: `slide` yandan kayar (kenara kaydırarak kapanır), `fade` solarak belirir. Arkadaki ekranı da hareket ettirmek için ekranı `SidebarLayout` ile sarın: `push` çekmece ekranı iter, `reveal` ekran kayarak alttaki menüyü açar, `scaleDown` ekran küçülüp yuvarlak köşeli karta dönüşerek çekilir. `staggerItems`: satırlar sırayla gelir (her animasyonla). Hareketi azalt açıksa hepsi anında.",
-    `// Ekranın üstünde
-<Sidebar animation="fade" staggerItems data={items} open={open} onOpenChange={setOpen} />
+    `const icon = (Icon: typeof Inbox) => ({ color, size }: SidebarIconState) => <Icon size={size} color={color} />;
+const mailItems: SidebarItem[] = [
+  { key: "inbox", title: "Gelen Kutusu", icon: icon(Inbox), route: "/inbox", badge: 24 },
+  { key: "starred", title: "Yıldızlı", icon: icon(Star), route: "/starred" },
+  { key: "drafts", title: "Taslaklar", icon: icon(FileText), route: "/drafts", badge: 3 },
+  { key: "labels", title: "Etiketler", heading: true },
+  { key: "work", title: "İş", route: "/label/is" },
+  { key: "family", title: "Aile", route: "/label/aile" },
+  { key: "more", title: "Diğer", heading: true },
+  { key: "archive", title: "Arşiv", icon: icon(Archive), route: "/archive" },
+  { key: "help", title: "Yardım", icon: icon(HelpCircle), route: "/help", disabled: true },
+];
+const [open, setOpen] = useState(false);
+const menuButton = <AppBarAction icon={({ color }) => <Menu size={24} color={color} />} accessibilityLabel="Menüyü aç" onPress={() => setOpen(true)} />;
 
-// Ekranı da hareket ettiren
-<SidebarLayout animation="scaleDown" staggerItems data={items} open={open} onOpenChange={setOpen}>
-  <AppBar … />
-  <Screen />
+{/* Ekranın üstünde */}
+<Sidebar animation="fade" staggerItems data={mailItems} open={open} onOpenChange={setOpen} />
+
+{/* Ekranı da hareket ettiren */}
+<SidebarLayout animation="scaleDown" staggerItems data={mailItems} open={open} onOpenChange={setOpen}>
+  <AppBar title="Gelen Kutusu" leading={menuButton} />
+  <View style={{ flex: 1, padding: 16 }}>
+    <Text>Sunum dosyasını ekledim, bakabilir misin?</Text>
+  </View>
 </SidebarLayout>`
   ),
   render: () => <AnimationsDemo />,
@@ -318,6 +402,6 @@ function SkeletonStory() {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Başlık bandı ve satırlar kendi kutularında; satırlar dokunulamaz, ✕ ve karartma yine kapatır.", `<Sidebar skeleton={isLoading} data={items} open={open} onOpenChange={setOpen} />`),
+  ...storyDoc(SKELETON_STORY_DOC + " Başlık bandı ve satırlar kendi kutularında; satırlar dokunulamaz, ✕ ve karartma yine kapatır.", `<Sidebar skeleton={isLoading} data={mailItems} open={open} onOpenChange={setOpen} currentPath="/" header={<Text weight="semibold">Deniz Kaya</Text>} />`),
   render: () => <SkeletonStory />,
 };

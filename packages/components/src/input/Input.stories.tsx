@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AtSign, Lock, PhoneIcon, Search } from "lucide-react";
 import { useState } from "react";
 import { baseSizeArgType, disabledArgType } from "../lib/storybookArgTypes";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Input } from "./index";
 import type { InputProps } from "./index";
@@ -181,7 +181,10 @@ export const PressEnterAction: StoryObj = {
 
 export const CustomCountFormatter: StoryObj<InputProps> = {
   name: "Özel Karakter Sayacı",
-  ...storyDoc("`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir."),
+  ...storyDoc(
+    "`count.formatter` ile varsayılan `n / max` yerine özel bir metin gösterilebilir.",
+    (args) => `<Input ${jsxProps(args, { skip: ["count"] })} count={{ formatter: ({ count, maxLength }) => \`\${maxLength - count} karakter kaldı\` }} />`
+  ),
   args: {
     "aria-label": "Ürün başlığı",
     placeholder: "Ürün başlığı",

@@ -62,18 +62,62 @@ export function componentDoc(input: ComponentDocInput): string {
 }
 
 /**
+ * Faz 21 — Playground gibi argümanla değişen story'ler için kodu argümandan üreten
+ * fonksiyon. Storybook'un kendi JSX dökümü ref'leri `[Circular]`, ikon/loader gibi
+ * fonksiyonları `() => {}` diye basıyordu; bu fonksiyon `source.transform`a bağlanır,
+ * kod o anki argümanlarla temiz yazılır.
+ */
+export type StoryCode = (args: Record<string, unknown>) => string;
+
+function literal(value: unknown, indent: string): string {
+  if (typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((v) => literal(v, indent)).join(", ")}]`;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value).filter(([, v]) => v !== undefined && typeof v !== "function");
+    const key = (k: string) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k));
+    const fields = entries.map(([k, v]) => key(k) + ": " + literal(v, indent));
+    return "{ " + fields.join(", ") + " }";
+  }
+  return String(value);
+}
+
+/**
+ * Argümanları JSX prop dizisine çevirir: `true` → `ad`, `false`/`undefined`/fonksiyon
+ * atlanır, metin → `ad="…"`, diğerleri → `ad={…}`. `skip` ile elle yazılacak
+ * prop'lar (ikon, handler, ref) çıkarılır; `defaults` ile varsayılana eşit değerler gizlenir.
+ */
+function propString(key: string, value: unknown): string {
+  if (value === true) return key;
+  if (typeof value === "string") return `${key}=${JSON.stringify(value)}`;
+  return `${key}={${literal(value, "")}}`;
+}
+
+export function jsxProps(args: Record<string, unknown>, { skip = [], defaults = {} }: { skip?: string[]; defaults?: Record<string, unknown> } = {}): string {
+  return Object.entries(args)
+    .filter(([key, value]) => !skip.includes(key) && key !== "children" && value !== undefined && value !== false && typeof value !== "function" && !(key in defaults && defaults[key] === value))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => propString(key, value))
+    .join(" ");
+}
+
+/**
  * Tek bir story'nin autodocs açıklaması (ant'ın her demo'sunun altındaki
  * başlık + paragraf). `export const Foo: Story = { ...storyDoc("...") }`.
  */
+function sourceOf(code: string | StoryCode | undefined) {
+  if (typeof code === "function") return { source: { language: "tsx", transform: (_src: string, ctx: { args: Record<string, unknown> }) => code(ctx.args).trim() } };
+  return code ? { source: { code: code.trim(), language: "tsx" } } : {};
+}
+
 export function storyDoc(
   description: string,
-  code?: string
-): { parameters: { docs: { description: { story: string }; source?: { code: string; language: string } } } } {
+  code?: string | StoryCode
+): { parameters: { docs: { description: { story: string }; source?: { code?: string; language: string; transform?: (src: string, ctx: { args: Record<string, unknown> }) => string } } } } {
   return {
     parameters: {
       docs: {
         description: { story: description },
-        ...(code ? { source: { code: code.trim(), language: "tsx" } } : {}),
+        ...sourceOf(code),
       },
     },
   };

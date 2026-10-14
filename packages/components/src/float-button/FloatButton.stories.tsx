@@ -152,7 +152,10 @@ export const BackToTop: Story = {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<FloatButtonGroup shape="square" skeleton>…</FloatButtonGroup>`),
+  ...storyDoc(SKELETON_STORY_DOC, `<FloatButtonGroup shape="square" skeleton>
+  <FloatButton icon={<HeadsetIcon />} description="Destek" />
+  <FloatButton icon={<MessageCircleIcon />} description="Sohbet" />
+</FloatButtonGroup>`),
   render: () => <SkeletonDemo>{(skeleton) => (
         <Frame>
           <FloatButtonGroup shape="square" skeleton={skeleton}>

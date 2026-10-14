@@ -3,7 +3,8 @@ import { AccessibilityInfo, Animated, PanResponder, Pressable, Text, View } from
 import type { ColorRole } from "@mari-ui/core";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
-import { useTheme } from "../theme/useTheme";
+import { useMotionScale, useTheme } from "../theme/useTheme";
+
 import { toPx } from "../theme/toPx";
 import { XIcon } from "../lib/icons";
 import { ROLE_ICON } from "../lib/roleIcon";
@@ -75,15 +76,16 @@ function useAutoClose(duration: number, paused: boolean, onClose: () => void) {
 
 /** Giriş (kenardan kayarak) ve çıkış (soluklaşma); hareket azaltmada yalnız opaklık. */
 function useEnterExit(edge: ToastEdge, exiting: boolean | undefined, onRemoved: () => void) {
+  const motion = useMotionScale();
   const progress = useRef(new Animated.Value(0)).current;
   const removed = useRef(onRemoved);
   removed.current = onRemoved;
   useEffect(() => {
-    Animated.timing(progress, { toValue: 1, duration: 220, useNativeDriver: true }).start();
-  }, [progress]);
+    Animated.timing(progress, { toValue: 1, duration: Math.round(220 * motion), useNativeDriver: true }).start();
+  }, [progress, motion]);
   useEffect(() => {
-    if (exiting) Animated.timing(progress, { toValue: 0, duration: 180, useNativeDriver: true }).start(() => removed.current());
-  }, [exiting, progress]);
+    if (exiting) Animated.timing(progress, { toValue: 0, duration: Math.round(180 * motion), useNativeDriver: true }).start(() => removed.current());
+  }, [exiting, progress, motion]);
   const from = edge === "top" ? -16 : 16;
   return { opacity: progress, translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [from, 0] }) };
 }

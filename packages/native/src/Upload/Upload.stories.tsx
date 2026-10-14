@@ -220,7 +220,9 @@ export const Validation: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("Pasif: seçici açılmaz, kaldırma düğmeleri yok.", `<Upload disabled … />`),
+  ...storyDoc("Pasif: seçici açılmaz, kaldırma düğmeleri yok.", `
+<Upload onPick={pickImages} disabled hint="Görsel · en fazla 5 MB" />
+<Upload onPick={pickImages} disabled listType="review" />`),
   render: (_args, ctx) => (
     <View style={{ gap: 16 }}>
       <PickerUpload picker={studioPicker(ctx)} disabled hint="Görsel · en fazla 5 MB" />
@@ -231,7 +233,9 @@ export const States: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC + " Listede düğme + ipucu satırı, önizlemede döşeme.", `<Field label="Belgeler" skeleton={isLoading}><Upload onPick={pick} hint="…" /></Field>`),
+  ...storyDoc(SKELETON_STORY_DOC + " Listede düğme + ipucu satırı, önizlemede döşeme.", `<Field label="Belgeler" skeleton={isLoading}>
+  <Upload onPick={pickImages} hint="Görsel · en fazla 5 MB" />
+</Field>`),
   render: (_args, ctx) => (
     <SkeletonDemo>
       {(skeleton) => (

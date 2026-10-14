@@ -131,7 +131,7 @@ export const Controls: Story = {
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Field label="E-posta" hint="…" skeleton={isLoading}>
+  ...storyDoc(SKELETON_STORY_DOC, `<Field label="E-posta" hint="Sipariş bilgilerini buraya göndereceğiz." skeleton={isLoading}>
   <Input defaultValue={user.email} />
 </Field>`),
   render: () => (

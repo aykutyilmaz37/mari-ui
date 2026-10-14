@@ -1,5 +1,5 @@
 import React, { useRef, useState, type ComponentRef } from "react";
-import { Pressable, Text, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { Platform, Pressable, Text, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
 import { useControllableState, type ColorRole, type Size } from "@mari-ui/core";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
@@ -162,7 +162,7 @@ export function OtpInput({
         autoCapitalize="characters"
         autoCorrect={false}
         textContentType="oneTimeCode"
-        autoComplete="sms-otp"
+        autoComplete={Platform.OS === "web" ? ("one-time-code" as "sms-otp") : "sms-otp"}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         accessibilityLabel={field.accessibilityLabel ?? "Doğrulama kodu"}

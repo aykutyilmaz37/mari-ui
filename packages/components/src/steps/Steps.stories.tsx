@@ -390,7 +390,7 @@ export const Onboarding: Story = {
 const [step, setStep] = useState(2);
 
 <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_minmax(0,1fr)]">
-  {/* mobilde bunun yerine: <Steps responsive={Infinity} responsiveLayout="compact" … /> */}
+  {/* mobilde: responsive={Infinity} responsiveLayout="compact" ekleyin */}
   <Steps
     vertical
     variant="outlined"

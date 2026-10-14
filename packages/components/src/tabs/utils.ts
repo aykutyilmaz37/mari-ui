@@ -109,7 +109,7 @@ export function getTriggerClass(opts: {
 }
 
 export function getIndicatorClass(variant: TabsVariant, orientation: TabsOrientation, color: ColorRole): string {
-  if (variant === "pills") return "rounded-md bg-mari-surface shadow-sm ring-1 ring-mari-border/60";
+  if (variant === "pills") return "rounded-md bg-mari-surface shadow-mari-sm ring-1 ring-mari-border/60";
   if (variant === "card") return "hidden";
   return cn(bgSolidClass[color], orientation === "vertical" ? "right-0 w-0.5" : "bottom-0 h-0.5", "rounded-full");
 }

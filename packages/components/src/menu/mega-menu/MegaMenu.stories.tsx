@@ -214,7 +214,7 @@ export const StickyPosition: Story = {
       "konumunu izler; kaydırılan kapsayıcı onu kırpmaz.",
     `
 <MegaMenu data={data} menuPosition="sticky" logo={<MariLogo size={36} />} logoHref="/" />
-<main>…</main>`
+<main className="p-6">Sayfa içeriği — menü kaydırırken üstte kalır.</main>`
   ),
   render: (args) => (
     <div className="h-96 overflow-y-auto">

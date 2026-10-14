@@ -132,7 +132,7 @@ export const DeleteConfirm: Story = {
     close();
   }}
 >
-  <Input value={typed} onChange={…} />
+  <Input aria-label="Onay için proje adı" value={typed} onChange={(e) => setTyped(e.target.value)} />
 </Modal>`
   ),
   render: () => {
@@ -321,10 +321,10 @@ export const InviteForm: Story = {
   onConfirm={send}
 >
   <Field label="E-posta adresi" required error={emailError}>
-    <Input data-autofocus type="email" … />
+    <Input data-autofocus type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
   </Field>
   <Field label="Rol">
-    <RadioGroup options={roles} … />
+    <RadioGroup options={["Görüntüleyici", "Editör", "Yönetici"]} value={role} onChange={setRole} />
   </Field>
 </Modal>`
   ),
@@ -479,7 +479,11 @@ export const PaymentSuccess: Story = {
   description="Makbuz e-posta adresinize gönderildi."
   footer={<Button block onClick={close}>Tamam</Button>}
 >
-  <dl>…</dl>
+  <dl className="grid grid-cols-2 gap-2 text-sm">
+    <dt>Tutar</dt><dd>1.299,00 ₺</dd>
+    <dt>Kart</dt><dd>**** 4411</dd>
+    <dt>Sipariş no</dt><dd>#48213</dd>
+  </dl>
 </Modal>`
   ),
   render: () => {
@@ -547,7 +551,12 @@ export const LongContent: Story = {
   description="Son güncelleme: 1 Eylül 2026"
   footer={<Button disabled={!readToEnd} onClick={accept}>Kabul et</Button>}
 >
-  <div onScroll={trackScroll}>…</div>
+  <div onScroll={trackScroll} className="max-h-80 overflow-y-auto">
+    <h3>1. Taraflar</h3>
+    <p>Bu koşullar mari-ui hizmetini kullanan herkes için geçerlidir.</p>
+    <h3>2. Gizlilik</h3>
+    <p>Kişisel verileriniz yalnız hizmetin sunulması için işlenir.</p>
+  </div>
 </Modal>`
   ),
   render: () => {
@@ -608,7 +617,10 @@ export const LongContent: Story = {
 
 export const Sizes: Story = {
   name: "Boyutlar",
-  ...storyDoc("`sm` 400 / `md` 520 / `lg` 720px; `width` ile özel genişlik.", `<Modal size="lg" …>…</Modal>`),
+  ...storyDoc("`sm` 400 / `md` 520 / `lg` 720px; `width` ile özel genişlik.", `
+<Modal size="sm" open={open} onClose={close} title="Küçük (400px)"><p>Kısa onay metinleri için.</p></Modal>
+<Modal size="md" open={open} onClose={close} title="Orta (520px)"><p>Varsayılan; çoğu form için.</p></Modal>
+<Modal size="lg" open={open} onClose={close} title="Büyük (720px)"><p>Tablo ya da uzun içerik için.</p></Modal>`),
   render: () => {
     // Açık/kapalı ayrı state: kapanırken boyut SABİT kalmalı — eskiden
     // `size` null'a çekilip `md`'ye düşüyordu, büyük modal kapanış
@@ -663,6 +675,8 @@ function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
 
 export const SkeletonState: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Modal open title="Sipariş #48213" skeleton>…</Modal>`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Modal open title="Sipariş #48213" skeleton>
+  <p>3 ürün · 1.299,00 ₺ · Kargoya verildi</p>
+</Modal>`),
   render: () => <SkeletonDemo>{(skeleton) => <SkeletonOverlayDemo skeleton={skeleton} />}</SkeletonDemo>,
 };

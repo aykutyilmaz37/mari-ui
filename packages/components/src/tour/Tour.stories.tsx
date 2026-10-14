@@ -7,7 +7,7 @@
 import React, { useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { BellIcon, FilterIcon, PlusIcon, SparklesIcon } from "lucide-react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
 import { Button } from "../button";
 import { Input } from "../input";
@@ -55,7 +55,24 @@ export default meta;
 type Story = StoryObj<typeof Tour>;
 
 export const Playground: Story = {
-  ...storyDoc("İki adımlı örnek tur; kontrollerden karartma (`mask`), ok (`arrow`) ve diğerleri."),
+  ...storyDoc(
+    "İki adımlı örnek tur; kontrollerden karartma (`mask`), ok (`arrow`) ve diğerleri.",
+    (args) => `
+const [open, setOpen] = useState(false);
+const targetRef = useRef<HTMLButtonElement>(null);
+
+<Button onClick={() => setOpen(true)}>Turu başlat</Button>
+<Button ref={targetRef} variant="outline" color="neutral">Hedef düğme</Button>
+<Tour
+  ${jsxProps(args, { skip: ["open", "steps"] })}
+  open={open}
+  onOpenChange={setOpen}
+  steps={[
+    { title: "Hoş geldiniz", description: "Ortada açılan karşılama adımı." },
+    { title: "Hedef", description: "Bu adım bir öğeyi vurgular.", target: () => targetRef.current },
+  ]}
+/>`
+  ),
   args: { mask: true, arrow: true },
   render: (args) => {
     const [open, setOpen] = useState(false);
@@ -84,17 +101,32 @@ export const Onboarding: Story = {
   ...storyDoc(
     "İlk adım hedefsiz (ortada karşılama, görsel), sonrakiler arayüz öğelerini vurgular. Hedefler `ref` ile verilir; adım " +
       "metinleri kısa. Son adımda \"Bitir\" → `onFinish` (ör. \"tur görüldü\" bilgisini kaydedin).",
-    `const newRef = useRef<HTMLButtonElement>(null);
+    `const [open, setOpen] = useState(false);
+const newRef = useRef<HTMLButtonElement>(null);
+const searchRef = useRef<HTMLDivElement>(null);
+const bellRef = useRef<HTMLButtonElement>(null);
+
+<Button ref={newRef} size="sm" icon={<PlusIcon size={16} />}>Yeni proje</Button>
+<div ref={searchRef}>
+  <Input size="sm" aria-label="Projelerde ara" placeholder="Ara" />
+</div>
+<Button ref={bellRef} size="sm" variant="ghost" color="neutral" aria-label="Bildirimler" icon={<BellIcon size={16} />} />
+<Button onClick={() => setOpen(true)}>Turu başlat</Button>
 
 <Tour
   open={open}
   onOpenChange={setOpen}
-  onFinish={() => markTourSeen()}
+  onFinish={() => localStorage.setItem("tour-seen", "1")}
   steps={[
-    { title: "mari-ui'ya hoş geldiniz", description: "Bir dakikada temel adımlar.", cover: <img … /> },
-    { title: "Proje oluşturun", description: "…", target: () => newRef.current },
-    { title: "Filtreleyin", description: "…", target: () => filterRef.current, placement: "bottom-start" },
-    { title: "Bildirimler", description: "…", target: () => bellRef.current, placement: "bottom-end" },
+    {
+      title: "mari-ui'ya hoş geldiniz",
+      description: "Bir dakikada temel adımları gösterelim.",
+      cover: <div aria-hidden className="grid h-28 place-items-center bg-mari-primary-subtle text-mari-primary"><SparklesIcon size={40} /></div>,
+      nextButtonText: "Başlayalım",
+    },
+    { title: "Proje oluşturun", description: "Her iş bir projede toplanır: görevler, dosyalar ve ekip.", target: () => newRef.current },
+    { title: "Arayın ve filtreleyin", description: "Ada, sahibine ya da duruma göre projeleri daraltın.", target: () => searchRef.current, placement: "bottom-start" },
+    { title: "Bildirimler", description: "Size atanan görevler ve yorumlar burada.", target: () => bellRef.current, placement: "bottom-end" },
   ]}
 />`
   ),
@@ -162,7 +194,14 @@ export const FeatureHint: Story = {
   name: "Yeni Özellik İpucu (Karartmasız)",
   ...storyDoc(
     "Tek adım, `mask={false}`: sayfa kullanılabilir kalır, tur modal değildir. Hafif bir \"yeni\" duyurusu için.",
-    `<Tour mask={false} defaultOpen steps={[{ title: "Yeni: Akıllı filtreler", description: "…", target: () => ref.current, nextButtonText: "Anladım" }]} />`
+    `const filterRef = useRef<HTMLButtonElement>(null);
+
+<Button ref={filterRef} variant="outline" color="neutral" icon={<FilterIcon size={16} />}>Akıllı filtre</Button>
+<Tour
+  mask={false}
+  defaultOpen
+  steps={[{ title: "Yeni: Akıllı filtreler", description: "Sık kullandığınız filtreleri kaydedin, tek tıkla uygulayın.", target: () => filterRef.current, nextButtonText: "Anladım" }]}
+/>`
   ),
   render: () => {
     const ref = useRef<HTMLButtonElement>(null);

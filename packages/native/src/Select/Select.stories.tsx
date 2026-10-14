@@ -148,10 +148,25 @@ function PaymentDemo() {
 
 export const Grouped: Story = {
   name: "Ödeme Yöntemi (Gruplu)",
-  ...storyDoc("Seçenekler `{ label, options }` ile gruplanır; ekran okuyucu grubu liste olarak okur. Kullanılamayan seçenek `disabled` + nedeni `description`da.", `<Select defaultValue="credit" options={[
-  { label: "Kart", options: [{ value: "credit", label: "Kredi kartı", icon: <CreditCard />, description: "Tek çekim ya da taksit" }, …] },
-  { label: "Havale", options: [{ value: "corp", label: "Kurumsal hesap", disabled: true, description: "Yalnız kurumsal üyeler" }, …] },
-]} />`),
+  ...storyDoc("Seçenekler `{ label, options }` ile gruplanır; ekran okuyucu grubu liste olarak okur. Kullanılamayan seçenek `disabled` + nedeni `description`da.", `<Select
+  defaultValue="credit"
+  options={[
+    {
+      label: "Kart",
+      options: [
+        { value: "credit", label: "Kredi kartı", icon: <CreditCard size={20} />, description: "Tek çekim ya da taksit" },
+        { value: "debit", label: "Banka kartı", icon: <Wallet size={20} /> },
+      ],
+    },
+    {
+      label: "Havale",
+      options: [
+        { value: "eft", label: "Havale / EFT", icon: <Landmark size={20} />, description: "1 iş günü içinde onay" },
+        { value: "corp", label: "Kurumsal hesap", icon: <Building2 size={20} />, description: "Yalnız kurumsal üyeler", disabled: true },
+      ],
+    },
+  ]}
+/>`),
   render: () => <PaymentDemo />,
 };
 
@@ -189,7 +204,18 @@ export const FreeText: Story = {
 
 export const SizesAndVariants: Story = {
   name: "Boyut ve Görünüm",
-  ...storyDoc("Boyut, varyant ve şekil Input'la aynı ölçekten — formda Input ile aynı hizada durur.", `<Select size="sm" variant="soft" options={…} />`),
+  ...storyDoc("Boyut, varyant ve şekil Input'la aynı ölçekten — formda Input ile aynı hizada durur.", `const cities = [
+  { value: "adana", label: "Adana" },
+  { value: "ankara", label: "Ankara" },
+  { value: "antalya", label: "Antalya" },
+  { value: "bursa", label: "Bursa" },
+];
+
+<Select size="sm" options={cities} placeholder="Şehir seçin" accessibilityLabel="Şehir" />
+<Select size="lg" options={cities} placeholder="Şehir seçin" accessibilityLabel="Şehir" />
+<Select variant="soft" options={cities} placeholder="Şehir seçin" accessibilityLabel="Şehir" />
+<Select variant="underlined" options={cities} placeholder="Şehir seçin" accessibilityLabel="Şehir" />
+<Select shape="pill" options={cities} placeholder="Şehir seçin" accessibilityLabel="Şehir" />`),
   render: () => (
     <Stack>
       {(["sm", "md", "lg"] as const).map((size) => (
@@ -205,10 +231,17 @@ export const SizesAndVariants: Story = {
 
 export const States: Story = {
   name: "Durumlar",
-  ...storyDoc("Doğrulama hatası: `Field`'a `error` verin — kırmızı kenarlık, hata ekran okuyucu ipucu olur. Devre dışı ve yükleniyor.", `<Field label="Kategori" error="Bir kategori seçin">
-  <Select options={…} />
+  ...storyDoc("Doğrulama hatası: `Field`'a `error` verin — kırmızı kenarlık, hata ekran okuyucu ipucu olur. Devre dışı ve yükleniyor.", `const cities = [
+  { value: "adana", label: "Adana" },
+  { value: "ankara", label: "Ankara" },
+  { value: "antalya", label: "Antalya" },
+  { value: "bursa", label: "Bursa" },
+];
+
+<Field label="Kategori" error="Bir kategori seçin">
+  <Select options={cities} placeholder="Seçin" />
 </Field>
-<Select disabled defaultValue="ankara" options={…} />
+<Select disabled defaultValue="ankara" options={cities} />
 <Select loading options={[]} />`),
   render: () => (
     <Stack>
