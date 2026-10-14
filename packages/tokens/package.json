@@ -3,6 +3,16 @@
   "version": "0.1.0",
   "description": "mari-ui design system'inin platform-agnostic token kaynağı (renk, spacing, radius, typography, shadow, z-index, motion).",
   "license": "MIT",
+  "author": "Aykut Yılmaz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aykutyilmaz37/mari-ui.git",
+    "directory": "packages/tokens"
+  },
+  "homepage": "https://github.com/aykutyilmaz37/mari-ui#readme",
+  "bugs": {
+    "url": "https://github.com/aykutyilmaz37/mari-ui/issues"
+  },
   "type": "module",
   "sideEffects": [
     "*.css"
@@ -48,5 +58,9 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.0",
     "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

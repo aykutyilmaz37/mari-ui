@@ -17,10 +17,15 @@
     "native": "pnpm --filter @mari-ui/native-studio start",
     "native:web": "pnpm --filter @mari-ui/native-studio web",
     "clean": "turbo run clean && rm -rf node_modules",
-    "audit": "pnpm audit --audit-level critical"
+    "audit": "pnpm audit --audit-level critical",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=./packages/* && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "2.29.7",
     "turbo": "^2.3.0",
     "typescript": "^5.7.0"
-  }
+  },
+  "license": "MIT"
 }

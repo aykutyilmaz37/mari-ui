@@ -86,4 +86,4 @@ Renk, köşe ve boşluk yoğunluğu CSS değişkeni olduğundan **çalışma zam
 
 ## Yayın
 
-Paketler `0.1.0` ve henüz npm'e yayınlanmadı; sürüm/yayın süreci (changesets vb.) kurulmadı.
+Beş paket (`tokens`, `core`, `components`, `native`, `cli`) npm'de public ve MIT; `0.x` döneminde. Sürümleme [changesets](https://github.com/changesets/changesets) ile, beşi **birlikte** (`fixed`) — tasarım sisteminde paketler arası sürüm uyumsuzluğu olmasın. main'e gelen changeset'leri bir "sürüm paketleri" PR'ı toplar; merge edilince `release.yml` derleyip yayınlar (npm provenance). `workspace:*` bağımlılıkları yayında gerçek sürüme çevrilir. Akış: [CONTRIBUTING.md](../CONTRIBUTING.md#sürüm-ve-yayın).
