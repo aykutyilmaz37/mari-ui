@@ -1,14 +1,15 @@
 # Erişilebilirlik (a11y) disiplini — Faz 9
 
-Bu proje üç KATMANLI bir erişilebilirlik güvenlik ağı kullanır — hiçbiri tek başına yeterli değil, üçü birlikte hem derleme zamanında hem çalışma zamanında hem de gözle denetlemeyi kapsıyor:
+Bu proje dört KATMANLI bir erişilebilirlik güvenlik ağı kullanır — hiçbiri tek başına yeterli değil, dördü birlikte hem derleme zamanında hem çalışma zamanında hem de gözle denetlemeyi kapsıyor:
 
 | Katman | Araç | Ne zaman çalışır | Ne yakalar |
 |---|---|---|---|
 | 1. Statik analiz | `eslint-plugin-jsx-a11y` (`@mari-ui/eslint-config/react`, sadece web) | `pnpm lint`, her push/PR'da CI'da (Faz 8) | Eksik `alt`, geçersiz ARIA rolü/attribute, klavyeyle erişilemeyen interaktif element, `autoFocus` kötüye kullanımı, ... |
 | 2. Otomatik çalışma zamanı denetimi | `axe-core` (doğrudan, `src/testUtils/a11y.ts`) | `pnpm test` (vitest/jsdom), CI'da | ARIA ilişkileri, rol/isim hesaplaması, focus-able olmayan interaktif elementler — component GERÇEKTEN render edilmiş haliyle |
 | 3. Görsel/manuel denetim | `@storybook/addon-a11y` (Faz 4) | Storybook'u açıp gözle bakınca | Renk kontrastı (jsdom'da çalışmayan tek şey — bkz. aşağıda), gerçek tarayıcı düzeni, ekran okuyucu ile fiili deneyim |
+| 4. Her story'de gerçek tarayıcıda axe (2026-10) | `@storybook/test-runner` + `axe-playwright` (`apps/docs/.storybook/test-runner.ts`) | `pnpm -F @mari-ui/docs test-storybook:ci`, her push/PR'da CI'da | 3. katmanın yakaladığı her şey (renk kontrastı dahil) — web + native, ~840 story, kimse Storybook'u açmasa da. Story `parameters.a11y.disable` / `config.rules` ile ayarlanabilir (gerekçesiyle). |
 
-**Neden üçü birden**: 2. katman olmadan 1. katman sadece JSX'in KENDİSİNE bakar — `role="none"` gibi "teknik olarak geçerli ama semantik olarak yanlış" bir kaçamak, statik kural setini kolayca atlatabilir (fiilen `Modal`de böyle oldu, bkz. aşağıda). 3. katman olmadan RENK KONTRASTI hiç denetlenmez (jsdom piksel render etmiyor). Storybook'un addon-a11y'si otomatik ÇALIŞTIRILMADIĞI (birinin Storybook'u AÇIP bakması gerektiği) için CI'a bağlı DEĞİL — bu, sadece 3. katmana güvenmenin neden yetmediğinin kanıtı.
+**Neden hepsi birden**: 2. katman olmadan 1. katman sadece JSX'in KENDİSİNE bakar — `role="none"` gibi "teknik olarak geçerli ama semantik olarak yanlış" bir kaçamak, statik kural setini kolayca atlatabilir (fiilen `Modal`de böyle oldu, bkz. aşağıda). Gerçek tarayıcı katmanları (3–4) olmadan RENK KONTRASTI hiç denetlenmez (jsdom piksel render etmiyor). Storybook'un addon-a11y'si otomatik ÇALIŞTIRILMADIĞI (birinin Storybook'u AÇIP bakması gerektiği) için 4. katman aynı motoru (axe) her story'de CI'da gerçek tarayıcıda koşturur; kontrast da artık otomatik denetlenir.
 
 ## Faz 9'da fiilen bulunup düzeltilen gerçek hatalar
 
@@ -29,4 +30,4 @@ Bu checklist Faz 13'ün (backlog madde 18 — component bazlı detaylı gözden 
 
 ## Bilinen sınırlama
 
-`axe-core`nin `color-contrast` kuralı jsdom'da (gerçek piksel render'ı olmadığı için) ÇALIŞTIRILAMIYOR — `src/testUtils/a11y.ts`te bilinçli olarak devre dışı. Bu eksik değil: kontrast garantisi zaten Faz 1'in matematiksel otomasyonundan geliyor (bkz. `packages/tokens/src/contrast.ts`). `axe-core`nin GERÇEK tarayıcıda çalışan versiyonu (Storybook'un addon-a11y'si) bunu ayrıca doğrular.
+`axe-core`nin `color-contrast` kuralı jsdom'da (gerçek piksel render'ı olmadığı için) ÇALIŞTIRILAMIYOR — `src/testUtils/a11y.ts`te bilinçli olarak devre dışı. Bu eksik değil: kontrast garantisi zaten Faz 1'in matematiksel otomasyonundan geliyor (bkz. `packages/tokens/src/contrast.ts`). `axe-core`nin GERÇEK tarayıcıda çalışan versiyonu bunu ayrıca doğrular: elle Storybook a11y panelinde, otomatik olarak CI'daki story testlerinde (4. katman).

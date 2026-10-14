@@ -41,9 +41,10 @@ packages/
   tokens/      @mari-ui/tokens       platform-agnostic tek token kaynağı, tema çözümleme, tema kalıcılığı
   core/        @mari-ui/core         headless mantık: cn(), variant tabloları, paylaşılan eksen tipleri
   components/  @mari-ui/components   web component'leri (her biri ayrı subpath: @mari-ui/components/button)
-  native/      @mari-ui/native       React Native component'leri (Button, Input, Card, List)
+  native/      @mari-ui/native       React Native component'leri (web ile aynı prop adları, ~45 component)
   cli/         @mari-ui/cli          init / sync / theme — tema üretimi ve AI ajan kuralları
   modules/     (iskelet)             sayfa modülleri — backend sözleşmesi netleşince
+  (utils)                            UI'dan bağımsız yardımcılar (dataLayer, captcha) ayrı projeye taşındı
   tsconfig/, eslint-config/          paylaşılan yapılandırma (yayınlanmaz)
 ```
 
@@ -56,12 +57,14 @@ pnpm install
 pnpm build        # tüm paketler (turbo)
 pnpm storybook    # http://localhost:6006
 pnpm test
-pnpm lint
+pnpm test:coverage                          # paket başına eşikli coverage (CI bunu koşar)
+pnpm lint                                   # tip bilgili (sonarjs, jsx-a11y)
 pnpm typecheck
+pnpm -F @mari-ui/docs test-storybook:ci     # build sonrası: her story'de çizim + etkileşim + axe
 ```
 
 Node ≥ 20, pnpm. Katkı süreci ve yeni component kontrol listesi: [CONTRIBUTING.md](CONTRIBUTING.md). Erişilebilirlik ve güvenlik: [ACCESSIBILITY.md](ACCESSIBILITY.md), [SECURITY.md](SECURITY.md).
 
 ## Durum
 
-Paketler `0.1.0`; henüz npm'e yayınlanmadı ve bir sürüm/yayın süreci (changesets vb.) kurulmadı. CI her PR'da build, lint, tip kontrolü, test ve bağımlılık taramasını çalıştırır.
+Paketler `0.1.0`; henüz npm'e yayınlanmadı ve bir sürüm/yayın süreci (changesets vb.) kurulmadı. CI her PR'da build, tip bilgili lint, tip kontrolü, eşikli coverage, story testleri (Playwright + axe) ve bağımlılık taramasını çalıştırır.

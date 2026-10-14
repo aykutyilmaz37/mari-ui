@@ -84,7 +84,12 @@ pnpm --filter @mari-ui/components exec eslint src/<ad>
 pnpm --filter @mari-ui/components exec vitest run src/<ad>
 ```
 
-- ESLint `sonarjs` bilişsel karmaşıklık sınırı 15: aşan render'ı alt bileşenlere / saf yardımcılara bölün. `eslint-disable` yalnız gerekçesiyle (`-- neden`).
+- ESLint **tip bilgili** çalışır: `sonarjs`in tip isteyen kuralları da (ör. `prefer-read-only-props`, `deprecation`) etkin. Component props'ları `Readonly<…>` yazılır.
+- `sonarjs` bilişsel karmaşıklık sınırı 15: aşan render'ı alt bileşenlere / saf yardımcılara bölün. `eslint-disable` yalnız gerekçesiyle (`-- neden`).
+- Bir `sonarjs` kuralını kapatırsanız (`packages/eslint-config/base.mjs`), aynı kuralı Sonar anahtarıyla kökteki `.vscode/settings.json`da (`sonarlint.rules`) da kapatın — VS Code'daki SonarQube for IDE ile CLI aynı şeyi göstersin.
+- Coverage eşikleri paket başına `vitest.config.ts`te (bugünkü oranın ~1 puan altı). Test eklediğinizde oran yükseldiyse eşiği de yükseltin.
+- Yeni / değişen story'ler CI'da Playwright'ta açılır ve axe'tan geçer: `pnpm build` sonrası `pnpm -F @mari-ui/docs test-storybook:ci` (tek dosya: `… test-storybook --url … <ad>`).
+- Paket yayınlanana kadar eski prop adları için `@deprecated` takma ad tutulmaz; ad değişirse kullanım yerleri de değiştirilir.
 - Davranışı Storybook'ta gerçek tarayıcıda da deneyin (fare, klavye, dar ekran).
 
 ### Değişiklik başka yerleri etkiliyorsa
