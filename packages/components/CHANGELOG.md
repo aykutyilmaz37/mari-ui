@@ -1,5 +1,13 @@
 # @mari-ui/components
 
+## 0.1.2
+
+### Patch Changes
+
+- 01c95ef: İlk gerçek kurulum (POC) bulguları: `body` artık temanın yüzey ve metin rengini alır (koyu temada sayfa tarayıcının kendi koyu zeminine düşüyordu). `init` bağımlılıkları `"latest"` yerine CLI'ın sürüm aralığıyla (`^x.y.z`) yazar. CLI'ın önerdiği tema CSS import yolu, dosyanın proje köküne yazıldığını hesaba katar (`../mari-ui-theme.css`).
+- @mari-ui/core@0.1.2
+  - @mari-ui/tokens@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
