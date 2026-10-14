@@ -1,9 +1,10 @@
 name: Release
 
-# main'e changeset'li bir PR birleşince changesets/action bir "Version Packages"
-# PR'ı açar (sürüm + CHANGELOG). O PR merge edilince paketler npm'e yayınlanır.
-# Yayınlanacak sürüm yoksa (ilk sürüm 0.1.0 dahil) `changeset publish`
-# npm'de olmayan sürümleri doğrudan yayınlar.
+# main'e changeset'li bir PR birleşince changesets/action bir "sürüm paketleri"
+# PR'ı açar (sürüm + CHANGELOG). O PR merge edilince npm'de olmayan sürümler
+# TASLAK olarak yüklenir (scripts/stage-release.mjs, `npm stage publish`);
+# maintainer npmjs.com → Staged Packages'tan 2FA ile onaylayınca yayınlanır.
+# Kimlik GitHub OIDC (trusted publishing): token yok, provenance npm'ce eklenir.
 
 on:
   push:
@@ -17,13 +18,13 @@ concurrency: release-${{ github.ref }}
 permissions:
   contents: write
   pull-requests: write
-  # npm provenance (paketin bu iş akışından derlendiğinin imzası) — repo public olmalı.
+  # npm trusted publishing (OIDC) ve provenance — repo public olmalı.
   id-token: write
 
 jobs:
   release:
     name: Version PR / npm yayını
-    # NPM_TOKEN secret'ı eklenip repo değişkeni RELEASE_ENABLED=true yapılana
+    # Repo değişkeni RELEASE_ENABLED=true yapılana
     # kadar çalışmaz (yoksa her main push'unda yayın denenip düşerdi).
     if: vars.RELEASE_ENABLED == 'true'
     # ubuntu-latest 2026-10-19'dan itibaren Ubuntu 26'ya geçiyor; Playwright'ın sistem
@@ -34,12 +35,16 @@ jobs:
 
       - uses: pnpm/action-setup@v6
 
-      # CI ile aynı LTS (bkz. ci.yml).
+      # CI ile aynı LTS (bkz. ci.yml). `registry-url` YOK: setup-node'un yazdığı
+      # .npmrc'deki boş `_authToken`, npm'in OIDC değişimini engelleyebiliyor.
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
+
+      # `npm stage publish` npm CLI 11.15.0+ ister (Node 22'yle gelen daha eski).
+      - name: npm CLI (staged publishing)
+        run: npm install -g npm@^11.15.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -52,6 +57,6 @@ jobs:
           pr-title: "chore: sürüm paketleri"
           commit-message: "chore: sürüm paketleri"
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Taslak onaylanmadan "yayınlandı" sayılmasın: sürüm etiketi / GitHub Release yok.
+          create-github-releases: false
+          push-git-tags: false
