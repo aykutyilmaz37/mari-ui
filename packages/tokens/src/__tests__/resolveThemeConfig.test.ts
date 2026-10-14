@@ -118,26 +118,26 @@ it("özel primary odak halkasına da yansır", () => {
   for (const theme of [resolved.light, resolved.dark]) {
     expect(theme.color.canvas.ring).toBe(theme.color.primary.text);
   }
+});
 
-  describe("density.radius (Faz 15 preset)", () => {
-    it("md skalayı olduğu gibi bırakır", () => {
-      expect(scaleRadius("md")).toEqual(radius);
-    });
+describe("density.radius (Faz 15 preset)", () => {
+  it("md skalayı olduğu gibi bırakır", () => {
+    expect(scaleRadius("md")).toEqual(radius);
+  });
 
-    it("none her şeyi 0 yapar, full'e dokunmaz", () => {
-      expect(scaleRadius("none")).toEqual({ none: "0px", sm: "0px", md: "0px", lg: "0px", xl: "0px", full: radius.full });
-    });
+  it("none her şeyi 0 yapar, full'e dokunmaz", () => {
+    expect(scaleRadius("none")).toEqual({ none: "0px", sm: "0px", md: "0px", lg: "0px", xl: "0px", full: radius.full });
+  });
 
-    it("sm yarıya, lg 1.5 katına ölçekler", () => {
-      expect(scaleRadius("sm")).toMatchObject({ sm: "0.125rem", md: "0.25rem", lg: "0.375rem", xl: "0.5rem" });
-      expect(scaleRadius("lg")).toMatchObject({ sm: "0.375rem", md: "0.75rem", lg: "1.125rem", xl: "1.5rem" });
-    });
+  it("sm yarıya, lg 1.5 katına ölçekler", () => {
+    expect(scaleRadius("sm")).toMatchObject({ sm: "0.125rem", md: "0.25rem", lg: "0.375rem", xl: "0.5rem" });
+    expect(scaleRadius("lg")).toMatchObject({ sm: "0.375rem", md: "0.75rem", lg: "1.125rem", xl: "1.5rem" });
+  });
 
-    it("light, dark ve isimli temaların hepsine ve CSS değişkenlerine yansır", () => {
-      const resolved = resolveThemeConfig({ density: { radius: "none" }, themes: { brand: { base: "light" } } });
-      expect(resolved.radiusDensity).toBe("none");
-      for (const theme of [resolved.light, resolved.dark, resolved.themes.brand]) expect(theme?.radius.md).toBe("0px");
-      expect(themeToCssVariables(resolved.light)["--mari-radius-lg"]).toBe("0px");
-    });
+  it("light, dark ve isimli temaların hepsine ve CSS değişkenlerine yansır", () => {
+    const resolved = resolveThemeConfig({ density: { radius: "none" }, themes: { brand: { base: "light" } } });
+    expect(resolved.radiusDensity).toBe("none");
+    for (const theme of [resolved.light, resolved.dark, resolved.themes.brand]) expect(theme?.radius.md).toBe("0px");
+    expect(themeToCssVariables(resolved.light)["--mari-radius-lg"]).toBe("0px");
   });
 });

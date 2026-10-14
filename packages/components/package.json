@@ -304,7 +304,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
-    "@vitest/coverage-v8": "3.2.7",
+    "@vitest/coverage-v8": "4.1.11",
     "axe-core": "^4.13.0",
     "concurrently": "^9.1.2",
     "embla-carousel-autoplay": "^8.6.0",
@@ -319,7 +319,7 @@
     "tsup": "^8.3.5",
     "tsx": "^4.23.13",
     "typescript": "^5.7.0",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public",
