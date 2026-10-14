@@ -33,7 +33,7 @@ const joinIds = (...ids: Array<string | undefined>) => ids.filter(Boolean).join(
 export interface FieldControlProps {
   id?: string;
   "aria-describedby"?: string;
-  "aria-invalid"?: React.AriaAttributes["aria-invalid"];
+  "aria-invalid"?: Exclude<React.AriaAttributes["aria-invalid"], undefined>;
   required?: boolean;
   disabled?: boolean;
   color?: ColorRole;

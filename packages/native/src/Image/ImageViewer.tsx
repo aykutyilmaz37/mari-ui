@@ -399,7 +399,7 @@ interface GestureContext {
   stage: Size;
   base: Size;
   anim: ViewerAnim;
-  view: React.MutableRefObject<ViewState>;
+  view: React.RefObject<ViewState>;
   onClose: () => void;
   setIndex: (index: number) => void;
   applyView: (next: ViewState, animated?: boolean) => void;
@@ -411,7 +411,7 @@ interface GestureContext {
  * Sahnenin jest makinesi: tek parmak → yön belirlenince kaydır / aşağı çek /
  * (yakınken) gez; iki parmak → yakınlaştır; kısa dokunuş → tek/çift dokunuş.
  */
-function createViewerGestures(ref: React.MutableRefObject<GestureContext>) {
+function createViewerGestures(ref: React.RefObject<GestureContext>) {
   const g: Gesture = { kind: null, view: IDENTITY, baseDx: 0, baseDy: 0, distance: 0, mid: { x: 0, y: 0 }, moved: false, startedAt: 0 };
   let lastTap: { t: number; x: number; y: number } | null = null;
   let tapTimer: ReturnType<typeof setTimeout> | undefined;

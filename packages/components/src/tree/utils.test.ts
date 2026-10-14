@@ -74,7 +74,7 @@ describe("tree/utils", () => {
   it("searchTree + splitMatch: Türkçe harf duyarsız; atalar açılır", () => {
     const r = searchTree(index, "UTİL")!;
     expect([...r.matches]).toEqual(["utils"]);
-    expect([...r.expand].sort()).toEqual(["lib", "src"]);
+    expect([...r.expand].sort((a, b) => a.localeCompare(b))).toEqual(["lib", "src"]);
     expect(r.visible.has("app")).toBe(false);
     expect([...searchTree(index, "istanbul")!.matches]).toEqual(["İstanbul"]);
     // Latin büyük I: tr küçültmesi "ı" yapardı.

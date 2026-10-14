@@ -16,7 +16,7 @@ import type { TreeNode, TreeProps } from "./types";
 export type { TreeCheckInfo, TreeNode, TreeProps } from "./types";
 
 /** Başlık: düz metinse arama eşleşmesi vurgulu (kalın + rol rengi). */
-function Title({ node, searchValue, style, matchColor, render }: Readonly<{ node: TreeNode; searchValue?: string; style: TextStyle; matchColor: string; render?: TreeProps["titleRender"] }>) {
+function Title({ node, searchValue, style, matchColor, render }: Readonly<{ node: TreeNode; searchValue?: string; style: TextStyle; matchColor: string; render?: Exclude<TreeProps["titleRender"], undefined> }>) {
   if (render) return <>{render(node)}</>;
   if (typeof node.title !== "string" && typeof node.title !== "number") return <>{node.title}</>;
   const parts = splitMatch(String(node.title), searchValue ?? "");
@@ -52,7 +52,7 @@ interface RowProps {
   onCheck: () => void;
   showLine: boolean;
   searchValue?: string;
-  titleRender?: TreeProps["titleRender"];
+  titleRender?: Exclude<TreeProps["titleRender"], undefined>;
   color: ColorRole;
   skeleton: boolean;
   m: NativeTreeSize;

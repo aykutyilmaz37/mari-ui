@@ -67,8 +67,8 @@ function DropdownRoot({ children, hover = false, className }: Readonly<DropdownP
       if (event.key === "Tab" && focusInPanel) {
         const focusable = getFocusable(panel);
         const active = document.activeElement;
-        const leavingForward = !event.shiftKey && (focusable.length === 0 || active === focusable[focusable.length - 1]);
-        const leavingBackward = event.shiftKey && (focusable.length === 0 || active === focusable[0] || active === panel);
+        const leavingForward = !event.shiftKey && (focusable.length === 0 || active === (focusable.at(-1) ?? null));
+        const leavingBackward = event.shiftKey && (focusable.length === 0 || active === (focusable[0] ?? null) || active === panel);
         if (leavingForward || leavingBackward) {
           event.preventDefault();
           setVisible(false);

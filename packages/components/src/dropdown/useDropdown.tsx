@@ -35,7 +35,7 @@ interface DropdownContextType {
   /** Panelin `id`si — tetikleyicinin `aria-controls`ü bunu gösterir. */
   panelId: string;
   /** Klavyeyle açıldıysa panel görünür olunca odağın gideceği uç (Enter/Boşluk/↓ → ilk öğe, ↑ → son öğe); `false` → odak taşınmaz. */
-  focusPanelOnOpenRef: React.MutableRefObject<false | "first" | "last">;
+  focusPanelOnOpenRef: React.RefObject<false | "first" | "last">;
   /** `skeleton` açıkken tetikleyici yer tutucu çizer ve panel açılmaz. */
   skeleton: boolean;
   /** `hover` modundayken hem tetikleyici hem panel tarafından paylaşılan gecikmeli kapatma. */

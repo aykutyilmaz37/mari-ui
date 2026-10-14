@@ -84,7 +84,7 @@ export interface ImageGalleryProps extends SkeletonableProps {
   /** Seçim modunda araç çubuğuna eklenecek eylemler (paylaş, sil…). */
   selectionActions?: (keys: React.Key[]) => React.ReactNode;
   /** Görüntüleyicinin üst çubuğuna ek eylemler. */
-  viewerActions?: ImageViewerProps["actions"];
+  viewerActions?: Exclude<ImageViewerProps["actions"], undefined>;
   /** Tarih biçimi. Varsayılan: `"tr-TR"`. */
   locale?: string;
   /** Öğe yokken. Varsayılan: "Henüz fotoğraf yok". */
@@ -524,7 +524,7 @@ function GalleryToolbar({ title, selection, selectable, selectionActions, empty,
 }
 
 /** Normal çubukla aynı satır sayısı (`twoRows`) — seçime girince ızgara kaymaz. */
-function SelectionBar({ selection, selectionActions, empty, textStyle, twoRows }: Readonly<{ selection: Selection; selectionActions?: ToolbarProps["selectionActions"]; empty: boolean; textStyle: object; twoRows: boolean }>) {
+function SelectionBar({ selection, selectionActions, empty, textStyle, twoRows }: Readonly<{ selection: Selection; selectionActions?: Exclude<ToolbarProps["selectionActions"], undefined>; empty: boolean; textStyle: object; twoRows: boolean }>) {
   const count = selection.keys.length;
   const tools = (
     <>

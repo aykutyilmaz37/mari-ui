@@ -43,8 +43,8 @@ function handlePanelKey(event: KeyboardEvent, panel: HTMLElement, bar: HTMLEleme
     }
   }
   if (event.key !== "Tab") return;
-  const leavingForward = !event.shiftKey && active === focusable[focusable.length - 1];
-  const leavingBackward = event.shiftKey && active === focusable[0];
+  const leavingForward = !event.shiftKey && active === (focusable.at(-1) ?? null);
+  const leavingBackward = event.shiftKey && active === (focusable[0] ?? null);
   if (!leavingForward && !leavingBackward) return;
   event.preventDefault();
   close();
@@ -163,7 +163,7 @@ export function MegaMenu({ data, color = "primary", currentPath, onNavigate, men
 
       if (event.key === "Escape") {
         close();
-        if (focusInPanel || document.activeElement === trigger) trigger?.focus();
+        if (focusInPanel || document.activeElement === (trigger ?? null)) trigger?.focus();
         return;
       }
       if (!focusInPanel || !panel) return;
@@ -175,7 +175,7 @@ export function MegaMenu({ data, color = "primary", currentPath, onNavigate, men
     };
     const handleFocusIn = (event: FocusEvent) => {
       const target = event.target as Node;
-      if (panelRef.current?.contains(target) || target === triggerFor(openKey)) return;
+      if (panelRef.current?.contains(target) || triggerFor(openKey)?.contains(target)) return;
       close();
     };
 

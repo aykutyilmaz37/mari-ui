@@ -21,7 +21,7 @@ interface SelectPanelProps {
   loading: boolean;
   notFoundContent: React.ReactNode;
   listHeight: string;
-  optionRender?: SelectProps["optionRender"];
+  optionRender?: Exclude<SelectProps["optionRender"], undefined>;
   labelledBy?: string;
   label?: string;
   onPick: (option: SelectOption) => void;

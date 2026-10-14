@@ -67,7 +67,7 @@ export interface BoxStyle {
   aspectRatio?: number;
 }
 
-type Length = number | `${number}%` | string | null | undefined;
+type Length = number | `${number}%` | string | null;
 
 const sizeRatio = (size?: { width?: number; height?: number } | null) => (size?.width && size.height ? size.width / size.height : undefined);
 

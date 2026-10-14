@@ -150,7 +150,7 @@ const InputInner = (
     // tıklanabilirdi. İç butonlar (temizle, şifre) kendi işini yapar.
     const handleWrapperMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
       const target = e.target as HTMLElement;
-      if (disabled || target === innerRef.current || target.closest("button")) return;
+      if (disabled || innerRef.current?.contains(target) || target.closest("button")) return;
       e.preventDefault();
       innerRef.current?.focus();
     };

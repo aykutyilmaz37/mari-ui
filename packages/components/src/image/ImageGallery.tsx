@@ -47,7 +47,7 @@ export interface ImageGalleryItem {
   /** Izgarada `src` yerine gösterilecek küçük kaynak (CDN `loader`ı yoksa önerilir). */
   thumbnail?: ImageSource;
   caption?: React.ReactNode;
-  tracks?: ImageViewerItem["tracks"];
+  tracks?: Exclude<ImageViewerItem["tracks"], undefined>;
 }
 
 export interface ImageGalleryProps extends SkeletonableProps {
@@ -84,7 +84,7 @@ export interface ImageGalleryProps extends SkeletonableProps {
   /** Seçim modunda araç çubuğuna eklenecek eylemler (paylaş, sil…). */
   selectionActions?: (keys: React.Key[]) => React.ReactNode;
   /** Görüntüleyicinin üst çubuğuna ek eylemler. */
-  viewerActions?: ImageViewerProps["actions"];
+  viewerActions?: Exclude<ImageViewerProps["actions"], undefined>;
   /** Tarih biçimi. Varsayılan: `"tr-TR"`. */
   locale?: string;
   /** Öğe yokken. Varsayılan: "Henüz fotoğraf yok". */

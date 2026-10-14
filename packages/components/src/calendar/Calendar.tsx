@@ -200,7 +200,7 @@ interface YearBodyProps {
   fullscreen: boolean;
   locale?: string;
   validRange?: [Date, Date];
-  cellRender?: CalendarProps["cellRender"];
+  cellRender?: Exclude<CalendarProps["cellRender"], undefined>;
   onNavigate: (date: Date) => void;
   onPick: (date: Date) => void;
   skeleton: boolean;

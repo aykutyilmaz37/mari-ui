@@ -59,7 +59,7 @@ function Ring({ size, percent, fill, track }: Readonly<{ size: Size; percent: nu
   const c = 2 * Math.PI * r;
   return (
     <Svg width={box} height={box}>
-      <G rotation={-90} origin={`${box / 2}, ${box / 2}`}>
+      <G transform={`rotate(-90 ${box / 2} ${box / 2})`}>
         <Circle cx={box / 2} cy={box / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
         <Circle cx={box / 2} cy={box / 2} r={r} fill="none" stroke={fill} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={`${(clampPercent(percent) / 100) * c} ${c}`} />
       </G>

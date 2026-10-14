@@ -56,7 +56,7 @@ function useDismiss(open: boolean, anchorRef: ElRef, panelRef: ElRef, close: () 
       const panel = panelRef.current;
       if (e.key !== "Tab" || !panel?.contains(document.activeElement)) return;
       const items = getFocusables(panel);
-      const atEnd = e.shiftKey ? document.activeElement === items[0] || items.length === 0 : document.activeElement === items.at(-1) || items.length === 0;
+      const atEnd = e.shiftKey ? document.activeElement === (items[0] ?? null) || items.length === 0 : document.activeElement === (items.at(-1) ?? null) || items.length === 0;
       if (!atEnd) return;
       // Panel body'ye portal edildiğinden DOM sırası tetikleyiciden sonra değil: önce tetikleyiciye dön.
       triggerEl(anchorRef.current)?.focus();

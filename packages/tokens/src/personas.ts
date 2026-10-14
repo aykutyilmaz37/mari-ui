@@ -136,7 +136,7 @@ export function minimizeConfig(config: MariUiThemeConfig, defaults: MariUiThemeC
   };
   const out: MariUiThemeConfig = { persona: config.persona };
   for (const group of ["color", "typography", "density"] as ConfigGroup[]) {
-    const changed = Object.entries(config[group] ?? {}).filter(([key, value]) => value !== undefined && (base[group] as Record<string, unknown> | undefined)?.[key] !== value);
+    const changed = (Object.entries(config[group] ?? {}) as [string, unknown][]).filter(([key, value]) => value !== undefined && (base[group] as Record<string, unknown> | undefined)?.[key] !== value);
     if (changed.length) (out as Record<string, unknown>)[group] = Object.fromEntries(changed);
   }
   if (config.motion && config.motion !== base.motion) out.motion = config.motion;

@@ -35,12 +35,12 @@ describe("Transfer utils", () => {
     const visible = items.slice(0, 3);
     expect(selectAllState(visible, new Set(["a"]))).toEqual({ checked: false, indeterminate: true });
     expect(selectAllState(visible, new Set(["a", "b"]))).toEqual({ checked: true, indeterminate: false });
-    expect(toggleAll(visible, ["i"], true).sort()).toEqual(["a", "b", "i"]);
+    expect(toggleAll(visible, ["i"], true).sort((a, b) => a.localeCompare(b))).toEqual(["a", "b", "i"]);
     expect(toggleAll(visible, ["a", "b", "i"], false)).toEqual(["i"]);
   });
 
   it("rangeSelect: anchor ile tıklanan arası (devre dışı atlanır); anchor yoksa tek öğe", () => {
-    expect(rangeSelect(items, [], "a", "i", true).sort()).toEqual(["a", "b", "d", "i"]);
+    expect(rangeSelect(items, [], "a", "i", true).sort((a, b) => a.localeCompare(b))).toEqual(["a", "b", "d", "i"]);
     expect(rangeSelect(items, ["a", "b", "d"], "d", "a", false)).toEqual([]);
     expect(rangeSelect(items, [], null, "b", true)).toEqual(["b"]);
   });

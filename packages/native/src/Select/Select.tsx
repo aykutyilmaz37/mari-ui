@@ -89,7 +89,7 @@ interface OptionRowProps {
   selected: boolean;
   multiple: boolean;
   onPress: () => void;
-  render?: SelectBaseProps["optionRender"];
+  render?: Exclude<SelectBaseProps["optionRender"], undefined>;
 }
 
 /** Satırın varsayılan içeriği: ikon, etiket + açıklama, seçiliyse sağda ✓ (iOS liste seçimi). */
@@ -250,7 +250,7 @@ interface ListProps {
   values: SelectValue[];
   multiple: boolean;
   onChoose: (option: SelectOption) => void;
-  render?: SelectBaseProps["optionRender"];
+  render?: Exclude<SelectBaseProps["optionRender"], undefined>;
 }
 
 /** Paneldeki liste: yükleniyor, boş sonuç ya da (başlıklı) bölümler. */

@@ -59,7 +59,7 @@ function CircleTrack({ percent, successPercent, size, fill, track, success }: Re
   const arc = (p: number) => `${(p / 100) * c} ${c}`;
   return (
     <Svg width={CIRCLE[size]} height={CIRCLE[size]} viewBox={`0 0 ${box} ${box}`}>
-      <G rotation={-90} origin={`${box / 2}, ${box / 2}`}>
+      <G transform={`rotate(-90 ${box / 2} ${box / 2})`}>
         <Circle cx={box / 2} cy={box / 2} r={r} fill="none" strokeWidth={stroke} stroke={track} />
         {percent > 0 ? <Circle cx={box / 2} cy={box / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={arc(percent)} stroke={fill} /> : null}
         {successPercent > 0 ? <Circle cx={box / 2} cy={box / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={arc(successPercent)} stroke={success} /> : null}

@@ -13,7 +13,7 @@ const DOT_SIZE = { sm: "size-1.5", md: "size-2" } as const;
 const toLength = (v: number | string) => (typeof v === "number" ? `${v}px` : v);
 
 function displayCount(count: BadgeProps["count"], overflowCount: number): string | null {
-  if (count === undefined || count === null || count === "") return null;
+  if (count == null || count === "") return null;
   if (typeof count === "number") return count > overflowCount ? `${overflowCount}+` : String(count);
   return count;
 }

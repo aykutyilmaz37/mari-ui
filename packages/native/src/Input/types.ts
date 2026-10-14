@@ -58,13 +58,13 @@ export interface InputProps extends SkeletonableProps {
   /** @deprecated `type="password"` kullanın (web ile aynı). */
   secureTextEntry?: boolean;
   autoFocus?: boolean;
-  autoComplete?: TextInputProps["autoComplete"];
+  autoComplete?: Exclude<TextInputProps["autoComplete"], undefined>;
   /** Klavyedeki eylem tuşu (web `enterKeyHint`). */
-  returnKeyType?: TextInputProps["returnKeyType"];
-  onFocus?: TextInputProps["onFocus"];
-  onBlur?: TextInputProps["onBlur"];
+  returnKeyType?: Exclude<TextInputProps["returnKeyType"], undefined>;
+  onFocus?: Exclude<TextInputProps["onFocus"], undefined>;
+  onBlur?: Exclude<TextInputProps["onBlur"], undefined>;
   /** @deprecated `onPressEnter` kullanın. */
-  onSubmitEditing?: TextInputProps["onSubmitEditing"];
+  onSubmitEditing?: Exclude<TextInputProps["onSubmitEditing"], undefined>;
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   testID?: string;

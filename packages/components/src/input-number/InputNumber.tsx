@@ -228,7 +228,7 @@ function InputNumberInner(
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       onMouseDown={(e) => {
-        if (disabled || e.target === innerRef.current || (e.target as HTMLElement).closest("button")) return;
+        if (disabled || innerRef.current?.contains(e.target as Node) || (e.target as HTMLElement).closest("button")) return;
         e.preventDefault();
         innerRef.current?.focus();
       }}

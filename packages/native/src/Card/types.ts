@@ -33,8 +33,8 @@ export interface CardProps extends SkeletonableProps {
   /** Web classNames karşılığı: header/body/footer/cover/actions bölümlerinin stilleri. */
   slotStyles?: CardSlotStyles;
   /** Tüm kart dokunulabilir olur. İçinde başka düğmeler varsa bu prop'u kullanmayın. */
-  onPress?: PressableProps["onPress"];
-  onLongPress?: PressableProps["onLongPress"];
+  onPress?: Exclude<PressableProps["onPress"], undefined>;
+  onLongPress?: Exclude<PressableProps["onLongPress"], undefined>;
   testID?: string;
   accessibilityLabel?: string;
   accessibilityHint?: string;

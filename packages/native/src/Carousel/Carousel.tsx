@@ -59,7 +59,7 @@ export interface CarouselProps extends SkeletonableProps {
   dots?: boolean;
   dotPosition?: DotPosition;
   dotsPlacement?: DotsPlacement;
-  controlsRef?: React.MutableRefObject<CarouselControls | null>;
+  controlsRef?: React.RefObject<CarouselControls | null>;
   /** Pencere genişliğine göre `slidesToShow`/`slidesToScroll` (web ile aynı kural). */
   responsive?: ResponsiveItem[];
   /** Seçili durak değişirken: `(önceki, yeni)`. */
@@ -83,7 +83,7 @@ interface Geometry {
  * Konum (slayt birimi) + geçiş. Konum `Animated.Value`; son değeri dinleyiciyle
  * izlenir (sürükleme ortada bir geçişi kesebilir).
  */
-function useCarouselMotion(geo: Geometry, speed: number, callbacks: { beforeChange?: CarouselProps["beforeChange"]; afterChange?: CarouselProps["afterChange"] }) {
+function useCarouselMotion(geo: Geometry, speed: number, callbacks: { beforeChange?: Exclude<CarouselProps["beforeChange"], undefined>; afterChange?: Exclude<CarouselProps["afterChange"], undefined> }) {
   const reduce = useReduceMotion();
   const pos = useRef(new Animated.Value(0)).current;
   const posNow = useRef(0);

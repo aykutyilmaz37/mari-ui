@@ -208,7 +208,7 @@ export interface FloatButtonGroupMenuProps extends FloatButtonGroupBaseProps {
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   /** Ana düğmenin ikonu (kapalıyken). Açıkken × (döner). */
-  icon?: FloatButtonProps["icon"];
+  icon?: Exclude<FloatButtonProps["icon"], undefined>;
   /** Ana düğmenin erişilebilir adı. Varsayılan: "Hızlı işlemler". */
   accessibilityLabel?: string;
   color?: ColorRole;

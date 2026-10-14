@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type SubmitEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowRight, Check, Moon, Sun } from "lucide-react";
 import { contrastRatio, darkTheme, lightTheme, personaNames, personas, resolveThemeConfig, type HexColor, type PersonaName, type Theme, type ThemeMode } from "@mari-ui/tokens";
@@ -29,7 +29,7 @@ function IrisForm({ mode, theme, label }: Readonly<{ mode: ThemeMode; theme: The
   const ModeIcon = mode === "light" ? Sun : Moon;
   const ratio = (a: string, b: string) => contrastRatio(a as HexColor, b as HexColor).toFixed(2);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("");
     setInvalid(!name.trim());

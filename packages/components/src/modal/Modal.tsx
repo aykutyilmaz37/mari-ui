@@ -82,7 +82,7 @@ function ModalHeader({
   description: React.ReactNode;
   descriptionId: string;
   /** Kapat düğmesinin olduğu kenar — başlık onun altına girmesin. */
-  closeInset?: ModalProps["closeButtonPosition"];
+  closeInset?: Exclude<ModalProps["closeButtonPosition"], undefined>;
   skeleton: boolean;
 }>) {
   return (

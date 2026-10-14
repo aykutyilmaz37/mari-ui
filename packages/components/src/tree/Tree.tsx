@@ -46,7 +46,7 @@ export function CheckboxBox({ state, disabled, onClick }: Readonly<{ state: Chec
 }
 
 /** Başlık + arama vurgusu — TreeSelect de kullanır. */
-export function Title({ node, searchValue, titleRender }: Readonly<{ node: TreeNode; searchValue?: string; titleRender?: TreeProps["titleRender"] }>) {
+export function Title({ node, searchValue, titleRender }: Readonly<{ node: TreeNode; searchValue?: string; titleRender?: Exclude<TreeProps["titleRender"], undefined> }>) {
   if (titleRender) return <>{titleRender(node)}</>;
   if (!searchValue || typeof node.title !== "string") return <>{node.title}</>;
   return (
@@ -78,7 +78,7 @@ interface RowProps {
   showLine: boolean;
   blockNode: boolean;
   searchValue?: string;
-  titleRender?: TreeProps["titleRender"];
+  titleRender?: Exclude<TreeProps["titleRender"], undefined>;
   onToggle: () => void;
   onCheck: () => void;
   onActivate: () => void;
