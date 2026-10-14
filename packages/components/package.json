@@ -1,6 +1,6 @@
 {
   "name": "@mari-ui/components",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "mari-ui'ın web / React Server Components uyumlu bileşen kütüphanesi.",
   "license": "MIT",
   "author": "Aykut Yılmaz",
