@@ -1,6 +1,6 @@
 {
   "name": "@mari-ui/core",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "mari-ui'ın web ve native arasında paylaşılan headless katmanı: ortak tipler, variant çözümleme, cn() ve headless hook'lar.",
   "license": "MIT",
   "author": "Aykut Yılmaz",
