@@ -1,35 +1,56 @@
 # @mari-ui/cli
 
-Faz 7 — mari-ui'ı bir tüketici projesine kurar ve AI ajan kural dosyalarını (Claude Code, Codex, Cursor, Gemini, GitHub Copilot) `@mari-ui/components`in **gerçek** manifest'inden ve projenin **çözümlenmiş** temasından senkron tutar.
+[mari-ui](https://github.com/aykutyilmaz37/mari-ui) tasarım sistemini bir projeye kurar, projenin temasını üretir ve AI kod asistanları (Claude Code, Codex, Cursor, Gemini, GitHub Copilot) için **kütüphanenin gerçek prop sözleşmesinden** üretilmiş kural dosyalarını güncel tutar.
 
-## Temel ilke
+## Hızlı başlangıç
 
-Kurallar elle yazılmaz. `packages/components/scripts/build-manifest.ts` (ts-morph ile `src/**/index.ts`i introspect eder) her component'in gerçek prop sözleşmesini, terk edilmiş prop'larını (JSDoc `@deprecated`'dan) ve `@mari-ui/core`'un beş paylaşılan eksenini (`ColorRole`/`Size`/`Variant`/`Radius`/`Placement`) `dist/manifest.json`a yazar. `@mari-ui/cli` bunu okuyup beş aracın formatına uygun tek bir içerik üretir — elle yazılan bir kural dosyası ilk sürümde eskiyip tam da düzeltmeye çalıştığımız kopukluğu (terk edilmiş prop'ların "güncel" sanılması) yeniden üretirdi.
+```bash
+npx @mari-ui/cli init --persona minimal
+pnpm install
+npx @mari-ui/cli sync
+```
 
-Faz 17 — iki katman (`src/skillGuide.ts`, elle yazılı tasarım kararları): **kesin kurallar** (7 madde: önce mari-ui, sabit renk/px yok, skala dışı gölge/köşe/katman yok, yüklenme `skeleton` ile, erişilebilirlik temeli, linkler düz `<a href>` + `onNavigate`) TÜM araç dosyalarına ve `CLAUDE.md`ye girer — her istekte okunduğu için kısa. **Sayfa kurma rehberi** (iş akışı, uygulama iskeleti, sayfa kalıpları, "hangi durumda hangi component" tablosu, tema/ölçek, framework'ten bağımsız proje yapısı ilkeleri) YALNIZ Claude skill'ine (`SKILL.md`) girer; Claude onu ilgili işte yükler. Rehberde adı geçen her component'in gerçek manifest'te var olduğunu bir test denetler.
+`init`; `@mari-ui/components`, `@mari-ui/core` ve `@mari-ui/tokens`ı `package.json`a ekler, `mari-ui.config.json`ı oluşturur, AI kural dosyalarını yazar ve projenize uygun CSS girişini (Tailwind v4'lü ya da Tailwind'siz) söyler. Paket yöneticisini kendisi çalıştırmaz; kurulumdan sonra `sync` kuralları yüklenen sürüme göre tazeler.
 
 ## Komutlar
 
-```bash
-npx mari-ui init [--agents claude,codex,cursor,gemini,copilot] [--dir <yol>]
-npx mari-ui sync [--agents ...] [--dir <yol>] [--check]
-npx mari-ui theme [--dir <yol>] [--config <yol>] [--out <yol>] [--check]
+| Komut | Ne yapar |
+|---|---|
+| `init` | Bağımlılıkları ekler, `mari-ui.config.json` oluşturur (varsa dokunmaz), AI kural dosyalarını yazar. |
+| `sync` | Kural dosyalarını güncel tema ve kütüphane sürümüne göre tazeler. Temayı değiştirdiyseniz ayrıca `theme` çalıştırın. |
+| `theme` | `mari-ui.config.json`dan `mari-ui-theme.css` (CSS değişkenleri) ve `mari-ui-theme.ts` (React Native / koddan erişim) üretir. |
+
+| Bayrak | |
+|---|---|
+| `--dir <yol>` | Hedef proje kökü (varsayılan: bulunulan dizin) |
+| `--agents <liste>` | `claude,codex,cursor,gemini,copilot` (varsayılan: hepsi) |
+| `--check` | Hiçbir şey yazmaz; dosyalar bayatsa çıkış kodu `1` — CI için |
+| `--persona <ad>` | `init`: tasarım kişiliği — `corporate` (Kurumsal), `playful` (Oyunbaz), `minimal`, `editorial` (Editoryal), `luxury` (Lüks) |
+
+## Tema: `mari-ui.config.json`
+
+```json
+{
+  "persona": "playful",
+  "color": { "primary": "#0f766e" },
+  "themes": { "marka-koyu": { "base": "dark", "color": { "primary": "#facc15" } } }
+}
 ```
 
-- **`init`** — `package.json`a `@mari-ui/components`/`@mari-ui/core`/`@mari-ui/tokens`i ekler (zaten varsa dokunmaz), `mari-ui.config.json`ı varsayılan değerlerle oluşturur (zaten varsa dokunmaz — kullanıcının tema seçimini silmez), ve AI ajan kural dosyalarını yazar. **Component seçtirmez** — tek paket kurulur, kullanılmayan component'ler zaten `@mari-ui/components`in subpath export mimarisiyle bundle'a girmez.
-- **`sync`** — Sadece kural dosyalarını tazeler (paket sürümü veya tema değişince). `--check` hiçbir şey YAZMAZ, bayat bir dosya varsa çıkış kodu `1` verir (CI için).
-- **`theme`** — `mari-ui.config.json`dan `mari-ui-theme.css` (`:root`/`[data-theme="dark"]` CSS değişkenleri) ve `mari-ui-theme.ts` (native/başka platformlar için TS token objesi) üretir. `resolveThemeConfig`/`buildPlainThemeCss` — `@mari-ui/tokens`ın KENDİ varsayılan temasını üreten build script'iyle (`packages/tokens/scripts/build-css.ts`) AYNI fonksiyonlar; mantık ikinci kez yazılmadı. **Faz 10** — config'e opsiyonel bir `themes` alanı eklenirse (`{"themes": {"brand": {"base": "light", "color": {"primary": "#a21caf"}}}}`), light/dark'ın ÖTESİNDE HER girdi de kendi `[data-theme="<isim>"]` bloğu olarak aynı CSS'e yazılır — bkz. `packages/tokens/README.md`.
+```bash
+npx @mari-ui/cli theme
+```
 
-## `<!-- mari-ui:start -->` / `<!-- mari-ui:end -->` işaretleri
+Kişilik taban olur, yazdığınız her alan onu ezer. `themes` altındaki her ek tema `[data-theme="<ad>"]` ile seçilir. Üretilen `mari-ui-theme.css`i mari-ui CSS'inden **sonra** import edin. Kişiliğin Google Fonts bağlantısı komut çıktısında yazılır. Değerleri görerek seçmek için repodaki tema stüdyosu (`apps/studio`) aynı dosyayı dışa aktarır.
 
-`AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md` gibi dosyalar tüketicinin KENDİ amacıyla da yazdığı, paylaşılan dosyalardır. `sync` bu dosyalarda SADECE iki işaret arasını değiştirir — öncesi/sonrası hiç dokunulmadan kalır. Dosya hiç yoksa oluşturulur, marker taşımıyorsa blok sona eklenir.
+## AI kuralları
 
-`.claude/skills/mari-ui/SKILL.md` ve `.cursor/rules/mari-ui.mdc` İSTİSNA: bu ikisinin YAML frontmatter'ı, o araçların parser'ı gereği dosyanın LİTERAL İLK BAYTLARI olmak zorunda — bu yüzden frontmatter marker bloğunun DIŞINDA (önünde) sabit yazılır. (İlk denemede frontmatter yanlışlıkla marker'ın içine düşürülmüştü — bir smoke test'te fark edilip düzeltildi, bkz. git geçmişi.)
+Kurallar elle yazılmaz: kütüphanenin derlenmiş manifest'inden (component'ler, gerçek prop'lar, renk/boyut/variant eksenleri) ve projenizin çözümlenmiş temasından üretilir. Böylece asistan var olmayan bir prop'u ya da sabit bir rengi önermez.
 
-## Test kapsamı
+- Kısa **kesin kurallar** (önce mari-ui component'i, sabit renk/px yok, yüklenmede `skeleton`, erişilebilirlik…) tüm araçların dosyasına girer.
+- Uzun **sayfa kurma rehberi** (uygulama iskeleti, sayfa kalıpları, "hangi durumda hangi component", tasarım brief'i) Claude skill'ine (`.claude/skills/mari-ui/SKILL.md`) girer.
+- `AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md` gibi paylaşılan dosyalarda yalnız `<!-- mari-ui:start -->` / `<!-- mari-ui:end -->` arası değişir; kendi içeriğiniz korunur.
 
-Tüm komutlar (`init`/`sync`/`theme`) gerçek, izole geçici dizinlerde (`node:fs` + `node:os.tmpdir()`) ve `@mari-ui/components`in GERÇEK derlenmiş `manifest.json`ına karşı test edilir — sahte fixture'lar değil. İdempotency (iki kez çalıştırınca ikinci seferde değişiklik olmaması), kullanıcı içeriğinin korunması, ve `--check` modunun hiçbir şey yazmadığı ayrı ayrı doğrulanır.
+CI'da kuralların güncel kaldığını denetlemek için: `npx @mari-ui/cli sync --check`.
 
-## Bilinen sınırlama
-
-`init`, bağımlılıkları `package.json`a EKLER ama paket yöneticisini (npm/yarn/pnpm) OTOMATİK ÇALIŞTIRMAZ — kurulum tamamlandıktan sonra `npx mari-ui sync`i tekrar çalıştırmanız gerekir (manifest, paket gerçekten `node_modules`e inene kadar okunamaz). CSS import'u da otomatik enjekte edilmez (projenin giriş noktasını güvenilir şekilde tahmin etmenin bir yolu yok) — `init` net bir talimat basar.
+Lisans: MIT.

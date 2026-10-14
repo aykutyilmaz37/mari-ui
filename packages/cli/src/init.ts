@@ -30,7 +30,7 @@ export interface InitResult {
    * `null` olması şu anlama gelir: bağımlılıklar `package.json`a EKLENDİ ama
    * henüz KURULMADI (`pnpm install` çalıştırılmadı) — bu yüzden `@mari-ui/
    * components/manifest.json` henüz `node_modules`te yok. Kural dosyaları
-   * bağımlılıklar kurulduktan sonra `npx mari-ui sync` ile yazılabilir.
+   * bağımlılıklar kurulduktan sonra `npx @mari-ui/cli sync` ile yazılabilir.
    * Sert bir hata yerine bu durumu AÇIKÇA taşımak, `init`in "bağımlılığı
    * ekle, sonra kur, sonra tekrar çalıştır" akışında hiç çökmemesini sağlar.
    */

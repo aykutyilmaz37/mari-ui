@@ -26,13 +26,13 @@ export interface ThemeCommandResult {
 }
 
 const CONFIG_FILE_HINT = "mari-ui.config.json";
-const HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.", ` * "npx mari-ui theme" ile ${CONFIG_FILE_HINT}'dan üretildi.`, " */", ""].join(
+const HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.", ` * "npx @mari-ui/cli theme" ile ${CONFIG_FILE_HINT}'dan üretildi.`, " */", ""].join(
   "\n"
 );
 
 function buildThemeTsContent(resolved: ReturnType<typeof resolveThemeConfig>): string {
   return [
-    "// ÜRETİLMİŞ DOSYA — elle düzenlemeyin. \"npx mari-ui theme\" ile mari-ui.config.json'dan üretildi.",
+    "// ÜRETİLMİŞ DOSYA — elle düzenlemeyin. \"npx @mari-ui/cli theme\" ile mari-ui.config.json'dan üretildi.",
     "// @mari-ui/native (veya token değerlerine doğrudan erişmek isteyen başka bir platform) için.",
     `export const mariTheme = ${JSON.stringify(
       { light: resolved.light, dark: resolved.dark, themes: resolved.themes, radiusDensity: resolved.radiusDensity, spacingDensity: resolved.spacingDensity },

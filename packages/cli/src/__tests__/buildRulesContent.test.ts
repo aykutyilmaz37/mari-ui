@@ -46,6 +46,6 @@ describe("buildRulesContent (gerçek manifest.json üzerinde)", () => {
   });
 
   it("elle düzenlenmemesi gerektiğini açıkça belirtir", () => {
-    expect(content).toMatch(/npx mari-ui sync/);
+    expect(content).toContain("npx @mari-ui/cli sync");
   });
 });

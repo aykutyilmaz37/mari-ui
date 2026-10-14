@@ -203,7 +203,7 @@ export function createNamedTheme(name: string, base: ThemeMode, config: Omit<Nam
 /**
  * `mari-ui.config.json`ı (stüdyonun ürettiği anchor renkler + font ailesi +
  * radius yoğunluğu + Faz 10'un opsiyonel `themes`i) gerçek `Theme`
- * objelerine çözer. Faz 7'nin `npx mari-ui theme` komutu bu FONKSİYONUN
+ * objelerine çözer. Faz 7'nin `npx @mari-ui/cli theme` komutu bu FONKSİYONUN
  * AYNISINI çağırır — burada tek kaynak olarak duruyor ki CLI mantığı
  * ikinci kez yazmasın.
  */

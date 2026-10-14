@@ -42,20 +42,20 @@ export function tailwindInstructions(setup: TailwindSetup): string[] {
       "Tailwind v4 bulundu — mari-ui sınıflarını kendi Tailwind'iniz derleyecek (tekrar yok). Global CSS dosyanıza:",
       '  @import "tailwindcss";',
       '  @import "@mari-ui/components/tailwind.css";',
-      '  @import "./mari-ui-theme.css";   /* npx mari-ui theme çıktısı (config\'iniz varsa) */',
+      '  @import "./mari-ui-theme.css";   /* npx @mari-ui/cli theme çıktısı (config\'iniz varsa) */',
       '⚠ "@mari-ui/components/styles.css"i AYRICA import etmeyin: aynı sınıfları ve sıfırlamayı ikinci kez yükler.',
     ];
   }
   if (setup === "v3") {
     return [
       "⚠ Tailwind v3 bulundu — desteklenmiyor (mari-ui teması v4 söz dizimiyle yazılı).",
-      "  Önerilen: npx @tailwindcss/upgrade  (projeyi v4'e taşır), sonra npx mari-ui init'i tekrar çalıştırın.",
+      "  Önerilen: npx @tailwindcss/upgrade  (projeyi v4'e taşır), sonra npx @mari-ui/cli init'i tekrar çalıştırın.",
       '  Geçici çözüm: "@mari-ui/components/styles.css" çalışır ama v3 sınıflarınızla çakışabilir.',
     ];
   }
   return [
     "Tailwind bulunamadı — hazır derlenmiş CSS'i global CSS dosyanıza import edin:",
     '  @import "@mari-ui/components/styles.css";',
-    '  @import "./mari-ui-theme.css";   /* npx mari-ui theme çıktısı (config\'iniz varsa) */',
+    '  @import "./mari-ui-theme.css";   /* npx @mari-ui/cli theme çıktısı (config\'iniz varsa) */',
   ];
 }

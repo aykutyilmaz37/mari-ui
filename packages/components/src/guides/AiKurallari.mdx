@@ -9,12 +9,12 @@ Projenizde Claude Code, Codex, Cursor, Gemini ya da GitHub Copilot ile çalış�
 ## Komutlar
 
 ```bash
-npx mari-ui init     # paketleri package.json'a ekler, mari-ui.config.json ve kural dosyalarını oluşturur
-npx mari-ui sync     # paket sürümü ya da tema değişince kural dosyalarını tazeler
-npx mari-ui sync --check   # hiçbir şey yazmaz; bayat dosya varsa çıkış kodu 1 (CI için)
+npx @mari-ui/cli init     # paketleri package.json'a ekler, mari-ui.config.json ve kural dosyalarını oluşturur
+npx @mari-ui/cli sync     # paket sürümü ya da tema değişince kural dosyalarını tazeler
+npx @mari-ui/cli sync --check   # hiçbir şey yazmaz; bayat dosya varsa çıkış kodu 1 (CI için)
 ```
 
-Belirli araçlar için: `--agents claude,cursor`. Tasarım kişiliğiyle başlamak için: `npx mari-ui init --persona editorial` (bkz. Tema). `init` paket yöneticisini kendisi çalıştırmaz: kurulumdan sonra `npx mari-ui sync` ile kuralları gerçek manifest'ten tazeleyin.
+Belirli araçlar için: `--agents claude,cursor`. Tasarım kişiliğiyle başlamak için: `npx @mari-ui/cli init --persona editorial` (bkz. Tema). `init` paket yöneticisini kendisi çalıştırmaz: kurulumdan sonra `npx @mari-ui/cli sync` ile kuralları gerçek manifest'ten tazeleyin.
 
 ## Yazılan dosyalar
 
