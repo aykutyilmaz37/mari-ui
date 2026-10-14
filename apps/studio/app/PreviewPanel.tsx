@@ -9,7 +9,8 @@ import { Switch } from "@mari-ui/components/switch";
 import { Checkbox } from "@mari-ui/components/checkbox";
 
 export interface PreviewPanelProps {
-  mode: "light" | "dark";
+  /** `data-theme` değeri: `light`, `dark` ya da bir ek temanın adı. */
+  mode: string;
   /** Yoğunluk — `data-density` (ThemeCustomizer ile aynı; `normal` de açıkça yazılır). */
   spacing?: SpacingDensity;
   cssVars: Record<string, string>;

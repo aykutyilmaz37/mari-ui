@@ -213,9 +213,14 @@ export function resolveThemeConfig(input: MariUiThemeConfig = {}): ResolvedMariU
   const effects: ThemeEffectOptions = { radiusDensity, shadowDensity: config.density?.shadow, motion: config.motion };
   const baseOptions = { ...resolveBuildThemeOptions(config), ...effects };
 
+  // Ek tema rengi BAĞIMSIZ (her tema kendi paletini taşır, Faz 10), fontu ise
+  // uygulama geneli: üst seviye (kişilik dahil) aileler miras alınır, temanın
+  // kendi `typography`si ezer — yoksa `[data-theme="<ad>"]`e geçince kişilik
+  // fontları varsayılana dönüyordu.
   const namedThemes: Record<string, Theme> = {};
   for (const [name, themeInput] of Object.entries(config.themes ?? {})) {
-    namedThemes[name] = createNamedTheme(name, themeInput.base, themeInput, effects);
+    const typography = { ...config.typography, ...themeInput.typography };
+    namedThemes[name] = createNamedTheme(name, themeInput.base, { ...themeInput, typography }, effects);
   }
 
   return {

@@ -34,6 +34,8 @@ npx mari-ui theme
 
 `mari-ui-theme.css`de her ek tema kendi `[data-theme="<isim>"]` bloğu olarak çıkar; `mari-ui-theme.ts`de `mariTheme.themes.<isim>` altında tam bir `Theme` objesi olarak bulunur (`@mari-ui/native`nin `<ThemeProvider theme={mariTheme.themes.brand}>`ı için hazır).
 
+Ek tema **rengi** bağımsızdır (yazmadığı rol varsayılan rampayı kullanır); **fontu** üst seviyeden — kişilik dahil — miras alır, kendi `typography`si ezer. Koyu tabanlı ek temanın bloğuna `color-scheme: dark` da yazılır.
+
 `Theme.mode` (`"light"|"dark"`) ve `Theme.name` (keyfi string) ayrı kavramlardır: `mode` SADECE WCAG kontrast aramasının yönünü belirler, `name` temanın GÖRÜNEN kimliğidir. `highContrast` teması `base: "dark"` olsa bile `name: "highContrast"` taşır — `mode`, `deriveColorRole`ün doğru yönde arama yapmasını garanti eder, `name` ise CSS seçicisini/native `ThemeProvider` tercihini belirler.
 
 ## Diğer paketler bunu nasıl kullanıyor
@@ -42,7 +44,7 @@ npx mari-ui theme
 - **`@mari-ui/core`**: `componentSize`/`resolveColorVariant` gibi platform-agnostic soyutlamalar için `spacing`/`radius` gibi primitifleri buradan alır.
 - **`@mari-ui/native`**: `lightTheme`/`darkTheme`i (veya `createNamedTheme()`in ürettiği özel bir temayı) doğrudan JS objesi olarak tüketir — `ThemeProvider theme={...}` herhangi bir `Theme` şeklindeki objeyi kabul eder.
 - **`@mari-ui/cli`**: `resolveThemeConfig()` ile `mari-ui.config.json`ı gerçek `Theme` objelerine çözer; `theme` komutu bunları CSS/TS dosyalarına yazar.
-- **`apps/studio`** (Faz 6): `generateRamp()`/`resolveThemeConfig()` ile canlı önizleme — bugün sadece varsayılan light/dark çiftini düzenliyor, 3. tema ekleme UI'ı henüz yok (altyapı — bu paket + CLI — hazır, stüdyo arayüzü ileride eklenebilir).
+- **`apps/studio`** (Faz 6): `generateRamp()`/`resolveThemeConfig()` ile canlı önizleme — light/dark çiftinin yanında ek temalar da eklenip önizlenir ve `themes` alanına dışa aktarılır.
 
 ## Yumuşak iris ve fontlar
 

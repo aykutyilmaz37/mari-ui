@@ -108,7 +108,10 @@ export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOpti
   const lines: string[] = [header, ":root {", ...varsToLines(themeToCssVariables(themeSet.default)), "}", ""];
 
   for (const [name, theme] of Object.entries({ [themeSet.default.name]: themeSet.default, ...themeSet.named })) {
-    lines.push(`[data-theme="${name}"] {`, ...varsToLines(scopedThemeVars(theme)), "}", "");
+    // light/dark'ın `color-scheme`i components CSS'inde; ek temalar tabanlarınınkini burada alır
+    // (koyu tabanlı temada kaydırma çubuğu ve yerel form kontrolleri de koyu olsun).
+    const scheme = name === "light" || name === "dark" ? [] : [`  color-scheme: ${theme.mode};`];
+    lines.push(`[data-theme="${name}"] {`, ...scheme, ...varsToLines(scopedThemeVars(theme)), "}", "");
   }
 
   // `prefers-color-scheme` tarayıcının kendi İKİ değerli (light/dark)
