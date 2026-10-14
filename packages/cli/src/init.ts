@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join } from "node:path";
 import { ALL_AGENTS, syncAgentRules, type AgentName, type SyncResult } from "./sync";
 import type { PersonaName } from "@mari-ui/tokens";
@@ -8,8 +9,12 @@ import { detectTailwind, type TailwindSetup } from "./tailwindSetup";
 
 const REQUIRED_DEPENDENCIES = ["@mari-ui/components", "@mari-ui/core", "@mari-ui/tokens"] as const;
 
-/** Şu an mari-ui'ın yayınlandığı sürüm aralığı — gerçek bir yayından sonra `package.json`daki sürümle senkron tutulacak. */
-const DEPENDENCY_RANGE = "latest";
+/**
+ * Eklenen bağımlılıkların sürüm aralığı: CLI'ın kendi sürümü. Beş paket birlikte
+ * sürümlenir (changesets `fixed`), yani `@mari-ui/cli@0.1.1` ile kurulan proje
+ * `^0.1.1` alır. `"latest"` yazılsaydı kurulum tekrarlanabilir olmazdı.
+ */
+const DEPENDENCY_RANGE = `^${(createRequire(import.meta.url)("../package.json") as { version: string }).version}`;
 
 export interface InitOptions {
   targetDir: string;

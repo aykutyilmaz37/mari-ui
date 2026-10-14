@@ -42,7 +42,7 @@ export function tailwindInstructions(setup: TailwindSetup): string[] {
       "Tailwind v4 bulundu — mari-ui sınıflarını kendi Tailwind'iniz derleyecek (tekrar yok). Global CSS dosyanıza:",
       '  @import "tailwindcss";',
       '  @import "@mari-ui/components/tailwind.css";',
-      '  @import "./mari-ui-theme.css";   /* npx @mari-ui/cli theme çıktısı (config\'iniz varsa) */',
+      '  @import "../mari-ui-theme.css";  /* npx @mari-ui/cli theme proje köküne yazar; yol bu CSS dosyasına göre (örnek: src/index.css) */',
       '⚠ "@mari-ui/components/styles.css"i AYRICA import etmeyin: aynı sınıfları ve sıfırlamayı ikinci kez yükler.',
     ];
   }
@@ -56,6 +56,6 @@ export function tailwindInstructions(setup: TailwindSetup): string[] {
   return [
     "Tailwind bulunamadı — hazır derlenmiş CSS'i global CSS dosyanıza import edin:",
     '  @import "@mari-ui/components/styles.css";',
-    '  @import "./mari-ui-theme.css";   /* npx @mari-ui/cli theme çıktısı (config\'iniz varsa) */',
+    '  @import "../mari-ui-theme.css";  /* npx @mari-ui/cli theme proje köküne yazar; yol bu CSS dosyasına göre (örnek: src/index.css) */',
   ];
 }

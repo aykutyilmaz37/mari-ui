@@ -113,9 +113,15 @@
   }
 }
 
-/* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
+/* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır.
+   Sayfa zemini ve metni temadan: yoksa koyu temada tarayıcının kendi koyu
+   zemini görünür, metin rengi token'dan gelmez (kontrast tutarsız). */
 @layer base {
-  body { font-family: var(--mari-font-sans); }
+  body {
+    font-family: var(--mari-font-sans);
+    background-color: var(--mari-color-surface);
+    color: var(--mari-color-foreground);
+  }
   h1, h2, h3, h4, h5, h6 { font-family: var(--mari-font-heading); }
   input::placeholder, textarea::placeholder { color: var(--mari-color-muted); opacity: 1; }
   code, pre, kbd, samp { font-family: var(--mari-font-mono); }
