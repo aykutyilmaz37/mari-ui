@@ -87,6 +87,10 @@ describe("buildPlainThemeCss", () => {
       expect(css).toContain('[data-theme="highContrast"] {');
       expect(css).toContain(brand.color.primary.solid);
       expect(css).toContain(highContrast.color.primary.solid);
+      // Ek tema tabanının color-scheme'ini taşır; light/dark'ınki components CSS'inde.
+      expect(css).toContain('[data-theme="highContrast"] {\n  color-scheme: dark;');
+      expect(css).toContain('[data-theme="brand"] {\n  color-scheme: light;');
+      expect(css).not.toContain('[data-theme="dark"] {\n  color-scheme');
     });
 
     it("'dark' adlı bir tema YOKSA @media (prefers-color-scheme: dark) fallback'i eklenmez (N-adet özel temaya genellenemeyen tarayıcı kavramı)", () => {

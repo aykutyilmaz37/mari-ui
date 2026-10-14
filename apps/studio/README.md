@@ -32,12 +32,13 @@ Soldaki **Varsayılan boşluk yoğunluğu** config'e `density.spacing` olarak ya
 
 **Büyük ekran** (`scale.fluid`, varsayılan kapalı): açıkken `npx mari-ui theme` `html { font-size: clamp(100%, …vw + …rem, max) }` üretir — kök yazı boyutu 1920px'e kadar tarayıcı varsayılanı, 3840px'te `scale.max` px (varsayılan 22). Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür (22px'te 32px'lik düğme 44px olur). İşletim sistemi ölçeklemesi kapalı 4K ekranlar içindir; medya sorgusu kırılımları etkilenmez. Panel genişliğine bağlı olduğu için önizlemede görünmez.
 
+**Ek temalar** (Faz 10'un arayüzü): "Tema ekle" ile açık/koyunun yanına isimli temalar eklenir (ör. `marka`, `yuksek-kontrast`). Her birinin adı (`[data-theme="<ad>"]` seçicisi: küçük harf, rakam, tire; `light`/`dark` dışında, tekil), tabanı (açık/koyu — kontrast yönü ve `color-scheme`) ve kendi `primary`/`accent` rengi vardır; font ve yoğunluk ana temadan gelir. Geçerli adlı temalar config'in `themes` alanına yazılır ve üstteki seçiciden önizlenir; adı geçersiz tema alanında hata gösterir, config'e girmez.
+
 Önizlemedeki **Sıkı / Normal / Rahat** geçişi, son kullanıcının seçebileceği yoğunluğu (`data-density` → Tailwind `--spacing`) bu temayla görmek içindir; config'e yazılmaz.
 
 ## Bilinen sınırlamalar (dürüstçe kayıtlı, gizlenmedi)
 
 - **Radius yoğunluğu** (Faz 15): `density.radius` (`none`/`sm`/`md`/`lg`) `Theme.radius` skalasını orantılı ölçekler; web'de `--mari-radius-*` değişkenleri (Tailwind `rounded-sm/md/lg/xl` bunlara bağlı) değiştiği için önizlemede canlı yansır.
-- **`mari-ui.config.json`ı gerçekten TÜKETEN bir CLI henüz yok** — `resolveThemeConfig()` bunun için hazır (Faz 7'nin `npx mari-ui theme`i aynı fonksiyonu çağıracak), ama bugün tüketici bu JSON'u indirdikten sonra elle bir yere bağlamıyor. Studio + CLI arasındaki bu boşluk Faz 7'de kapanacak.
 - **Sadece `primary`/`accent` düzenlenebilir** (`success`/`error`/`warning`/`info`/`neutral` sabit) — `dist/schema.json`ın kendi `editable` sözleşmesiyle bilinçli olarak sınırlı tutuldu.
 
 ## Mimari notu

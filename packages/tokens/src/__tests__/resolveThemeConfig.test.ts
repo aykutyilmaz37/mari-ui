@@ -84,13 +84,24 @@ describe("resolveThemeConfig", () => {
       expect(resolved.themes.brand?.color.primary).not.toEqual(resolved.themes.highContrast?.color.primary);
     });
 
-    it("ek temalar üst seviye color/typography'den ETKİLENMEZ — tamamen bağımsız", () => {
+    it("ek temanın RENGİ üst seviyeden bağımsızdır", () => {
       const resolved = resolveThemeConfig({
         color: { primary: "#000000" },
         themes: { brand: { base: "light" } },
       });
       // `brand` kendi override'ını vermedi -> varsayılan primary'yi (üst seviyedeki #000000'ı DEĞİL) taşımalı.
       expect(resolved.themes.brand?.color.primary).toEqual(lightTheme.color.primary);
+    });
+
+    it("ek tema FONTU üst seviyeden (kişilik dahil) miras alır, kendi typography'si ezer", () => {
+      const resolved = resolveThemeConfig({
+        persona: "editorial",
+        themes: { brand: { base: "light" }, mono: { base: "dark", typography: { fontFamilySans: "Courier" } } },
+      });
+      expect(resolved.themes.brand?.fontFamily).toEqual(resolved.light.fontFamily);
+      expect(resolved.themes.brand?.fontFamily.sans).not.toEqual(lightTheme.fontFamily.sans);
+      expect(resolved.themes.mono?.fontFamily.sans).toBe("Courier");
+      expect(resolved.themes.mono?.fontFamily.heading).toEqual(resolved.light.fontFamily.heading);
     });
   });
 });

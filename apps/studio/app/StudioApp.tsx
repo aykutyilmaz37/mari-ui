@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@mari-ui/components/button";
+import { Card } from "@mari-ui/components/card";
 import { ColorPicker } from "@mari-ui/components/color-picker";
 import { Field } from "@mari-ui/components/field";
 import { Input } from "@mari-ui/components/input";
@@ -63,6 +64,30 @@ function personaFields(name: PersonaName | undefined) {
   };
 }
 
+/** Stüdyoda düzenlenen ek tema (`config.themes`'in bir girdisi); `id` yalnız liste anahtarı. */
+interface ExtraTheme {
+  id: string;
+  name: string;
+  base: "light" | "dark";
+  primary: string;
+  accent: string;
+}
+
+/** Ek tema adı `[data-theme="<ad>"]` seçicisi olur: küçük harf/rakam/tire, harfle başlar, light/dark değil, tekil. */
+function themeNameError(name: string, all: ExtraTheme[]): string | undefined {
+  if (!name) return "Ad gerekli.";
+  if (!/^[a-z][a-z0-9-]*$/.test(name)) return "Küçük harf, rakam ve tire; harfle başlamalı (ör. marka-koyu).";
+  if (name === "light" || name === "dark") return "light/dark zaten var — başka bir ad seçin.";
+  if (all.filter((t) => t.name === name).length > 1) return "Bu ad başka bir temada kullanılıyor.";
+  return undefined;
+}
+
+function nextThemeName(all: ExtraTheme[]): string {
+  let i = all.length + 1;
+  while (all.some((t) => t.name === `tema-${i}`)) i++;
+  return `tema-${i}`;
+}
+
 function downloadJson(filename: string, data: unknown) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -86,7 +111,8 @@ export function StudioApp() {
   const [spacingDensity, setSpacingDensity] = useState<SpacingDensity>("normal");
   const [fluidScale, setFluidScale] = useState(defaultThemeConfig.scale.fluid);
   const [fluidMax, setFluidMax] = useState(defaultThemeConfig.scale.max);
-  const [previewMode, setPreviewMode] = useState<"light" | "dark">("light");
+  const [extraThemes, setExtraThemes] = useState<ExtraTheme[]>([]);
+  const [previewMode, setPreviewMode] = useState<string>("light");
   const [previewSpacing, setPreviewSpacing] = useState<SpacingDensity>("normal");
 
   // Kişilik seçilince tüm alanlar onun değerleriyle dolar; sonra her alan elle değiştirilebilir.
@@ -116,6 +142,13 @@ export function StudioApp() {
     document.head.appendChild(link);
   }, [persona]);
 
+  const updateTheme = (id: string, patch: Partial<ExtraTheme>) => setExtraThemes((list) => list.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+  const removeTheme = (id: string) => setExtraThemes((list) => list.filter((t) => t.id !== id));
+  const addTheme = () =>
+    setExtraThemes((list) => [...list, { id: crypto.randomUUID(), name: nextThemeName(list), base: "dark", primary: primaryHex, accent: accentHex }]);
+  // Adı geçersiz tema config'e ve önizlemeye girmez (alanında hata gösterilir).
+  const validThemes = extraThemes.filter((t) => !themeNameError(t.name, extraThemes));
+
   const explicitConfig: MariUiThemeConfig = useMemo(
     () => ({
       persona,
@@ -124,8 +157,11 @@ export function StudioApp() {
       density: { radius: radiusDensity, spacing: spacingDensity, shadow: shadowDensity },
       motion,
       scale: { fluid: fluidScale, max: fluidMax },
+      ...(validThemes.length > 0 && {
+        themes: Object.fromEntries(validThemes.map((t) => [t.name, { base: t.base, color: { primary: t.primary as HexColor, accent: t.accent as HexColor } }])),
+      }),
     }),
-    [persona, primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, shadowDensity, motion, fluidScale, fluidMax]
+    [persona, primaryHex, accentHex, fontFamilySans, fontFamilyMono, fontFamilyHeading, radiusDensity, spacingDensity, shadowDensity, motion, fluidScale, fluidMax, validThemes]
   );
   // Dışa aktarılan dosya: kişilik + yalnız ondan farklı alanlar.
   const config = useMemo(
@@ -134,7 +170,10 @@ export function StudioApp() {
   );
 
   const resolved = useMemo(() => resolveThemeConfig(config), [config]);
-  const activeTheme = previewMode === "light" ? resolved.light : resolved.dark;
+  // Önizlenen tema silinir/geçersizleşirse açığa dönülür.
+  const previewOptions = [{ value: "light", label: "Açık" }, { value: "dark", label: "Koyu" }, ...validThemes.map((t) => ({ value: t.name, label: t.name }))];
+  const mode = previewOptions.some((o) => o.value === previewMode) ? previewMode : "light";
+  const activeTheme = resolved.themes[mode] ?? (mode === "dark" ? resolved.dark : resolved.light);
   const cssVars = useMemo(() => themeToCssVariables(activeTheme), [activeTheme]);
   const contrastRows: ContrastRowData[] = [
     contrastRow("surface", "Gövde metni", activeTheme.color.canvas.surface, activeTheme.color.canvas.foreground),
@@ -212,6 +251,35 @@ export function StudioApp() {
           </Field>
         </Section>
 
+        <Section title="Ek temalar" hint={'Açık/koyunun yanında kendi temalarınız (ör. marka, yüksek kontrast). Her biri `data-theme="<ad>"` ile seçilir; açık ya da koyu tabanlıdır, kendi rengini taşır, font ve yoğunluğu ana temadan alır.'}>
+          {extraThemes.map((t) => (
+            <Card
+              key={t.id}
+              size="sm"
+              title={t.name || "Adsız tema"}
+              extra={<Button variant="ghost" color="neutral" size="sm" shape="square" icon={<Trash2Icon size={16} aria-hidden />} aria-label={`${t.name || "Adsız tema"} temasını kaldır`} onClick={() => removeTheme(t.id)} />}
+            >
+              <div className="studio-section-body">
+                <Field label="Ad" error={themeNameError(t.name, extraThemes)}>
+                  <Input value={t.name} onChange={(e) => updateTheme(t.id, { name: e.target.value.trim() })} />
+                </Field>
+                <Field label="Taban">
+                  <Segmented aria-label={`${t.name || "Adsız tema"} tabanı`} value={t.base} options={[{ value: "light", label: "Açık" }, { value: "dark", label: "Koyu" }]} onChange={(value) => updateTheme(t.id, { base: value as "light" | "dark" })} />
+                </Field>
+                <Field label="Birincil (primary)">
+                  <ColorPicker value={t.primary} onChange={(value) => value && updateTheme(t.id, { primary: value })} showText disabledAlpha />
+                </Field>
+                <Field label="Vurgu (accent)">
+                  <ColorPicker value={t.accent} onChange={(value) => value && updateTheme(t.id, { accent: value })} showText disabledAlpha />
+                </Field>
+              </div>
+            </Card>
+          ))}
+          <Button variant="outline" color="neutral" block icon={<PlusIcon size={16} aria-hidden />} onClick={addTheme}>
+            Tema ekle
+          </Button>
+        </Section>
+
         <Section title="Büyük ekran">
           <Switch label="Büyük ekranlarda büyüt" checked={fluidScale} onChange={setFluidScale} />
           <Text muted className="studio-hint">
@@ -234,7 +302,7 @@ export function StudioApp() {
 
       <main className="studio-main">
         <div className="studio-toggle-row">
-          <Segmented aria-label="Önizleme modu" value={previewMode} options={[{ value: "light", label: "Açık" }, { value: "dark", label: "Koyu" }]} onChange={(value) => setPreviewMode(value as "light" | "dark")} />
+          <Segmented aria-label="Önizlenen tema" value={mode} options={previewOptions} onChange={(value) => setPreviewMode(String(value))} />
           {/* Son kullanıcının ThemeCustomizer'da seçebileceği yoğunluk — config'e yazılmaz, yalnız önizleme. */}
           <Segmented
             aria-label="Yoğunluk önizlemesi (son kullanıcı)"
@@ -244,7 +312,7 @@ export function StudioApp() {
           />
         </div>
 
-        <PreviewPanel mode={previewMode} spacing={previewSpacing} cssVars={cssVars} fontFamilySans={fontFamilySans} />
+        <PreviewPanel mode={mode} spacing={previewSpacing} cssVars={cssVars} fontFamilySans={fontFamilySans} />
 
         <Section title="WCAG kontrast kontrolü" hint="Metin için en az 4,5:1; kontrol sınırları ve odak halkası için en az 3:1.">
           <Table<ContrastRowData> label="Kontrast oranları" data={contrastRows} columns={CONTRAST_COLUMNS} />
