@@ -22,7 +22,6 @@ mari-ui'ın paketleri, bir tasarım kararının (ör. marka rengi) token'dan ekr
 | `@mari-ui/core` | Headless ortak mantık: `cn()`, `resolveColorVariant`, paylaşılan eksen tipleri (`ColorRole`, `Size`, `Variant`, `Radius`, `Placement`). | Render etmez. |
 | `@mari-ui/components` | Web component'leri. Her klasör ayrı bir subpath (`@mari-ui/components/button`) ve ayrı bir derleme parçası. | Çalışma zamanında `@mari-ui/tokens`a bağlı değil; yalnız CSS değişkenlerini okur. |
 | `@mari-ui/native` | React Native component'leri (`StyleSheet` + tokens JS objesi). | NativeWind / babel / metro eklentisi istemez. |
-| `@mari-ui/utils` | UI'dan bağımsız modüller: `dataLayer`, captcha sarmalayıcıları, asset çözümleyici. | Component render etmez, framework'e bağlı değil. |
 | `@mari-ui/cli` | `init` / `sync` / `theme`: tüketici projesine kurulum, tema dosyaları, AI ajan kuralları. | Paket yöneticisini kendisi çalıştırmaz, CSS import'u enjekte etmez. |
 | `apps/docs` | Storybook — component dokümantasyonu ve "Başlarken" rehberleri. | |
 | `apps/studio` | Next.js tema stüdyosu: renk/font/yoğunluk canlı düzenleme, kontrast paneli, `mari-ui.config.json` dışa aktarma. | |
@@ -41,7 +40,7 @@ Renk, köşe ve boşluk yoğunluğu CSS değişkeni olduğundan **çalışma zam
 
 ## Build
 
-- `turbo run build` paketleri bağımlılık sırasıyla derler (`tokens → core → components/native/utils → cli`).
+- `turbo run build` paketleri bağımlılık sırasıyla derler (`tokens → core → components/native → cli`).
 - `@mari-ui/components`: `tsup` her `src/<klasör>/index.ts`i ayrı ESM girişi yapar (`scripts/discoverEntries.ts`). Tip bildirimleri tsup'ta değil tek bir `tsc` ile (`build:types`): ~90 girişte tsup'ın dts işçisi bellek yetersizliğiyle düşüyordu.
 - `build:manifest` (`scripts/build-manifest.ts`, ts-morph) her girişin gerçek export'larını ve prop'larını (`@deprecated` dahil) `dist/manifest.json`a yazar.
 - CI (`.github/workflows/ci.yml`): `pnpm turbo run build lint typecheck test` + `pnpm audit --audit-level critical`, Node 22.

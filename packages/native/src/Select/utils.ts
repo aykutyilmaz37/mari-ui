@@ -59,7 +59,7 @@ export function buildSections(items: Array<SelectOption | SelectOptionGroup>, se
       return;
     }
     if (!matches(item)) return;
-    const last = sections.at(-1);
+    const last = sections[sections.length - 1];
     if (last && last.label === undefined) last.options.push(item);
     else sections.push({ key: `plain-${index}`, options: [item] });
   });

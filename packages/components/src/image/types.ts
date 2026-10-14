@@ -25,8 +25,8 @@ export interface ImageLoaderParams {
 
 /**
  * Kaynak + genişlik → gerçek URL. CDN ve boyutlandırma burada çözülür; `srcSet`
- * adayları ve bulanık ön izleme de bununla üretilir. `@mari-ui/utils/asset`'in
- * `createAssetResolver`ı ile birleşir:
+ * adayları ve bulanık ön izleme de bununla üretilir. Uygulamanın kendi
+ * asset/CDN adres fonksiyonuyla birleşir:
  * `({ src, width }) => \`${asset(src)}?w=${width}\``.
  */
 export type ImageLoader = (params: ImageLoaderParams) => string;

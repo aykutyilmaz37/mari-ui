@@ -90,7 +90,7 @@ export function Masonry({ items, columns = { base: 2, sm: 3, md: 4 }, gutter = "
   const report = `${cols}:${Math.round(layout.height)}`;
   if (onLayoutChange && width > 0 && report !== lastReported.current) {
     lastReported.current = report;
-    queueMicrotask(() => onLayoutChange({ columns: cols, height: layout.height }));
+    void Promise.resolve().then(() => onLayoutChange({ columns: cols, height: layout.height }));
   }
 
   const setHeight = (key: string, h: number) => setHeights((prev) => (prev[key] === h ? prev : { ...prev, [key]: h }));
