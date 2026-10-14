@@ -24,7 +24,7 @@ permissions:
 jobs:
   release:
     name: Version PR / npm yayını
-    # NPM_TOKEN secret'ı eklenip repo değişkeni RELEASE_ENABLED=true yapılana
+    # Repo değişkeni RELEASE_ENABLED=true yapılana
     # kadar çalışmaz (yoksa her main push'unda yayın denenip düşerdi).
     if: vars.RELEASE_ENABLED == 'true'
     # ubuntu-latest 2026-10-19'dan itibaren Ubuntu 26'ya geçiyor; Playwright'ın sistem
