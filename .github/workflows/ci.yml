@@ -39,10 +39,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Testler coverage ile koşar: her paketin vitest.config.ts'indeki eşik
-      # (bugünkü oranın ~1 puan altı) düşerse CI kırılır.
-      - name: Build, lint, typecheck, test + coverage (tüm workspace paketleri)
-        run: pnpm turbo run build lint typecheck test:coverage
+      - name: Build, lint, typecheck (tüm workspace paketleri)
+        run: pnpm turbo run build lint typecheck
+
+      # Testler coverage ile ve paketler SIRAYLA koşar (her paketin vitest'i
+      # kendi içinde paralel): hepsi lint/typecheck ile aynı anda koşunca az
+      # çekirdekli runner'da testler zaman aşımına düşüyordu. Eşik
+      # (bugünkü oranın ~1 puan altı, vitest.config.ts) düşerse CI kırılır.
+      - name: Test + coverage
+        run: pnpm turbo run test:coverage --concurrency=1
 
       # Storybook bir önceki adımda statik derlendi (apps/docs build). Her story
       # (web + native) Playwright'ta açılır: çizim / `play` hatası ve axe ihlali
