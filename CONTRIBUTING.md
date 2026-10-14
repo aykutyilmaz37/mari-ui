@@ -104,6 +104,7 @@ Yayınlanan paketler: `@mari-ui/tokens`, `core`, `components`, `native`, `cli` (
 
 1. Kullanıcıyı etkileyen bir değişiklikte PR'a changeset ekleyin: `pnpm changeset` (`0.x` döneminde kırıcı değişiklik `minor`, geri kalan `patch`). Yalnız doküman/test/iç araç değişikliği changeset istemez.
 2. main'e birleşince `.github/workflows/release.yml` bir **"chore: sürüm paketleri"** PR'ı açar ya da günceller (sürüm + `CHANGELOG.md`).
-3. O PR merge edilince paketler npm'e yayınlanır (provenance imzalı).
+3. O PR merge edilince npm'de olmayan sürümler **taslak** olarak yüklenir (`scripts/stage-release.mjs`, `npm stage publish`).
+4. **Onay (maintainer):** npmjs.com → **Staged Packages** → her paket için **Approve** (2FA) ya da `npm stage approve <id>`. Onaylanınca yayınlanır (provenance imzalı). Beş paket birlikte sürümlendiği için her sürümde beş onay.
 
-İlk kurulum (bir kez, repo sahibi): npm'de `mari-ui` organizasyonu, GitHub'da `NPM_TOKEN` secret'ı (npm "Automation" token), repo değişkeni `RELEASE_ENABLED=true`; provenance için repo public olmalı.
+Kimlik doğrulama token'sız: npm **trusted publishing** (GitHub OIDC). Her paketin npm ayarlarında trusted publisher = `aykutyilmaz37/mari-ui`, iş akışı `release.yml`, environment boş; "Allow npm publish" **kapalı** (yalnız taslak — kasıtlı: CI ya da main ele geçirilse bile onaysız sürüm çıkmaz). Release iş akışı repo değişkeni `RELEASE_ENABLED=true` iken çalışır; repo public olmalı.
