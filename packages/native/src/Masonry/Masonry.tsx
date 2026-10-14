@@ -97,6 +97,8 @@ export function Masonry({ items, columns = { base: 2, sm: 3, md: 4 }, gutter = "
 
   return (
     <ScrollView
+      // Kendi içinde kayar: öğeler odaklanamıyorsa (fotoğraflar) klavye kaydırma alanına ulaşabilsin (web Tab durağı).
+      focusable
       style={[{ flex: 1, alignSelf: "stretch" }, style]}
       contentContainerStyle={contentContainerStyle}
       scrollEventThrottle={64}
