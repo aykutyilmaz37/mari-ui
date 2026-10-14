@@ -1,0 +1,13 @@
+/**
+ * Tailwind v4'lü HOST'un girişi — `dist/tailwind.css` olarak yayınlanır.
+ *
+ *   @import "tailwindcss";
+ *   @import "@mari-ui/components/tailwind.css";
+ *
+ * Host'un tek Tailwind derlemesi mari-ui sınıflarını da üretir: tek preflight,
+ * tek `--spacing`, aynı sınıf iki kez tanımlanmaz. `dist/styles.css`i ayrıca
+ * import ETMEYİN. Tarama yalnız derlenmiş `.js` dosyalarında (kaynak yorumlarındaki
+ * örnek sınıflar host'a sızmasın).
+ */
+@import "./mari.css";
+@source "./**/*.js";

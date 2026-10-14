@@ -2,6 +2,7 @@
 import { runInit } from "./init";
 import { ALL_AGENTS, syncAgentRules, type AgentName } from "./sync";
 import { runThemeCommand } from "./theme";
+import { tailwindInstructions } from "./tailwindSetup";
 import { personaNames, personas, type PersonaName } from "@mari-ui/tokens";
 
 /**
@@ -107,7 +108,7 @@ function runInitCommand(args: ParsedArgs) {
   } else {
     console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx mari-ui sync");
   }
-  console.log('\nSon adım: "@mari-ui/components/styles.css"i projenizin global CSS giriş noktasına import edin.');
+  console.log(`\n${tailwindInstructions(result.tailwind).join("\n")}`);
 }
 
 function configMessage(result: ReturnType<typeof runInit>): string {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { lightTheme, darkTheme, resolveThemeConfig, createNamedTheme } from "../theme";
-import { buildPlainThemeCss, buildTailwindThemeCss, fluidRootFontSize } from "../cssOutput";
+import { buildPlainThemeCss, buildTailwindMappingCss, buildTailwindThemeCss, fluidRootFontSize } from "../cssOutput";
 
 describe("fluidRootFontSize", () => {
   /** clamp'in orta terimini verilen genişlikte px'e çevirir (16px kök varsayımıyla). */
@@ -140,5 +140,14 @@ describe("Tema sınırları", () => {
     expect(css).toContain("--mari-font-heading: Custom Heading;");
     expect(css).not.toContain("--mari-font-sans: var(--mari-font-sans");
     expect(buildTailwindThemeCss(lightTheme)).toContain("--font-heading: var(--mari-font-heading)");
+  });
+});
+
+describe("buildTailwindMappingCss (Tailwind'li host)", () => {
+  it("tailwindcss'i import ETMEZ; tema değişkenleri + @theme eşlemesi verir", () => {
+    const css = buildTailwindMappingCss(lightTheme);
+    expect(css).not.toContain('@import "tailwindcss"');
+    expect(css).toContain('@import "./theme.css"');
+    expect(css).toContain("--color-mari-primary-solid: var(--mari-color-primary-solid)");
   });
 });

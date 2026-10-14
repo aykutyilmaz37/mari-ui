@@ -192,12 +192,24 @@ function buildThemeInlineBlock(theme: Theme): string {
  * `./theme.css`sini işaret eder — `@mari-ui/cli`ın `theme` komutu tüketici
  * projesinde farklı bir göreli yol yazmak isteyebilir.
  */
+/**
+ * Tailwind'li HOST için eşleme: `@import "tailwindcss"` İÇERMEZ (host zaten yapar;
+ * iki kez import, preflight ve utility'leri ikiler). Host'un tek Tailwind derlemesi
+ * `bg-mari-*`, `shadow-mari-*`, `rounded-*` … sınıflarını bu değişkenlere bağlar.
+ * `@mari-ui/components/tailwind.css` bunu import eder.
+ */
+export function buildTailwindMappingCss(light: Theme, options: CssOutputOptions & { themeFilePath?: string } = {}): string {
+  const header = options.header ?? DEFAULT_HEADER;
+  const themeFilePath = options.themeFilePath ?? "./theme.css";
+  return [header, `@import "${themeFilePath}";`, "", buildThemeInlineBlock(light), ""].join("\n");
+}
+
 export function buildTailwindThemeCss(light: Theme, options: CssOutputOptions & { themeFilePath?: string } = {}): string {
   const header = options.header ?? DEFAULT_HEADER;
   const themeFilePath = options.themeFilePath ?? "./theme.css";
   return [
     header,
-    "/* Sadece Tailwind v4 kullanan tüketiciler için opsiyonel eşleme katmanı. */",
+    "/* Tailwind'i KENDİSİ import eden tam giriş — Tailwind'li bir projede `tailwindcss`i ikinci kez yükler; host'lar `tailwind.css` (eşleme) ya da `@mari-ui/components/tailwind.css` kullanmalı. */",
     '@import "tailwindcss";',
     `@import "${themeFilePath}";`,
     "",

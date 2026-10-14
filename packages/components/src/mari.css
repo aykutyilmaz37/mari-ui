@@ -1,0 +1,145 @@
+/**
+ * mari-ui'nin ortak Tailwind kuralları — HİÇBİR giriş noktası değil, iki girişin
+ * paylaştığı gövde (keyframes, base kuralları, yoğunluk, `duration-*`):
+ *
+ * - `styles.css` — kendi derlememiz (`dist/styles.css`): `@import "tailwindcss"`
+ *   + bu dosya + kaynak `.tsx` taraması. Tailwind'SİZ host'lar bunu import eder.
+ * - `tailwind.css` — Tailwind'li HOST'un girişi (`dist/tailwind.css`): bu dosya
+ *   + derlenmiş `.js` taraması. Host kendi `@import "tailwindcss"`ünden sonra bunu
+ *   import eder; sınıflarımızı host'un tek derlemesi üretir → tekrar yok.
+ *
+ * `tailwindcss` burada import EDİLMEZ (host'ta iki kez import preflight'ı ve
+ * utility'leri ikilerdi).
+ */
+@import "@mari-ui/tokens/tailwind.css";
+
+/*
+ * Skeleton parıltısı (ant.design `active`). Gradyan 4 kat geniş, konumu
+ * sağdan sola kayar. Hareket azaltma tercihinde `motion-reduce:animate-none`.
+ */
+@keyframes mari-skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/*
+ * Gecikmeli görünme (Button `loading.delay`): öğe görünmez başlar, verilen
+ * `animation-delay` sonunda belirir. Kısa süren işlemlerde spinner titremesin.
+ */
+@keyframes mari-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Metin imleci: adımlı aç/kapa (yumuşak solma değil) — gerçek bir imleç gibi.
+ * OtpInput `layout="single"`'daki çizilmiş imleç kullanır.
+ */
+@keyframes mari-caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/*
+ * Progress `status="active"`: dolu kısmın üstünde soldan sağa akan parıltı
+ * (süren işlem). Hareket azaltma tercihinde parıltı öğesi `motion-reduce:hidden`.
+ */
+@keyframes mari-progress-active {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/*
+ * Grafik giriş animasyonu (`animated`). Yalnız `from` — bitiş öğenin kendi
+ * hali. Çubuk sıfır çizgisinden büyür, çizgi/alan soldan açılır (kırpma
+ * dikdörtgeni), yay/dilim `pathLength=1` ile süpürülür.
+ */
+@keyframes mari-chart-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes mari-chart-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes mari-chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/*
+ * Statistic trend oku (`animated`): ok kendi yönünde kayarak belirir —
+ * yükselen ok aşağı-soldan, düşen ok yukarı-soldan gelir.
+ */
+@keyframes mari-trend-up {
+  from {
+    opacity: 0;
+    transform: translate(-4px, 4px);
+  }
+}
+
+@keyframes mari-trend-down {
+  from {
+    opacity: 0;
+    transform: translate(-4px, -4px);
+  }
+}
+
+/* Font dosyaları opt-in; aile ve tema seçimi bütün bileşenlere miras kalır. */
+@layer base {
+  body { font-family: var(--mari-font-sans); }
+  h1, h2, h3, h4, h5, h6 { font-family: var(--mari-font-heading); }
+  input::placeholder, textarea::placeholder { color: var(--mari-color-muted); opacity: 1; }
+  code, pre, kbd, samp { font-family: var(--mari-font-mono); }
+  [data-theme="light"] { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+
+  /*
+   * Faz 16.8 — boşluk yoğunluğu (`applyTheme` / ThemeCustomizer). Değerler
+   * `@mari-ui/tokens` `spacingDensityBase` ile aynı. Sıkı mod dokunmatikte
+   * uygulanmaz: kontroller 44px dokunma hedefinin altına inerdi.
+   */
+  [data-density="normal"] { --spacing: 0.25rem; }
+  [data-density="compact"] { --spacing: 0.2rem; }
+  [data-density="comfortable"] { --spacing: 0.3rem; }
+  @media (pointer: coarse) {
+    [data-density="compact"] { --spacing: 0.25rem; }
+  }
+}
+
+/*
+ * Faz 21 — hareket seviyesi (`mari-ui.config.json` `motion` / kişilik). Tailwind'in
+ * `duration-*` sınıfları sabit ms yazar; bu tanım onlardan sonra üretildiği için
+ * kazanır ve süreyi `--mari-motion-scale` ile çarpar (`off` = 0, `calm` = 1.4 …).
+ */
+@utility duration-* {
+  transition-duration: calc(--value(integer) * 1ms * var(--mari-motion-scale, 1));
+}

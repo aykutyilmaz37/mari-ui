@@ -14,17 +14,22 @@ Türkçe, token tabanlı, framework'ten bağımsız React tasarım sistemi. Web 
 pnpm add @mari-ui/components @mari-ui/core @mari-ui/tokens
 ```
 
-```tsx
-// Global CSS giriş noktanızda (ör. app/layout.tsx, main.tsx)
-import "@mari-ui/tokens/fonts.css"; // isteğe bağlı: Geist / Manrope / Geist Mono yerel fontları
-import "@mari-ui/components/styles.css";
+```css
+/* Global CSS — Tailwind v4 kullanıyorsanız: sınıfları kendi Tailwind'iniz derler, tekrar yok */
+@import "tailwindcss";
+@import "@mari-ui/components/tailwind.css";
 
+/* Tailwind kullanmıyorsanız bunun yerine hazır derlenmiş CSS: */
+/* @import "@mari-ui/components/styles.css"; */
+```
+
+```tsx
 import { Button } from "@mari-ui/components/button";
 
 <Button color="primary">Kaydet</Button>;
 ```
 
-Projenizde Tailwind kurulu olması gerekmez; `styles.css` derlenmiş haldedir. Ayrıntılı kurulum (Next.js App Router, Vite, tema, koyu mod, AI kuralları) Storybook'taki **Başlarken** bölümünde.
+İkisini birden import etmeyin; `npx mari-ui init` projenize uygun olanı söyler. Tailwind v3 desteklenmez. Ayrıntılı kurulum (Next.js App Router, Vite, tema, koyu mod, AI kuralları) Storybook'taki **Başlarken** bölümünde.
 
 ## Paket grafiği
 

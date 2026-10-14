@@ -14,7 +14,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { darkTheme, lightTheme } from "../src/theme";
-import { buildPlainThemeCss, buildTailwindThemeCss } from "../src/cssOutput";
+import { buildPlainThemeCss, buildTailwindMappingCss, buildTailwindThemeCss } from "../src/cssOutput";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = resolve(__dirname, "../dist");
@@ -22,12 +22,14 @@ const DIST_DIR = resolve(__dirname, "../dist");
 async function main() {
   const plainCss = buildPlainThemeCss({ default: lightTheme, named: { dark: darkTheme } });
   const tailwindCss = buildTailwindThemeCss(lightTheme);
+  const mappingCss = buildTailwindMappingCss(lightTheme);
 
   await mkdir(DIST_DIR, { recursive: true });
   await writeFile(resolve(DIST_DIR, "theme.css"), plainCss, "utf8");
   await writeFile(resolve(DIST_DIR, "tailwind-theme.css"), tailwindCss, "utf8");
+  await writeFile(resolve(DIST_DIR, "tailwind.css"), mappingCss, "utf8");
   console.log(
-    `[@mari-ui/tokens] dist/theme.css (${plainCss.length} bayt) ve dist/tailwind-theme.css (${tailwindCss.length} bayt) üretildi.`
+    `[@mari-ui/tokens] dist/theme.css (${plainCss.length} bayt), dist/tailwind-theme.css (${tailwindCss.length} bayt) ve dist/tailwind.css (${mappingCss.length} bayt) üretildi.`
   );
 }
 
