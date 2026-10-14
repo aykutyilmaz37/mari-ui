@@ -91,7 +91,7 @@ function labelColor(variant: BottomNavigationVariant, active: boolean, color: Co
   return variant === "pill" ? theme.color.canvas.foreground : theme.color[color].text;
 }
 
-function NavItem({ item, active, onPress, variant, color, hideLabels, skeleton, m, theme }: ItemProps) {
+function NavItem({ item, active, onPress, variant, color, hideLabels, skeleton, m, theme }: Readonly<ItemProps>) {
   const pill = usePillAnim(active);
   const ink = iconColor(variant, active, color, theme);
   const disabled = item.disabled ?? false;
@@ -146,7 +146,7 @@ export function BottomNavigation({
   skeleton = false,
   accessibilityLabel,
   style,
-}: BottomNavigationProps) {
+}: Readonly<BottomNavigationProps>) {
   const theme = useTheme();
   const m = useNativeConfig().bottomNavigation[variant];
   const safe = useSafeInsets();

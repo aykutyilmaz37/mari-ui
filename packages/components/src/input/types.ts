@@ -34,9 +34,9 @@ export type InputNativeAttributes = React.AriaAttributes & {
   role?: string;
   readOnly?: boolean;
   /** Mobil klavye türü (`numeric`, `email`, `tel`, `search`…). */
-  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  inputMode?: Exclude<React.HTMLAttributes<HTMLInputElement>["inputMode"], undefined>;
   /** Mobil klavyedeki Enter tuşunun etiketi (`search`, `send`, `next`…). */
-  enterKeyHint?: React.InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
+  enterKeyHint?: Exclude<React.InputHTMLAttributes<HTMLInputElement>["enterKeyHint"], undefined>;
   autoComplete?: string;
   pattern?: string;
   [dataAttribute: `data-${string}`]: unknown;
@@ -50,9 +50,9 @@ export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onClear?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onFocus?: (e: React.FormEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FormEvent<HTMLInputElement>) => void;
-  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onInput?: (e: React.InputEvent<HTMLInputElement>) => void;
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
   allowClear?: boolean | { clearIcon?: React.ReactNode };
   /** Temizle butonunun erişilebilir adı. Varsayılan: `"Temizle"`. */
@@ -62,12 +62,9 @@ export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   disabled?: boolean;
   size?: Size;
   shape?: InputShape;
-  /** @remarks Eski `"outlined"`/`"filled"`/`"borderless"` değerleri de kabul edilir (deprecated). */
-  variant?: InputVariant | "outlined" | "filled" | "borderless";
+  variant?: InputVariant;
   /** Semantik renk. Varsayılan: `primary`. `error`/`warning` doğrulama durumu olarak da işlev görür. */
   color?: ColorRole;
-  /** @deprecated `color` kullanın — "error"/"warning" zaten birer ColorRole. */
-  status?: "error" | "warning";
   maxLength?: number;
   showCount?: boolean;
   count?: InputCountConfig;

@@ -27,27 +27,6 @@ describe("Button", () => {
     expect(btn.className).not.toContain("bg-mari-error-solid");
   });
 
-  it("eski `type` prop'unu yeni `color`'a çevirir (deprecated alias çalışıyor)", () => {
-    render(<Button type="secondary">Eski API</Button>);
-    const btn = screen.getByRole("button", { name: "Eski API" });
-    // secondary -> neutral
-    expect(btn.className).toContain("bg-mari-neutral-solid");
-  });
-
-  it('eski `type="text"` prop\'unu variant="ghost"a çevirir', () => {
-    render(<Button type="text">Ghost</Button>);
-    const btn = screen.getByRole("button", { name: "Ghost" });
-    expect(btn.className).not.toContain("bg-mari-primary-solid");
-    expect(btn.className).toContain("text-mari-primary");
-  });
-
-  it("eski `variant=\"outlined\"` değerini `outline`a çevirir", () => {
-    render(<Button variant="outlined">Eski Variant</Button>);
-    const btn = screen.getByRole("button", { name: "Eski Variant" });
-    expect(btn.className).toContain("border-mari-primary");
-    expect(btn.className).not.toContain("border-mari-primary-border");
-  });
-
   it("disabled iken onClick tetiklenmez", async () => {
     const onClick = vi.fn();
     render(

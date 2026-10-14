@@ -9,7 +9,7 @@ import { getA11yViolations } from "../testUtils/a11y";
 
 const nextFrame = () => act(() => new Promise<void>((r) => requestAnimationFrame(() => r())));
 
-function Harness(props: { steps?: TourStep[]; mask?: boolean; onClose?: (c: number) => void; onFinish?: () => void }) {
+function Harness(props: Readonly<{ steps?: TourStep[]; mask?: boolean; onClose?: (c: number) => void; onFinish?: () => void }>) {
   const [open, setOpen] = useState(false);
   const steps: TourStep[] = props.steps ?? [
     { title: "Hoş geldiniz", description: "Kısa bir tur." },

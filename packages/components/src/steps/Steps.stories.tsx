@@ -111,7 +111,7 @@ const basicSteps: StepItem[] = [
 /* ─────────────────────────── Story yardımcıları ─────────────────────────── */
 
 /** Görünür etiketli form alanı — placeholder-only etiket kullanmıyoruz. */
-function Field({ label, hint, children, className }: { label: string; hint?: string; children: React.ReactNode; className?: string }) {
+function Field({ label, hint, children, className }: Readonly<{ label: string; hint?: string; children: React.ReactNode; className?: string }>) {
   return (
     <label className={`flex flex-col gap-1.5 ${className ?? ""}`}>
       <span className="text-sm font-medium text-mari-foreground">{label}</span>
@@ -121,7 +121,7 @@ function Field({ label, hint, children, className }: { label: string; hint?: str
   );
 }
 
-function SummaryRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function SummaryRow({ label, value, strong }: Readonly<{ label: string; value: string; strong?: boolean }>) {
   return (
     <div className={`flex items-center justify-between ${strong ? "text-base font-semibold text-mari-foreground" : "text-sm text-mari-muted"}`}>
       <span>{label}</span>

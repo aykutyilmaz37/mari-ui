@@ -63,7 +63,7 @@ describe("Carousel utils", () => {
   it("slidesInView: yarısından fazlası görünenler", () => {
     expect([...slidesInView(0, 1, 5, false)]).toEqual([0]);
     expect([...slidesInView(0.4, 1, 5, false)]).toEqual([0]);
-    expect([...slidesInView(4.6, 1, 5, true)].sort()).toEqual([0]);
-    expect([...slidesInView(1, 3, 6, false)].sort()).toEqual([1, 2, 3]);
+    expect([...slidesInView(4.6, 1, 5, true)].sort((a, b) => a - b)).toEqual([0]);
+    expect([...slidesInView(1, 3, 6, false)].sort((a, b) => a - b)).toEqual([1, 2, 3]);
   });
 });

@@ -25,7 +25,7 @@ export type { MegaPanelProps };
  * Geçerli sayfa `activeKey` ile gelir (host `currentPath`ten bulur): ray
  * başlangıçta onu içeren kategoriyi seçer, link vurgulanır.
  */
-export function MegaPanel({ items, color, layout, orientation = "horizontal", onNavigate, onItemClick, activeKey = null, className }: MegaPanelProps) {
+export function MegaPanel({ items, color, layout, orientation = "horizontal", onNavigate, onItemClick, activeKey = null, className }: Readonly<MegaPanelProps>) {
   // Geçerli sayfa bu paneldeyse ray onu içeren kategoriyle açılır (kullanıcı nerede olduğunu görür).
   const [selectedKey, setSelectedKey] = useState<string | null>(() => items.find((item) => isMenuItemActive(item, activeKey))?.key ?? items[0]?.key ?? null);
   const selected = items.find((item) => item.key === selectedKey) ?? items[0];

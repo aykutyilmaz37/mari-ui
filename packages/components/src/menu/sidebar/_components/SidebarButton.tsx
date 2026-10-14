@@ -17,7 +17,7 @@ export interface SidebarButtonProps {
  * için standart olan panel aç/kapa ikonları kullanılıyor. Kenara yapışık
  * küçük bir sekme: sidebar kapalıyken de ekranda kalan tek tutamaç.
  */
-export function SidebarButton({ position, setVisible, visible, controlsId }: SidebarButtonProps) {
+export function SidebarButton({ position, setVisible, visible, controlsId }: Readonly<SidebarButtonProps>) {
   const isLeft = position === "left";
   let Icon = isLeft ? PanelLeftOpenIcon : PanelRightOpenIcon;
   if (visible) Icon = isLeft ? PanelLeftCloseIcon : PanelRightCloseIcon;

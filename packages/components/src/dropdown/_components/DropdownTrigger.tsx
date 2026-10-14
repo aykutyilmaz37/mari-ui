@@ -7,7 +7,7 @@ import { useDropdown } from "../useDropdown";
 import { getTriggerClasses } from "../utils";
 import { skeletonBoxProps } from "../../lib/skeleton";
 
-export function DropdownTrigger({ children, className, color, variant, onClick, "aria-label": ariaLabel }: DropdownTriggerProps) {
+export function DropdownTrigger({ children, className, color, variant, onClick, "aria-label": ariaLabel }: Readonly<DropdownTriggerProps>) {
   const { visible, setVisible, triggerRef, panelId, focusPanelOnOpenRef, hoverMode, skeleton } = useDropdown();
   const classes = cn("cursor-pointer", getTriggerClasses(color, variant), className);
 

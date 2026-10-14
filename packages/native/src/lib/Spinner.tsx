@@ -9,7 +9,7 @@ import { Animated, Easing, View } from "react-native";
  * Geometri lucide ile aynı oran: 24'lük kutuda r=9 yay, 2 kalınlık →
  * çap = boyut × 18/24, çizgi = boyut × 2/24. Dönüş 1 sn, doğrusal (Tailwind `animate-spin`).
  */
-export function Spinner({ size, color }: { size: number; color: string }) {
+export function Spinner({ size, color }: Readonly<{ size: number; color: string }>) {
   const rotation = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const loop = Animated.loop(Animated.timing(rotation, { toValue: 1, duration: 1000, easing: Easing.linear, useNativeDriver: true }));

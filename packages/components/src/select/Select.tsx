@@ -92,7 +92,7 @@ function handleTriggerKey(e: React.KeyboardEvent, state: SelectState, searchable
   else if (!searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) state.typeChar(e.key);
 }
 
-function SelectTags({ state, maxTagCount, disabled }: { state: SelectState; maxTagCount?: number; disabled: boolean }) {
+function SelectTags({ state, maxTagCount, disabled }: Readonly<{ state: SelectState; maxTagCount?: number; disabled: boolean }>) {
   const shown = maxTagCount === undefined ? state.selectedOptions : state.selectedOptions.slice(0, maxTagCount);
   const hidden = state.selectedOptions.length - shown.length;
   return (
@@ -115,7 +115,7 @@ function SelectTags({ state, maxTagCount, disabled }: { state: SelectState; maxT
   );
 }
 
-function SelectSuffix({ loading, open }: { loading: boolean; open: boolean }) {
+function SelectSuffix({ loading, open }: Readonly<{ loading: boolean; open: boolean }>) {
   return (
     <span aria-hidden className="flex shrink-0 items-center text-mari-muted">
       {loading ? (

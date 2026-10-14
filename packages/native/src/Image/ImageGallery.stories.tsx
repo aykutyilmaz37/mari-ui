@@ -49,13 +49,13 @@ type Story = StoryObj<typeof ImageGallery>;
  * Galeri kendi içinde kayar: story'lerde sabit yükseklikte kutu (uygulamada
  * ekranın kendisi). Telefonda studio başlığı + story seçiciyle ekrana sığsın.
  */
-function Frame({ height = 560, children }: { height?: number; children: React.ReactNode }) {
+function Frame({ height = 560, children }: Readonly<{ height?: number; children: React.ReactNode }>) {
   const theme = useTheme();
   const window = useWindowDimensions();
   return <View style={{ height: Math.min(height, Math.max(320, window.height - 300)), borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 12, overflow: "hidden", padding: 4 }}>{children}</View>;
 }
 
-function Note({ children }: { children: React.ReactNode }) {
+function Note({ children }: Readonly<{ children: React.ReactNode }>) {
   const theme = useTheme();
   return <Text style={{ fontSize: 14, color: theme.color.canvas.muted, fontVariant: ["tabular-nums"] }}>{children}</Text>;
 }

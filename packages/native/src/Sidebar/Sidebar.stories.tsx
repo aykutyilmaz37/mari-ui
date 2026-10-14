@@ -90,12 +90,12 @@ const MAIL: SidebarItem[] = [
 ];
 
 /** Telefon ekranı gibi çerçeve; çekmece tam ekran açılır (Modal). */
-function Screen({ children }: { children: React.ReactNode }) {
+function Screen({ children }: Readonly<{ children: React.ReactNode }>) {
   const theme = useTheme();
   return <View style={{ height: 320, alignSelf: "stretch", borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 16, overflow: "hidden", backgroundColor: theme.color.canvas.surface }}>{children}</View>;
 }
 
-function MenuButton({ onPress }: { onPress: () => void }) {
+function MenuButton({ onPress }: Readonly<{ onPress: () => void }>) {
   return <AppBarAction icon={({ color }) => <Menu size={24} color={color} />} accessibilityLabel="Menüyü aç" onPress={onPress} />;
 }
 
@@ -127,7 +127,7 @@ const [open, setOpen] = useState(false);
   },
 };
 
-function LogoutRow({ onPress }: { onPress: () => void }) {
+function LogoutRow({ onPress }: Readonly<{ onPress: () => void }>) {
   const theme = useTheme();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, minHeight: 52, backgroundColor: pressed ? theme.color.canvas.surfaceAlt : "transparent" })}>
@@ -206,7 +206,7 @@ const categories: SidebarItem[] = [
   render: () => <ShopDemo />,
 };
 
-function MailDemo({ position = "left" as const }: { position?: "left" | "right" }) {
+function MailDemo({ position = "left" as const }: Readonly<{ position?: "left" | "right" }>) {
   const [open, setOpen] = useState(false);
   const [path, setPath] = useState("/inbox");
   const menu = <MenuButton onPress={() => setOpen(true)} />;

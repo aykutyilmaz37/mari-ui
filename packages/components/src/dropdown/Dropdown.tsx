@@ -20,7 +20,7 @@ export type { DropdownProps };
  * açık kalan bir dropdown'ı klavyeyle veya mouse'la kapatmanın tek yolu
  * trigger'a tekrar tıklamaktı. İkisi de eklendi.
  */
-function DropdownRoot({ children, hover = false, className }: DropdownProps) {
+function DropdownRoot({ children, hover = false, className }: Readonly<DropdownProps>) {
   const { visible, setVisible, anchorRef, panelRef, triggerRef, scheduleHoverClose, cancelHoverClose, skeleton } = useDropdown();
 
   useEffect(() => {
@@ -67,8 +67,8 @@ function DropdownRoot({ children, hover = false, className }: DropdownProps) {
       if (event.key === "Tab" && focusInPanel) {
         const focusable = getFocusable(panel);
         const active = document.activeElement;
-        const leavingForward = !event.shiftKey && (focusable.length === 0 || active === focusable[focusable.length - 1]);
-        const leavingBackward = event.shiftKey && (focusable.length === 0 || active === focusable[0] || active === panel);
+        const leavingForward = !event.shiftKey && (focusable.length === 0 || active === (focusable.at(-1) ?? null));
+        const leavingBackward = event.shiftKey && (focusable.length === 0 || active === (focusable[0] ?? null) || active === panel);
         if (leavingForward || leavingBackward) {
           event.preventDefault();
           setVisible(false);
@@ -118,7 +118,7 @@ function DropdownRoot({ children, hover = false, className }: DropdownProps) {
 }
 
 /** `DropdownProvider`ı kendi içine gömer — tüketicinin ayrıca sarması gerekmez. */
-export function Dropdown(props: DropdownProps) {
+export function Dropdown(props: Readonly<DropdownProps>) {
   return (
     <DropdownProvider hover={props.hover} skeleton={props.skeleton}>
       <DropdownRoot {...props} />

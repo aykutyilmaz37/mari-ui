@@ -98,7 +98,7 @@ interface ShellProps extends StatisticBaseProps {
 }
 
 /** İskelette her bölge kendi boyutunda kutu; içerik görünmez yerinde (yükseklik zıplamaz). */
-function Region({ skeleton, children, style }: { skeleton: boolean; children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+function Region({ skeleton, children, style }: Readonly<{ skeleton: boolean; children: React.ReactNode; style?: StyleProp<ViewStyle> }>) {
   if (!skeleton) return <View style={style}>{children}</View>;
   // SkeletonBox çocukları kendi (görünmez) kutusuna sarar → satır düzeni o kutuda olmalı.
   return (
@@ -108,7 +108,7 @@ function Region({ skeleton, children, style }: { skeleton: boolean; children: Re
   );
 }
 
-function StatisticShell({ title, prefix, suffix, description, footer, descriptionBlock, size, skeleton, style, children, valueRole, valueLabel, groupLabel }: ShellProps) {
+function StatisticShell({ title, prefix, suffix, description, footer, descriptionBlock, size, skeleton, style, children, valueRole, valueLabel, groupLabel }: Readonly<ShellProps>) {
   const theme = useTheme();
   const m = useNativeConfig().statistic[size];
   const c = theme.color.canvas;
@@ -190,7 +190,7 @@ function describeTrend(trend: StatisticTrend, locale: string) {
   return { tone, text, direction, spoken, withUnit };
 }
 
-function Trend({ trend, locale, animate, mode, fontSize, lineHeight }: { trend: StatisticTrend; locale: string; animate: boolean; mode: ValueAnimation; fontSize: number; lineHeight: number }) {
+function Trend({ trend, locale, animate, mode, fontSize, lineHeight }: Readonly<{ trend: StatisticTrend; locale: string; animate: boolean; mode: ValueAnimation; fontSize: number; lineHeight: number }>) {
   const theme = useTheme();
   const { tone, text, direction, spoken, withUnit } = describeTrend(trend, locale);
   const fixed = new Intl.NumberFormat(locale, { minimumFractionDigits: Number.isInteger(trend.value) ? 0 : 1, maximumFractionDigits: 1 });
@@ -213,7 +213,7 @@ function Trend({ trend, locale, animate, mode, fontSize, lineHeight }: { trend: 
  * Sayısal KPI: başlık, yerel biçimli değer, önek/sonek, trend. Trendin rengi
  * yönden değil ANLAMdan (`goodWhen`): maliyetin düşmesi yeşil.
  */
-export function Statistic({ title, value, precision, prefix, suffix, trend, description, locale = "tr-TR", size = "md", style, skeleton = false, animated = true, valueAnimation = "count" }: StatisticProps) {
+export function Statistic({ title, value, precision, prefix, suffix, trend, description, locale = "tr-TR", size = "md", style, skeleton = false, animated = true, valueAnimation = "count" }: Readonly<StatisticProps>) {
   const theme = useTheme();
   const m = useNativeConfig().statistic[size];
   const text = formatValue(value, precision, locale);
@@ -262,7 +262,7 @@ function useNow(intervalMs: number, enabled = true): number {
  * Geri sayım. Her saniye güncellenir ama duyurulmaz (`timer`); kalan süre
  * sözlü olarak erişilebilir adda, süre dolunca bir kez duyurulur.
  */
-export function Countdown({ title, target, onFinish, showDays = true, finishedText = "Süre doldu", prefix, suffix, description, size = "md", style, skeleton = false }: CountdownProps) {
+export function Countdown({ title, target, onFinish, showDays = true, finishedText = "Süre doldu", prefix, suffix, description, size = "md", style, skeleton = false }: Readonly<CountdownProps>) {
   const targetMs = typeof target === "number" ? target : target.getTime();
   const now = useNow(1000);
   const remaining = Math.max(0, targetMs - now);
@@ -298,7 +298,7 @@ export function Countdown({ title, target, onFinish, showDays = true, finishedTe
 }
 
 /** Canlı saat; saniyesizde dakikada bir değişir ama saniyede bir kontrol edilir. */
-export function Clock({ title, timeZone, showSeconds = false, locale = "tr-TR", prefix, suffix, description, size = "md", style, skeleton = false }: ClockProps) {
+export function Clock({ title, timeZone, showSeconds = false, locale = "tr-TR", prefix, suffix, description, size = "md", style, skeleton = false }: Readonly<ClockProps>) {
   const now = useNow(1000);
   const text = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", second: showSeconds ? "2-digit" : undefined, hour12: false, timeZone }).format(new Date(now));
   return (
@@ -312,7 +312,7 @@ export function Clock({ title, timeZone, showSeconds = false, locale = "tr-TR", 
  * Kronometre: Başlat / Duraklat / Sıfırla. Salise görünür ama duyurulmaz;
  * durdurulunca geçen süre sözlü olarak duyurulur.
  */
-export function Stopwatch({ title, controls = true, autoStart = false, onStop, prefix, suffix, description, size = "md", style, skeleton = false }: StopwatchProps) {
+export function Stopwatch({ title, controls = true, autoStart = false, onStop, prefix, suffix, description, size = "md", style, skeleton = false }: Readonly<StopwatchProps>) {
   const theme = useTheme();
   const [running, setRunning] = useState(autoStart);
   const [base, setBase] = useState(0);

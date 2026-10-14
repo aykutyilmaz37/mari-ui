@@ -33,7 +33,7 @@ export interface ActionSheetProps {
 
 const ROW = 56;
 
-function ActionRow({ action, onSelect }: { action: ActionSheetAction; onSelect: () => void }) {
+function ActionRow({ action, onSelect }: Readonly<{ action: ActionSheetAction; onSelect: () => void }>) {
   const theme = useTheme();
   const body = useNativeConfig().typography.body;
   let color = theme.color.canvas.foreground;
@@ -60,7 +60,7 @@ function ActionRow({ action, onSelect }: { action: ActionSheetAction; onSelect: 
  * iki platformda aynı görünüm; sürükleyerek ya da karartmaya dokunarak kapanır.
  * Bir eyleme basılınca panel kapanır, kapanış bitince eylem çalışır.
  */
-export function ActionSheet({ open, onClose, title, message, actions, cancelLabel = "Vazgeç", onAfterClose }: ActionSheetProps) {
+export function ActionSheet({ open, onClose, title, message, actions, cancelLabel = "Vazgeç", onAfterClose }: Readonly<ActionSheetProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const font = nativeFontFamily(theme.fontFamily.sans);

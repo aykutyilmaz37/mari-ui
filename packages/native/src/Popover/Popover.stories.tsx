@@ -34,7 +34,7 @@ const meta: Meta<typeof Popover> = {
 export default meta;
 type Story = StoryObj<typeof Popover>;
 
-function MutedIcon({ Icon }: { Icon: typeof Info }) {
+function MutedIcon({ Icon }: Readonly<{ Icon: typeof Info }>) {
   const theme = useTheme();
   return <Icon size={18} color={theme.color.canvas.foreground} />;
 }

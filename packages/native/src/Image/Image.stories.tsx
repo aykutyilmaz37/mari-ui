@@ -37,7 +37,7 @@ type Story = StoryObj<typeof Image>;
 const photos = storyPhotos(12);
 
 /** Story ızgarası: `columns` eşit sütun, 12 boşluk (web `grid gap-3`). */
-function Grid({ columns, children }: { columns: number; children: React.ReactNode }) {
+function Grid({ columns, children }: Readonly<{ columns: number; children: React.ReactNode }>) {
   return (
     <View style={{ flexDirection: "row", flexWrap: "wrap", margin: -6 }}>
       {React.Children.map(children, (child) => (
@@ -47,7 +47,7 @@ function Grid({ columns, children }: { columns: number; children: React.ReactNod
   );
 }
 
-function Caption({ children }: { children: React.ReactNode }) {
+function Caption({ children }: Readonly<{ children: React.ReactNode }>) {
   const theme = useTheme();
   return <Text style={{ fontSize: 13, lineHeight: 18, color: theme.color.canvas.muted, marginTop: 6 }}>{children}</Text>;
 }
@@ -192,7 +192,7 @@ export const Viewer: Story = {
   render: () => <ViewerDemo />,
 };
 
-function Framed({ fit }: { fit: "cover" | "contain" }) {
+function Framed({ fit }: Readonly<{ fit: "cover" | "contain" }>) {
   const theme = useTheme();
   return (
     <View>

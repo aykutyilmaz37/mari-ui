@@ -75,16 +75,16 @@ function ModalHeader({
   descriptionId,
   closeInset,
   skeleton,
-}: {
+}: Readonly<{
   icon: React.ReactNode;
   title: React.ReactNode;
   titleId: string;
   description: React.ReactNode;
   descriptionId: string;
   /** Kapat düğmesinin olduğu kenar — başlık onun altına girmesin. */
-  closeInset?: ModalProps["closeButtonPosition"];
+  closeInset?: Exclude<ModalProps["closeButtonPosition"], undefined>;
   skeleton: boolean;
-}) {
+}>) {
   return (
     <div className={cn("shrink-0 px-6 pt-6", closeInset === "left" && "pl-14", closeInset === "right" && "pr-14")}>
       <ContentSkeleton on={skeleton} fallback={HEADER_PLACEHOLDER}>
@@ -114,13 +114,13 @@ function ModalBody({
   skeleton,
   className,
   children,
-}: {
+}: Readonly<{
   indented: boolean;
   hasFooter: boolean;
   skeleton: boolean;
   className?: string;
   children: React.ReactNode;
-}) {
+}>) {
   const ref = useRef<HTMLDivElement>(null);
   // Uzun metin (kullanım koşulları) kayar ama içinde odaklanabilir öğe yok →
   // klavyeyle kaydırılabilsin diye taşarken gövde Tab durağı olur.
@@ -148,7 +148,7 @@ function ModalBody({
   );
 }
 
-function CloseButton({ onClose, position }: { onClose: () => void; position: ModalProps["closeButtonPosition"] }) {
+function CloseButton({ onClose, position }: Readonly<{ onClose: () => void; position: ModalProps["closeButtonPosition"] }>) {
   return (
     <button
       type="button"
@@ -185,7 +185,7 @@ function resolveFooter({ footer, ...buttons }: FooterButtonsProps & { footer: Re
   return <FooterButtons {...buttons} />;
 }
 
-function FooterButtons({ position, cancelText, confirmText, onCancel, onConfirm, color, loading, disabled }: FooterButtonsProps) {
+function FooterButtons({ position, cancelText, confirmText, onCancel, onConfirm, color, loading, disabled }: Readonly<FooterButtonsProps>) {
   return (
     // Mobilde düğmeler tam genişlik ve alt alta (birincil altta, başparmak erişiminde).
     <div className={cn("flex flex-col-reverse gap-2 sm:flex-row", position === "left" ? "sm:justify-start" : "sm:justify-end")}>

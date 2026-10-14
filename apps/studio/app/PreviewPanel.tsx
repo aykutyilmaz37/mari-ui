@@ -26,7 +26,7 @@ const PREVIEW_COLORS: ColorRole[] = ["primary", "accent"];
  *
  * Font token'ları CSS değişkenlerinden, gövde ailesi miras yoluyla uygulanır.
  */
-export function PreviewPanel({ mode, spacing = "normal", cssVars, fontFamilySans }: PreviewPanelProps) {
+export function PreviewPanel({ mode, spacing = "normal", cssVars, fontFamilySans }: Readonly<PreviewPanelProps>) {
   const style: CSSProperties = { ...(cssVars as CSSProperties), fontFamily: fontFamilySans };
 
   return (

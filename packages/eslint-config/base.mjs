@@ -24,6 +24,19 @@ export const baseConfig = [
     ignores: ["dist/**", "build/**", ".turbo/**", "storybook-static/**", "node_modules/**"],
   },
   {
+    // Tip bilgisi: sonarjs'in "Sonar way" setindeki 56 kural (prefer-read-only-props,
+    // deprecation, different-types-comparison…) tip ister; bu olmadan SESSİZCE
+    // çalışmıyordu — CLI lint temizken VS Code'daki SonarQube eklentisi uyarı
+    // gösteriyordu. Kök *.config.ts dosyaları her paketin tsconfig `include`'unda.
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: process.cwd(),
+      },
+    },
+  },
+  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "warn",
@@ -34,6 +47,11 @@ export const baseConfig = [
       // dallanması olan sunum bileşenleri barındırıyor (bkz. Faz 3);
       // 15 daha gerçekçi, gerçek karmaşık kod parçalarını yine de yakalar.
       "sonarjs/cognitive-complexity": ["warn", 15],
+      // Kapalı (S3800): `React.ReactNode` döndüren yardımcılar (null | öğe |
+      // metin) bildirilen dönüş tipine rağmen işaretleniyordu; tek tipe
+      // zorlamak gereksiz fragment sarmalı demek. VS Code eklentisinde de
+      // kapalı — bkz. kökteki .vscode/settings.json (`sonarlint.rules`).
+      "sonarjs/function-return-type": "off",
     },
   },
 ];

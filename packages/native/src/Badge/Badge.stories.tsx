@@ -36,7 +36,7 @@ const meta: Meta<typeof Badge> = {
 export default meta;
 type Story = StoryObj<typeof Badge>;
 
-function IconButton({ label, children }: { label: string; children: React.ReactNode }) {
+function IconButton({ label, children }: Readonly<{ label: string; children: React.ReactNode }>) {
   const theme = useTheme();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} style={{ width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: theme.color.canvas.surfaceAlt }}>

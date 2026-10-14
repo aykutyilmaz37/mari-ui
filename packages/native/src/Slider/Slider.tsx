@@ -87,7 +87,7 @@ function markerOpacity(measured: Box | undefined, dim: boolean | undefined): num
  * Ray boyunca konumlanan işaret/ikon dizisi. Her öğe ölçülür ve merkezi
  * tutamaç merkeziyle hizalanır; uçtakiler kenardan taşmaz (içeri kayar).
  */
-function Markers({ items, length, thumb, min, max, vertical, textStyle }: { items: MarkerItem[]; length: number; thumb: number; min: number; max: number; vertical: boolean; textStyle: TextStyle }) {
+function Markers({ items, length, thumb, min, max, vertical, textStyle }: Readonly<{ items: MarkerItem[]; length: number; thumb: number; min: number; max: number; vertical: boolean; textStyle: TextStyle }>) {
   const [sizes, setSizes] = useState<Record<string, Box>>({});
   const usable = Math.max(0, length - thumb);
   const along = (s: Box) => (vertical ? s.height : s.width);
@@ -119,7 +119,7 @@ function Markers({ items, length, thumb, min, max, vertical, textStyle }: { item
 }
 
 /** Sayı girişi: yazarken serbest, onaylanınca (Enter/odak kaybı) adıma oturur. */
-function SliderInput({ value, bounds, step, min, max, disabled, skeleton, accessibilityLabel, onCommit }: { value: number; bounds: [number, number]; step: number; min: number; max: number; disabled: boolean; skeleton: boolean; accessibilityLabel?: string; onCommit: (v: number) => void }) {
+function SliderInput({ value, bounds, step, min, max, disabled, skeleton, accessibilityLabel, onCommit }: Readonly<{ value: number; bounds: [number, number]; step: number; min: number; max: number; disabled: boolean; skeleton: boolean; accessibilityLabel?: string; onCommit: (v: number) => void }>) {
   const [text, setText] = useState(String(value));
   useEffect(() => setText(String(value)), [value]);
   const commit = () => {
@@ -210,7 +210,7 @@ interface ThumbProps {
 }
 
 /** Tek tutamaç: ekran okuyucuda `adjustable` (yukarı/aşağı kaydırma bir adım). */
-function Thumb({ value, bounds, text, label, vertical, disabled, active, m, tint, theme, position, onStep }: ThumbProps) {
+function Thumb({ value, bounds, text, label, vertical, disabled, active, m, tint, theme, position, onStep }: Readonly<ThumbProps>) {
   const [lo, hi] = bounds;
   return (
     <View
@@ -258,7 +258,7 @@ const BUBBLE_SPAN = 160;
  * metin tek satıra zorlanmaz (`numberOfLines` iOS'ta tabular rakamı dar
  * ölçüp "…" ile kesebiliyor) — kutu geniş olduğu için zaten sarmaz.
  */
-function Bubble({ visible, text, offset, vertical, cross, m, theme }: { visible: boolean; text: string; offset: number; vertical: boolean; cross: number; m: NativeSliderSize; theme: Theme }) {
+function Bubble({ visible, text, offset, vertical, cross, m, theme }: Readonly<{ visible: boolean; text: string; offset: number; vertical: boolean; cross: number; m: NativeSliderSize; theme: Theme }>) {
   if (!visible) return null;
   const box: ViewStyle = vertical
     ? { position: "absolute", left: (cross + m.thumb) / 2 + 8, top: offset, height: m.thumb, width: BUBBLE_SPAN, justifyContent: "center", alignItems: "flex-start" }
@@ -295,7 +295,7 @@ export function Slider({
   thumbLabels,
   skeleton = false,
   style,
-}: SliderProps) {
+}: Readonly<SliderProps>) {
   const theme = useTheme();
   const m = useNativeConfig().slider[size];
   const [current, setCurrent] = useControllable<SliderValue>(value, defaultValue);
@@ -431,7 +431,7 @@ interface FrameProps {
 }
 
 /** Ray, işaretler, ikonlar ve sayı girişlerinin yerleşimi. Dikeyde: ikonlar solda, işaretler sağda, giriş altta. */
-function SliderFrame({ vertical, skeleton, style, axis, inputs, icons, marks, iconPosition, isRange, dash }: FrameProps) {
+function SliderFrame({ vertical, skeleton, style, axis, inputs, icons, marks, iconPosition, isRange, dash }: Readonly<FrameProps>) {
   const hidden = skeleton ? HIDDEN_A11Y : null;
   if (vertical) {
     return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type SubmitEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ArrowRight, Check, Moon, Sun } from "lucide-react";
 import { contrastRatio, darkTheme, lightTheme, personaNames, personas, resolveThemeConfig, type HexColor, type PersonaName, type Theme, type ThemeMode } from "@mari-ui/tokens";
@@ -18,7 +18,7 @@ function personaOf(globals: Record<string, unknown>): { label: string; themes: R
   return { label: personas[name].label, themes: { light: resolved.light, dark: resolved.dark } };
 }
 
-function IrisForm({ mode, theme, label }: { mode: ThemeMode; theme: Theme; label: string }) {
+function IrisForm({ mode, theme, label }: Readonly<{ mode: ThemeMode; theme: Theme; label: string }>) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("Mari Studio");
@@ -29,7 +29,7 @@ function IrisForm({ mode, theme, label }: { mode: ThemeMode; theme: Theme; label
   const ModeIcon = mode === "light" ? Sun : Moon;
   const ratio = (a: string, b: string) => contrastRatio(a as HexColor, b as HexColor).toFixed(2);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("");
     setInvalid(!name.trim());

@@ -1,23 +1,5 @@
 import { cn, type ColorRole, type Size, type Variant } from "@mari-ui/core";
 import { bgSolidClass, borderStrongColorClass, checkedBgSolidClass, checkedBorderStrongClass } from "../lib/colorClasses";
-import type { LegacyRadioType } from "./types";
-
-const LEGACY_TYPE_TO_COLOR: Record<LegacyRadioType, ColorRole> = {
-  primary: "primary",
-  secondary: "neutral",
-};
-
-/**
- * Checkbox'takiyle aynı birleştirme: `status` (error/warning) artık ayrı bir
- * eksen değil, `color`'ın kendisi. `undefined` dönebilir — "renk AÇIKÇA
- * verilmedi" ile "primary açıkça seçildi" ayrımı korunur (bkz. checkbox/utils.ts).
- */
-export function resolveRadioColor(props: { color?: ColorRole; status?: "error" | "warning"; type?: LegacyRadioType }): ColorRole | undefined {
-  if (props.status) return props.status;
-  if (props.color) return props.color;
-  if (props.type) return LEGACY_TYPE_TO_COLOR[props.type];
-  return undefined;
-}
 
 const SIZE_CLASS: Record<Size, string> = {
   sm: "w-3 h-3 text-sm",

@@ -44,7 +44,7 @@ function renderValue<T extends { id: string }>(col: ColumnDef<T>, value: T[keyof
   return <TableInfoValue info={col.info} value={value != null ? String(value) : "-"} />;
 }
 
-export function TableAccordion<T extends { id: string }>({ data, columns, emptyState, className, skeleton = false, pageSize }: TableAccordionProps<T>) {
+export function TableAccordion<T extends { id: string }>({ data, columns, emptyState, className, skeleton = false, pageSize }: Readonly<TableAccordionProps<T>>) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<T>>>({});

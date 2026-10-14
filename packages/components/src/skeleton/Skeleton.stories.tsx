@@ -55,7 +55,7 @@ const meta: Meta<typeof Skeleton> = {
 export default meta;
 type Story = StoryObj<typeof Skeleton>;
 
-function LoadedToggle({ loaded, onChange }: { loaded: boolean; onChange: (v: boolean) => void }) {
+function LoadedToggle({ loaded, onChange }: Readonly<{ loaded: boolean; onChange: (v: boolean) => void }>) {
   return (
     <div className="mb-5">
       <Switch checked={loaded} onChange={onChange} label="Yüklendi" size="sm" />

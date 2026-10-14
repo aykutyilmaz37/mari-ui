@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Drawer } from "./Drawer";
 import { getA11yViolations } from "../testUtils/a11y";
 
-function Harness(props: Partial<React.ComponentProps<typeof Drawer>>) {
+function Harness(props: Readonly<Partial<React.ComponentProps<typeof Drawer>>>) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -124,16 +124,6 @@ describe("Drawer", () => {
       </Drawer>
     );
     expect(screen.getByRole("dialog", { name: "Filtreler" })).toBeInTheDocument();
-  });
-
-  it("loading (eski ad) hâlâ iskelet gösterir", () => {
-    render(
-      <Drawer open onClose={() => {}} title="Sipariş" loading>
-        Gizli içerik
-      </Drawer>
-    );
-    // İçerik ölçülmek için görünmez kopya olarak yerinde; erişilebilirlik ağacında yok.
-    expect(screen.getByText("Gizli içerik").closest('[data-skeleton][aria-hidden="true"]')).not.toBeNull();
   });
 
   it("skeleton başlık/extra/alt çubuğu da gizler; dialog adını ve Kapat'ı korur, meşgul bildirir", () => {

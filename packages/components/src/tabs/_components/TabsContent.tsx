@@ -11,7 +11,7 @@ import { skeletonFill } from "../../lib/skeleton";
  * panel de klavyeyle erişilebilsin). Eskiden sabit `p-2` dolgu dayatıyordu —
  * artık sadece sekme çubuğundan ayıran üst boşluk (ant.design: 16px).
  */
-export function TabsContent({ children, value, forceMount = false, className }: TabsContentProps) {
+export function TabsContent({ children, value, forceMount = false, className }: Readonly<TabsContentProps>) {
   const { activeTab, baseId, keepMounted, orientation, skeleton, registerPanel } = useTabs();
   const active = activeTab === value;
   const mounted = active || keepMounted || forceMount;

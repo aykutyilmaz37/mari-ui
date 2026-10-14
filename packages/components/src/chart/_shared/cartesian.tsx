@@ -39,14 +39,14 @@ export function YGrid({
   format,
   showGrid,
   zeroLine,
-}: {
+}: Readonly<{
   domain: NiceDomain;
   y: (v: number) => number;
   box: PlotBox;
   format: (v: number) => string;
   showGrid: boolean;
   zeroLine: boolean;
-}) {
+}>) {
   return (
     <g aria-hidden>
       {domain.ticks.map((t) => (
@@ -67,7 +67,7 @@ export function YGrid({
 }
 
 /** Dikey kılavuz + x değerleri (yatay çubuk grafiğinin değer ekseni). */
-export function XValueGrid({ domain, x, box, format, showGrid }: { domain: NiceDomain; x: (v: number) => number; box: PlotBox; format: (v: number) => string; showGrid: boolean }) {
+export function XValueGrid({ domain, x, box, format, showGrid }: Readonly<{ domain: NiceDomain; x: (v: number) => number; box: PlotBox; format: (v: number) => string; showGrid: boolean }>) {
   return (
     <g aria-hidden>
       {domain.ticks.map((t) => (
@@ -93,7 +93,7 @@ export function visibleLabelIndexes(count: number, stride: number): number[] {
 }
 
 /** Kategori etiketleri (alt eksen). */
-export function XLabels({ labels, xAt, box, stride }: { labels: string[]; xAt: (i: number) => number; box: PlotBox; stride: number }) {
+export function XLabels({ labels, xAt, box, stride }: Readonly<{ labels: string[]; xAt: (i: number) => number; box: PlotBox; stride: number }>) {
   return (
     <g aria-hidden>
       {visibleLabelIndexes(labels.length, stride).map((i) => (

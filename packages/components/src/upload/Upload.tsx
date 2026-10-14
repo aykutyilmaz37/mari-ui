@@ -25,7 +25,7 @@ export function Upload({
   onChange,
   disabled = false,
   skeleton = false,
-}: UploadProps) {
+}: Readonly<UploadProps>) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { fileList, deleteFile, addFiles } = useUpload({ fileSize, fileType, max });
 

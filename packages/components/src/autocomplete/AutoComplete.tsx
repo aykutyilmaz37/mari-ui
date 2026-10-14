@@ -9,7 +9,7 @@ import { getFilteredOption, splitMatch } from "./utils";
 
 export type { AutoCompleteProps };
 
-function HighlightedValue({ value, searchText }: { value: string; searchText: string }) {
+function HighlightedValue({ value, searchText }: Readonly<{ value: string; searchText: string }>) {
   const parts = splitMatch(value, searchText);
   if (!parts) return <>{value}</>;
   return (
@@ -39,8 +39,7 @@ export function AutoComplete({
   onSearch,
   onSelect,
   placeholder = "Ara",
-  onBlur,
-  closeOnBlur,
+  closeOnBlur = true,
   notFoundContent,
   size,
   color,
@@ -50,11 +49,10 @@ export function AutoComplete({
   "aria-label": ariaLabel,
   className,
   skeleton = false,
-}: AutoCompleteProps) {
+}: Readonly<AutoCompleteProps>) {
   const [searchText, setSearchText] = useControllableState<string>({ value, defaultValue, onChange: onSearch });
   const [isFocused, setIsFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const shouldCloseOnBlur = closeOnBlur ?? onBlur ?? true;
   const listboxId = useId();
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -117,7 +115,7 @@ export function AutoComplete({
         }}
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
-        onBlur={shouldCloseOnBlur ? () => setIsFocused(false) : undefined}
+        onBlur={closeOnBlur ? () => setIsFocused(false) : undefined}
         role="combobox"
         // `placeholder` bir accessible name SAYILMAZ — tüketici `aria-label`
         // vermediyse placeholder'dan türetilir.

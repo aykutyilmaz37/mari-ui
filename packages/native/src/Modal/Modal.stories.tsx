@@ -37,7 +37,7 @@ const meta: Meta<typeof Modal> = {
 export default meta;
 type Story = StoryObj<typeof Modal>;
 
-function Trigger({ label, children }: { label: string; children: (close: () => void, open: boolean) => React.ReactNode }) {
+function Trigger({ label, children }: Readonly<{ label: string; children: (close: () => void, open: boolean) => React.ReactNode }>) {
   const [open, setOpen] = useState(false);
   return (
     <>

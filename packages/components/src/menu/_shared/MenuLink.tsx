@@ -39,7 +39,7 @@ export interface MenuLinkProps extends LinkBehaviorProps {
  * tıklamalar, `target` (`_self` dışı), `reloadDocument` ve dış adresler
  * (`https:`, `mailto:`…) her zaman tarayıcıya bırakılır.
  */
-export function MenuLink({ route, onNavigate, onSelect, disabled, current, target, reloadDocument, className, children, ...rest }: MenuLinkProps) {
+export function MenuLink({ route, onNavigate, onSelect, disabled, current, target, reloadDocument, className, children, ...rest }: Readonly<MenuLinkProps>) {
   if (!route || disabled) {
     return (
       <button type="button" {...rest} disabled={disabled} onClick={onSelect} className={className}>

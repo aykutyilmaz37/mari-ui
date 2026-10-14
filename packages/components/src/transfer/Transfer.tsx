@@ -57,7 +57,7 @@ function MoveButton({ direction, enabled, label, text, onMove, skeleton }: MoveB
  * düğmelerinin adı eylemi söyler ("Seçilenleri Hedef listesine taşı"); taşıma
  * sonucu canlı bölgeden duyurulur.
  */
-export function Transfer(props: TransferProps) {
+export function Transfer(props: Readonly<TransferProps>) {
   const field = useFieldGroup({ "aria-label": props["aria-label"], "aria-labelledby": props["aria-labelledby"], "aria-describedby": props["aria-describedby"], disabled: props.disabled });
   const {
     dataSource,

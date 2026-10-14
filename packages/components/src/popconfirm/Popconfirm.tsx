@@ -12,7 +12,7 @@ export type { PopconfirmProps };
 
 const isDestructive = (color: ColorRole) => color === "error" || color === "warning";
 
-function StatusIcon({ icon, color }: { icon: PopconfirmProps["icon"]; color: ColorRole }) {
+function StatusIcon({ icon, color }: Readonly<{ icon: PopconfirmProps["icon"]; color: ColorRole }>) {
   if (icon === false) return null;
   if (icon !== true && icon !== undefined) return <span className={cn("flex shrink-0 pt-0.5", textClass[color])}>{icon}</span>;
   let Icon = InfoIcon;
@@ -48,7 +48,7 @@ export function Popconfirm({
   onOpenChange,
   className,
   skeleton = false,
-}: PopconfirmProps) {
+}: Readonly<PopconfirmProps>) {
   const [open, setOpen] = useControllableState<boolean>({ value: openProp, defaultValue: false, onChange: onOpenChange });
   const [pending, setPending] = useState(false);
   const titleId = useId();

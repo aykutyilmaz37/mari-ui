@@ -64,7 +64,7 @@ function useRenderedContent(open: boolean, forceRender: boolean, destroyOnHidden
   return open || rendered;
 }
 
-function ExpandIcon({ open, size, placement, disabled, skeleton, custom }: { open: boolean; size: Size; placement: "start" | "end"; disabled?: boolean; skeleton: boolean; custom?: (open: boolean) => React.ReactNode }) {
+function ExpandIcon({ open, size, placement, disabled, skeleton, custom }: Readonly<{ open: boolean; size: Size; placement: "start" | "end"; disabled?: boolean; skeleton: boolean; custom?: (open: boolean) => React.ReactNode }>) {
   const Chevron = placement === "end" ? ChevronDownIcon : ChevronRightIcon;
   let content: React.ReactNode;
   if (skeleton) content = <span {...skeletonBoxProps("size-3.5 rounded-sm")} />;
@@ -133,7 +133,7 @@ function HeaderRow({ item, open, onToggle, variant, size, iconPlacement, expandI
   );
 }
 
-function Panel({ item, open, onToggle, variant, size, iconPlacement, expandIcon, headingLevel, destroyOnHidden, region, skeleton }: PanelProps) {
+function Panel({ item, open, onToggle, variant, size, iconPlacement, expandIcon, headingLevel, destroyOnHidden, region, skeleton }: Readonly<PanelProps>) {
   const id = useId();
   const headerId = `${id}-header`;
   const panelId = `${id}-panel`;
@@ -208,7 +208,7 @@ export function Accordion({
   destroyOnHidden = false,
   className,
   skeleton = false,
-}: AccordionProps) {
+}: Readonly<AccordionProps>) {
   const [active, setActive] = useControllableState<string[]>({
     value: toKeys(activeKey),
     defaultValue: toKeys(defaultActiveKey) ?? [],

@@ -183,7 +183,7 @@ export const DeleteConfirm: Story = {
               </>
             }
           >
-            <Input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={name} status={typed && !matches ? "error" : undefined} />
+            <Input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={name} color={typed && !matches ? "error" : undefined} />
           </Field>
         </Modal>
       </>
@@ -661,7 +661,7 @@ export const Sizes: Story = {
 
 /* ─────────────────────────── İskelet ─────────────────────────── */
 
-function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
+function SkeletonOverlayDemo({ skeleton }: Readonly<{ skeleton: boolean }>) {
   const [open, setOpen] = useState(false);
   return (
     <>

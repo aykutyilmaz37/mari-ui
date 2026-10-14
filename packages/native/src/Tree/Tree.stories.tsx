@@ -37,7 +37,7 @@ const iconFor = (name: string) => {
   return File;
 };
 
-function FileIcon({ name }: { name: string }) {
+function FileIcon({ name }: Readonly<{ name: string }>) {
   const theme = useTheme();
   const Icon = iconFor(name);
   return <Icon size={18} color={theme.color.canvas.muted} />;

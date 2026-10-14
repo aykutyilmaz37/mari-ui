@@ -48,7 +48,7 @@ export function LineChart<T>({
   skeleton,
   animated = true,
   className,
-}: LineChartProps<T>) {
+}: Readonly<LineChartProps<T>>) {
   const [plotRef, size] = useChartSize<HTMLDivElement>();
   const clipId = `mari-line-${useId().replace(/[^\w-]/g, "")}`;
   const [active, setActive] = useState<number | null>(null);

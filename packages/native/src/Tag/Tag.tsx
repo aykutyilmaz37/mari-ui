@@ -29,7 +29,7 @@ export interface TagProps extends SkeletonableProps {
 
 const MIN_TOUCH = 44;
 
-export function Tag({ children, color = "neutral", variant = "soft", icon, closeIcon, bordered = false, onClose, closeLabel, skeleton = false, style }: TagProps) {
+export function Tag({ children, color = "neutral", variant = "soft", icon, closeIcon, bordered = false, onClose, closeLabel, skeleton = false, style }: Readonly<TagProps>) {
   const theme = useTheme();
   const metrics = useNativeConfig().tag;
   const colors = resolveColorVariantStyle(theme, resolveColorVariant(color, variant));

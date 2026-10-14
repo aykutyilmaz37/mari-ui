@@ -8,6 +8,6 @@ import { View, type StyleProp, type ViewStyle } from "react-native";
  * "center"`ını ezip öğeyi tepeye yaslar. Bunun yerine dış kutu ebeveynin
  * hizasını izler, içerik onun içinde kendi boyutunda kalır.
  */
-export function Hug({ style, children }: { style?: StyleProp<ViewStyle>; children: React.ReactNode }) {
+export function Hug({ style, children }: Readonly<{ style?: StyleProp<ViewStyle>; children: React.ReactNode }>) {
   return <View style={[{ alignItems: "flex-start", maxWidth: "100%" }, style]}>{children}</View>;
 }

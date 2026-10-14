@@ -8,7 +8,7 @@ import { cardText } from "./Card";
 import type { CardMetaProps } from "./types";
 
 /** Web CardMeta: avatar + tek satır başlık + çok satırlı açıklama. */
-export function CardMeta({ avatar, title, description, style }: CardMetaProps) {
+export function CardMeta({ avatar, title, description, style }: Readonly<CardMetaProps>) {
   const theme = useTheme();
   const config = useNativeConfig();
   const titleSize = nativeSize(theme, "md", config);

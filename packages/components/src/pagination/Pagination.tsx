@@ -168,7 +168,7 @@ export function Pagination({
   className,
   "aria-label": ariaLabel = "Sayfalama",
   skeleton = false,
-}: PaginationProps) {
+}: Readonly<PaginationProps>) {
   const [rawPage, setRawPage] = useControllableState<number>({ value: currentPage, defaultValue: defaultPage });
   const [pageSize, setPageSize] = useControllableState<number>({ value: pageSizeProp, defaultValue: defaultPageSize });
 
@@ -365,13 +365,13 @@ function SizeChanger({
   size,
   disabled,
   onChange,
-}: {
+}: Readonly<{
   value: number;
   options: number[];
   size: Size;
   disabled: boolean;
   onChange: (size: number) => void;
-}) {
+}>) {
   // Mevcut boyut listede yoksa (ör. controlled `pageSize={15}`) yine de
   // seçili görünsün — native `<select>` aksi halde ilk seçeneği gösterir.
   const allOptions = options.includes(value) ? options : [...options, value].sort((a, b) => a - b);
@@ -406,7 +406,7 @@ function usePageDraft(onCommit: (page: number) => void, initial = "") {
   return { draft, setDraft, commit };
 }
 
-function QuickJumper({ totalPages, size, disabled, onCommit }: { totalPages: number; size: Size; disabled: boolean; onCommit: (page: number) => void }) {
+function QuickJumper({ totalPages, size, disabled, onCommit }: Readonly<{ totalPages: number; size: Size; disabled: boolean; onCommit: (page: number) => void }>) {
   const { draft, setDraft, commit } = usePageDraft(onCommit);
   const submit = () => {
     commit();
@@ -436,13 +436,13 @@ function SimplePageInput({
   size,
   disabled,
   onCommit,
-}: {
+}: Readonly<{
   page: number;
   totalPages: number;
   size: Size;
   disabled: boolean;
   onCommit: (page: number) => void;
-}) {
+}>) {
   const { draft, setDraft, commit } = usePageDraft(onCommit, String(page));
   // Dışarıdan (ok düğmeleri, controlled prop) sayfa değişince alanı eşitle.
   useEffect(() => setDraft(String(page)), [page, setDraft]);

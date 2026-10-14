@@ -24,7 +24,7 @@ function IrisMark() {
   );
 }
 
-export function MariLogo({ variant = "full", size = 56, label = "Mari UI", ...props }: MariLogoProps) {
+export function MariLogo({ variant = "full", size = 56, label = "Mari UI", ...props }: Readonly<MariLogoProps>) {
   const isFull = variant === "full";
   return (
     <svg

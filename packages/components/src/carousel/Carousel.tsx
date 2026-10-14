@@ -143,7 +143,7 @@ function CarouselArrows({
   canNext,
   onPrev,
   onNext,
-}: {
+}: Readonly<{
   placement: ArrowsPlacement;
   visibility: "always" | "hover";
   hidden: boolean;
@@ -151,7 +151,7 @@ function CarouselArrows({
   canNext: boolean;
   onPrev: () => void;
   onNext: () => void;
-}) {
+}>) {
   const sides = placement === "sides";
   const base = cn(
     "relative text-mari-foreground drop-shadow-sm transition-colors hover:text-mari-primary disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",

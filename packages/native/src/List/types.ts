@@ -22,11 +22,11 @@ export interface InfiniteScrollOptions {
 /** `FlatList` API'sini korur; `renderItem(item, index)` kolaylığını ekler. */
 export interface ListProps<ItemT> extends Omit<FlatListProps<ItemT>, "data" | "renderItem" | "ItemSeparatorComponent">, SkeletonableProps {
   /** Veri kaynağı; boş bırakıldığında `ListEmptyComponent` gösterilir. */
-  data?: FlatListProps<ItemT>["data"];
+  data?: Exclude<FlatListProps<ItemT>["data"], undefined>;
   /** Her kaydı bir native öğeye dönüştürür. */
   renderItem: (item: ItemT, index: number) => ReactElement | null;
   /** Satırlar arası ayırıcı. Verilmezse `split` varsayılan ayırıcıyı yönetir. */
-  ItemSeparatorComponent?: FlatListProps<ItemT>["ItemSeparatorComponent"];
+  ItemSeparatorComponent?: Exclude<FlatListProps<ItemT>["ItemSeparatorComponent"], undefined>;
   /** `ItemSeparatorComponent` verilmediğinde ayırıcıyı açıp kapatır. Varsayılan: `true`. */
   split?: boolean;
   /** Satır yoğunluğu; native ölçü ölçeğinden gelir. Varsayılan: `md`. */
@@ -58,5 +58,5 @@ export interface ListItemMetaProps {
   avatar?: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
-  style?: ViewProps["style"];
+  style?: Exclude<ViewProps["style"], undefined>;
 }

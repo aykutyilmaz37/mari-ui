@@ -54,7 +54,7 @@ const NESTED_INDENT_CLASS: Record<SidebarPosition, { root: string; deep: string 
 
 const FOCUS_RING = "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mari-ring";
 
-function ItemIcon({ item, showMonogram, reserveIconSlot }: Pick<SidebarItemProps, "item" | "showMonogram" | "reserveIconSlot">) {
+function ItemIcon({ item, showMonogram, reserveIconSlot }: Readonly<Pick<SidebarItemProps, "item" | "showMonogram" | "reserveIconSlot">>) {
   if (item.icon) {
     return (
       <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center [&_svg]:size-[1.125rem]">
@@ -110,7 +110,7 @@ interface RowContentProps extends Pick<SidebarItemProps, "item" | "collapsed" | 
   open?: boolean;
 }
 
-function RowContent({ item, collapsed, reserveIconSlot, position, showMonogram, chevron, open }: RowContentProps) {
+function RowContent({ item, collapsed, reserveIconSlot, position, showMonogram, chevron, open }: Readonly<RowContentProps>) {
   const FlyoutChevron = position === "left" ? ChevronRightIcon : ChevronLeftIcon;
   return (
     <>
@@ -126,7 +126,7 @@ function RowContent({ item, collapsed, reserveIconSlot, position, showMonogram, 
 }
 
 /** İskelet satırı: satırın kendi kutusunda ikon karesi + metin çubuğu (daraltılmış rayda yalnızca ikon). */
-function RowPlaceholder({ level, collapsed, hasIcon }: { level: number; collapsed: boolean; hasIcon: boolean }) {
+function RowPlaceholder({ level, collapsed, hasIcon }: Readonly<{ level: number; collapsed: boolean; hasIcon: boolean }>) {
   return (
     <span className={cn("flex h-full items-center gap-3", level === 0 ? "px-3.5" : "px-3")}>
       {hasIcon && <span className={cn("size-5 shrink-0 rounded-sm", skeletonFill(true))} />}
@@ -136,7 +136,7 @@ function RowPlaceholder({ level, collapsed, hasIcon }: { level: number; collapse
 }
 
 /** Satırı iskelette yer tutucuya çevirir; gerçek satır görünmez olarak kalır → yüklenince zıplamaz. */
-function RowSlot({ props, level, children }: { props: SidebarItemProps; level: number; children: React.ReactNode }) {
+function RowSlot({ props, level, children }: Readonly<{ props: SidebarItemProps; level: number; children: React.ReactNode }>) {
   const { skeleton, collapsed, item, showMonogram, reserveIconSlot } = props;
   // Satırın gerçek ikon yuvasıyla aynı: ikon, rayda baş harf ya da kardeşler için ayrılmış boşluk.
   const hasIcon = !!item.icon || (showMonogram && level === 0) || reserveIconSlot || collapsed;
@@ -152,7 +152,7 @@ function RowSlot({ props, level, children }: { props: SidebarItemProps; level: n
  * açılır (eskiden tetikleyicisiz bir Dropdown'ın satırın ALTINA düşen sıfır
  * yükseklikli çıpasına hizalanıyordu). İçerik BasicMenu'nün alt menü paneliyle aynı.
  */
-function SidebarDropdownItem(props: SidebarItemProps) {
+function SidebarDropdownItem(props: Readonly<SidebarItemProps>) {
   const { item, activeKey, setActiveKey, color, collapsed, showMonogram, position, onNavigate, currentPath } = props;
   const children = item.children ?? [];
   const containsActive = isMenuItemActive(item, activeKey);
@@ -188,7 +188,7 @@ function SidebarDropdownItem(props: SidebarItemProps) {
  * Ray daraltılmışken etiket kesilmiyor, SOLUYOR (eskiden `w-12` içinde yarım
  * harfler görünüyordu); erişilebilir ad metin DOM'da kaldığı için bozulmaz.
  */
-export function SidebarItem(props: SidebarItemProps) {
+export function SidebarItem(props: Readonly<SidebarItemProps>) {
   const hasChildren = !!props.item.children?.length;
   // Kök seviyede alt menü dropdown/mega olabilir; iç seviyeler hep akordeon.
   const mode: SidebarSubMode = props.level === 0 ? props.subMode : "accordion";
@@ -202,7 +202,7 @@ export function SidebarItem(props: SidebarItemProps) {
  * Enter/Boşluk/→ (sağdaki sidebar'da ←) ile açılır ve odak panele taşınır.
  * Çocuksuz satır gerçek bir link.
  */
-function SidebarMegaItem(props: SidebarItemProps) {
+function SidebarMegaItem(props: Readonly<SidebarItemProps>) {
   const { item, activeKey, color, collapsed, showMonogram, megaKey, onMegaOpen, onMegaClose, onSelect, onNavigate, position } = props;
   const hasChildren = !!item.children?.length;
   const containsActive = isMenuItemActive(item, activeKey);
@@ -258,7 +258,7 @@ function SidebarMegaItem(props: SidebarItemProps) {
 }
 
 /** Varsayılan mod: alt öğeler satırın altında girintili bir akordeonla açılır. */
-function SidebarAccordionItem(props: SidebarItemProps) {
+function SidebarAccordionItem(props: Readonly<SidebarItemProps>) {
   const { item, level, activeKey, onSelect, color, collapsed, showMonogram, tabbable, position, skeleton, ...shared } = props;
   const { onNavigate } = props;
   const hasChildren = !!item.children?.length;

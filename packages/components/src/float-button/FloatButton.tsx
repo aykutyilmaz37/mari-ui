@@ -23,7 +23,7 @@ function boxClass(hasDescription: boolean, joined: boolean) {
   return joined ? "h-10 w-full min-w-10" : "size-10";
 }
 
-export function floatButtonClass({ color, shape, joined, hasDescription }: { color?: FloatButtonProps["color"]; shape: FloatButtonShape; joined: boolean; hasDescription: boolean }) {
+export function floatButtonClass({ color, shape, joined, hasDescription }: { color?: Exclude<FloatButtonProps["color"], undefined>; shape: FloatButtonShape; joined: boolean; hasDescription: boolean }) {
   return cn(
     "relative inline-flex shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 outline-none transition-colors duration-150",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
@@ -60,7 +60,7 @@ function tooltipPlacement(placement: FloatButtonPlacement, inGroup: boolean) {
   return placement.startsWith("bottom") ? "top" : "bottom";
 }
 
-function FloatControl({ href, target, label, onClick, className, children }: { href?: string; target?: React.HTMLAttributeAnchorTarget; label?: string; onClick?: FloatButtonProps["onClick"]; className: string; children: React.ReactNode }) {
+function FloatControl({ href, target, label, onClick, className, children }: Readonly<{ href?: string; target?: React.HTMLAttributeAnchorTarget; label?: string; onClick?: Exclude<FloatButtonProps["onClick"], undefined>; className: string; children: React.ReactNode }>) {
   if (href) {
     return (
       <a href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined} aria-label={label} onClick={onClick} className={className}>
@@ -100,7 +100,7 @@ export function FloatButton({
   "aria-label": ariaLabel,
   className,
   skeleton = false,
-}: FloatButtonProps) {
+}: Readonly<FloatButtonProps>) {
   const group = useContext(FloatGroupContext);
   const shape = group?.shape ?? ownShape;
   const joined = !!group?.joined;

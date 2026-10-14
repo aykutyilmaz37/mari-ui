@@ -125,7 +125,7 @@ export function Steps({
   className,
   "aria-label": ariaLabel = "İlerleme adımları",
   skeleton = false,
-}: StepsProps) {
+}: Readonly<StepsProps>) {
   const [rootRef, width] = useContainerWidth(!vertical && responsive !== false);
   const isNarrow = responsive !== false && width !== undefined && width < responsive;
   const layout = resolveLayout(vertical, isNarrow, responsiveLayout, dot, labelPlacement);

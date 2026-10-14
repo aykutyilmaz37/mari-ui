@@ -33,7 +33,7 @@ const PLACEHOLDER = (
  * Kapat canlı, sayaç durur); Kapat (28px) ve aksiyon bağlantısı (20px)
  * dokunmatikte 44px hedef.
  */
-export function Toast({ title, description, type = "none", onClose, closeIcon = true, duration, action, exiting = false, skeleton = false }: ToastProps) {
+export function Toast({ title, description, type = "none", onClose, closeIcon = true, duration, action, exiting = false, skeleton = false }: Readonly<ToastProps>) {
   const icon = getToastIcon(type);
   const [paused, setPaused] = useState(false);
   const remaining = useRef(duration ?? 0);

@@ -18,7 +18,7 @@ interface SwatchProps {
 }
 
 /** Rengi dama deseni üstünde gösteren kutu; içi dolu, kenarında ince çizgi (beyaz rengi zeminden ayırır). */
-export function Swatch({ color, className }: SwatchProps) {
+export function Swatch({ color, className }: Readonly<SwatchProps>) {
   if (!color) return <span aria-hidden className={cn("block shrink-0 border border-mari-border", EMPTY_CLASS, className)} />;
   return (
     <span aria-hidden className={cn("relative block shrink-0 overflow-hidden border border-mari-border", CHECKER_CLASS, className)}>

@@ -253,7 +253,7 @@ function useKeyboardHeight(): number {
 /** Klavye açıkken panelin üstünde bırakılan pay (durum çubuğu / çentik). */
 const KEYBOARD_TOP_GAP = 56;
 
-function SheetHeader({ title, skeleton, multiSnap, onHandlePress }: { title: React.ReactNode; skeleton: boolean; multiSnap: boolean; onHandlePress: () => void }) {
+function SheetHeader({ title, skeleton, multiSnap, onHandlePress }: Readonly<{ title: React.ReactNode; skeleton: boolean; multiSnap: boolean; onHandlePress: () => void }>) {
   const theme = useTheme();
   const t = useNativeConfig().typography.h5;
   const titleStyle = { fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: "600" as const, color: theme.color.canvas.foreground, textAlign: "center" as const };
@@ -282,7 +282,7 @@ function SheetHeader({ title, skeleton, multiSnap, onHandlePress }: { title: Rea
  * Card dersi). İskelette görünmez yer tutar. Klavye listeyi kaydırmaya
  * başlayınca kapanır (iOS arama listeleri gibi).
  */
-function SheetBody({ children, sized, skeleton, bottom, style, onContentHeight }: { children: React.ReactNode; sized: boolean; skeleton: boolean; bottom: number; style?: StyleProp<ViewStyle>; onContentHeight: (h: number) => void }) {
+function SheetBody({ children, sized, skeleton, bottom, style, onContentHeight }: Readonly<{ children: React.ReactNode; sized: boolean; skeleton: boolean; bottom: number; style?: StyleProp<ViewStyle>; onContentHeight: (h: number) => void }>) {
   return (
     <ScrollView style={sized ? { flex: 1 } : { flexShrink: 1 }} contentContainerStyle={[{ paddingHorizontal: 20, paddingBottom: bottom }, style]} onContentSizeChange={(_, h) => onContentHeight(h)} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <View aria-hidden={skeleton} accessibilityElementsHidden={skeleton} style={{ opacity: skeleton ? 0 : 1 }}>{children}</View>
@@ -292,7 +292,7 @@ function SheetBody({ children, sized, skeleton, bottom, style, onContentHeight }
 }
 
 /** Sabit alt bölüm (her durakta görünür). */
-function SheetFooter({ inset, children, onHeight }: { inset: number; children: React.ReactNode; onHeight: (h: number) => void }) {
+function SheetFooter({ inset, children, onHeight }: Readonly<{ inset: number; children: React.ReactNode; onHeight: (h: number) => void }>) {
   const theme = useTheme();
   if (children == null) return null;
   return <View onLayout={(e) => onHeight(e.nativeEvent.layout.height)} style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: inset, borderTopWidth: 1, borderColor: theme.color.canvas.border }}>{children}</View>;
@@ -321,7 +321,7 @@ function sheetStyle(theme: ReturnType<typeof useTheme>, ready: boolean, height: 
   ];
 }
 
-export function BottomSheet(props: BottomSheetProps) {
+export function BottomSheet(props: Readonly<BottomSheetProps>) {
   const { open, onClose, title, children, footer, snapPoints, initialSnap = 0, onSnapChange, closable = true, contentStyle, skeleton = false } = props;
   const h = sheetHandlers(props, useSafeInsets());
   const theme = useTheme();

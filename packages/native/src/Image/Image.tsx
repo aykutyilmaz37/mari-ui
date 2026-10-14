@@ -43,7 +43,7 @@ function DefaultFallback() {
 }
 
 /** Yüklenemezse: URL yedeği (o da yüklenemezse varsayılan), node ya da varsayılan. */
-function FallbackLayer({ fallback, resizeMode }: { fallback: ImageProps["fallback"]; resizeMode: "cover" | "contain" | "stretch" | "center" }) {
+function FallbackLayer({ fallback, resizeMode }: Readonly<{ fallback: ImageProps["fallback"]; resizeMode: "cover" | "contain" | "stretch" | "center" }>) {
   const [urlFailed, setUrlFailed] = useState(false);
   if (typeof fallback === "string" && !urlFailed) {
     return <RNImage source={{ uri: fallback }} resizeMode={resizeMode} onError={() => setUrlFailed(true)} style={FILL} accessibilityIgnoresInvertColors />;
@@ -88,7 +88,7 @@ function placeholderParts(placeholder: ImageProps["placeholder"], statik: ImageS
 }
 
 /** Yüklenirken: bulanık ön izleme → özel içerik → nabız (öncelik sırasıyla). */
-function PlaceholderLayer({ blurSrc, custom, pulse, resizeMode }: { blurSrc: string | null; custom: React.ReactNode; pulse: boolean; resizeMode: "cover" | "contain" | "stretch" | "center" }) {
+function PlaceholderLayer({ blurSrc, custom, pulse, resizeMode }: Readonly<{ blurSrc: string | null; custom: React.ReactNode; pulse: boolean; resizeMode: "cover" | "contain" | "stretch" | "center" }>) {
   if (blurSrc) return <RNImage source={{ uri: blurSrc }} resizeMode={resizeMode} blurRadius={12} style={FILL} accessibilityIgnoresInvertColors />;
   if (custom) return <View style={[FILL, { alignItems: "center", justifyContent: "center" }]}>{custom}</View>;
   return pulse ? <SkeletonBox style={FILL} /> : null;
@@ -119,7 +119,7 @@ export function Image({
   imageStyle,
   onLoad,
   onError,
-}: ImageProps) {
+}: Readonly<ImageProps>) {
   const theme = useTheme();
   const reduce = useReduceMotion();
   const [layout, onLayout] = useLayoutSize();
@@ -204,7 +204,7 @@ function PreviewFrame({
   boxStyle,
   onLayout,
   children,
-}: {
+}: Readonly<{
   config: ImagePreviewConfig;
   src: ImageProps["src"];
   alt: string;
@@ -214,7 +214,7 @@ function PreviewFrame({
   boxStyle: React.ComponentProps<typeof View>["style"][];
   onLayout: LayoutHandler;
   children: React.ReactNode;
-}) {
+}>) {
   const [innerOpen, setInnerOpen] = useControllable(config.open, false);
   const setOpen = (next: boolean) => {
     setInnerOpen(next);

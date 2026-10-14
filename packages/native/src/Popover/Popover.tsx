@@ -83,7 +83,7 @@ const ENTER_SHIFT: Record<Side, { axis: "translateX" | "translateY"; from: numbe
 };
 
 /** Ok: panelin tetikleyiciye bakan kenarında, 45° döndürülmüş kare (kenarlıklı yüzeyle aynı). */
-function Arrow({ side, offset, theme }: { side: Side; offset: number; theme: Theme }) {
+function Arrow({ side, offset, theme }: Readonly<{ side: Side; offset: number; theme: Theme }>) {
   const c = theme.color.canvas;
   const size = ARROW * Math.SQRT2;
   return <View pointerEvents="none" style={[{ position: "absolute", width: size, height: size, backgroundColor: c.surface, borderColor: c.border, transform: [{ rotate: "45deg" }] }, arrowFrame(side, offset, size / 2)]} />;
@@ -124,7 +124,7 @@ function placedStyle(pos: Placed, v: Animated.Value) {
   return { top: pos.top, left: pos.left, opacity: v, transform: axis === "translateX" ? [{ translateX: move }] : [{ translateY: move }] };
 }
 
-function PanelTitle({ title, theme }: { title: React.ReactNode; theme: Theme }) {
+function PanelTitle({ title, theme }: Readonly<{ title: React.ReactNode; theme: Theme }>) {
   if (title == null) return null;
   if (typeof title !== "string") return <>{title}</>;
   return <Text accessibilityRole="header" style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: 15, lineHeight: 20, fontWeight: "600", color: theme.color.canvas.foreground }}>{title}</Text>;
@@ -142,7 +142,7 @@ function PanelBody({ body, skeleton, theme }: { body: React.ReactNode; skeleton:
  * geri ve VoiceOver "geri" kapatır. Yer yoksa karşı yöne döner, ekrana kıstırılır
  * ama tetikleyiciden kopmaz (web ile aynı `computePanelPosition`).
  */
-export function Popover({ title, content, children, trigger = "click", placement = "top", arrow = true, open: openProp, defaultOpen = false, onOpenChange, maxWidth = 300, accessibilityLabel, role = "dialog", skeleton = false, style }: PopoverProps) {
+export function Popover({ title, content, children, trigger = "click", placement = "top", arrow = true, open: openProp, defaultOpen = false, onOpenChange, maxWidth = 300, accessibilityLabel, role = "dialog", skeleton = false, style }: Readonly<PopoverProps>) {
   const theme = useTheme();
   const viewport = useWindowDimensions();
   const [open, setOpenState] = useControllable<boolean>(openProp, defaultOpen);

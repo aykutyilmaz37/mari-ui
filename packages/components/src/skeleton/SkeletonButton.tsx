@@ -13,6 +13,6 @@ export interface SkeletonButtonProps {
 }
 
 // Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
-export function SkeletonButton({ active = false, block = false, shape = "default", size = "md", className }: SkeletonButtonProps) {
+export function SkeletonButton({ active = false, block = false, shape = "default", size = "md", className }: Readonly<SkeletonButtonProps>) {
   return <div aria-hidden className={cn(skeletonFill(active), getButtonSkeletonClass(size, shape, block), className)} />;
 }

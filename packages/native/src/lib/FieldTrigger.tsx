@@ -31,7 +31,7 @@ const hiddenProps = { accessibilityElementsHidden: true, importantForAccessibili
  * alanı: metne/etikete dokunmak da paneli açar (dokunuş ataya kabarır),
  * kapatma düğmeleri kendi dokunuşunu yakalar.
  */
-export function FieldTrigger({ accessibilityLabel, accessibilityHint, accessibilityValue, expanded, disabled, onPress, hitSlop, style, display, displayAccessible, action, indicator }: FieldTriggerProps) {
+export function FieldTrigger({ accessibilityLabel, accessibilityHint, accessibilityValue, expanded, disabled, onPress, hitSlop, style, display, displayAccessible, action, indicator }: Readonly<FieldTriggerProps>) {
   return (
     <Pressable accessible={false} tabIndex={-1} disabled={disabled} onPress={onPress} hitSlop={hitSlop} style={style}>
       <Pressable

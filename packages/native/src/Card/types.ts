@@ -21,8 +21,6 @@ export interface CardProps extends SkeletonableProps {
   bordered?: boolean;
   /** Basılma geri bildirimi. onPress/onLongPress varsa varsayılan açık; etkileşimi kapatmaz. */
   hoverable?: boolean;
-  /** @deprecated skeleton kullanın. Açıkça verilen skeleton bu değeri geçersiz kılar. */
-  loading?: boolean;
   /** Native yazı ölçeği; dolgu sm: 12, md: 16, lg: 20. Varsayılan: md. */
   size?: Size;
   /** Tonlu zemin ve kenarlık. */
@@ -33,8 +31,8 @@ export interface CardProps extends SkeletonableProps {
   /** Web classNames karşılığı: header/body/footer/cover/actions bölümlerinin stilleri. */
   slotStyles?: CardSlotStyles;
   /** Tüm kart dokunulabilir olur. İçinde başka düğmeler varsa bu prop'u kullanmayın. */
-  onPress?: PressableProps["onPress"];
-  onLongPress?: PressableProps["onLongPress"];
+  onPress?: Exclude<PressableProps["onPress"], undefined>;
+  onLongPress?: Exclude<PressableProps["onLongPress"], undefined>;
   testID?: string;
   accessibilityLabel?: string;
   accessibilityHint?: string;

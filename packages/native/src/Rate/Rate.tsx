@@ -52,7 +52,7 @@ interface Palette {
   empty: string;
 }
 
-function Character({ character, index, filled, size, palette }: { character: RateProps["character"]; index: number; filled: boolean; size: number; palette: Palette }) {
+function Character({ character, index, filled, size, palette }: Readonly<{ character: RateProps["character"]; index: number; filled: boolean; size: number; palette: Palette }>) {
   if (character === undefined) {
     return filled ? <StarIcon size={size} fill={palette.fill} color={palette.stroke} /> : <StarIcon size={size} color={palette.empty} />;
   }
@@ -61,7 +61,7 @@ function Character({ character, index, filled, size, palette }: { character: Rat
   return <View style={{ opacity: filled ? 1 : 0.25 }}>{character}</View>;
 }
 
-function Star({ fraction, index, size, character, palette }: { fraction: number; index: number; size: number; character: RateProps["character"]; palette: Palette }) {
+function Star({ fraction, index, size, character, palette }: Readonly<{ fraction: number; index: number; size: number; character: RateProps["character"]; palette: Palette }>) {
   return (
     <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}>
       <Character character={character} index={index} filled={false} size={size} palette={palette} />
@@ -94,7 +94,7 @@ export function Rate({
   accessibilityLabel = "Puan",
   skeleton = false,
   style,
-}: RateProps) {
+}: Readonly<RateProps>) {
   const theme = useTheme();
   const [current, setCurrent] = useControllable(value, defaultValue);
   // Sürüklerken önizleme; bırakınca işlenir.

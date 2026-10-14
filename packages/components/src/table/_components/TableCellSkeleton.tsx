@@ -7,7 +7,7 @@ import { SkeletonBlock } from "../../skeleton";
  * yüksekliği (20px): veri yokken çizilen sahte satırlar gerçek tek satırlık
  * bir satırla aynı yükseklikte olur. `justify` hücre hizasını izler.
  */
-export function TableCellSkeleton({ width, height = "0.75rem", className }: { width: string; height?: string; className?: string }) {
+export function TableCellSkeleton({ width, height = "0.75rem", className }: Readonly<{ width: string; height?: string; className?: string }>) {
   return (
     <div className={cn("flex h-5 items-center", className)}>
       <SkeletonBlock active width={width} height={height} radius="sm" />

@@ -42,7 +42,7 @@ export function BarChart<T>({
   skeleton,
   animated = true,
   className,
-}: BarChartProps<T>) {
+}: Readonly<BarChartProps<T>>) {
   const [plotRef, size] = useChartSize<HTMLDivElement>();
   const [active, setActive] = useState<number | null>(null);
   const fmt = useMemo(() => makeFormatters(locale, valueFormatter), [locale, valueFormatter]);

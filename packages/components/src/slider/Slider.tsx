@@ -82,7 +82,7 @@ function resolveThumbLabels(thumbLabels: [string, string] | undefined, ariaLabel
 }
 
 /** Ray + tek tutamaç yer tutucusu — gerçek ray kutusuyla aynı kalınlıkta. */
-function SliderSkeleton({ size, vertical, className }: { size: Size; vertical: boolean; className?: string }) {
+function SliderSkeleton({ size, vertical, className }: Readonly<{ size: Size; vertical: boolean; className?: string }>) {
   const thumb = THUMB_SIZE[size];
   const cross = `max(${thumb}, 1.5rem)`;
   return (
@@ -125,7 +125,7 @@ export function Slider({
   thumbLabels,
   className,
   skeleton = false,
-}: SliderProps) {
+}: Readonly<SliderProps>) {
   const [current, setCurrent] = useControllableState<SliderValue>({ value, defaultValue, onChange });
   const values = toArray(current);
   const isRange = values.length === 2;

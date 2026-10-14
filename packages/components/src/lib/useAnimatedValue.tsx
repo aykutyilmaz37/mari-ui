@@ -106,7 +106,7 @@ export function useAnimatedValue({ text, number, format, mode, enabled, delay = 
  * onu okur), ara metin üstüne çizilir (gizli) → genişlik zıplamaz, okuyucu
  * ara sayıları duymaz. `shown` null iken düz metin.
  */
-export function AnimatedText({ text, shown }: { text: string; shown: string | null }) {
+export function AnimatedText({ text, shown }: Readonly<{ text: string; shown: string | null }>) {
   if (shown === null) return <>{text}</>;
   return (
     <span className="relative inline-block">

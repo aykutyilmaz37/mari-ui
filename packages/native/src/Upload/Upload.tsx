@@ -84,7 +84,7 @@ const TILE = 88;
 let uidSeq = 0;
 const nextUid = () => `upload-${Date.now().toString(36)}-${(uidSeq++).toString(36)}`;
 
-function ProgressLine({ file }: { file: UploadFile }) {
+function ProgressLine({ file }: Readonly<{ file: UploadFile }>) {
   if (file.status !== "uploading") return null;
   return <Progress percent={file.progress ?? 0} size="sm" showInfo={false} />;
 }
@@ -99,7 +99,7 @@ interface ItemProps {
 }
 
 /** Liste satırı: [önizleme / dosya ikonu] ad + boyut / ilerleme / hata [tekrar dene] [sil]. */
-function FileRow({ file, disabled, onRemove, onRetry, onPreview, theme }: ItemProps) {
+function FileRow({ file, disabled, onRemove, onRetry, onPreview, theme }: Readonly<ItemProps>) {
   const c = theme.color.canvas;
   const font = nativeFontFamily(theme.fontFamily.sans);
   const image = isImageFile(file);
@@ -164,7 +164,7 @@ function FileTile({ file, disabled, onRemove, onRetry, onPreview, theme, circle 
   );
 }
 
-function AddTile({ circle, disabled, busy, onPress, label, theme }: { circle: boolean; disabled: boolean; busy: boolean; onPress: () => void; label: string; theme: Theme }) {
+function AddTile({ circle, disabled, busy, onPress, label, theme }: Readonly<{ circle: boolean; disabled: boolean; busy: boolean; onPress: () => void; label: string; theme: Theme }>) {
   const c = theme.color.canvas;
   return (
     <Pressable
@@ -182,7 +182,7 @@ function AddTile({ circle, disabled, busy, onPress, label, theme }: { circle: bo
 }
 
 /** İskelet: önizlemede döşeme, listede düğme + ipucu satırı (yüklü hal ile aynı boyutlar). */
-function UploadSkeleton({ review, circle, hint, style }: { review: boolean; circle: boolean; hint: React.ReactNode; style: StyleProp<ViewStyle> }) {
+function UploadSkeleton({ review, circle, hint, style }: Readonly<{ review: boolean; circle: boolean; hint: React.ReactNode; style: StyleProp<ViewStyle> }>) {
   if (review) return <SkeletonBox style={[{ width: TILE, height: TILE, borderRadius: circle ? TILE / 2 : 12 }, style]} />;
   return (
     <View style={[{ alignSelf: "stretch", gap: 10, alignItems: "flex-start" }, style]}>
@@ -235,7 +235,7 @@ function useUploadList(props: UploadProps) {
  * önizler (görsel → tam ekran ImageViewer), isteğe bağlı gerçek yüklemenin
  * (`onUpload`) ilerlemesini ve hatasını gösterir.
  */
-export function Upload(props: UploadProps) {
+export function Upload(props: Readonly<UploadProps>) {
   const { onPick, onReject, fileType, fileSize = 5 * 1024 * 1024, max = 5, listType = "list", reviewType = "square", triggerLabel = "Dosya seç", hint, style } = props;
   const field = useFieldControl({ disabled: props.disabled, skeleton: props.skeleton, accessibilityLabel: props.accessibilityLabel });
   const theme = useTheme();

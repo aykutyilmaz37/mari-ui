@@ -27,8 +27,6 @@ export interface LoadingProps {
   children?: React.ReactNode;
   /** Dönen yayın rengi. Varsayılan: `primary`. */
   color?: ColorRole;
-  /** @deprecated Halka artık her zaman nötr ray rengi (`border`). Yok sayılır. */
-  trackColor?: ColorRole;
   /** Varsayılan spinner yerine özel gösterge. */
   indicator?: React.ReactNode;
   className?: string;

@@ -58,7 +58,7 @@ const meta: Meta<typeof Toast> = {
 export default meta;
 type Story = StoryObj<typeof Toast>;
 
-function PlaygroundToast(props: { type: "info" | "success" | "warning" | "error"; title: string; description: string; duration: number; position: ToastPosition }) {
+function PlaygroundToast(props: Readonly<{ type: "info" | "success" | "warning" | "error"; title: string; description: string; duration: number; position: ToastPosition }>) {
   const { showToast } = useToast();
   return <Button onClick={() => showToast(props)}>Bildirim göster</Button>;
 }

@@ -34,7 +34,7 @@ const ROW_CLASS =
  * dokunma dostu satırlar; çocuğu olan satır sağda chevron taşır ve bir seviye
  * içeri girer (accordion değil — derin veride liste boyu patlamasın diye).
  */
-export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack, onSelect, onNavigate, backRef }: MobileNavLevelProps) {
+export function MobileNavLevel({ items, trail, activeKey, color, onDrill, onBack, onSelect, onNavigate, backRef }: Readonly<MobileNavLevelProps>) {
   const parent = trail[trail.length - 1];
   const backLabel = trail[trail.length - 2]?.title ?? "Ana Menü";
   // Seviyede ikonlu bir kardeş varsa ikonsuz satırlar da aynı yeri ayırır — başlıklar tek hizada dursun.

@@ -16,7 +16,7 @@ const reducedMotion = () => typeof window !== "undefined" && window.matchMedia?.
  * Başa dönünce odak sayfanın başına (ilk h1 / main) taşınır — düğme
  * gizlendiğinde odak kaybolmasın ve klavye kullanıcısı baştan devam etsin.
  */
-export function BackTop({ visibilityHeight = 400, target, focusTarget, icon = <ArrowUpIcon />, "aria-label": ariaLabel = "Başa dön", tooltip, ...rest }: BackTopProps) {
+export function BackTop({ visibilityHeight = 400, target, focusTarget, icon = <ArrowUpIcon />, "aria-label": ariaLabel = "Başa dön", tooltip, ...rest }: Readonly<BackTopProps>) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

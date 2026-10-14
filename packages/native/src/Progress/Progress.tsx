@@ -42,7 +42,7 @@ const CIRCLE_STROKE = { sm: 10, md: 8, lg: 6 } as const;
 const CIRCLE_TEXT = { sm: 12, md: 17, lg: 28 } as const;
 const CIRCLE_ICON = { sm: 16, md: 28, lg: 40 } as const;
 
-function Info({ status, percent, format, circle, size, tint, textStyle }: { status: ProgressStatus; percent: number; format: ProgressProps["format"]; circle: boolean; size: ProgressSize; tint: string; textStyle: object }) {
+function Info({ status, percent, format, circle, size, tint, textStyle }: Readonly<{ status: ProgressStatus; percent: number; format: ProgressProps["format"]; circle: boolean; size: ProgressSize; tint: string; textStyle: object }>) {
   if (!format && (status === "success" || status === "exception")) {
     const Icon = circle ? { success: CheckIcon, exception: XIcon }[status] : { success: CircleCheckIcon, exception: CircleXIcon }[status];
     return <Icon size={circle ? CIRCLE_ICON[size] : 16} color={tint} />;
@@ -51,7 +51,7 @@ function Info({ status, percent, format, circle, size, tint, textStyle }: { stat
   return typeof value === "string" || typeof value === "number" ? <Text style={textStyle}>{value}</Text> : <>{value}</>;
 }
 
-function CircleTrack({ percent, successPercent, size, fill, track, success }: { percent: number; successPercent: number; size: ProgressSize; fill: string; track: string; success: string }) {
+function CircleTrack({ percent, successPercent, size, fill, track, success }: Readonly<{ percent: number; successPercent: number; size: ProgressSize; fill: string; track: string; success: string }>) {
   const box = 100;
   const stroke = CIRCLE_STROKE[size];
   const r = (box - stroke) / 2;
@@ -59,7 +59,7 @@ function CircleTrack({ percent, successPercent, size, fill, track, success }: { 
   const arc = (p: number) => `${(p / 100) * c} ${c}`;
   return (
     <Svg width={CIRCLE[size]} height={CIRCLE[size]} viewBox={`0 0 ${box} ${box}`}>
-      <G rotation={-90} origin={`${box / 2}, ${box / 2}`}>
+      <G transform={`rotate(-90 ${box / 2} ${box / 2})`}>
         <Circle cx={box / 2} cy={box / 2} r={r} fill="none" strokeWidth={stroke} stroke={track} />
         {percent > 0 ? <Circle cx={box / 2} cy={box / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={arc(percent)} stroke={fill} /> : null}
         {successPercent > 0 ? <Circle cx={box / 2} cy={box / 2} r={r} fill="none" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={arc(successPercent)} stroke={success} /> : null}
@@ -80,7 +80,7 @@ interface BarProps {
   active: boolean;
 }
 
-function LineBar({ percent, successPercent, steps, size, fill, track, success, skeleton, active }: BarProps) {
+function LineBar({ percent, successPercent, steps, size, fill, track, success, skeleton, active }: Readonly<BarProps>) {
   const pulse = usePulse(active && !skeleton, 0.6);
   const height = LINE[size];
   if (steps) {
@@ -121,7 +121,7 @@ function a11yProps(skeleton: boolean, label: string | undefined, percent: number
   };
 }
 
-export function Progress({ percent: rawPercent, type = "line", status: statusProp, color: colorProp, success, steps, showInfo = true, format, size = "md", accessibilityLabel, skeleton = false, style }: ProgressProps) {
+export function Progress({ percent: rawPercent, type = "line", status: statusProp, color: colorProp, success, steps, showInfo = true, format, size = "md", accessibilityLabel, skeleton = false, style }: Readonly<ProgressProps>) {
   const theme = useTheme();
   const percent = clampPercent(rawPercent);
   const status = resolveProgressStatus(statusProp, percent);

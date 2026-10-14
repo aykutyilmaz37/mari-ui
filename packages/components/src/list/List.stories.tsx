@@ -285,7 +285,7 @@ const posts = [
   },
 ];
 
-function Cover({ Icon }: { Icon: typeof LaptopIcon }) {
+function Cover({ Icon }: Readonly<{ Icon: typeof LaptopIcon }>) {
   return (
     <div className="flex aspect-[16/10] w-full items-center justify-center rounded-lg bg-gradient-to-br from-mari-primary-subtle to-mari-surface-alt text-mari-primary sm:w-60">
       <Icon size={48} strokeWidth={1.25} aria-hidden />

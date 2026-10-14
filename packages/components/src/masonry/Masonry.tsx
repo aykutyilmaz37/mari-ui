@@ -73,7 +73,7 @@ export function Masonry({
   skeleton = false,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
-}: MasonryProps) {
+}: Readonly<MasonryProps>) {
   const viewport = useViewportWidth();
   const columnCount = resolveColumns(columns, viewport);
   const gap = resolveGap(gutter);

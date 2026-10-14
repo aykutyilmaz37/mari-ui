@@ -80,7 +80,7 @@ export function Textarea({
   accessibilityLabel: ownLabel,
   accessibilityHint: ownHint,
   skeleton: ownSkeleton,
-}: TextareaProps) {
+}: Readonly<TextareaProps>) {
   const { disabled, skeleton, accessibilityLabel, accessibilityHint, status } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel, accessibilityHint: ownHint, status: ownStatus });
   const [current, setCurrent] = useControllableState({ value, defaultValue, onChange: onChangeText });
   const [focused, setFocused] = useState(false);

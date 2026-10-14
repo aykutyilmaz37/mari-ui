@@ -63,9 +63,14 @@ export function nextEnabled(options: SelectOption[], from: number, step: 1 | -1)
   return from;
 }
 
-/** İlk (ya da `fromEnd` ile son) seçilebilir seçenek; yoksa -1. */
-export function firstEnabled(options: SelectOption[], fromEnd = false): number {
-  return fromEnd ? nextEnabledOrNone(options, options.length, -1) : nextEnabledOrNone(options, -1, 1);
+/** İlk seçilebilir seçenek; yoksa -1. */
+export function firstEnabled(options: SelectOption[]): number {
+  return nextEnabledOrNone(options, -1, 1);
+}
+
+/** Son seçilebilir seçenek; yoksa -1. */
+export function lastEnabled(options: SelectOption[]): number {
+  return nextEnabledOrNone(options, options.length, -1);
 }
 
 function nextEnabledOrNone(options: SelectOption[], from: number, step: 1 | -1): number {

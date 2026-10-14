@@ -13,7 +13,7 @@ describe("navigateTo", () => {
     // jsdom'da window.location.href'i doğrudan atamak navigasyonu simüle eder;
     // burada sadece atamanın gerçekleştiğini doğruluyoruz.
     const original = window.location.href;
-    navigateTo("#navigate-to-test", undefined);
+    navigateTo("#navigate-to-test");
     expect(window.location.href).toContain("navigate-to-test");
     window.location.href = original;
   });

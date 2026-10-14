@@ -63,7 +63,7 @@ interface StepperProps {
  * değil (klavyede ↑/↓ zaten var, ant.design de böyle); `onPointerDown`
  * `preventDefault` ile odağı alandan almaz.
  */
-function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, decrementLabel, size }: StepperProps) {
+function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, decrementLabel, size }: Readonly<StepperProps>) {
   const button = (direction: 1 | -1, enabled: boolean, label: string, fine: React.ReactNode, coarse: React.ReactNode) => (
     <button
       type="button"
@@ -228,7 +228,7 @@ function InputNumberInner(
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       onMouseDown={(e) => {
-        if (disabled || e.target === innerRef.current || (e.target as HTMLElement).closest("button")) return;
+        if (disabled || innerRef.current?.contains(e.target as Node) || (e.target as HTMLElement).closest("button")) return;
         e.preventDefault();
         innerRef.current?.focus();
       }}

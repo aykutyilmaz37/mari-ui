@@ -35,7 +35,7 @@ type Story = StoryObj<typeof FloatButton>;
 const icon = (Icon: typeof Plus) => ({ color, size }: FloatButtonIconState) => <Icon size={size} color={color} />;
 
 /** Telefon ekranı gibi çerçeve: düğmeler bu kutunun köşesine yapışır. */
-function Screen({ children, height = 300 }: { children: React.ReactNode; height?: number }) {
+function Screen({ children, height = 300 }: Readonly<{ children: React.ReactNode; height?: number }>) {
   const theme = useTheme();
   return <View style={{ height, alignSelf: "stretch", borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 16, overflow: "hidden", backgroundColor: theme.color.canvas.surfaceAlt }}>{children}</View>;
 }

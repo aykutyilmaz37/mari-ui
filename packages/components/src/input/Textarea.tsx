@@ -16,8 +16,6 @@ import {
   getVariantClasses,
   clearNativeValue,
   isClearable,
-  resolveInputColor,
-  resolveLegacyInputVariant,
 } from "./utils";
 import type { MentionsConfig } from "./mention/types";
 import { useMention } from "./mention/useMention";
@@ -45,10 +43,8 @@ export interface TextareaProps extends SkeletonableProps {
   "aria-invalid"?: boolean | "true" | "false";
   size?: Size;
   shape?: InputShape;
-  variant?: InputVariant | "outlined" | "filled" | "borderless";
+  variant?: InputVariant;
   color?: ColorRole;
-  /** @deprecated `color` kullanın. */
-  status?: "error" | "warning";
   maxLength?: number;
   showCount?: boolean;
   count?: InputCountConfig;
@@ -118,11 +114,10 @@ const TextareaInner = (
       id,
       maxLength,
       showCount,
-      status,
       color,
       size = "md",
       shape = "default",
-      variant,
+      variant = "outline",
       value,
       onChange,
       onClear,
@@ -138,9 +133,8 @@ const TextareaInner = (
       mentions,
     }: TextareaProps & { forwardedRef: React.ForwardedRef<HTMLTextAreaElement> }
   ) => {
-    const resolvedVariant = resolveLegacyInputVariant(variant);
-    const resolvedColor = resolveInputColor(color, status);
-    const ariaInvalid = ariaInvalidProp ?? (resolvedColor === "error" || undefined);
+    // `color` varsayılansız: verilmezse dinlenmede nötr, odakta primary (bkz. `getVariantClasses`).
+    const ariaInvalid = ariaInvalidProp ?? (color === "error" || undefined);
     const innerRef = useRef<HTMLTextAreaElement>(null);
     useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
 
@@ -171,7 +165,7 @@ const TextareaInner = (
       // eslint-disable-next-line react-hooks/exhaustive-deps -- autoSizeKey, obje kimliği yerine değerleri izler
     }, [currentValue, autoSizeKey]);
 
-    const geometryClass = cn("flex w-full items-start gap-2", getTextareaSizeClasses(size), getShapeClasses(shape, resolvedVariant));
+    const geometryClass = cn("flex w-full items-start gap-2", getTextareaSizeClasses(size), getShapeClasses(shape, variant));
     const textareaClass = cn(
       "w-full bg-transparent placeholder:text-mari-muted focus:outline-none disabled:cursor-not-allowed",
       autoSize ? "resize-none" : "resize-y",
@@ -192,7 +186,7 @@ const TextareaInner = (
     const wrapperClass = cn(
       geometryClass,
       FIELD_BASE_CLASS,
-      getVariantClasses(resolvedVariant, resolvedColor),
+      getVariantClasses(variant, color),
       disabled && FIELD_DISABLED_CLASS,
       classNames.wrapper,
       className

@@ -27,6 +27,6 @@ export function useSafeInsets(): Partial<SafeAreaInsets> | null {
  * DEĞMEYEN bir yerde çizilen AppBar / BottomNavigation için `insets={{}}`
  * (pay sıfır). Uygulama kökünde `ThemeProvider insets` yeterlidir.
  */
-export function SafeAreaInsetsProvider({ insets, children }: { insets: Partial<SafeAreaInsets>; children: ReactNode }) {
+export function SafeAreaInsetsProvider({ insets, children }: Readonly<{ insets: Partial<SafeAreaInsets>; children: ReactNode }>) {
   return <InsetsContext.Provider value={insets}>{children}</InsetsContext.Provider>;
 }

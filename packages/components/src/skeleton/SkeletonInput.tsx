@@ -9,7 +9,7 @@ export interface SkeletonInputProps {
 }
 
 // Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
-export function SkeletonInput({ active = false, size = "md", className }: SkeletonInputProps) {
+export function SkeletonInput({ active = false, size = "md", className }: Readonly<SkeletonInputProps>) {
   return (
     <div aria-hidden className={cn(skeletonFill(active), INPUT_SIZE_CLASS[size], className)} />
   );

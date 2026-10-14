@@ -7,7 +7,7 @@ import { bgSolidContrastClass, textSolidContrastClass } from "../lib/colorClasse
 import { skeletonBoxProps } from "../lib/skeleton";
 import { checkableTouchTargetClass, fontSizeClass } from "../lib/sizeClasses";
 import type { CheckboxChangeEvent, CheckboxProps } from "./types";
-import { getCheckIconClass, getIndeterminateSizeClasses, getShapeClasses, getSizeClasses, getVariantClasses, resolveCheckboxColor } from "./utils";
+import { getCheckIconClass, getIndeterminateSizeClasses, getShapeClasses, getSizeClasses, getVariantClasses } from "./utils";
 
 export type { CheckboxProps };
 
@@ -36,8 +36,6 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       description,
       variant = "outline",
       color,
-      status,
-      type,
       size = "md",
       shape = "default",
       id,
@@ -48,10 +46,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     },
     ref
   ) => {
-    const resolvedColor = resolveCheckboxColor({ color, status, type });
-    // İşaretliyken çentiğin/açıklamanın rengi — `resolvedColor` bir doğrulama
-    // durumu verilmediyse `undefined` olabilir, o zaman varsayılan `primary`.
-    const fillColor = resolvedColor ?? "primary";
+    // `color` varsayılansız: "renk açıkça verilmedi" ile "primary seçildi"
+    // ayrımı dinlenme halindeki kenarlığın nötr mü renkli mi olacağını
+    // belirler (Faz 13 — checked OLMAYAN kutucuk mavi görünmemeli).
+    // İşaretliyken çentiğin/açıklamanın rengi — renk verilmediyse `primary`.
+    const fillColor = color ?? "primary";
     const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked });
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +79,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       "shrink-0 cursor-pointer appearance-none border transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
       getSizeClasses(size),
       getShapeClasses(shape),
-      getVariantClasses(variant, resolvedColor, indeterminate),
+      getVariantClasses(variant, color, indeterminate),
       disabled && "opacity-50 cursor-not-allowed",
       classNames.checkbox,
       className

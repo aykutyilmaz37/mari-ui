@@ -45,7 +45,7 @@ describe("buildThemeVars", () => {
 
   it("yalnız primary değişkenleri ve ring'i döndürür", () => {
     const vars = buildThemeVars({ primary: "#facc15" }, "light");
-    expect(Object.keys(vars).sort()).toEqual(
+    expect(Object.keys(vars).sort((a, b) => a.localeCompare(b))).toEqual(
       [
         "--mari-color-primary",
         "--mari-color-primary-border",
@@ -55,7 +55,7 @@ describe("buildThemeVars", () => {
         "--mari-color-primary-subtle",
         "--mari-color-primary-subtle-contrast",
         "--mari-color-ring",
-      ].sort()
+      ].sort((a, b) => a.localeCompare(b))
     );
     expect(vars["--mari-color-ring"]).toBe(vars["--mari-color-primary"]);
   });

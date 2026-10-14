@@ -12,7 +12,7 @@ const nextFrame = () => act(() => new Promise<void>((r) => requestAnimationFrame
  * Faz 16 kalite turu — Modal içindeki açılır parça Escape'i işlerse yalnız o
  * kapanır; ikinci Escape Modal'ı kapatır (Modal `defaultPrevented`ı dikkate alır).
  */
-function InModal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+function InModal({ children, onClose }: Readonly<{ children: React.ReactNode; onClose: () => void }>) {
   return (
     <Modal open title="Form" onClose={onClose}>
       {children}

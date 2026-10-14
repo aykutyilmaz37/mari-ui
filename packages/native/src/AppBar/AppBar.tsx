@@ -65,7 +65,7 @@ export function useAppBarScroll() {
   return { scrollY, onScroll, scrollEventThrottle: 16 };
 }
 
-export function AppBarAction({ icon, accessibilityLabel, onPress, disabled = false, badge }: AppBarActionProps) {
+export function AppBarAction({ icon, accessibilityLabel, onPress, disabled = false, badge }: Readonly<AppBarActionProps>) {
   const ctx = React.useContext(AppBarContext);
   const fallbackTheme = useTheme();
   const fallbackM = useNativeConfig().appBar;
@@ -142,7 +142,7 @@ interface TitleBlockProps {
   theme: Theme;
 }
 
-function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hidden, header, skeleton, m, theme }: TitleBlockProps) {
+function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hidden, header, skeleton, m, theme }: Readonly<TitleBlockProps>) {
   if (title == null && subtitle == null) return null;
   const c = theme.color.canvas;
   const font = nativeFontFamily(theme.fontFamily.sans);
@@ -162,7 +162,7 @@ function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hid
   );
 }
 
-function LargeTitle({ title, height, opacity, skeleton, m, theme }: { title: React.ReactNode; height: Animatable; opacity: Animatable; skeleton: boolean; m: NativeAppBarSize; theme: Theme }) {
+function LargeTitle({ title, height, opacity, skeleton, m, theme }: Readonly<{ title: React.ReactNode; height: Animatable; opacity: Animatable; skeleton: boolean; m: NativeAppBarSize; theme: Theme }>) {
   const style = { fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: m.largeTitleFontSize, lineHeight: m.largeTitleLineHeight, fontWeight: "700", color: theme.color.canvas.foreground };
   return (
     <Animated.View style={{ height, overflow: "hidden", justifyContent: "flex-end", paddingHorizontal: 16 }}>
@@ -191,7 +191,7 @@ export function AppBar({
   bordered,
   skeleton = false,
   style,
-}: AppBarProps) {
+}: Readonly<AppBarProps>) {
   const theme = useTheme();
   const m = useNativeConfig().appBar;
   const safe = useSafeInsets();

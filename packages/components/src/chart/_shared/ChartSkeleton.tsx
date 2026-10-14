@@ -27,14 +27,14 @@ export function waveMask(strokeWidth: number): React.CSSProperties {
 }
 
 /** Metin satırı yer tutucusu: kutu bir satır yüksekliğinde, çubuk yazı gövdesi kadar. */
-function TextStub({ className }: { className?: string }) {
+function TextStub({ className }: Readonly<{ className?: string }>) {
   return <span aria-hidden className={cn("block h-2 rounded-sm", skeletonFill(true), className)} />;
 }
 
 /** Ad yer tutucuları dönüşümlü iki uzunlukta — tek tip çubuk dizisi gibi görünmesin. */
 const categoryStubWidth = (i: number) => (i % 2 ? "w-10" : "w-14");
 
-export function LegendSkeleton({ count }: { count: number }) {
+export function LegendSkeleton({ count }: Readonly<{ count: number }>) {
   return (
     <div className="flex flex-wrap gap-x-4 gap-y-1">
       {Array.from({ length: count }, (_, i) => (
@@ -56,7 +56,7 @@ export type CartesianSkeletonShape = "bar" | "barHorizontal" | "line";
  * Kartezyen iskelet: `plotBox` ile aynı boşluklar (sol değer etiketleri,
  * alt kategori etiketleri; üst 0.5rem, sağ 0.75rem, alt 1.75rem).
  */
-export function CartesianSkeleton({ shape, count }: { shape: CartesianSkeletonShape; count: number }) {
+export function CartesianSkeleton({ shape, count }: Readonly<{ shape: CartesianSkeletonShape; count: number }>) {
   const n = Math.max(3, Math.min(12, count));
   const horizontal = shape === "barHorizontal";
   return (
@@ -107,7 +107,7 @@ export function CartesianSkeleton({ shape, count }: { shape: CartesianSkeletonSh
  * önde uyarı. Okuyucu burada ne tür bir grafik olacağını görür; düz bir
  * "Veri yok" kutusu gibi alan boş kalmaz.
  */
-export function ChartEmpty({ plot, children, compact = false }: { plot: React.ReactNode; children: React.ReactNode; compact?: boolean }) {
+export function ChartEmpty({ plot, children, compact = false }: Readonly<{ plot: React.ReactNode; children: React.ReactNode; compact?: boolean }>) {
   return (
     <div className="absolute inset-0">
       {/* Küçük (Sparkline) şekilde ince çizgi fazla bulanıklıkta kaybolur. */}
@@ -120,7 +120,7 @@ export function ChartEmpty({ plot, children, compact = false }: { plot: React.Re
 }
 
 /** Pasta / halka: çizim alanına sığan en büyük daire (grafikteki `outer` gibi 6px pay). */
-export function PieSkeleton({ donut }: { donut: boolean }) {
+export function PieSkeleton({ donut }: Readonly<{ donut: boolean }>) {
   return (
     <div className="absolute inset-1.5 grid place-items-center">
       <div

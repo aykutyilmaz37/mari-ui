@@ -161,8 +161,8 @@ export const defaultThemeConfig = {
 
 export interface NamedThemeInput {
   base: ThemeMode;
-  color?: MariUiThemeConfig["color"];
-  typography?: MariUiThemeConfig["typography"];
+  color?: Exclude<MariUiThemeConfig["color"], undefined>;
+  typography?: Exclude<MariUiThemeConfig["typography"], undefined>;
 }
 
 export interface ResolvedMariUiTheme {
@@ -177,7 +177,7 @@ export interface ResolvedMariUiTheme {
   themes: Record<string, Theme>;
 }
 
-function resolveBuildThemeOptions(config: { color?: MariUiThemeConfig["color"]; typography?: MariUiThemeConfig["typography"] } = {}, name?: string): BuildThemeOptions {
+function resolveBuildThemeOptions(config: { color?: Exclude<MariUiThemeConfig["color"], undefined>; typography?: Exclude<MariUiThemeConfig["typography"], undefined> } = {}, name?: string): BuildThemeOptions {
   const rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {};
   if (config.color?.primary && config.color.primary.toLowerCase() !== defaultThemeConfig.color.primary) rampOverrides.primary = primitives.generateRamp(config.color.primary);
   if (config.color?.accent && config.color.accent.toLowerCase() !== defaultThemeConfig.color.accent) rampOverrides.accent = primitives.generateRamp(config.color.accent);

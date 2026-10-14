@@ -23,7 +23,7 @@ export type { FieldProps };
  * Bölge hep DOM'da (sonradan eklenen canlı bölgeyi bazı ekran okuyucular
  * duyurmuyor); hata yokken boş.
  */
-export function Field({ label, hint, error, required = false, disabled = false, layout = "vertical", htmlFor, className, skeleton = false, children }: FieldProps) {
+export function Field({ label, hint, error, required = false, disabled = false, layout = "vertical", htmlFor, className, skeleton = false, children }: Readonly<FieldProps>) {
   const autoId = useId();
   const [ownControlId, setControlId] = useState<string | undefined>();
   const [isGroup, setIsGroup] = useState(false);

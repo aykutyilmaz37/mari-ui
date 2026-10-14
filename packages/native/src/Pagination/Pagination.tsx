@@ -65,7 +65,7 @@ interface CellProps {
 }
 
 /** Kare düğme; görünür kutu `size`, dokunma alanı 44'e tamamlanır. */
-function Cell({ label, onPress, disabled, active = false, children, size, activeBox, theme }: CellProps) {
+function Cell({ label, onPress, disabled, active = false, children, size, activeBox, theme }: Readonly<CellProps>) {
   const slop = Math.max(0, (44 - size) / 2);
   return (
     <Pressable
@@ -92,7 +92,7 @@ function Cell({ label, onPress, disabled, active = false, children, size, active
  * ve "Git" alanı yok (mobilde Select / InputNumber ile ayrıca). Mantık web
  * Pagination ile aynı (`paginationUtils`).
  */
-export function Pagination({ currentPage, defaultPage = 1, pageSize = 10, totalItems, onPageChange, simple = true, showTotal = false, siblingCount = 1, size = "md", color = "primary", variant = "outline", disabled = false, accessibilityLabel = "Sayfalama", skeleton = false, style }: PaginationProps) {
+export function Pagination({ currentPage, defaultPage = 1, pageSize = 10, totalItems, onPageChange, simple = true, showTotal = false, siblingCount = 1, size = "md", color = "primary", variant = "outline", disabled = false, accessibilityLabel = "Sayfalama", skeleton = false, style }: Readonly<PaginationProps>) {
   const theme = useTheme();
   const c = theme.color.canvas;
   const font = nativeFontFamily(theme.fontFamily.sans);

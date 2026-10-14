@@ -40,7 +40,7 @@ function valueText(format: ProgressProps["format"], percent: number, status: Pro
   return base;
 }
 
-function Info({ status, percent, format, circle, size, color }: { status: ProgressStatus; percent: number; format: ProgressProps["format"]; circle: boolean; size: NonNullable<ProgressProps["size"]>; color: ColorRole }) {
+function Info({ status, percent, format, circle, size, color }: Readonly<{ status: ProgressStatus; percent: number; format: ProgressProps["format"]; circle: boolean; size: NonNullable<ProgressProps["size"]>; color: ColorRole }>) {
   // Özel format varsa her durumda metin; yoksa bitince/hatada ikon.
   if (!format && (status === "success" || status === "exception")) {
     // Dairede ortadaki alan geniş: yalın ✓/✕; çizginin yanında daire içinde ikon.
@@ -75,7 +75,7 @@ export function Progress({
   "aria-labelledby": ariaLabelledBy,
   className,
   skeleton = false,
-}: ProgressProps) {
+}: Readonly<ProgressProps>) {
   const percent = clamp(rawPercent);
   const status = resolveStatus(statusProp, percent);
   const color = resolveColor(status, colorProp);
@@ -142,7 +142,7 @@ export function Progress({
   );
 }
 
-function StepsTrack({ steps, percent, color, size, skeleton }: { steps: number; percent: number; color: ColorRole; size: NonNullable<ProgressProps["size"]>; skeleton: boolean }) {
+function StepsTrack({ steps, percent, color, size, skeleton }: Readonly<{ steps: number; percent: number; color: ColorRole; size: NonNullable<ProgressProps["size"]>; skeleton: boolean }>) {
   const filled = Math.round((percent / 100) * steps);
   const segmentFill = (i: number) => {
     if (skeleton) return skeletonFill(true);
@@ -157,7 +157,7 @@ function StepsTrack({ steps, percent, color, size, skeleton }: { steps: number; 
   );
 }
 
-function CircleTrack({ percent, successPercent, stroke, color, skeleton }: { percent: number; successPercent: number; stroke: number; color: ColorRole; skeleton: boolean }) {
+function CircleTrack({ percent, successPercent, stroke, color, skeleton }: Readonly<{ percent: number; successPercent: number; stroke: number; color: ColorRole; skeleton: boolean }>) {
   const box = 100;
   const r = (box - stroke) / 2;
   const c = 2 * Math.PI * r;

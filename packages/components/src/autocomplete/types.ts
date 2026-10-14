@@ -15,8 +15,6 @@ export interface AutoCompleteProps extends SkeletonableProps {
   /** Bir seçenek seçildiğinde çağrılır. */
   onSelect?: (value: string) => void;
   placeholder?: string;
-  /** @deprecated `closeOnBlur` kullanın — aynı şey, daha açık bir isim. */
-  onBlur?: boolean;
   closeOnBlur?: boolean;
   /** Hiçbir seçenek eşleşmezken listede gösterilecek içerik. Verilmezse liste kapanır. */
   notFoundContent?: React.ReactNode;

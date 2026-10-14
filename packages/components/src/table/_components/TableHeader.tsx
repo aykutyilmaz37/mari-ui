@@ -17,7 +17,7 @@ export interface TableHeaderProps<T extends { id: string }> {
  * Vercel tarzı) başlığı sessiz tutar: dolgu arka plan YOK, küçük/soluk/geniş
  * harf aralıklı metin — göze asıl çarpması gereken VERİ, başlık değil.
  */
-export function TableHeader<T extends { id: string }>({ columns, skeleton = false }: TableHeaderProps<T>) {
+export function TableHeader<T extends { id: string }>({ columns, skeleton = false }: Readonly<TableHeaderProps<T>>) {
   return (
     <thead>
       <tr className="w-full">

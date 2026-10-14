@@ -5,7 +5,7 @@ import { cn, useControllableState } from "@mari-ui/core";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { checkableTouchTargetClass, fontSizeClass } from "../lib/sizeClasses";
 import type { RadioChangeEvent, RadioProps } from "./types";
-import { getDotSizeClasses, getSizeClasses, getVariantClasses, getVariantDotClasses, resolveRadioColor } from "./utils";
+import { getDotSizeClasses, getSizeClasses, getVariantClasses, getVariantDotClasses } from "./utils";
 
 export type { RadioProps };
 
@@ -34,8 +34,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       description,
       variant = "outline",
       color,
-      status,
-      type,
       size = "md",
       id,
       value,
@@ -44,7 +42,6 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     },
     ref
   ) => {
-    const resolvedColor = resolveRadioColor({ color, status, type });
     const inputRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => inputRef.current!, []);
 
@@ -68,7 +65,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     const baseClasses = cn(
       "relative shrink-0 cursor-pointer appearance-none rounded-full border transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring",
       getSizeClasses(size),
-      getVariantClasses(variant, resolvedColor),
+      getVariantClasses(variant, color),
       disabled && "opacity-50 cursor-not-allowed",
       classNames.radio,
       className
@@ -100,7 +97,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                 className={cn(
                   "pointer-events-none absolute rounded-full transition-[scale] duration-150 starting:scale-0 motion-reduce:transition-none",
                   getDotSizeClasses(size),
-                  getVariantDotClasses(variant, resolvedColor)
+                  getVariantDotClasses(variant, color)
                 )}
               />
             )}

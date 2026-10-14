@@ -13,7 +13,7 @@ const DOT_SIZE = { sm: "size-1.5", md: "size-2" } as const;
 const toLength = (v: number | string) => (typeof v === "number" ? `${v}px` : v);
 
 function displayCount(count: BadgeProps["count"], overflowCount: number): string | null {
-  if (count === undefined || count === null || count === "") return null;
+  if (count == null || count === "") return null;
   if (typeof count === "number") return count > overflowCount ? `${overflowCount}+` : String(count);
   return count;
 }
@@ -39,7 +39,7 @@ export function Badge({
   children,
   className,
   skeleton = false,
-}: BadgeProps) {
+}: Readonly<BadgeProps>) {
   const text = displayCount(count, overflowCount);
   const hidden = !dot && (text === null || (count === 0 && !showZero));
   const standalone = children === undefined;
@@ -85,7 +85,7 @@ const STATUS_DOT: Record<ColorRole, string> = bgSolidClass;
  * Durum rozeti: renkli nokta + metin (tablo satırında "Aktif", "Beklemede").
  * Renk tek başına anlam taşımaz (renk körlüğü) — metin her zaman görünür.
  */
-export function StatusBadge({ color = "neutral", children, processing = false, className, skeleton = false }: StatusBadgeProps) {
+export function StatusBadge({ color = "neutral", children, processing = false, className, skeleton = false }: Readonly<StatusBadgeProps>) {
   return (
     <span className={cn("inline-flex items-center gap-2 text-sm text-mari-foreground", className)} aria-hidden={skeleton || undefined}>
       <span className="relative flex size-2 shrink-0">

@@ -12,7 +12,7 @@ export type { QRCodeProps };
 
 const DEFAULT_COLOR = neutralRamp[950];
 
-function StatusLayer({ status, onRefresh }: { status: Exclude<QRStatus, "active">; onRefresh?: () => void }) {
+function StatusLayer({ status, onRefresh }: Readonly<{ status: Exclude<QRStatus, "active">; onRefresh?: () => void }>) {
   if (status === "loading") {
     return (
       <>
@@ -80,7 +80,7 @@ export function QRCode({
   "aria-label": ariaLabel = "QR kod",
   className,
   skeleton = false,
-}: QRCodeProps) {
+}: Readonly<QRCodeProps>) {
   const gradientId = useId();
   const level = errorLevel ?? (icon ? "H" : "M");
   const model = useMemo(

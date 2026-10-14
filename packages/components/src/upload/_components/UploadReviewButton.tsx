@@ -15,7 +15,7 @@ export interface UploadReviewButtonProps {
  * eskiden ayrı bir satırda/boyutta duruyordu, artık küçük resimlerle AYNI
  * grid'e (bkz. `Upload.tsx`) akıp aynı boyutta bir "ekle" karosu oluyor.
  */
-export function UploadReviewButton({ handleClick, reviewType, disabled }: UploadReviewButtonProps) {
+export function UploadReviewButton({ handleClick, reviewType, disabled }: Readonly<UploadReviewButtonProps>) {
   return (
     <Button
       onClick={handleClick}

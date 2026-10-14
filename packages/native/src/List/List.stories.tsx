@@ -56,7 +56,7 @@ const meta: Meta<typeof List> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function AvatarBadge({ contact }: { contact: Contact }) {
+function AvatarBadge({ contact }: Readonly<{ contact: Contact }>) {
   const theme = useTheme();
   return (
     <View style={{ width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center", backgroundColor: theme.color[contact.color].solid }}>

@@ -2,34 +2,6 @@ import { cn, resolveColorVariant, type ColorRole, type Variant } from "@mari-ui/
 import { colorVariantToClassName } from "../lib/colorClasses";
 
 /**
- * @deprecated Eski `statu` prop'unun değerleri. "processing" -> `info`,
- * "default" -> `neutral`. Eski prop, RENK ekseninde bir yazım hatası
- * ("statu", "status" değil) taşıyordu ve tag/utils.ts'teki `color?: string`
- * hiçbir zaman gerçekten kullanılmıyordu (runtime'da `` `bg-[${color}]` ``
- * template literal'i Tailwind'in tarayıcısı tarafından hiç görülmüyordu).
- */
-export type LegacyTagStatu = "success" | "processing" | "error" | "default" | "warning";
-
-const LEGACY_STATU_TO_COLOR: Record<LegacyTagStatu, ColorRole> = {
-  success: "success",
-  error: "error",
-  warning: "warning",
-  processing: "info",
-  default: "neutral",
-};
-
-export function resolveLegacyTagColor(statu: LegacyTagStatu | undefined, color: ColorRole | undefined): ColorRole {
-  if (color) return color;
-  if (statu) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn('[@mari-ui/components] Tag: "statu" deprecated, `color` (ColorRole) kullanın.');
-    }
-    return LEGACY_STATU_TO_COLOR[statu];
-  }
-  return "neutral";
-}
-
-/**
  * ant.design'ın gerçek Tag'i (`getComputedStyle`, ant.design/components/tag)
  * bir hap (pill) DEĞİL, 4px yuvarlatılmış küçük bir dikdörtgen: `border-radius:
  * 4px`, `padding: 0 7px`, `font-size: 12px`, `line-height: 20px`. Eskiden

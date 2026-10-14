@@ -39,7 +39,7 @@ const ROW = 44;
  * KAPANMAZ (karar bekler); Android geri tuşu `cancel` eylemini çağırır.
  * Uzun içerik ya da form için `Modal`.
  */
-export function Dialog({ open, onClose, title, message, actions = [{ label: "Tamam" }] }: DialogProps) {
+export function Dialog({ open, onClose, title, message, actions = [{ label: "Tamam" }] }: Readonly<DialogProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const [pending, setPending] = useState<number | null>(null);

@@ -10,7 +10,7 @@ const nextFrame = () => act(() => new Promise<void>((r) => requestAnimationFrame
 
 afterEach(() => vi.useRealTimers());
 
-function Harness(props: Partial<React.ComponentProps<typeof Popover>>) {
+function Harness(props: Readonly<Partial<React.ComponentProps<typeof Popover>>>) {
   return (
     <>
       <button>Önceki</button>

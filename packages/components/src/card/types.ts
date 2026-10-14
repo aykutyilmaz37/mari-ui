@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { SlotClassNames, Size } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 
@@ -22,8 +22,6 @@ export interface CardProps extends SkeletonableProps {
   bordered?: boolean;
   /** Üzerine gelince gölge + hafif yükselme. `href` verildiğinde varsayılan olarak açık. */
   hoverable?: boolean;
-  /** @deprecated Faz 15 — `skeleton` kullanın; bir sonraki major'da kaldırılacak. */
-  loading?: boolean;
   /** `sm`: kompakt (12px), `md`: 24px, `lg`: 32px dolgu. Varsayılan: `md`. */
   size?: Size;
   /** İç içe/gömülü kart görünümü — tonlu zemin, gölge yok. */
@@ -42,8 +40,6 @@ export interface CardProps extends SkeletonableProps {
   onClick?: () => void;
   className?: string;
   classNames?: CardClassNames;
-  /** @deprecated Hiçbir zaman uygulanmıyordu. Stil için `classNames` kullanın. */
-  styles?: Partial<Record<CardSlot, CSSProperties>>;
 }
 
 export interface CardMetaProps {

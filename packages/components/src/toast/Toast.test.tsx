@@ -5,7 +5,7 @@ import { ToastProvider, useToast } from "./useToast";
 import type { ToastOptions } from "./types";
 import { getA11yViolations } from "../testUtils/a11y";
 
-function Trigger({ options }: { options: ToastOptions }) {
+function Trigger({ options }: Readonly<{ options: ToastOptions }>) {
   const { showToast, dismiss } = useToast();
   return (
     <>

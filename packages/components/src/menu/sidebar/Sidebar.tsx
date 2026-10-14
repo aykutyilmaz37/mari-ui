@@ -100,7 +100,7 @@ export function Sidebar({
   onNavigate,
   currentPath,
   skeleton = false,
-}: SidebarProps) {
+}: Readonly<SidebarProps>) {
   const [expanded, setExpanded] = useState(false);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [megaKey, setMegaKey] = useState<string | null>(null);

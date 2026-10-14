@@ -47,7 +47,7 @@ export interface ImageGalleryItem {
   /** Izgarada `src` yerine gösterilecek küçük kaynak (CDN `loader`ı yoksa önerilir). */
   thumbnail?: ImageSource;
   caption?: React.ReactNode;
-  tracks?: ImageViewerItem["tracks"];
+  tracks?: Exclude<ImageViewerItem["tracks"], undefined>;
 }
 
 export interface ImageGalleryProps extends SkeletonableProps {
@@ -84,7 +84,7 @@ export interface ImageGalleryProps extends SkeletonableProps {
   /** Seçim modunda araç çubuğuna eklenecek eylemler (paylaş, sil…). */
   selectionActions?: (keys: React.Key[]) => React.ReactNode;
   /** Görüntüleyicinin üst çubuğuna ek eylemler. */
-  viewerActions?: ImageViewerProps["actions"];
+  viewerActions?: Exclude<ImageViewerProps["actions"], undefined>;
   /** Tarih biçimi. Varsayılan: `"tr-TR"`. */
   locale?: string;
   /** Öğe yokken. Varsayılan: "Henüz fotoğraf yok". */
@@ -199,7 +199,7 @@ function GalleryTile({
   onActivate,
   onLongPress,
   onKeyDown,
-}: {
+}: Readonly<{
   item: ImageGalleryItem;
   index: number;
   active: boolean;
@@ -210,7 +210,7 @@ function GalleryTile({
   onActivate: (index: number, event: React.MouseEvent | React.KeyboardEvent) => void;
   onLongPress: (index: number) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-}) {
+}>) {
   const press = useRef<{ timer: ReturnType<typeof setTimeout>; x: number; y: number; fired: boolean } | null>(null);
   const isVideo = item.type === "video";
   // Kapak görseli görüntüleyicideki gibi hazır bir adres: `loader`dan geçmez.
@@ -280,7 +280,9 @@ function GalleryTile({
         )}
       />
       {isVideo && (
-        <span className="pointer-events-none absolute right-1 bottom-1 inline-flex items-center gap-0.5 rounded-sm bg-mari-scrim px-1 text-xs font-medium text-white tabular-nums">
+        // Fotoğrafa bağlı, temadan bağımsız (native VIDEO_BADGE_BG ile aynı): açık temanın
+        // yarı saydam scrim'i açık karede beyaz metni AA'nın altına düşürüyordu.
+        <span className="pointer-events-none absolute right-1 bottom-1 inline-flex items-center gap-0.5 rounded-sm bg-black/72 px-1 text-xs font-medium text-white tabular-nums">
           <PlayIcon aria-hidden className="size-3 fill-current" />
           {item.duration !== undefined ? formatDuration(item.duration) : <span className="sr-only">Video</span>}
           {item.duration !== undefined && <span className="sr-only">, video</span>}
@@ -452,7 +454,7 @@ export function ImageGallery({
   skeleton = false,
   "aria-label": ariaLabel = "Fotoğraflar",
   className,
-}: ImageGalleryProps) {
+}: Readonly<ImageGalleryProps>) {
   const [rawView, setViewState] = useControllableState({ value: viewProp, defaultValue: defaultView, onChange: onViewChange });
   const [columnsSetting = "auto", setColumns] = useControllableState<number | "auto">({
     value: columnsProp,
@@ -679,7 +681,7 @@ function ItemRow({
   selecting,
   isSelected,
   tile,
-}: {
+}: Readonly<{
   rowIndex: number;
   style: React.CSSProperties;
   columns: number;
@@ -690,7 +692,7 @@ function ItemRow({
   selecting: boolean;
   isSelected: (key: React.Key) => boolean;
   tile: TileShared;
-}) {
+}>) {
   return (
     <div role="row" aria-rowindex={rowIndex + 1} style={{ ...style, display: "grid", gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`, gap }}>
       {items.map((item, k) => (
@@ -716,7 +718,7 @@ function SectionHeaderRow({
   label,
   count,
   onDrillDown,
-}: {
+}: Readonly<{
   rowIndex: number;
   style: React.CSSProperties;
   columns: number;
@@ -724,7 +726,7 @@ function SectionHeaderRow({
   label: string;
   count: number;
   onDrillDown?: () => void;
-}) {
+}>) {
   const Heading = `h${headingLevel}` as "h3";
   return (
     <div role="row" aria-rowindex={rowIndex + 1} style={style} className="flex items-end px-1 pb-1.5">
@@ -860,13 +862,13 @@ function GallerySkeleton({
   view,
   gap,
   className,
-}: {
+}: Readonly<{
   toolbar: boolean;
   columns: number | "auto";
   view: GalleryView;
   gap: number;
   className?: string;
-}) {
+}>) {
   const gridRef = useRef<HTMLDivElement>(null);
   const width = useWidth(gridRef, true);
   const cols = columns === "auto" ? autoColumns(width, view, gap) : clampColumns(columns);

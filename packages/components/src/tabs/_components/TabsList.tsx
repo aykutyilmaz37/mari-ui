@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@mari-ui/core";
-import { TabsContext, useTabs } from "../useTabs";
+import { useTabs } from "../useTabs";
 import { getBarClass, getIndicatorClass, getListClass } from "../utils";
 import type { TabsListProps } from "../types";
 
@@ -90,12 +90,8 @@ function getKeyTarget(key: string, tabs: HTMLButtonElement[], index: number, ver
  * - `cloneElement` + ref dizisi ile sekme bulunuyordu (sarmalanmış bir
  *   TabsTrigger'ı kaçırıyordu). Artık DOM'dan `[aria-selected=true]`.
  */
-export function TabsList({ children, extra, className, cardTabs, "aria-label": ariaLabel }: TabsListProps) {
-  const context = useTabs();
-  // Eski `cardTabs` prop'u: bu listenin altındaki sekmeler için varyantı
-  // `card`'a çevirir (geriye uyumluluk).
-  const ctx = useMemo(() => (cardTabs ? { ...context, variant: "card" as const } : context), [context, cardTabs]);
-  const { activeTab, setActiveTab, isControlled, variant, orientation, size, fill, align, color, activationMode, skeleton } = ctx;
+export function TabsList({ children, extra, className, "aria-label": ariaLabel }: Readonly<TabsListProps>) {
+  const { activeTab, setActiveTab, isControlled, variant, orientation, size, fill, align, color, activationMode, skeleton } = useTabs();
   const vertical = orientation === "vertical";
 
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -185,45 +181,43 @@ export function TabsList({ children, extra, className, cardTabs, "aria-label": a
   const indicatorStyle = getIndicatorStyle(indicator, vertical, variant === "pills");
 
   return (
-    <TabsContext.Provider value={ctx}>
-      <div aria-hidden={skeleton || undefined} className={cn("flex min-w-0", vertical ? "shrink-0 flex-col" : "items-end", getBarClass(variant, orientation), className)}>
+    <div aria-hidden={skeleton || undefined} className={cn("flex min-w-0", vertical ? "shrink-0 flex-col" : "items-end", getBarClass(variant, orientation), className)}>
+      <div
+        ref={scrollerRef}
+        onScroll={measure}
+        className={cn(
+          "flex min-w-0",
+          vertical ? "flex-col" : "flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          variant === "pills" && !vertical && "py-0.5"
+        )}
+        style={maskImage ? { maskImage, WebkitMaskImage: maskImage } : undefined}
+      >
+        {/* Odak tablist'te değil, içindeki role="tab" düğmelerinde (roving
+            tabindex); ok tuşu olayları buraya kabarcıklanır. */}
+        {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
         <div
-          ref={scrollerRef}
-          onScroll={measure}
-          className={cn(
-            "flex min-w-0",
-            vertical ? "flex-col" : "flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-            variant === "pills" && !vertical && "py-0.5"
-          )}
-          style={maskImage ? { maskImage, WebkitMaskImage: maskImage } : undefined}
+          ref={listRef}
+          role="tablist"
+          aria-label={ariaLabel}
+          aria-orientation={orientation}
+          onKeyDown={handleKeyDown}
+          className={cn(getListClass(variant, orientation, size, fill), align === "center" && !vertical && "mx-auto")}
         >
-          {/* Odak tablist'te değil, içindeki role="tab" düğmelerinde (roving
-              tabindex); ok tuşu olayları buraya kabarcıklanır. */}
-          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
-          <div
-            ref={listRef}
-            role="tablist"
-            aria-label={ariaLabel}
-            aria-orientation={orientation}
-            onKeyDown={handleKeyDown}
-            className={cn(getListClass(variant, orientation, size, fill), align === "center" && !vertical && "mx-auto")}
-          >
-            {children}
-            <span
-              aria-hidden
-              className={cn(
-                "pointer-events-none absolute",
-                getIndicatorClass(variant, orientation, color),
-                animate && "transition-[left,top,width,height] duration-300 ease-out motion-reduce:transition-none",
-                // İskelette aktif sekme henüz anlamlı değil — gösterge gizli.
-                (!indicator || skeleton) && "opacity-0"
-              )}
-              style={indicatorStyle}
-            />
-          </div>
+          {children}
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute",
+              getIndicatorClass(variant, orientation, color),
+              animate && "transition-[left,top,width,height] duration-300 ease-out motion-reduce:transition-none",
+              // İskelette aktif sekme henüz anlamlı değil — gösterge gizli.
+              (!indicator || skeleton) && "opacity-0"
+            )}
+            style={indicatorStyle}
+          />
         </div>
-        {extra && <div className={cn("shrink-0", vertical ? "mt-4" : "ml-4 self-center")}>{extra}</div>}
       </div>
-    </TabsContext.Provider>
+      {extra && <div className={cn("shrink-0", vertical ? "mt-4" : "ml-4 self-center")}>{extra}</div>}
+    </div>
   );
 }

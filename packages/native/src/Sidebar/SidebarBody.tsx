@@ -136,7 +136,7 @@ function rowText(theme: Theme, m: NativeSidebarSize) {
 const skBox = (on: boolean, node: React.ReactNode) => (on ? <SkeletonBox style={{ borderRadius: 4 }}>{node}</SkeletonBox> : node);
 const skText = (on: boolean, fontSize: number, node: React.ReactNode) => (on ? <SkeletonText fontSize={fontSize}>{node}</SkeletonText> : node);
 
-function LevelHeader({ trail, rootLabel, seeAllLabel, color, skeleton, onBack, onLeaf, m, theme }: Pick<LevelProps, "trail" | "rootLabel" | "seeAllLabel" | "color" | "skeleton" | "onBack" | "onLeaf" | "m" | "theme">) {
+function LevelHeader({ trail, rootLabel, seeAllLabel, color, skeleton, onBack, onLeaf, m, theme }: Readonly<Pick<LevelProps, "trail" | "rootLabel" | "seeAllLabel" | "color" | "skeleton" | "onBack" | "onLeaf" | "m" | "theme">>) {
   const parent = trail[trail.length - 1];
   if (!parent) return null;
   const c = theme.color.canvas;
@@ -165,7 +165,7 @@ function LevelHeader({ trail, rootLabel, seeAllLabel, color, skeleton, onBack, o
   );
 }
 
-function Heading({ title, first, m, theme }: { title: string; first: boolean; m: NativeSidebarSize; theme: Theme }) {
+function Heading({ title, first, m, theme }: Readonly<{ title: string; first: boolean; m: NativeSidebarSize; theme: Theme }>) {
   const c = theme.color.canvas;
   // Amazon çekmecesi: her bölüm ayraçla ayrılır, başlığı kalın ve okunur (soluk küçük etiket değil).
   return (
@@ -192,7 +192,7 @@ function rowBackground(active: boolean, pressed: boolean, color: ColorRole, them
   return pressed ? theme.color.canvas.surfaceAlt : "transparent";
 }
 
-function Row({ item, active, reserveIcon, color, skeleton, onPress, m, theme }: { item: SidebarItem; active: boolean; reserveIcon: boolean; color: ColorRole; skeleton: boolean; onPress: () => void; m: NativeSidebarSize; theme: Theme }) {
+function Row({ item, active, reserveIcon, color, skeleton, onPress, m, theme }: Readonly<{ item: SidebarItem; active: boolean; reserveIcon: boolean; color: ColorRole; skeleton: boolean; onPress: () => void; m: NativeSidebarSize; theme: Theme }>) {
   const c = theme.color.canvas;
   const branch = isBranch(item);
   const disabled = item.disabled ?? false;
@@ -282,7 +282,7 @@ function Level(props: LevelProps & { stagger: boolean }) {
   );
 }
 
-function HeaderBand({ header, emphasized, color, topInset, onClose, skeleton, theme }: { header: SidebarBaseProps["header"]; emphasized: boolean; color: ColorRole; topInset: number; onClose: () => void; skeleton: boolean; theme: Theme }) {
+function HeaderBand({ header, emphasized, color, topInset, onClose, skeleton, theme }: Readonly<{ header: SidebarBaseProps["header"]; emphasized: boolean; color: ColorRole; topInset: number; onClose: () => void; skeleton: boolean; theme: Theme }>) {
   const c = theme.color.canvas;
   const ink: SidebarHeaderInk = emphasized ? { color: theme.color[color].solidContrast, muted: theme.color[color].solidContrast } : { color: c.foreground, muted: c.muted };
   const content = typeof header === "function" ? header(ink) : header;
@@ -330,7 +330,7 @@ export function useSidebarInsets(props: SidebarBaseProps) {
 }
 
 /** Panelin içi: başlık bandı + kayan seviye + alt bölüm. */
-export function DrawerBody({ props, state, insets }: { props: SidebarBaseProps; state: SidebarState; insets: { top: number; bottom: number } }) {
+export function DrawerBody({ props, state, insets }: Readonly<{ props: SidebarBaseProps; state: SidebarState; insets: { top: number; bottom: number } }>) {
   const theme = useTheme();
   const m = useNativeConfig().sidebar;
   const { color = "primary", skeleton = false, footer } = props;

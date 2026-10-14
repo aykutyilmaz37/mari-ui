@@ -330,7 +330,7 @@ const categoryIndex = buildIndex(categories);
 const titleOf = (key: string) => String(categoryIndex.get(key)?.node.title ?? key);
 
 /** Seçim/işaret sonucunu gösteren kutu: ağacın NE ürettiği görünsün. */
-function ResultPanel({ title, keys, empty }: { title: string; keys: string[]; empty: string }) {
+function ResultPanel({ title, keys, empty }: Readonly<{ title: string; keys: string[]; empty: string }>) {
   return (
     <section aria-live="polite" className="flex flex-col gap-2 rounded-lg border border-mari-border bg-mari-surface-alt p-3 text-sm">
       <h3 className="font-medium text-mari-foreground">{title}</h3>

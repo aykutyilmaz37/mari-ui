@@ -9,7 +9,7 @@ import { EyeIcon, EyeOffIcon, XIcon } from "../lib/icons";
  * göz 24px kutu + 16px ikon). Native: temizle kutu = ikon + 4, X = ikon − 2; göz kutu = ikon + 8.
  */
 
-export function ClearButton({ visible, label, icon, size, color, onClear }: { visible: boolean; label: string; icon?: ReactNode; size: number; color: string; onClear: () => void }) {
+export function ClearButton({ visible, label, icon, size, color, onClear }: Readonly<{ visible: boolean; label: string; icon?: ReactNode; size: number; color: string; onClear: () => void }>) {
   return (
     // Boşken görünmez ama yer kaplar — yazınca metin kaymaz (web `invisible`).
     <Pressable
@@ -27,7 +27,7 @@ export function ClearButton({ visible, label, icon, size, color, onClear }: { vi
   );
 }
 
-export function PasswordToggle({ visible, disabled, size, color, onToggle, iconRender }: { visible: boolean; disabled: boolean; size: number; color: string; onToggle: () => void; iconRender?: (visible: boolean) => ReactNode }) {
+export function PasswordToggle({ visible, disabled, size, color, onToggle, iconRender }: Readonly<{ visible: boolean; disabled: boolean; size: number; color: string; onToggle: () => void; iconRender?: (visible: boolean) => ReactNode }>) {
   let icon: ReactNode = visible ? <EyeIcon size={size} color={color} /> : <EyeOffIcon size={size} color={color} />;
   if (iconRender) icon = iconRender(visible);
   return (
@@ -45,7 +45,7 @@ export function PasswordToggle({ visible, disabled, size, color, onToggle, iconR
   );
 }
 
-export function CountText({ value, maxLength, formatter, style }: { value: string; maxLength?: number; formatter?: (info: { value: string; count: number; maxLength?: number }) => ReactNode; style: TextStyle }) {
+export function CountText({ value, maxLength, formatter, style }: Readonly<{ value: string; maxLength?: number; formatter?: (info: { value: string; count: number; maxLength?: number }) => ReactNode; style: TextStyle }>) {
   let content: ReactNode = maxLength ? `${value.length} / ${maxLength}` : String(value.length);
   if (formatter) content = formatter({ value, count: value.length, maxLength });
   return <Text style={style}>{content}</Text>;

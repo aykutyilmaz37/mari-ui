@@ -42,12 +42,6 @@ const ANTI_PATTERNS = [
     right: 'import { Button } from "@mari-ui/components/button"',
     why: "İç yapı bir sürüm sonrasında değişebilir; sadece paketin `exports` haritasındaki subpath'ler kararlıdır.",
   },
-  {
-    title: "Terk edilmiş prop isimlerini kullanma",
-    wrong: 'type="primary"  veya  statu="processing"  veya  status="error"',
-    right: 'color="primary"  veya  color="info"  veya  color="error"',
-    why: "Bunlar bir sürüm boyunca hâlâ ÇALIŞIR (deprecated alias) ama yeni kod bunları YAZMAMALI — bkz. aşağıdaki bileşen bazlı terk edilmiş prop listesi.",
-  },
 ] as const;
 
 function formatAxes(axes: Record<string, string[]>): string {
@@ -70,6 +64,7 @@ function formatComponentInventory(manifest: Manifest): string {
     .join("\n");
 }
 
+/** Terk edilmiş prop yoksa bölüm hiç yazılmaz (boş başlık AI'ı yanıltmasın). */
 function formatDeprecatedProps(manifest: Manifest): string {
   const lines: string[] = [];
   for (const c of manifest.components) {
@@ -80,7 +75,8 @@ function formatDeprecatedProps(manifest: Manifest): string {
       lines.push(`- \`${c.name}.${p.name}\`${reasonSuffix}`);
     }
   }
-  return lines.length > 0 ? lines.join("\n") : "(şu an hiç terk edilmiş prop yok)";
+  if (lines.length === 0) return "";
+  return `\n### Terk edilmiş (deprecated) prop'lar — YENİ KODDA KULLANMAYIN\n\n${lines.join("\n")}\n`;
 }
 
 function formatThemeTokens(theme: Theme): string {
@@ -158,11 +154,7 @@ ${formatComponentInventory(manifest)}
 mari-ui component'leri beş paylaşılan eksenden konuşur — component'e özel isim UYDURMAYIN:
 
 ${formatAxes(manifest.axes)}
-
-### Terk edilmiş (deprecated) prop'lar — YENİ KODDA KULLANMAYIN
-
 ${formatDeprecatedProps(manifest)}
-
 ## Token listesi (bu projenin ÇÖZÜMLENMİŞ tema değerleri)
 
 ${formatThemeTokens(theme)}

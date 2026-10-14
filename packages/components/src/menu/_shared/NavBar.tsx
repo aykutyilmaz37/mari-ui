@@ -75,7 +75,7 @@ export function NavBar({
   renderItem,
   barRef,
   children,
-}: NavBarProps) {
+}: Readonly<NavBarProps>) {
   let logoNode: React.ReactNode = null;
   if (logo && logoHref) {
     logoNode = (

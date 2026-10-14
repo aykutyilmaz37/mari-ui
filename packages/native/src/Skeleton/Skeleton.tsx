@@ -68,7 +68,7 @@ function paragraphWidths(width: SkeletonParagraphProps["width"], rows: number): 
  * ölçeğinde (başlık = Headline 17/22, paragraf = Body 17/22) — yerine gelecek
  * `Title level={5}` + `Paragraph` ile aynı yükseklik.
  */
-export function Skeleton({ active = true, label, avatar = false, loading, paragraph = true, round = false, title = true, style, children }: SkeletonProps) {
+export function Skeleton({ active = true, label, avatar = false, loading, paragraph = true, round = false, title = true, style, children }: Readonly<SkeletonProps>) {
   const theme = useTheme();
   const config = useNativeConfig();
   if (loading === false) return <>{children}</>;
@@ -106,7 +106,7 @@ export function Skeleton({ active = true, label, avatar = false, loading, paragr
   );
 }
 
-function RoundLine({ round, ...line }: { fontSize: number; lineHeight: number; width: DimensionValue; animated: boolean; round?: ViewStyle }) {
+function RoundLine({ round, ...line }: Readonly<{ fontSize: number; lineHeight: number; width: DimensionValue; animated: boolean; round?: ViewStyle }>) {
   if (!round) return <SkeletonLine {...line} />;
   return (
     <View style={{ height: line.lineHeight, justifyContent: "center" }}>
@@ -116,7 +116,7 @@ function RoundLine({ round, ...line }: { fontSize: number; lineHeight: number; w
 }
 
 /** Serbest biçimli yer tutucu (görsel, grafik, özel kutu). */
-export function SkeletonBlock({ width = "100%", height = 16, radius = "md", active = true, style }: SkeletonBlockProps) {
+export function SkeletonBlock({ width = "100%", height = 16, radius = "md", active = true, style }: Readonly<SkeletonBlockProps>) {
   const theme = useTheme();
   return <SkeletonBox animated={active} style={[{ width, height, borderRadius: toPx(theme.radius[radius]) }, style]} />;
 }

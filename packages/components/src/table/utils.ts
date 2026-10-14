@@ -69,7 +69,8 @@ export function getActionsJustifyClass(align: TableColumnAlign | undefined): str
 export function getRowLabel<T extends { id: string }>(columns: ColumnDef<T>[], item: T): string {
   const first = columns.find((c) => !c.actions && c.columnName);
   const value = first?.columnName ? item[first.columnName] : undefined;
-  return value != null && value !== "" ? String(value) : item.id;
+  const text = value == null ? "" : String(value);
+  return text || item.id;
 }
 
 /** İskelet çubuk genişlikleri — sütuna göre değişken, deterministik (gerçek veri gibi dalgalı görünsün). */

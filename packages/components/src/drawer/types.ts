@@ -25,11 +25,6 @@ export interface DrawerProps extends SkeletonableProps {
   description?: React.ReactNode;
   /** Başlık şeridinin sağında ek aksiyonlar (ör. "Tümünü okundu say"). */
   extra?: React.ReactNode;
-  /**
-   * @deprecated `title` / `description` / `extra` kullanın. Verilirse
-   * başlık şeridinin içeriğini tamamen bu node belirler.
-   */
-  header?: React.ReactNode;
   /** Altta sabit eylem çubuğu (ör. İptal / Kaydet). */
   footer?: React.ReactNode;
   children?: React.ReactNode;
@@ -43,8 +38,6 @@ export interface DrawerProps extends SkeletonableProps {
    * beklemeden çıkabilmeli.
    */
   skeleton?: boolean;
-  /** @deprecated Faz 15 — `skeleton` kullanın; bir sonraki major'da kaldırılacak. */
-  loading?: boolean;
   /** Arka plan örtüsü (scrim). Varsayılan: `true`. */
   mask?: boolean;
   /** Örtüye tıklayınca kapansın. Varsayılan: `true`. */

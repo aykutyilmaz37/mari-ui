@@ -7,35 +7,7 @@ import {
   checkedBorderSolidClass,
   textSolidContrastClass,
 } from "../lib/colorClasses";
-import type { CheckboxShape, LegacyCheckboxType } from "./types";
-
-const LEGACY_TYPE_TO_COLOR: Record<LegacyCheckboxType, ColorRole> = {
-  primary: "primary",
-  secondary: "neutral",
-};
-
-/**
- * Eskiden `status` (error/warning) ve `type` (primary/secondary) İKİ AYRI
- * eksendi ve `status` varsa `type`'ın renk sınıfları TAMAMEN atlanıyordu.
- * `error`/`warning` zaten birer `ColorRole` olduğu için tek eksene
- * indirgendi: `status` verilmişse o `color` olarak kullanılır.
- *
- * `undefined` dönebilir (eskiden `?? "primary"` vardı) — "renk AÇIKÇA
- * verilmedi" ile "primary açıkça seçildi" ayrımı `getVariantClasses`'ın
- * dinlenme halindeki kenarlığı nötr/gri mi yoksa kalıcı renkli mi
- * çizeceğine karar vermesi için korunur (bkz. Faz 13 kullanıcı geri
- * bildirimi — checked OLMAYAN kutucuk mavi görünmemeli).
- */
-export function resolveCheckboxColor(props: {
-  color?: ColorRole;
-  status?: "error" | "warning";
-  type?: LegacyCheckboxType;
-}): ColorRole | undefined {
-  if (props.status) return props.status;
-  if (props.color) return props.color;
-  if (props.type) return LEGACY_TYPE_TO_COLOR[props.type];
-  return undefined;
-}
+import type { CheckboxShape } from "./types";
 
 const SIZE_CLASS: Record<Size, string> = {
   sm: "h-3 w-3 text-xs",

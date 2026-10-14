@@ -20,7 +20,7 @@ const meta: Meta<typeof Dialog> = {
 export default meta;
 type Story = StoryObj<typeof Dialog>;
 
-function Demo({ trigger, title, message, actions }: { trigger: string; title: string; message?: string; actions?: DialogAction[] }) {
+function Demo({ trigger, title, message, actions }: Readonly<{ trigger: string; title: string; message?: string; actions?: DialogAction[] }>) {
   const [open, setOpen] = useState(false);
   const [last, setLast] = useState<string>();
   const wrapped = actions?.map((a) => ({ ...a, onPress: () => (a.onPress ? Promise.resolve(a.onPress()).then(() => setLast(a.label)) : setLast(a.label)) }));

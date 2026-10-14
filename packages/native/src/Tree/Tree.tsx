@@ -16,7 +16,7 @@ import type { TreeNode, TreeProps } from "./types";
 export type { TreeCheckInfo, TreeNode, TreeProps } from "./types";
 
 /** Başlık: düz metinse arama eşleşmesi vurgulu (kalın + rol rengi). */
-function Title({ node, searchValue, style, matchColor, render }: { node: TreeNode; searchValue?: string; style: TextStyle; matchColor: string; render?: TreeProps["titleRender"] }) {
+function Title({ node, searchValue, style, matchColor, render }: Readonly<{ node: TreeNode; searchValue?: string; style: TextStyle; matchColor: string; render?: Exclude<TreeProps["titleRender"], undefined> }>) {
   if (render) return <>{render(node)}</>;
   if (typeof node.title !== "string" && typeof node.title !== "number") return <>{node.title}</>;
   const parts = splitMatch(String(node.title), searchValue ?? "");
@@ -28,7 +28,7 @@ function Title({ node, searchValue, style, matchColor, render }: { node: TreeNod
 }
 
 /** Girinti kılavuzları: her üst seviye için ince dikey çizgi (`showLine`). */
-function Guides({ level, m, color }: { level: number; m: NativeTreeSize; color: string }) {
+function Guides({ level, m, color }: Readonly<{ level: number; m: NativeTreeSize; color: string }>) {
   return (
     <>
       {Array.from({ length: level - 1 }, (_, i) => (
@@ -52,7 +52,7 @@ interface RowProps {
   onCheck: () => void;
   showLine: boolean;
   searchValue?: string;
-  titleRender?: TreeProps["titleRender"];
+  titleRender?: Exclude<TreeProps["titleRender"], undefined>;
   color: ColorRole;
   skeleton: boolean;
   m: NativeTreeSize;
@@ -88,7 +88,7 @@ function nodeIcon(node: TreeNode, skeleton: boolean, m: NativeTreeSize) {
   return skeleton ? <SkeletonBox style={{ width: m.iconSize, height: m.iconSize, borderRadius: 4 }} /> : <View>{node.icon}</View>;
 }
 
-function Row(props: RowProps) {
+function Row(props: Readonly<RowProps>) {
   const { item, selected, check, onPress, onCheck, showLine, searchValue, titleRender, color, skeleton, m, theme } = props;
   const { node, level } = item;
   const c = theme.color.canvas;
@@ -133,7 +133,7 @@ function useExpanded(props: TreeProps, index: ReturnType<typeof buildIndex>) {
  * üst ↔ alt yayılımlı onay kutuları (kısmi durum), tembel yükleme, arama
  * vurgusu, kılavuz çizgileri. Mantık web Tree ile aynı (`treeUtils`).
  */
-export function Tree(props: TreeProps) {
+export function Tree(props: Readonly<TreeProps>) {
   const { treeData, selectable = true, multiple = false, checkable = false, checkStrictly = false, loadData, expandAction = false, showLine = false, searchValue, titleRender, notFoundContent = "Sonuç bulunamadı", color = "primary", skeleton = false, accessibilityLabel, style } = props;
   const theme = useTheme();
   const m = useNativeConfig().tree;

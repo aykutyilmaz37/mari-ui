@@ -33,7 +33,7 @@ const meta: Meta<typeof BottomSheet> = {
 export default meta;
 type Story = StoryObj<typeof BottomSheet>;
 
-function Trigger({ label, children }: { label: string; children: (close: () => void, open: boolean) => React.ReactNode }) {
+function Trigger({ label, children }: Readonly<{ label: string; children: (close: () => void, open: boolean) => React.ReactNode }>) {
   const [open, setOpen] = useState(false);
   return (
     <>

@@ -33,7 +33,7 @@ export function Switch({
   className,
   skeleton = false,
   "aria-label": ariaLabel,
-}: SwitchProps) {
+}: Readonly<SwitchProps>) {
   const [isChecked, setIsChecked] = useControllableState<boolean>({ value: checked, defaultValue: defaultChecked, onChange });
   // `label` eskiden salt dekoratif bir <span>'di — ne ekran okuyucuya
   // duyurulan bir isim ne de tıklanabilir bir etiket olarak switch'e

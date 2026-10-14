@@ -33,23 +33,17 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       actions,
       bordered = true,
       hoverable,
-      loading = false,
-      skeleton = loading,
+      skeleton = false,
       size = "md",
       inset,
       href,
       target,
       className,
       classNames,
-      styles,
       onClick,
     },
     ref
   ) => {
-    if (process.env.NODE_ENV !== "production" && styles) {
-      console.warn("[@mari-ui/components] Card: `styles` prop'u kaldırıldı. Stil için `classNames` kullanın.");
-    }
-
     // İskeletteyken kart gezinmez/tıklanmaz: henüz var olmayan bir kaydın
     // sayfasına gitmek ya da onClick'i veri yokken çağırmak yanlış.
     const isLink = !skeleton && Boolean(href);
@@ -166,7 +160,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = "Card";
 
 /** ant.design `Card.Meta`: avatar + başlık + açıklama. */
-export function CardMeta({ avatar, title, description, className }: CardMetaProps) {
+export function CardMeta({ avatar, title, description, className }: Readonly<CardMetaProps>) {
   return (
     <div className={cn("flex min-w-0 gap-4", className)}>
       {avatar && <div className="shrink-0">{avatar}</div>}

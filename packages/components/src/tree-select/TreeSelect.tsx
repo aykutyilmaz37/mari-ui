@@ -74,7 +74,7 @@ function handleKey(e: React.KeyboardEvent, state: TreeSelectState, searchable: b
   if (navigate(e, state, searchable)) e.preventDefault();
 }
 
-function Tags({ state, maxTagCount, disabled }: { state: TreeSelectState; maxTagCount?: number; disabled: boolean }) {
+function Tags({ state, maxTagCount, disabled }: Readonly<{ state: TreeSelectState; maxTagCount?: number; disabled: boolean }>) {
   const nodes = state.selectedNodes;
   const shown = maxTagCount === undefined ? nodes : nodes.slice(0, maxTagCount);
   const hidden = nodes.length - shown.length;
@@ -107,7 +107,7 @@ interface TriggerControlProps {
 }
 
 /** Aramalıda `<input role="combobox">` (seçili değer yazana dek üstünde), aramasızda `<button role="combobox">`. */
-function TriggerControl({ controlRef, comboboxProps, state, searchable, placeholder }: TriggerControlProps) {
+function TriggerControl({ controlRef, comboboxProps, state, searchable, placeholder }: Readonly<TriggerControlProps>) {
   const single = state.multiple ? undefined : state.selectedNodes[0];
   const hasValue = state.values.length > 0;
   if (!searchable) {

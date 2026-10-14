@@ -110,7 +110,7 @@ function surface(theme: Theme, shape: FloatButtonShape, extended: boolean, bg: s
 }
 
 /** Menü öğesinin yanındaki etiket (speed dial). */
-function MenuLabel({ text, theme }: { text: string; theme: Theme }) {
+function MenuLabel({ text, theme }: Readonly<{ text: string; theme: Theme }>) {
   const c = theme.color.canvas;
   return (
     <View pointerEvents="none" style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: c.surface, borderWidth: 1, borderColor: c.border }}>
@@ -137,7 +137,7 @@ function withBadge(node: React.ReactNode, badge: FloatButtonBadge | undefined) {
  * köşesine yapışık. Daire / kare (alt metinli) / genişletilmiş (`label`),
  * rozet, güvenli alan payı. Grupta (`FloatButtonGroup`) alt alta ya da menü.
  */
-export function FloatButton({ icon, label, description, tooltip, color, shape: ownShape = "circle", badge, onPress, placement = "bottom-right", floating = true, offset = 16, disabled = false, accessibilityLabel, skeleton = false, style }: FloatButtonProps) {
+export function FloatButton({ icon, label, description, tooltip, color, shape: ownShape = "circle", badge, onPress, placement = "bottom-right", floating = true, offset = 16, disabled = false, accessibilityLabel, skeleton = false, style }: Readonly<FloatButtonProps>) {
   const theme = useTheme();
   const group = useContext(GroupContext);
   const insets = useCornerInsets();
@@ -208,7 +208,7 @@ export interface FloatButtonGroupMenuProps extends FloatButtonGroupBaseProps {
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   /** Ana düğmenin ikonu (kapalıyken). Açıkken × (döner). */
-  icon?: FloatButtonProps["icon"];
+  icon?: Exclude<FloatButtonProps["icon"], undefined>;
   /** Ana düğmenin erişilebilir adı. Varsayılan: "Hızlı işlemler". */
   accessibilityLabel?: string;
   color?: ColorRole;
@@ -318,7 +318,7 @@ export interface BackTopProps extends Omit<FloatButtonProps, "onPress" | "label"
 }
 
 /** Uzun sayfada başa dön düğmesi: `visibilityHeight` kadar kaydırılınca belirir. */
-export function BackTop({ scrollY, visibilityHeight = 400, onPress, accessibilityLabel = "Başa dön", ...rest }: BackTopProps) {
+export function BackTop({ scrollY, visibilityHeight = 400, onPress, accessibilityLabel = "Başa dön", ...rest }: Readonly<BackTopProps>) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const id = scrollY.addListener(({ value }) => setVisible((v) => (v === value >= visibilityHeight ? v : value >= visibilityHeight)));

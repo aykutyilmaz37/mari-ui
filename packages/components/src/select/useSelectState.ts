@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useControllableState } from "@mari-ui/core";
 import type { SelectOption, SelectProps, SelectValue } from "./types";
-import { buildSections, firstEnabled, flattenOptions, nextEnabled, typeAheadMatch } from "./utils";
+import { buildSections, firstEnabled, flattenOptions, lastEnabled, nextEnabled, typeAheadMatch } from "./utils";
 
 const TYPE_AHEAD_RESET_MS = 500;
 
@@ -73,7 +73,7 @@ export function useSelectState(props: SelectProps) {
   /** Açarken aktif satır: seçili olan (tekli) ya da ilk seçilebilir. */
   const openAt = (edge: "selected" | "first" | "last" = "selected") => {
     const selectedIndex = visibleOptions.findIndex((o) => values.includes(o.value));
-    if (edge === "last") setActiveIndex(firstEnabled(visibleOptions, true));
+    if (edge === "last") setActiveIndex(lastEnabled(visibleOptions));
     else if (edge === "selected" && selectedIndex >= 0 && !multiple) setActiveIndex(selectedIndex);
     else setActiveIndex(firstEnabled(visibleOptions));
     setOpen(true);
@@ -93,7 +93,9 @@ export function useSelectState(props: SelectProps) {
   };
 
   const move = (step: 1 | -1) => {
-    setActiveIndex((i) => (i < 0 ? firstEnabled(visibleOptions, step === -1) : nextEnabled(visibleOptions, i, step)));
+    // Henüz etkin seçenek yoksa yukarı ok sondan, aşağı ok baştan başlar.
+    const edge = step === -1 ? lastEnabled : firstEnabled;
+    setActiveIndex((i) => (i < 0 ? edge(visibleOptions) : nextEnabled(visibleOptions, i, step)));
   };
 
   // Harfle atlama (arama kutusu yokken): art arda harfler 500ms içinde birikir.

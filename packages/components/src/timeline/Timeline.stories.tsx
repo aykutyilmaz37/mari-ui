@@ -143,7 +143,7 @@ const releases: TimelineItem[] = [
   { title: <time dateTime="2026-09-02">2 Eyl 2026</time>, content: <Release version="2.3.0" text="Yoğunluk (radius) önayarları; tüm component'lerde skeleton." tag="Yeni" /> },
 ];
 
-function Release({ version, text, tag }: { version: string; text: string; tag: "Yeni" | "Düzeltme" }) {
+function Release({ version, text, tag }: Readonly<{ version: string; text: string; tag: "Yeni" | "Düzeltme" }>) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-2">

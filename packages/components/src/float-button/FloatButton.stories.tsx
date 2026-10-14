@@ -15,7 +15,7 @@ import { FloatButton } from "./FloatButton";
 import { FloatButtonGroup } from "./FloatButtonGroup";
 
 /** Uygulama ekranı çerçevesi: `transform` fixed konumlamayı içine hapseder. */
-function Frame({ children, scrollRef, title = "Sipariş #48213" }: { children: React.ReactNode; scrollRef?: React.Ref<HTMLDivElement>; title?: string }) {
+function Frame({ children, scrollRef, title = "Sipariş #48213" }: Readonly<{ children: React.ReactNode; scrollRef?: React.Ref<HTMLDivElement>; title?: string }>) {
   return (
     <div className="relative h-96 overflow-hidden rounded-xl border border-mari-border bg-mari-surface-alt [transform:translateZ(0)]">
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- kaydırılan örnek içerik klavyeyle de kaydırılabilsin */}

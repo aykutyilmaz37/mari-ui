@@ -2,11 +2,6 @@ import type React from "react";
 import type { ColorRole } from "@mari-ui/core";
 
 export type ToastPosition = "top" | "bottom" | "topRight" | "topLeft" | "bottomLeft" | "bottomRight";
-/**
- * @deprecated `ToastPosition` kullanın — isim değişti, değerler aynı.
- */
-// eslint-disable-next-line sonarjs/redundant-type-aliases
-export type PositionType = ToastPosition;
 
 /** `success`/`info`/`error`/`warning` bir ColorRole; `"none"` = ikon/renk vurgusu yok. */
 export type ToastType = ColorRole | "none";

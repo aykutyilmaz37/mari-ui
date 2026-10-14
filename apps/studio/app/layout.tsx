@@ -12,7 +12,7 @@ export const metadata: Metadata = {
  * Hook yok, browser API yok — saf sunum. `"use client"` gerekmiyor
  * (interaktif her şey `StudioApp.tsx`e taşındı).
  */
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="tr">
       <body>{children}</body>

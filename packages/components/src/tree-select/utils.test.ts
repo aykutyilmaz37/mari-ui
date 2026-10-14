@@ -46,7 +46,7 @@ describe("TreeSelect utils", () => {
   });
 
   it("initialExpanded: seçililerin ataları ya da hepsi", () => {
-    expect(initialExpanded(index, ["kad"], false).sort()).toEqual(["ist", "tr"]);
+    expect(initialExpanded(index, ["kad"], false).sort((a, b) => a.localeCompare(b))).toEqual(["ist", "tr"]);
     expect(initialExpanded(index, [], true)).toEqual(["tr", "ist", "ank", "de"]);
   });
 

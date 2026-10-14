@@ -17,7 +17,6 @@ export function RadioGroup({
   onChange,
   variant = "outline",
   color,
-  type,
   size = "md",
   block = false,
   orientation = "horizontal",
@@ -25,7 +24,7 @@ export function RadioGroup({
   skeleton: ownSkeleton,
   "aria-label": ownAriaLabel,
   "aria-labelledby": ownAriaLabelledBy,
-}: RadioGroupProps) {
+}: Readonly<RadioGroupProps>) {
   // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
   const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled });
   const skeleton = useFieldSkeleton(ownSkeleton);
@@ -77,7 +76,6 @@ export function RadioGroup({
           size={size}
           variant={variant}
           color={groupColor}
-          type={type}
         />
       ))}
     </div>

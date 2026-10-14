@@ -37,7 +37,7 @@ function Swatch({ color, shape }: Pick<LegendItem, "color" | "shape">) {
   );
 }
 
-export function ChartLegend({ items }: { items: LegendItem[] }) {
+export function ChartLegend({ items }: Readonly<{ items: LegendItem[] }>) {
   return (
     <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-mari-muted">
       {items.map((item) => (
@@ -55,7 +55,7 @@ export function ChartLegend({ items }: { items: LegendItem[] }) {
  * (lejantın tersi: okuyucu seriyi biliyor, sayıyı istiyor). Görsel kolaylık —
  * değerlere tablo ile de ulaşılır, bu yüzden ekran okuyucudan gizli.
  */
-function ChartTooltip({ state, width }: { state: TooltipState; width: number }) {
+function ChartTooltip({ state, width }: Readonly<{ state: TooltipState; width: number }>) {
   const flip = state.x > width / 2;
   return (
     <div
@@ -126,7 +126,7 @@ export function ChartFrame({
   legendPosition = "top",
   skeletonPlot,
   skeletonLegend = 0,
-}: ChartFrameProps) {
+}: Readonly<ChartFrameProps>) {
   if (skeleton) {
     const legendStub = skeletonLegend > 0 ? <LegendSkeleton count={skeletonLegend} /> : null;
     return (

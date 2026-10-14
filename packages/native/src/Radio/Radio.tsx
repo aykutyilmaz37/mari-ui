@@ -68,7 +68,7 @@ interface GroupContextValue {
 
 const GroupContext = createContext<GroupContextValue | null>(null);
 
-export function Radio({ value, checked, defaultChecked = false, disabled = false, onChange, label, description, size, variant, color, skeleton, accessibilityLabel, style }: RadioProps) {
+export function Radio({ value, checked, defaultChecked = false, disabled = false, onChange, label, description, size, variant, color, skeleton, accessibilityLabel, style }: Readonly<RadioProps>) {
   const theme = useTheme();
   const group = useContext(GroupContext);
   const resolvedSize = size ?? group?.size ?? "md";
@@ -112,7 +112,7 @@ export function Radio({ value, checked, defaultChecked = false, disabled = false
 
 const toOption = (option: RadioValue | RadioOption): RadioOption => (typeof option === "object" ? option : { label: String(option), value: option });
 
-export function RadioGroup({ value, defaultValue, onChange, options, children, disabled: ownDisabled, variant, color, size, orientation = "vertical", skeleton: ownSkeleton, accessibilityLabel: ownLabel, style }: RadioGroupProps) {
+export function RadioGroup({ value, defaultValue, onChange, options, children, disabled: ownDisabled, variant, color, size, orientation = "vertical", skeleton: ownSkeleton, accessibilityLabel: ownLabel, style }: Readonly<RadioGroupProps>) {
   const { disabled, skeleton, accessibilityLabel } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel });
   const [selected, setSelected] = useControllable<RadioValue | undefined>(value, defaultValue);
   const select = (next: RadioValue) => {

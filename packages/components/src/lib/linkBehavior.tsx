@@ -46,7 +46,7 @@ export function getLinkAttrs(target: LinkTarget | undefined): { target?: string;
  * ikonu ve ekran okuyucu için "(yeni sekmede açılır)". WCAG 3.2.5 — bağlam
  * değişikliği önceden bildirilmeli.
  */
-export function NewTabHint({ target }: { target?: LinkTarget }) {
+export function NewTabHint({ target }: Readonly<{ target?: LinkTarget }>) {
   if (target !== "_blank") return null;
   return (
     <>

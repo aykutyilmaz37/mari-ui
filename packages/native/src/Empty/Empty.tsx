@@ -37,7 +37,7 @@ function Line({ children, style, skeleton }: { children: React.ReactNode; style:
 }
 
 /** Boş durum: neden boş + ne yapılabilir. Liste, arama sonucu, sepet. */
-export function Empty({ title, description, buttonText, onPress, buttonIcon, actions, icon, size = "md", heading = false, skeleton = false, style }: EmptyProps) {
+export function Empty({ title, description, buttonText, onPress, buttonIcon, actions, icon, size = "md", heading = false, skeleton = false, style }: Readonly<EmptyProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const s = SIZE[size];

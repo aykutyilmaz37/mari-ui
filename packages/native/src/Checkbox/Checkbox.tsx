@@ -35,7 +35,7 @@ export interface CheckboxProps extends SkeletonableProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function Checkbox({ checked, defaultChecked = false, indeterminate = false, disabled: ownDisabled, onChange, label, description, size = "md", shape = "default", variant = "outline", color, skeleton: ownSkeleton, accessibilityLabel, style }: CheckboxProps) {
+export function Checkbox({ checked, defaultChecked = false, indeterminate = false, disabled: ownDisabled, onChange, label, description, size = "md", shape = "default", variant = "outline", color, skeleton: ownSkeleton, accessibilityLabel, style }: Readonly<CheckboxProps>) {
   const { disabled, skeleton } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton });
   const theme = useTheme();
   const m = useNativeConfig().selection[size];

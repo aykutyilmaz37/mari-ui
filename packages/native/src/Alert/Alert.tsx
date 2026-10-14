@@ -46,7 +46,7 @@ function resolveRole(role: AlertProps["role"], color: ColorRole): "alert" | "sta
 }
 
 /** 28pt düğme, `hitSlop` ile 44pt dokunma alanı; iskelette yer kaplar ama görünmez. */
-function CloseButton({ label, hidden, color, onPress }: { label: string; hidden: boolean; color: string; onPress: () => void }) {
+function CloseButton({ label, hidden, color, onPress }: Readonly<{ label: string; hidden: boolean; color: string; onPress: () => void }>) {
   return (
     <Pressable
       onPress={onPress}
@@ -81,7 +81,7 @@ function containerStyle(banner: boolean, radius: number): ViewStyle {
   return banner ? { borderBottomWidth: 1, paddingHorizontal: 16, paddingVertical: 10 } : { borderWidth: 1, borderRadius: radius, padding: 14 };
 }
 
-export function Alert({ title, description, color = "info", icon = true, action, closable = false, onClose, closeLabel = "Uyarıyı kapat", banner = false, role, skeleton = false, style }: AlertProps) {
+export function Alert({ title, description, color = "info", icon = true, action, closable = false, onClose, closeLabel = "Uyarıyı kapat", banner = false, role, skeleton = false, style }: Readonly<AlertProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography.h6;
   const [closed, setClosed] = useState(false);

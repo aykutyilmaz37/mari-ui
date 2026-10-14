@@ -39,7 +39,7 @@ export interface MasonryProps extends SkeletonableProps {
 const LOAD_THRESHOLD = 600;
 const SKELETON_HEIGHTS = [180, 240, 150, 210, 260, 170, 230, 190];
 
-function Footer({ infinite }: { infinite: InfiniteScrollOptions }) {
+function Footer({ infinite }: Readonly<{ infinite: InfiniteScrollOptions }>) {
   const theme = useTheme();
   const { hasMore, loading = false, endMessage = "Hepsi bu kadar", loadMoreLabel = "Daha fazla yükle", onLoadMore } = infinite;
   const muted = { fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: 14, color: theme.color.canvas.muted };
@@ -62,7 +62,7 @@ function Footer({ infinite }: { infinite: InfiniteScrollOptions }) {
 }
 
 /** Hücre: veri yokken sabit yükseklikte yer tutucu; iskelette içerik kendi şeklinde; değilse içerik. */
-function Cell({ placeholderHeight, skeleton, children }: { placeholderHeight?: number; skeleton: boolean; children: React.ReactNode }) {
+function Cell({ placeholderHeight, skeleton, children }: Readonly<{ placeholderHeight?: number; skeleton: boolean; children: React.ReactNode }>) {
   if (placeholderHeight !== undefined) return <SkeletonBox style={{ height: placeholderHeight, borderRadius: 12 }} />;
   if (skeleton) return <SkeletonBox style={{ borderRadius: 12 }}>{children}</SkeletonBox>;
   return <>{children}</>;
@@ -76,7 +76,7 @@ const nearEnd = ({ layoutMeasurement, contentOffset, contentSize }: NativeScroll
  * Kendi içinde kayar; `infinite` ile sona yaklaşınca sonraki sayfa. Mantık web
  * Masonry ile aynı (`masonryUtils`). Sanallaştırma yok — binlerce öğede FlatList.
  */
-export function Masonry({ items, columns = { base: 2, sm: 3, md: 4 }, gutter = "sm", infinite, header, skeletonCount = 8, onLayoutChange, accessibilityLabel, skeleton = false, style, contentContainerStyle }: MasonryProps) {
+export function Masonry({ items, columns = { base: 2, sm: 3, md: 4 }, gutter = "sm", infinite, header, skeletonCount = 8, onLayoutChange, accessibilityLabel, skeleton = false, style, contentContainerStyle }: Readonly<MasonryProps>) {
   const [width, setWidth] = useState(0);
   const [heights, setHeights] = useState<Record<string, number>>({});
   const requested = useRef(false);

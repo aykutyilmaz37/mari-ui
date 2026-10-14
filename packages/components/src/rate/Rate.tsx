@@ -75,7 +75,7 @@ export function Rate({
   "aria-label": ariaLabel = "Puan",
   readOnly = false,
   skeleton = false,
-}: RateProps) {
+}: Readonly<RateProps>) {
   const [hoverValue, setHoverValue] = useState<number | undefined>(undefined);
   const [displayValue, setDisplayValue] = useControllableState<number>({ value, defaultValue, onChange });
   const rootRef = useRef<HTMLDivElement>(null);

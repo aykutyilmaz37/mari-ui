@@ -9,7 +9,7 @@ import { Segmented } from "../segmented";
  * yerleşimin kaymadığı görülür (Faz 15 sözleşmesi). Paket girişlerinden
  * import edilmez.
  */
-export function SkeletonDemo({ children, className }: { children: (skeleton: boolean) => React.ReactNode; className?: string }) {
+export function SkeletonDemo({ children, className }: Readonly<{ children: (skeleton: boolean) => React.ReactNode; className?: string }>) {
   const [skeleton, setSkeleton] = useState(true);
   return (
     <div className="flex flex-col items-start gap-4">

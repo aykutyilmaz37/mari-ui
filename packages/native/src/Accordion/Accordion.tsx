@@ -121,7 +121,7 @@ interface PanelProps {
   isLast: boolean;
 }
 
-function Arrow({ open, progress, placement, m, color, skeleton, custom }: { open: boolean; progress: Animated.Value; placement: "start" | "end"; m: NativeAccordionSize; color: string; skeleton: boolean; custom?: (open: boolean) => React.ReactNode }) {
+function Arrow({ open, progress, placement, m, color, skeleton, custom }: Readonly<{ open: boolean; progress: Animated.Value; placement: "start" | "end"; m: NativeAccordionSize; color: string; skeleton: boolean; custom?: (open: boolean) => React.ReactNode }>) {
   let content: React.ReactNode;
   if (skeleton) content = <SkeletonBox style={{ width: 14, height: 14, borderRadius: 3 }} />;
   else if (custom) content = custom(open);
@@ -169,7 +169,7 @@ interface HeaderProps {
 }
 
 /** Başlık satırı: satırın her yeri açar; `extra` düğmenin DIŞINDA (içine düğme koymak güvenli). */
-function PanelHeader({ item, open, onToggle, m, theme, iconPlacement, arrow, skeleton }: HeaderProps) {
+function PanelHeader({ item, open, onToggle, m, theme, iconPlacement, arrow, skeleton }: Readonly<HeaderProps>) {
   const c = theme.color.canvas;
   const disabled = Boolean(item.disabled) || skeleton;
   const label = asText(item.label, { fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: m.fontSize, lineHeight: m.lineHeight, fontWeight: "500", color: item.disabled ? c.muted : c.foreground });
@@ -192,7 +192,7 @@ function PanelHeader({ item, open, onToggle, m, theme, iconPlacement, arrow, ske
   );
 }
 
-function Panel({ item, open, onToggle, variant, m, theme, iconPlacement, expandIcon, destroyOnHidden, skeleton, isLast }: PanelProps) {
+function Panel({ item, open, onToggle, variant, m, theme, iconPlacement, expandIcon, destroyOnHidden, skeleton, isLast }: Readonly<PanelProps>) {
   const c = theme.color.canvas;
   const { progress, boxHeight, clip, onMeasure } = useExpand(open);
   const rendered = useRendered(open, Boolean(item.forceRender), destroyOnHidden);
@@ -230,7 +230,7 @@ export function Accordion({
   destroyOnHidden = false,
   skeleton = false,
   style,
-}: AccordionProps) {
+}: Readonly<AccordionProps>) {
   const theme = useTheme();
   const m = useNativeConfig().accordion[size];
   const c = theme.color.canvas;

@@ -94,7 +94,7 @@ function PickerUpload({ picker, ...props }: Omit<React.ComponentProps<typeof Upl
   );
 }
 
-function WebNote({ picker }: { picker?: StoryPicker }) {
+function WebNote({ picker }: Readonly<{ picker?: StoryPicker }>) {
   if (picker) return null;
   return <Text muted style={{ fontSize: 13 }}>Web Storybook'ta seçici yok — native-studio'da telefonun galerisi açılır.</Text>;
 }
@@ -112,7 +112,7 @@ export const Playground: Story = {
   },
 };
 
-function ListingDemo({ picker }: { picker?: StoryPicker }) {
+function ListingDemo({ picker }: Readonly<{ picker?: StoryPicker }>) {
   const [files, setFiles] = useState<UploadFile[]>([]);
   return (
     <Stack>
@@ -172,7 +172,7 @@ const fakeUpload = (failFirst: boolean) => async (file: UploadFile, report: (p: 
   }
 };
 
-function ReturnDemo({ picker }: { picker?: StoryPicker }) {
+function ReturnDemo({ picker }: Readonly<{ picker?: StoryPicker }>) {
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [failFirst, setFailFirst] = useState(true);
   const uploading = files.some((f) => f.status === "uploading");

@@ -35,7 +35,7 @@ interface SlotInputProps {
 }
 
 /** Yazılabilir alan (her yuva için). Panel açıkken odak burada kalır; ↓ odağı panele taşır. */
-function SlotInput({ state, slot, id, label, labelledBy, describedBy, placeholder, panelId, disabled, required, invalid, inputRef, onOpenWithFocus }: SlotInputProps) {
+function SlotInput({ state, slot, id, label, labelledBy, describedBy, placeholder, panelId, disabled, required, invalid, inputRef, onOpenWithFocus }: Readonly<SlotInputProps>) {
   const active = state.open && state.slot === slot;
   return (
     <input

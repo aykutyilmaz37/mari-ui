@@ -7,9 +7,6 @@ export type CheckboxSlot = "wrapper" | "checkbox" | "label";
 export type CheckboxClassNames = SlotClassNames<CheckboxSlot>;
 export type CheckboxShape = "default" | "pill" | "square";
 
-/** @deprecated Eski `type` prop'unun değerleri. "secondary" -> `neutral`. */
-export type LegacyCheckboxType = "primary" | "secondary";
-
 export interface CheckboxProps extends SkeletonableProps {
   autoFocus?: boolean;
   checked?: boolean;
@@ -33,12 +30,7 @@ export interface CheckboxProps extends SkeletonableProps {
   variant?: Extract<Variant, "solid" | "outline">;
   /**
    * Semantik renk. Varsayılan: `primary`.
-   * @remarks `error`/`warning` verilirse doğrulama durumu olarak da işlev görür —
-   * eskiden bu ayrı bir `status` prop'uyla ifade ediliyordu; artık aynı eksen.
+   * @remarks `error`/`warning` verilirse doğrulama durumu olarak da işlev görür.
    */
   color?: ColorRole;
-  /** @deprecated `color` kullanın — "error"/"warning" zaten birer ColorRole. */
-  status?: "error" | "warning";
-  /** @deprecated `color` kullanın. */
-  type?: LegacyCheckboxType;
 }

@@ -38,7 +38,7 @@ function useMenuDismiss(open: boolean, rootRef: React.RefObject<HTMLDivElement |
   }, [open, rootRef, triggerRef]);
 }
 
-function MenuGroup(props: FloatButtonGroupMenuProps) {
+function MenuGroup(props: Readonly<FloatButtonGroupMenuProps>) {
   const { trigger, shape = "circle", placement = "bottom-right", icon, color = "primary", tooltip, "aria-label": ariaLabel = "Hızlı işlemler", children, className, skeleton = false } = props;
   const [open, setOpen] = useControllableState<boolean>({ value: props.open, defaultValue: props.defaultOpen ?? false, onChange: props.onOpenChange });
   const rootRef = useRef<HTMLDivElement>(null);

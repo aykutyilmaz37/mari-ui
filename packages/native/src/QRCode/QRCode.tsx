@@ -26,7 +26,7 @@ export interface QRCodeProps extends Omit<WebQRCodeProps, "size" | "className" |
 /** Her temada koyu-üstü-açık: bazı okuyucular ters (açık-üstü-koyu) QR'ı çözemez. */
 const DEFAULT_COLOR = neutralRamp[950];
 
-function StatusLayer({ status, onRefresh }: { status: Exclude<QRStatus, "active">; onRefresh?: () => void }) {
+function StatusLayer({ status, onRefresh }: Readonly<{ status: Exclude<QRStatus, "active">; onRefresh?: () => void }>) {
   const theme = useTheme();
   const c = theme.color.canvas;
   const font = nativeFontFamily(theme.fontFamily.sans);
@@ -72,7 +72,7 @@ interface GraphicProps {
 }
 
 /** SVG çizimi: zemin, veri modülleri, üç konum işareti, isteğe bağlı gradyan ve logo. */
-function QRGraphic({ model, size, gradientId, color, colorEnd, bgColor, cornerColor, icon, iconSize }: GraphicProps) {
+function QRGraphic({ model, size, gradientId, color, colorEnd, bgColor, cornerColor, icon, iconSize }: Readonly<GraphicProps>) {
   const fill = colorEnd ? `url(#${gradientId})` : color;
   const cornerFill = cornerColor ?? fill;
   const iconEdge = model.size * Math.min(Math.max(iconSize, 0.1), 0.3);
@@ -133,7 +133,7 @@ export function QRCode({
   accessibilityLabel = "QR kod",
   skeleton = false,
   style,
-}: QRCodeProps) {
+}: Readonly<QRCodeProps>) {
   const theme = useTheme();
   const gradientId = `qr-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const level = errorLevel ?? (icon ? "H" : "M");

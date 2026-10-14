@@ -35,7 +35,7 @@ interface DropdownContextType {
   /** Panelin `id`si — tetikleyicinin `aria-controls`ü bunu gösterir. */
   panelId: string;
   /** Klavyeyle açıldıysa panel görünür olunca odağın gideceği uç (Enter/Boşluk/↓ → ilk öğe, ↑ → son öğe); `false` → odak taşınmaz. */
-  focusPanelOnOpenRef: React.MutableRefObject<false | "first" | "last">;
+  focusPanelOnOpenRef: React.RefObject<false | "first" | "last">;
   /** `skeleton` açıkken tetikleyici yer tutucu çizer ve panel açılmaz. */
   skeleton: boolean;
   /** `hover` modundayken hem tetikleyici hem panel tarafından paylaşılan gecikmeli kapatma. */
@@ -54,7 +54,7 @@ const DropdownContext = createContext<DropdownContextType | null>(null);
  * kalıyordu (bkz. plan denetimi). Artık `Dropdown` component'i Provider'ı
  * kendi içine gömüyor; tüketicinin bundan haberi olmasına gerek yok.
  */
-export function DropdownProvider({ children, hover = false, skeleton = false }: { children: React.ReactNode; hover?: boolean; skeleton?: boolean }) {
+export function DropdownProvider({ children, hover = false, skeleton = false }: Readonly<{ children: React.ReactNode; hover?: boolean; skeleton?: boolean }>) {
   const { isOpen, open, close } = useDisclosure();
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);

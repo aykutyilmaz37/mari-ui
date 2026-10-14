@@ -44,7 +44,7 @@ export interface MegaMenuItemProps extends MenuNavigationProps {
  * hover dolgusu alt göstergeden geniş bir şerit yaratıyordu. BasicMenuItem'ın
  * aynısı: arka plan yok, yalnızca metin rengi + alt gösterge.
  */
-export function MegaMenuItem({ item, open, activeKey, panelId, onHover, onLeave, onToggle, color, onNavigate, className }: MegaMenuItemProps) {
+export function MegaMenuItem({ item, open, activeKey, panelId, onHover, onLeave, onToggle, color, onNavigate, className }: Readonly<MegaMenuItemProps>) {
   const hasChildren = !!item.children?.length;
   const pointerTypeRef = useRef<string>("mouse");
   // Paneli açık öğe ya da geçerli sayfayı içeren öğe "aktif" görünür.
