@@ -18,18 +18,20 @@ concurrency:
 jobs:
   build-lint-typecheck-test:
     name: Build, lint, typecheck, test
-    runs-on: ubuntu-latest
+    # ubuntu-latest 2026-10-19'dan itibaren Ubuntu 26'ya geçiyor; Playwright'ın sistem
+    # bağımlılıkları (story testleri) yeni sürümde doğrulanana kadar sabit.
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
       # LTS'e sabitlendi: bu monorepo'nun geliştirme ortamında Node 25 (LTS
       # olmayan bir sürüm), tsup'ın dts-build worker'ının varsayılan V8 heap
       # limitini bu iş yükü için yetersiz bırakıyordu (bkz. packages/
       # components/tsup.config.ts'teki not, Faz 5). CI'ın bu sürprizi
       # TEKRARLAMAMASI için bilinen-iyi bir LTS kullanılıyor.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: "pnpm"

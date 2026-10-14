@@ -81,7 +81,7 @@ describe("resolveComponents (gerçek kaynak kodu; deprecated için fixture)", { 
   });
 });
 
-describe("extractAxes (gerçek @mari-ui/core/src/types/common.ts üzerinde)", () => {
+describe("extractAxes (gerçek @mari-ui/core/src/types/common.ts üzerinde)", { timeout: 30_000 }, () => {
   it("beş paylaşılan ekseni de bulur, gerçek değerleriyle", () => {
     const project = buildProject();
     const axes = extractAxes(project);

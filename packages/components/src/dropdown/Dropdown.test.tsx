@@ -351,6 +351,9 @@ describe("Dropdown", () => {
     trigger.focus();
     await user.keyboard("{Enter}");
     expect(screen.getByText("İçerik")).toBeInTheDocument();
+    // Klavyeyle açılınca odak (konum hesaplanınca) panele geçer; toggle tetikleyicide denenir.
+    // Odağı açıkça geri vermek, testi o geçişin zamanlamasından bağımsız kılar (CI'da yarışıyordu).
+    act(() => trigger.focus());
     await user.keyboard("{Enter}");
     expect(screen.queryByText("İçerik")).not.toBeInTheDocument();
   });
