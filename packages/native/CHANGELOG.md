@@ -1,5 +1,15 @@
 # @mari-ui/native
 
+## 0.1.3
+
+### Patch Changes
+
+- e5480a7: Editörde görünen tip açıklamaları (JSDoc) kullanıcıya yönelik hale getirildi: iç geliştirme geçmişi ("Faz …", "eskiden …", "kullanıcı kararı") tip dosyalarından çıkarıldı, kaynakta iç yorum olarak duruyor. Açıklaması kalmayan dışa açık bildirimlere (Calendar, Pagination, Switch, Textarea, `ColumnDef`, `Variant`, `Placement`…) kısa açıklama yazıldı.
+- 4ed7af9: Yayınlanan paketten `@mari-ui/native/stories` dışa aktarımı kaldırıldı: pakete girmeyen `src/` klasörünü gösteriyordu (yalnız monorepo içindeki native-studio kullanır).
+- Updated dependencies [e5480a7]
+  - @mari-ui/tokens@0.1.3
+  - @mari-ui/core@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
