@@ -59,6 +59,6 @@ describe("Faz 21 — kişilik ve serbest alanlar", () => {
     const skill = buildSkillContent({ manifest, theme: lightTheme });
     expect(skill).toContain("Varsayılan (Yumuşak iris)");
     expect(skill).toContain("### Proje tasarım brief'i");
-    expect(skill).toContain("init --persona");
+    expect(skill).toContain("theme --persona");
   });
 });

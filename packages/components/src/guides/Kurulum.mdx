@@ -29,7 +29,7 @@ mari-ui sınıflarını **sizin Tailwind'iniz** derler: her sınıf ve sıfırla
 ```css
 @import "tailwindcss";
 @import "@mari-ui/components/tailwind.css";
-@import "./mari-ui-theme.css"; /* npx @mari-ui/cli theme çıktısı — kendi config'iniz varsa */
+@import "../mari-ui-theme.css"; /* npx @mari-ui/cli theme çıktısı (proje kökünde; yol bu CSS dosyasına göre) */
 ```
 
 Tema bütün uygulamaya uygulanır: font, `rounded-*` ölçeği ve yoğunluk (`--spacing`) mari-ui'dan gelir; kendi sayfalarınızda da `bg-mari-surface`, `text-mari-muted`, `shadow-mari-md` gibi sınıfları kullanabilirsiniz. **`@mari-ui/components/styles.css`i ayrıca import etmeyin** — aynı sınıfları ve sıfırlamayı ikinci kez yükler, sonra yüklenen kazanır.
@@ -41,7 +41,7 @@ Hazır derlenmiş CSS:
 ```tsx
 import "@mari-ui/tokens/fonts.css"; // isteğe bağlı — Geist, Manrope, Geist Mono yerel dosyaları
 import "@mari-ui/components/styles.css";
-import "./mari-ui-theme.css"; // npx @mari-ui/cli theme çıktısı — kendi config'iniz varsa
+import "../mari-ui-theme.css"; // npx @mari-ui/cli theme çıktısı (proje kökünde; yol bu dosyaya göre)
 ```
 
 ### Tailwind v3
@@ -51,7 +51,7 @@ Desteklenmez: mari-ui teması v4 söz dizimiyle (`@theme`, `@source`, `@utility`
 ### Ortak notlar
 
 - `fonts.css` ağ isteği yapmaz; yüklemezseniz sistem fontu kullanılır. Tasarım kişiliği seçtiyseniz fontlarının Google Fonts bağlantısını `npx @mari-ui/cli theme` basar.
-- `mari-ui.config.json` proje kökünde durur; yalnız `npx @mari-ui/cli theme` okur (uygulama çalışırken okunmaz). Config'i değiştirince komutu tekrar çalıştırın — `package.json`'a `"prebuild": "mari-ui theme"`, CI'a `npx @mari-ui/cli theme --check` ekleyebilirsiniz.
+- `mari-ui.config.json` proje kökünde durur; yalnız `npx @mari-ui/cli theme` okur (uygulama çalışırken okunmaz). Config'i değiştirince komutu tekrar çalıştırın — `package.json`'a `"prebuild": "npx @mari-ui/cli theme --yes"` (soru sormadan mevcut config'ten üretir), CI'a `npx @mari-ui/cli theme --check` ekleyebilirsiniz. Temayı değiştirmek için `npx @mari-ui/cli theme` soru sorarak seçtirir.
 
 ## 3. Kullanım
 

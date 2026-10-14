@@ -72,15 +72,28 @@ describe("runInit — kişilik (Faz 21)", () => {
   });
   afterEach(() => cleanupTempDir(dir));
 
+  it("config yoksa özel tema seçimiyle oluşturur", () => {
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "custom", primary: "#0f766e" } });
+    expect(result.configCreated).toBe(true);
+    expect(JSON.parse(readFileSync(result.configPath, "utf8")).color.primary).toBe("#0f766e");
+  });
+
+  it("config varsa özel / varsayılan seçim ona DOKUNMAZ (değiştirmek `theme`in işi)", () => {
+    writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ persona: "luxury" }), "utf8");
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "default" } });
+    expect(result.configUpdated).toBe(false);
+    expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "luxury" });
+  });
+
   it("config yoksa yalnız { persona } yazar", () => {
-    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, persona: "playful" });
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "persona", name: "playful" } });
     expect(result.configCreated).toBe(true);
     expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "playful" });
   });
 
   it("config varsa yalnız persona alanını ekler, diğer seçimlere dokunmaz", () => {
     writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ color: { primary: "#059669" }, density: { radius: "lg" } }), "utf8");
-    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, persona: "minimal" });
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "persona", name: "minimal" } });
     expect(result.configUpdated).toBe(true);
     const config = JSON.parse(readFileSync(result.configPath, "utf8"));
     expect(config).toEqual({ persona: "minimal", color: { primary: "#059669" }, density: { radius: "lg" } });
@@ -89,7 +102,7 @@ describe("runInit — kişilik (Faz 21)", () => {
 
   it("aynı kişilik zaten yazılıysa dosyaya dokunmaz", () => {
     writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ persona: "luxury" }), "utf8");
-    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, persona: "luxury" });
+    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "persona", name: "luxury" } });
     expect(result.configCreated).toBe(false);
     expect(result.configUpdated).toBe(false);
   });

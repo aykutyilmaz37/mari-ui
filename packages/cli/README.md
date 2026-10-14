@@ -5,9 +5,10 @@
 ## Hızlı başlangıç
 
 ```bash
-npx @mari-ui/cli init --persona minimal
+npx @mari-ui/cli init      # temayı sorar: Varsayılan, hazır kişilik ya da Özel
 pnpm install
 npx @mari-ui/cli sync
+npx @mari-ui/cli theme     # tema dosyalarını üretir (temayı değiştirmek için de bu)
 ```
 
 `init`; `@mari-ui/components`, `@mari-ui/core` ve `@mari-ui/tokens`ı `package.json`a ekler, `mari-ui.config.json`ı oluşturur, AI kural dosyalarını yazar ve projenize uygun CSS girişini (Tailwind v4'lü ya da Tailwind'siz) söyler. Paket yöneticisini kendisi çalıştırmaz; kurulumdan sonra `sync` kuralları yüklenen sürüme göre tazeler.
@@ -18,16 +19,35 @@ npx @mari-ui/cli sync
 |---|---|
 | `init` | Bağımlılıkları ekler, `mari-ui.config.json` oluşturur (varsa dokunmaz), AI kural dosyalarını yazar. |
 | `sync` | Kural dosyalarını güncel tema ve kütüphane sürümüne göre tazeler. Temayı değiştirdiyseniz ayrıca `theme` çalıştırın. |
-| `theme` | `mari-ui.config.json`dan `mari-ui-theme.css` (CSS değişkenleri) ve `mari-ui-theme.ts` (React Native / koddan erişim) üretir. |
+| `theme` | Temayı sorar (aşağıda), `mari-ui.config.json`ı günceller ve `mari-ui-theme.css` (CSS değişkenleri) ile `mari-ui-theme.ts`i (React Native / koddan erişim) üretir. |
 
 | Bayrak | |
 |---|---|
 | `--dir <yol>` | Hedef proje kökü (varsayılan: bulunulan dizin) |
 | `--agents <liste>` | `claude,codex,cursor,gemini,copilot` (varsayılan: hepsi) |
 | `--check` | Hiçbir şey yazmaz; dosyalar bayatsa çıkış kodu `1` — CI için |
-| `--persona <ad>` | `init`: tasarım kişiliği — `corporate` (Kurumsal), `playful` (Oyunbaz), `minimal`, `editorial` (Editoryal), `luxury` (Lüks) |
+| `--persona <ad>` | `default` (Yumuşak iris) ya da kişilik: `corporate` (Kurumsal), `playful` (Oyunbaz), `minimal`, `editorial` (Editoryal), `luxury` (Lüks) |
+| `--primary <#hex>` / `--accent <#hex>` | Özel tema: marka ve vurgu rengi |
+| `-y`, `--yes` | Soru sorma: bayraklar ya da mevcut `mari-ui.config.json` |
 
-## Tema: `mari-ui.config.json`
+## Tema seçimi
+
+`npx @mari-ui/cli theme` önce temayı sorar (ok tuşları + Enter):
+
+- **Mevcut ayarı koru** — config zaten varsa.
+- **Varsayılan (Yumuşak iris)** — mari-ui'ın kendi teması.
+- **Kurumsal, Oyunbaz, Minimal, Editoryal, Lüks** — renk, font, köşe, boşluk, gölge ve hareketi birlikte seçen hazır kişilikler.
+- **Özel** — birincil renk, vurgu rengi (isteğe bağlı), köşe yuvarlaklığı ve yoğunluk sorulur.
+
+Seçim config'in tema alanlarını baştan yazar; ek temalar (`themes`) ve büyük ekran ayarı (`scale`) korunur. Soru yalnız etkileşimli terminalde sorulur; CI'da ve AI ajanlarında bayraklar ya da mevcut config kullanılır:
+
+```bash
+npx @mari-ui/cli theme --persona minimal
+npx @mari-ui/cli theme --primary "#0f766e" --accent "#f59e0b"
+npx @mari-ui/cli theme --yes          # mevcut config'ten yeniden üret
+```
+
+## `mari-ui.config.json`
 
 ```json
 {

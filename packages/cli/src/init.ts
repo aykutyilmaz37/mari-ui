@@ -2,8 +2,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { ALL_AGENTS, syncAgentRules, type AgentName, type SyncResult } from "./sync";
-import type { PersonaName } from "@mari-ui/tokens";
-import { writeDefaultConfigIfMissing, writePersonaConfig } from "./configFile";
+import { configFilePath, writeConfig, writeDefaultConfigIfMissing, writePersonaConfig } from "./configFile";
+import { configFromChoice, type ThemeChoice } from "./themeChoice";
 import { ManifestNotFoundError } from "./manifest";
 import { detectTailwind, type TailwindSetup } from "./tailwindSetup";
 
@@ -20,8 +20,12 @@ export interface InitOptions {
   targetDir: string;
   agents?: readonly AgentName[];
   manifestPath?: string;
-  /** Tasarım kişiliği; config'e `persona` olarak yazılır. */
-  persona?: PersonaName;
+  /**
+   * Tema seçimi (sihirbaz ya da `--persona` / `--primary`). Config yoksa bu
+   * seçimle oluşturulur. Config varsa yalnız kişilik seçimi `persona` alanını
+   * ekler/değiştirir (diğer alanlara dokunmaz); temayı baştan değiştirmek `theme` komutunun işi.
+   */
+  theme?: ThemeChoice;
 }
 
 export interface InitResult {
@@ -29,7 +33,7 @@ export interface InitResult {
   alreadyHadDependencies: string[];
   configCreated: boolean;
   configPath: string;
-  /** `persona` verildi ve var olan config'te bu alan eklendi/değişti. */
+  /** Kişilik seçildi ve var olan config'te `persona` alanı eklendi/değişti. */
   configUpdated: boolean;
   /**
    * `null` olması şu anlama gelir: bağımlılıklar `package.json`a EKLENDİ ama
@@ -67,7 +71,7 @@ interface PackageJsonShape {
  * (bkz. `cli.ts`teki `runInitCommand` çağrısının çıktısı).
  */
 export function runInit(options: InitOptions): InitResult {
-  const { targetDir, agents = ALL_AGENTS, manifestPath, persona } = options;
+  const { targetDir, agents = ALL_AGENTS, manifestPath, theme } = options;
   const packageJsonPath = join(targetDir, "package.json");
   const packageJsonMissing = !existsSync(packageJsonPath);
 
@@ -93,7 +97,7 @@ export function runInit(options: InitOptions): InitResult {
     }
   }
 
-  const written = persona ? writePersonaConfig(targetDir, persona) : { ...writeDefaultConfigIfMissing(targetDir), updated: false };
+  const written = writeInitialConfig(targetDir, theme);
   const { created: configCreated, path: configPath, updated: configUpdated } = written;
 
   let ruleFiles: SyncResult | null;
@@ -108,4 +112,11 @@ export function runInit(options: InitOptions): InitResult {
   }
 
   return { addedDependencies, alreadyHadDependencies, configCreated, configUpdated, configPath, ruleFiles, packageJsonMissing, tailwind };
+}
+
+function writeInitialConfig(targetDir: string, theme: ThemeChoice | undefined): { created: boolean; updated: boolean; path: string } {
+  if (!theme) return { ...writeDefaultConfigIfMissing(targetDir), updated: false };
+  if (!existsSync(configFilePath(targetDir))) return { created: true, updated: false, path: writeConfig(targetDir, configFromChoice(theme)) };
+  if (theme.kind === "persona") return writePersonaConfig(targetDir, theme.name);
+  return { created: false, updated: false, path: configFilePath(targetDir) };
 }
