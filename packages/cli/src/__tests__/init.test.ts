@@ -20,7 +20,9 @@ describe("runInit", () => {
     const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
     expect(pkg.name).toBe("tuketici-proje");
     expect(pkg.dependencies.react).toBe("^19.0.0");
-    expect(pkg.dependencies["@mari-ui/components"]).toBeDefined();
+    // "latest" değil: CLI'ın kendi sürümüyle aynı aralık (beş paket birlikte sürümlenir).
+    const cliVersion = JSON.parse(readFileSync(join(__dirname, "../../package.json"), "utf8")).version;
+    for (const dep of ["@mari-ui/components", "@mari-ui/core", "@mari-ui/tokens"]) expect(pkg.dependencies[dep]).toBe(`^${cliVersion}`);
   });
 
   it("bağımlılık ZATEN varsa üzerine yazmaz, 'zaten vardı' listesine koyar", () => {
