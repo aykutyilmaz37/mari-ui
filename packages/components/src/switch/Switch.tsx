@@ -10,15 +10,14 @@ import { getBallClass, getSpinnerSize, getTrackClass, getTrackSizeClass, SWITCH_
 
 export type { SwitchProps };
 
-/**
+/*
  * Eskiden `Button` component'inin üzerine `!p-0.5` gibi `!important`
- * override'larla bindiriliyordu (bkz. plan Faz 3 denetimi: "Switch,
- * Button'ın kendi boyut class'larıyla savaşmak için `!important`
- * kullanıyor"). Switch, Button'la aynı boyut/dolgu sözleşmesini
+ * override'larla bindiriliyordu. Switch, Button'la aynı boyut/dolgu sözleşmesini
  * paylaşmadığı için (track genişliği Button'ın skalasında yok) bu hack
  * gerekiyordu. Artık bağımsız bir `<button>` render ediyor — override
  * savaşı ortadan kalktı.
  */
+/** Açma/kapama anahtarı (`role="switch"`). `label` ile etiketlenir, `color` ile rengi seçilir. */
 export function Switch({
   checked,
   defaultChecked = false,

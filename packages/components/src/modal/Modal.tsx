@@ -203,19 +203,20 @@ function FooterButtons({ position, cancelText, confirmText, onCancel, onConfirm,
   );
 }
 
-/**
+/*
  * Faz 9 temel ARIA'yı düzeltmişti (role=dialog, Escape, odağı geri verme).
- * Faz 13.6 — yapı ant.design Modal'dan, overlay davranışı Drawer ile ortak
+ * yapı ant.design Modal'dan, overlay davranışı Drawer ile ortak
  * (`lib/overlay.ts`). Eski sürümde kalanlar:
  * - Odak tuzağı YOKTU (belgede "focus-trap" yazmasına rağmen Tab dışarı
- *   kaçıyordu); sayfa kaydırması kilitlenmiyordu; portal yoktu.
+ *  kaçıyordu); sayfa kaydırması kilitlenmiyordu; portal yoktu.
  * - Uzun içerik ekrandan taşıyordu — artık gövde kendi içinde kayar.
  * - `title` zorunlu string'di; açıklama, özel footer, genişlik yoktu.
  * - Async onay için yükleniyor durumu, yıkıcı onay için `alertdialog` yoktu.
  * - Kapalıyken `inert` ile DOM'da kalıyordu; artık kapanış animasyonundan
- *   sonra unmount.
- *
- * Faz 15.6 — `skeleton`: başlık (ikon dahil), gövde ve alt çubuk
+ *  sonra unmount.
+ */
+/**
+ * `skeleton`: başlık (ikon dahil), gövde ve alt çubuk
  * `ContentSkeleton` ile içeriğin kendi şeklinde iskelete döner; Kapat ve
  * Escape çalışır, `aria-busy`. Veri gelince odak (hâlâ Kapat'taysa) normal
  * ilk odağa taşınır. Kapat düğmesi 44px dokunma hedefi.

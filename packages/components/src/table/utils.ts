@@ -8,7 +8,7 @@ export type DraftsSetter<T> = React.Dispatch<React.SetStateAction<Record<string,
  * responsive/accordion görünümünde de desteklemek için) ortak kullanır.
  * Modül seviyesinde tanımlı — `setDrafts((prev) => {...})` çağrıları render
  * fonksiyonu İÇİNE gömülü kalırsa SonarJS `no-nested-functions` sınırını
- * (4) aşıyordu (Faz 8'de yakalandı).
+ * (4) aşıyordu.
  */
 export function clearRowDraft<T>(setDrafts: DraftsSetter<T>, id: string) {
   setDrafts((prev) => {
@@ -28,7 +28,7 @@ export function setRowDraftValue<T>(setDrafts: DraftsSetter<T>, id: string, colu
   });
 }
 
-/**
+/*
  * Eskiden hizalama DOM index'ine göre otomatikti (ilk sütun sol, son sütun
  * sağ, ortadakiler merkez) — kullanıcı bulgusu: aynı tablodaki her sütun
  * farklı hizalanıyordu, tutarsız görünüyordu. Artık `ColumnDef.align`'dan
@@ -60,7 +60,7 @@ export function getActionsJustifyClass(align: TableColumnAlign | undefined): str
   return ACTIONS_JUSTIFY_CLASS[align ?? "start"];
 }
 
-/**
+/*
  * Satırın okunur adı — satır eylem düğmelerinin erişilebilir adında kullanılır
  * ("Sil: Aykut Yılmaz"). Eskiden her satırın düğmesi aynı "Sil" adını
  * taşıyordu; ekran okuyucu kullanıcısı hangi satırı sildiğini bilemiyordu.

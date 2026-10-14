@@ -76,7 +76,7 @@ const SKELETON_MASK = gaugeMask(true);
 const EMPTY_MASK = gaugeMask(false);
 
 /**
- * Faz 16.9 — gösterge (270° yay). Tek bir değerin aralıktaki yeri: doluluk,
+ * Gösterge (270° yay). Tek bir değerin aralıktaki yeri: doluluk,
  * hedefe ulaşma, skor. Dolgu durum rengini taşır; iz, aynı rengin soluk hali.
  * `role="meter"`. Birden çok değer için Bar, zaman içinde değişim için Line.
  */

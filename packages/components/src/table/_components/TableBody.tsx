@@ -39,8 +39,7 @@ const ACTIONS_CELL_CLASS = "sticky right-0 w-px whitespace-nowrap border-l borde
 
 /**
  * Veri hücresi. `max-w-64` KASITLI: `table-auto`'da sütun serbestçe
- * büyüyüp `line-clamp-2` hiç tetiklenmiyordu (kullanıcı bulgusu: "iki satıra
- * düşsün, horizontal scroll olacak"). `text-sm`: başlıktan (text-xs) orantılı.
+ * büyüyüp `line-clamp-2` hiç tetiklenmiyordu. `text-sm`: başlıktan (text-xs) orantılı.
  */
 const DATA_CELL_CLASS = "max-w-64 px-4 py-2.5 text-sm break-words";
 

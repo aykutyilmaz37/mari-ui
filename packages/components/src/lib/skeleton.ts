@@ -1,7 +1,7 @@
 import { cn } from "@mari-ui/core";
 
 /**
- * Faz 15 — component'lerin ortak `skeleton` sözleşmesi.
+ * Component'lerin ortak `skeleton` sözleşmesi.
  *
  * `loading` ≠ `skeleton`: `loading` = bir EYLEM sürüyor (Button spinner'ı,
  * component etkileşimli kalır ya da disabled olur). `skeleton` = VERİ henüz

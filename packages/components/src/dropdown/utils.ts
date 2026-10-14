@@ -12,7 +12,7 @@ export function getFocusable(root: HTMLElement | null): HTMLElement[] {
 }
 
 /**
- * Faz 15.5 — panel içi klavye gezinmesi (APG "menu button" tuş modeli). İçerik
+ * Panel içi klavye gezinmesi (APG "menu button" tuş modeli). İçerik
  * keyfi olabildiği için `role="menu"` verilmez; ama odaklanabilir öğeler
  * arasında ↑/↓ (sarar), Home/End ve harfle atlama (başlığı o harfle başlayan
  * sonraki öğe) çalışır. Hedef öğeyi döner, tuş bu modele ait değilse `null`.

@@ -1,6 +1,6 @@
 import { cn, type Size } from "@mari-ui/core";
 
-/**
+/*
  * Yapı ant.design Card'ından (başlık: min-height + yatay dolgu, 16px/600;
  * small: 38px başlık + 12px dolgu; default: 56px + 24px), görünüm kendi
  * token'larımızdan. Eskiden `lg` `md` ile birebir aynıydı — artık 32px.

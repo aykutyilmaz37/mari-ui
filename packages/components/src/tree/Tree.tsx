@@ -87,7 +87,7 @@ interface RowProps {
   skeleton: boolean;
 }
 
-/** treeitem ARIA özellikleri; iskelette hiçbiri (satır erişilebilirlik ağacında değil). */
+/** Treeitem ARIA özellikleri; iskelette hiçbiri (satır erişilebilirlik ağacında değil). */
 function treeitemAria({ entry, focused, open, expandable, loading, selected, selectable, checkState, skeleton }: RowProps) {
   if (skeleton) return {};
   let checked: boolean | "mixed" | undefined;
@@ -255,13 +255,14 @@ function useTreeState(props: TreeProps) {
   return { index, expanded, setExpanded, selected, setSelected, checkInfo, setRawChecked, expandedSet, visible };
 }
 
-/**
- * Faz 16.3 — yapı ant.design Tree'den (açma düğmesi, onay kutuları + üst/alt
+/*
+ * yapı ant.design Tree'den (açma düğmesi, onay kutuları + üst/alt
  * yayılım + kısmi durum, `checkStrictly`, tekli/çoklu seçim, tembel yükleme,
  * kılavuz çizgileri, `blockNode`, arama + vurgu, `titleRender`), görünüm kendi
  * token'larımızdan. Düz (flat) çizim: görünür düğümler tek dizi — klavye ve
  * iskelet bunun üzerinde çalışır. Saf mantık `utils.ts`te (TreeSelect de kullanır).
- *
+ */
+/**
  * Erişilebilirlik (WAI-ARIA APG Tree View): `role="tree"` + `treeitem`
  * (`aria-level`/`aria-posinset`/`aria-setsize`, açılabilirse `aria-expanded`,
  * seçilebilirse `aria-selected`, işaretlenebilirse `aria-checked` true/false/

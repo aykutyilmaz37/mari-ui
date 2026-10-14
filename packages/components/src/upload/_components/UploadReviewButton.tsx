@@ -10,7 +10,7 @@ export interface UploadReviewButtonProps {
   disabled?: boolean;
 }
 
-/**
+/*
  * ant.design'ın "Pictures Wall" karosuyla AYNI boyutta (`h-28 w-28`) —
  * eskiden ayrı bir satırda/boyutta duruyordu, artık küçük resimlerle AYNI
  * grid'e (bkz. `Upload.tsx`) akıp aynı boyutta bir "ekle" karosu oluyor.

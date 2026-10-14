@@ -23,7 +23,7 @@ export interface FloatingOptions {
 }
 
 /**
- * Faz 16.1 — `document.body`'ye portal edilmiş, `position: fixed` bir panelin
+ * `document.body`'ye portal edilmiş, `position: fixed` bir panelin
  * konumu. Dropdown'da vardı, Select de aynısına ihtiyaç duyunca buraya
  * taşındı. Konum tek seferlik değil, panel AÇIK KALDIĞI SÜRECE her karede
  * yeniden hesaplanır: sayfa kaydırılınca, sticky bir çubuk hareket edince ya

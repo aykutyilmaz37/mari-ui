@@ -6,7 +6,10 @@ import type { ThemeMode } from "./semantic/deriveColorRole";
 import type { SpacingDensity } from "./runtimeTheme";
 import { applyPersona, type PersonaName } from "./personas";
 
-/** `sans`/`mono` burada bilinçli olarak `string` — Faz 6'nın tema stüdyosu tüketicinin kendi font ailesi string'ini geçirebilmeli, sabit iki literalle sınırlı kalamaz. */
+/*
+ * `sans`/`mono` burada bilinçli olarak `string` — Faz 6'nın tema stüdyosu tüketicinin kendi font ailesi string'ini geçirebilmeli, sabit iki literalle sınırlı kalamaz.
+ */
+/** Temanın font aileleri: gövde (`sans`), kod (`mono`) ve başlık (`heading`). Değerler CSS aile listesidir. */
 export interface ThemeFontFamily {
   sans: string;
   mono: string;
@@ -15,7 +18,7 @@ export interface ThemeFontFamily {
 }
 
 export interface Theme {
-  /**
+  /*
    * WCAG kontrast aramasının hangi YÖNDE çalıştığı (`deriveColorRole`'ün
    * "surface açık mı koyu mu" varsayımı) — Faz 10'dan önce bu aynı zamanda
    * temanın "kimliği" gibi kullanılıyordu. Artık İKİ ayrı kavram: `mode`
@@ -27,8 +30,7 @@ export interface Theme {
    */
   mode: ThemeMode;
   /**
-   * `data-theme="..."` seçicisinde kullanılacak isim (Faz 10 — backlog
-   * madde 10: "tüketici 3. temayı ekleyebilmeli"). Yerleşik `lightTheme`/
+   * `data-theme="..."` seçicisinde kullanılacak isim. Yerleşik `lightTheme`/
    * `darkTheme` için sırasıyla `"light"`/`"dark"`; `createNamedTheme()`ın
    * ürettiği özel temalarda tüketicinin verdiği KEYFİ isim.
    */
@@ -45,7 +47,7 @@ export interface Theme {
   duration: Record<keyof typeof primitives.duration, string>;
   easing: Record<keyof typeof primitives.easing, string>;
   breakpoint: typeof primitives.breakpoint;
-  /** Faz 21 — gölge yoğunluğu ve hareket seviyesi; native bunlardan kendi gölge/süre değerlerini hesaplar. */
+  /** Gölge yoğunluğu ve hareket seviyesi; native bunlardan kendi gölge/süre değerlerini hesaplar. */
   effects: { shadow: primitives.ShadowDensity; motion: primitives.MotionLevel };
 }
 
@@ -91,15 +93,15 @@ export const darkTheme: Theme = buildTheme("dark");
 export const themes = { light: lightTheme, dark: darkTheme } as const;
 
 /**
- * Faz 6 — tema stüdyosu (`apps/studio`) çıktısı `mari-ui.config.json`,
+ * Tema stüdyosu (`apps/studio`) çıktısı `mari-ui.config.json`,
  * `dist/schema.json`'daki `editable` sözleşmesinin BİREBİR TypeScript
- * karşılığı. `density.radius` (Faz 15) `Theme.radius` skalasını orantılı
+ * karşılığı. `density.radius` `Theme.radius` skalasını orantılı
  * ölçekler (`scaleRadius`) → web'de `--mari-radius-*` değişkenleri, dolayısıyla
  * `rounded-sm/md/lg/xl` utility'leri değişir. `radiusDensity` ayrıca olduğu
  * gibi geri döndürülür ki `@mari-ui/core/buildComponentSize` (native) da
  * aynı seçimi kullanabilsin.
  *
- * `themes` (Faz 10 — backlog madde 10): light/dark'IN ÖTESİNDE, tüketicinin
+ * `themes`: light/dark'IN ÖTESİNDE, tüketicinin
  * kendi projesine ekleyebileceği KEYFİ sayıda ek isimli tema. Her girdi
  * kendi `base`ini (kontrast aramasının hangi yönde çalışacağını) ve
  * isteğe bağlı kendi renk/tipografi override'larını taşır — `color`/
@@ -118,26 +120,26 @@ export interface MariUiThemeConfig {
     fontFamilyHeading?: string;
   };
   density?: {
-    /** Faz 15 — tüm `--mari-radius-*` skalasını orantılı ölçekler (`none` = keskin). */
+    /** Tüm `--mari-radius-*` skalasını orantılı ölçekler (`none` = keskin). */
     radius?: primitives.RadiusDensity;
     /**
-     * Faz 16.8.1 — uygulamanın varsayılan boşluk yoğunluğu (`--spacing` tabanı).
+     * Uygulamanın varsayılan boşluk yoğunluğu (`--spacing` tabanı).
      * Son kullanıcı ThemeCustomizer ile `data-density` üzerinden yine değiştirebilir;
      * bu yalnız hiç seçim yapılmamışken geçerli olan değer.
      */
     spacing?: SpacingDensity;
-    /** Faz 21 — gölge yoğunluğu (`none` = gölgesiz, kartlar kenarlıkla ayrışır). */
+    /** Gölge yoğunluğu (`none` = gölgesiz, kartlar kenarlıkla ayrışır). */
     shadow?: primitives.ShadowDensity;
   };
-  /** Faz 21 — hareket seviyesi: süre çarpanı + eğri (`off` = animasyonsuz). */
+  /** Hareket seviyesi: süre çarpanı + eğri (`off` = animasyonsuz). */
   motion?: primitives.MotionLevel;
   /**
-   * Faz 21 — tasarım kişiliği. Kişiliğin renk/font/yoğunluk/gölge/hareket
+   * Tasarım kişiliği. Kişiliğin renk/font/yoğunluk/gölge/hareket
    * ayarları TABAN olur; bu config'te açıkça yazılan her alan onu ezer.
    */
   persona?: PersonaName;
   /**
-   * Faz 16.8.2 — büyük ekran ölçeği. `fluid: true` iken kök yazı boyutu 1920px'ten
+   * Büyük ekran ölçeği. `fluid: true` iken kök yazı boyutu 1920px'ten
    * itibaren ekran genişliğiyle büyür, 3840px'te (4K) `max` px'e ulaşıp durur.
    * Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür. 1920px ve altı
    * etkilenmez. İşletim sistemi ölçeklemesi kapalı (%100) 4K ekranlar için.
@@ -200,7 +202,7 @@ export function createNamedTheme(name: string, base: ThemeMode, config: Omit<Nam
   return buildTheme(base, { ...resolveBuildThemeOptions(config, name), ...effects });
 }
 
-/**
+/*
  * `mari-ui.config.json`ı (stüdyonun ürettiği anchor renkler + font ailesi +
  * radius yoğunluğu + Faz 10'un opsiyonel `themes`i) gerçek `Theme`
  * objelerine çözer. Faz 7'nin `npx @mari-ui/cli theme` komutu bu FONKSİYONUN

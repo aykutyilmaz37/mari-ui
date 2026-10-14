@@ -2,7 +2,10 @@ import type React from "react";
 import type { ColorRole } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 
-/** ant.design ile aynı dört durum. */
+/*
+ * ant.design ile aynı dört durum.
+ */
+/** Adımın durumu: `wait` bekliyor, `process` sürüyor, `finish` tamamlandı, `error` hata. */
 export type StepStatus = "wait" | "process" | "finish" | "error";
 
 export interface StepItem {

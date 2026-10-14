@@ -1,7 +1,7 @@
 import React from "react";
 import type { Side } from "./floating";
 
-/**
+/*
  * Yüzey renkli yüzen panellerin (Dropdown, Popover, Popconfirm) ortak ölçüleri
  * ve oku — Faz 16.2'de DropdownContent'ten taşındı.
  *
@@ -17,7 +17,9 @@ export const FLOATING_ARROW_INSET_PX = 20;
 /** Panel viewport kenarına YAPIŞMASIN diye bırakılan minimum boşluk. */
 export const FLOATING_EDGE_PX = 8;
 
-/** ant.design okunun birebir `clip-path`i: 16×8, ucu yuvarlak, taban köşeleri panele yumuşakça karışan üçgen. */
+/*
+ * ant.design okunun birebir `clip-path`i: 16×8, ucu yuvarlak, taban köşeleri panele yumuşakça karışan üçgen.
+ */
 const ARROW_FILL_PATH = "M 0 8 A 4 4 0 0 0 2.82843 6.82843 L 6.58579 3.07107 A 2 2 0 0 1 9.41421 3.07107 L 13.1716 6.82843 A 4 4 0 0 0 16 8 Z";
 /** Aynı yol KAPATILMADAN — kenarlık rengiyle sadece eğik kenarlar çizilir; taban çizgisi panelin kenarlığının üstünden geçmesin diye (dolgu o kısmı örter). */
 const ARROW_STROKE_PATH = "M 0 8 A 4 4 0 0 0 2.82843 6.82843 L 6.58579 3.07107 A 2 2 0 0 1 9.41421 3.07107 L 13.1716 6.82843 A 4 4 0 0 0 16 8";

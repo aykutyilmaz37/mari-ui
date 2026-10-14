@@ -1,6 +1,6 @@
 import { cn } from "@mari-ui/core";
 
-/**
+/*
  * `foundations/Elevation.mdx`'te vaat edilen tablo: `shadow-mari-*` + ince
  * `border-mari-border` kombinasyonu birlikte kullanılır. Koyu temada saf
  * siyah-alfa gölge tek başına neredeyse görünmez — yükseklik hissi asıl

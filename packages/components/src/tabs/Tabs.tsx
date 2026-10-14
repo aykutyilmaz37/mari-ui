@@ -24,7 +24,6 @@ function useContainerWidth(enabled: boolean) {
 /**
  * Compound API: `<Tabs><TabsList><TabsTrigger/></TabsList><TabsContent/></Tabs>`.
  *
- * Faz 13.6 — yapı ant.design Tabs'tan, görünüm kendi token'larımızdan:
  * `line` / `card` / `pills`, üç boyut, dikey yön (dar kapsayıcıda yataya
  * döner), `fill`, `align`, `keepMounted`, WAI-ARIA ok tuşu gezinmesi, taşan
  * sekmelerde yatay kaydırma. Bkz. `_components/TabsList.tsx`.

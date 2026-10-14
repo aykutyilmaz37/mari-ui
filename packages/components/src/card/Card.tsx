@@ -9,14 +9,13 @@ import { cardPadding, getBaseClassname } from "./utils";
 export type { CardProps, CardMetaProps };
 
 /**
- * Faz 13.6 — yapı ant.design Card'ından, görünüm kendi token'larımızdan.
  * Eski sürümdeki sorunlar:
  * - `hoverable` gölgeyi her zaman veriyordu (üzerine gelince değil).
  * - Kapak kartın yuvarlak köşelerinden taşıyor, altına keyfi `mb-4` boşluk
- *   ekleniyordu. Artık kenardan kenara, üst köşeler karttan miras.
+ *  ekleniyordu. Artık kenardan kenara, üst köşeler karttan miras.
  * - Başlık uzun olunca `extra`'yı itiyordu; artık başlık kesilir (`truncate`).
  * - Gövde `flex-1` değildi — ızgarada eşit yükseklikli kartların alt
- *   kısımları (footer/actions) hizalanmıyordu.
+ *  kısımları (footer/actions) hizalanmıyordu.
  * - `lg` `md` ile aynıydı; yükleme iskeleti iki gri çizgiden ibaretti.
  * Yeni: `actions`, `href` (link kart), `CardMeta`.
  *
@@ -159,7 +158,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
 Card.displayName = "Card";
 
-/** ant.design `Card.Meta`: avatar + başlık + açıklama. */
+/*
+ * ant.design `Card.Meta`: avatar + başlık + açıklama.
+ */
+/** Kart içinde avatar, başlık ve açıklamadan oluşan satır. */
 export function CardMeta({ avatar, title, description, className }: Readonly<CardMetaProps>) {
   return (
     <div className={cn("flex min-w-0 gap-4", className)}>

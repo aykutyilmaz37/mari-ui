@@ -2,7 +2,7 @@ import type { HexColor } from "../contrast";
 import type { ThemeMode } from "../semantic/deriveColorRole";
 
 /**
- * Faz 16.9 — grafik serileri için kategorik palet (Pie dilimleri, çok serili
+ * Grafik serileri için kategorik palet (Pie dilimleri, çok serili
  * Line/Bar). Anlam taşıyan rollerden (primary/success/error…) BAĞIMSIZ: bir
  * seri "hata" demek değil, yalnız kimlik.
  *

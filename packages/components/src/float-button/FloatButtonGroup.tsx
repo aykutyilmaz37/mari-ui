@@ -105,7 +105,7 @@ function MenuGroup(props: Readonly<FloatButtonGroupMenuProps>) {
 }
 
 /**
- * Faz 16.6 — FloatButton.Group: birden çok yüzen düğme. `trigger` yoksa hep
+ * FloatButton.Group: birden çok yüzen düğme. `trigger` yoksa hep
  * görünür bir sütun (kare şekilde tek kart gibi birleşik); `trigger`
  * verilirse ana düğme menüyü açar (`aria-expanded`), Escape/dışarı tıklama
  * kapatır ve odak ana düğmeye döner.

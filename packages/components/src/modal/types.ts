@@ -13,8 +13,7 @@ export interface ModalProps extends SkeletonableProps {
   description?: React.ReactNode;
   icon?: React.ReactNode;
   /**
-   * Durum rengi. Verilirse başlığın solunda tonlu bir ikon dairesi gösterilir
-   * (ant.design confirm düzeni) ve onay düğmesi bu renkte olur. `error` /
+   * Durum rengi. Verilirse başlığın solunda tonlu bir ikon dairesi gösterilir ve onay düğmesi bu renkte olur. `error` /
    * `warning` ile onay düğmesi olan modal `role="alertdialog"` olur ve ilk
    * odak "Vazgeç"e gider (yanlışlıkla Enter ile yıkıcı işlem yapılmasın).
    */
@@ -28,7 +27,10 @@ export interface ModalProps extends SkeletonableProps {
    * düğmeleri yerine bu render edilir; `null` alt çubuğu tamamen kaldırır.
    */
   footer?: React.ReactNode;
-  /** Varsayılan: `"right"` (eskiden `left`). */
+  /*
+   * Varsayılan: `"right"` (eskiden `left`).
+   */
+  /** Alt çubuktaki düğmelerin hizası. Varsayılan: `right`. */
   footerButtonPosition?: ButtonPositionType;
   confirmButtonText?: string;
   cancelButtonText?: string;
@@ -45,7 +47,7 @@ export interface ModalProps extends SkeletonableProps {
    * yıkıcıysa (ör. "Çıkış yap") `"confirm"` verin.
    */
   initialFocus?: "cancel" | "confirm";
-  /** sm 400 / md 520 / lg 720px. Varsayılan: `md`. */
+  /** Sm 400 / md 520 / lg 720px. Varsayılan: `md`. */
   size?: Size;
   /** `size` yerine özel genişlik, ör. `640` veya `"80vw"`. */
   width?: number | string;

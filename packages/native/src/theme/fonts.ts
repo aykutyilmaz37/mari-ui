@@ -1,15 +1,15 @@
 import type { Theme } from "@mari-ui/tokens";
 
 /**
- * Font kipi (kullanıcı kararı 2026-10-05 — "sıfır kurulum" sözü):
+ * Font kipi:
  *
- * - `"system"` (varsayılan): iOS'ta SF, Android'de Roboto. Hiçbir font dosyası
- *   yüklenmesi gerekmez. Token'lardaki aile adları ("Geist"…) kullanılmaz —
- *   yüklenmemiş bir aile iOS'ta geliştirme modunda hata basar, web'de serif'e
- *   düşer (Expo'da gerçek render'da görüldü).
+ * `"system"` (varsayılan): iOS'ta SF, Android'de Roboto. Hiçbir font dosyası
+ *  yüklenmesi gerekmez. Token'lardaki aile adları ("Geist"…) kullanılmaz —
+ *  yüklenmemiş bir aile iOS'ta geliştirme modunda hata basar, web'de serif'e
+ *  düşer (Expo'da gerçek render'da görüldü).
  * - `"brand"`: token aileleri (Geist gövde, Manrope başlık, Geist Mono kod).
- *   Tüketici dosyaları `expo-font` ile, kayıt adı aile adıyla aynı olacak
- *   şekilde yükler (bkz. `BRAND_FONT_FAMILIES` ve README).
+ *  Tüketici dosyaları `expo-font` ile, kayıt adı aile adıyla aynı olacak
+ *  şekilde yükler (bkz. `BRAND_FONT_FAMILIES` ve README).
  */
 export type NativeFonts = "system" | "brand";
 

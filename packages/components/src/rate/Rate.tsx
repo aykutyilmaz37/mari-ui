@@ -10,13 +10,13 @@ import { handleClick, handleMouseEnter, handleMouseLeave } from "./utils";
 
 export type { RateProps };
 
-/**
- * Eskiden `types.ts` tamamen boştu (bkz. plan denetimi). `value`/
+/*
+ * Eskiden `types.ts` tamamen boştu. `value`/
  * `defaultValue` artık `useControllableState` ile yönetiliyor — eskiden
  * `isControlled = value !== undefined` elle hesaplanıp `handleClick`'e
  * ayrıca geçiriliyordu.
  */
-/**
+/*
  * Yıldız ikonları. Varsayılan palet (renk verilmedi): dolu = puan sarısı,
  * boş = dolgusuz sarı kontur. Rol/ham renk: dolu = o renk, boş = dolgusuz o
  * renkte kontur (`currentColor`, `tintEmpty` ile boyanır). Özel `character`
@@ -98,7 +98,7 @@ export function Rate({
   }
   const step = allowHalf ? 0.5 : 1;
 
-  /**
+  /*
    * Eskiden kök `<div>` odaklanabilirdi (`tabIndex`) ama YALNIZCA fareyle
    * değiştirilebiliyordu — dahili hiçbir tuş işleyicisi yoktu, `onKeyDown`
    * salt tüketiciye ilettiği bir pass-through'du. Klavye kullanıcısı için

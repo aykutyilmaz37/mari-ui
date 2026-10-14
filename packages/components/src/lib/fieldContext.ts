@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect } from "react";
 import type { ColorRole } from "@mari-ui/core";
 
 /**
- * Faz 16.1 — `Field`in içindeki kontrole geçirdiği bağlantılar. `lib`te
+ * `Field`in içindeki kontrole geçirdiği bağlantılar. `lib`te
  * duruyor (field/ klasöründe değil) çünkü her kontrol bunu import eder;
  * tsup ortak parçaya (chunk) koyar, tek bir context örneği olur.
  */

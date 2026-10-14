@@ -12,7 +12,7 @@ import { MegaMenuItem } from "./_components/MegaMenuItem";
 
 export type MegaMenuProps = NavBarBaseProps & MenuColorProps;
 
-/**
+/*
  * Kullanıcı bulgusu: nav öğesinden panele inerken menü kapanıyordu. Öğenin
  * `onMouseLeave`i ANINDA kapatıyordu; navbar'ın `py-3` boşluğu ne öğeye ne
  * panele ait olduğundan fare oradan geçerken menü kapanıyor, kapanan panel
@@ -56,12 +56,7 @@ function handlePanelKey(event: KeyboardEvent, panel: HTMLElement, bar: HTMLEleme
   (barFocusable[barFocusable.indexOf(trigger) + 1] ?? trigger).focus();
 }
 
-/**
- * Alt panel tam genişlikte ve nav bar bandına (tek bir tetikleyici
- * dikdörtgenine değil) sabitlendiğinden `Dropdown` primitive'i kullanılmıyor;
- * çubuk kabuğu (logo, `<nav>`, `actions`, mobil çekmece, iskelet) BasicMenu
- * ile ortak `NavBar`da, panel içeriği (`MegaPanel`) Sidebar ile ortak.
- *
+/*
  * Faz 15.5 klavye modeli (APG disclosure navigation): çocuklu öğe
  * Enter/Boşluk/↓ ile açılır ve odak panelin ilk öğesine taşınır; panelde
  * ↑/↓/Home/End/harf gezinir, Escape kapatıp odağı tetikleyiciye döndürür,
@@ -69,6 +64,12 @@ function handlePanelKey(event: KeyboardEvent, panel: HTMLElement, bar: HTMLEleme
  * tetikleyiciye geçer. Odak menü dışına çıkınca / dışarı tıklanınca kapanır.
  * Kapalı panel `invisible` → içindeki linkler Tab sırasına girmez.
  * `currentPath`: üst öğe alt çizgisi + ray ön seçimi + link `aria-current`.
+ */
+/**
+ * Alt panel tam genişlikte ve nav bar bandına (tek bir tetikleyici
+ * dikdörtgenine değil) sabitlendiğinden `Dropdown` primitive'i kullanılmıyor;
+ * çubuk kabuğu (logo, `<nav>`, `actions`, mobil çekmece, iskelet) BasicMenu
+ * ile ortak `NavBar`da, panel içeriği (`MegaPanel`) Sidebar ile ortak.
  */
 export function MegaMenu({ data, color = "primary", currentPath, onNavigate, menuItemJustify = "center", ...barProps }: MegaMenuProps) {
   const [openKey, setOpenKey] = useState<string | null>(null);

@@ -413,7 +413,7 @@ function useGallerySelection(
 }
 
 /**
- * Faz 16.7 — fotoğraf/video galerisi. Yapı iPhone Fotoğraflar'dan: kare
+ * Fotoğraf/video galerisi. Yapı iPhone Fotoğraflar'dan: kare
  * küçük resimler kıl payı aralıkla, tarihe göre bölümler ve Yıllar / Aylar /
  * Günler / Tümü görünümleri (üst görünümün başlığına tıklayınca bir alta
  * inilir), sütun sayısı değiştirilebilir, seçim modu (uzun basış, Shift ile

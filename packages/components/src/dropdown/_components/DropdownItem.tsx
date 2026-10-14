@@ -6,7 +6,7 @@ import type { DropdownItemProps } from "../types";
 import { useDropdown } from "../useDropdown";
 import { NewTabHint, getLinkAttrs } from "../../lib/linkBehavior";
 
-/**
+/*
  * Yapı ant.design menü öğesinden: 32px yükseklik (5px/12px iç boşluk, 22px
  * satır yüksekliği), 4px yarıçap, ikon + metin, disabled durumu. Renkler kendi
  * token'larımızdan: hover'da hafif zemin, danger'da hafif kırmızı zemin.

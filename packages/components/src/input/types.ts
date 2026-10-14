@@ -3,13 +3,14 @@ import type { MentionsConfig } from "./mention/types";
 import type { ColorRole, SlotClassNames, Size } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 
-/**
+/*
  * Eskiden `variant` (outlined|borderless|filled|underlined) Button'ın
  * `variant`'ından (outlined|filled) FARKLI bir eksendi — aynı isim, iki
  * farklı anlam. Artık aynı kelime dağarcığını kullanıyor: `outline`≈outlined,
  * `soft`≈filled (tonlanmış arka plan), `ghost`≈borderless. `underlined`
  * Input'a özgü tek geometri, ayrı bir eksen değil.
  */
+/** Alan görünümü: `outline` kenarlıklı, `soft` tonlu zemin, `ghost` kenarlıksız, `underlined` yalnız alt çizgi. */
 export type InputVariant = "outline" | "soft" | "ghost" | "underlined";
 export type InputShape = "default" | "pill" | "square";
 export type InputSlot = "wrapper" | "input" | "icon" | "clear" | "count";
@@ -20,13 +21,14 @@ export interface InputCountConfig {
   formatter?: (info: { value: string; count: number; maxLength?: number }) => React.ReactNode;
 }
 
-/**
+/*
  * `aria-*`/`data-*` gibi native attribute'lar — eskiden Input bunları hiç
  * desteklemiyordu, bu yüzden bir `<label htmlFor>` dışında bir etikete
  * bağlamanın (`aria-labelledby`) veya `name`/`required` ile gerçek bir
  * native form'a katılmanın hiçbir yolu yoktu (bkz. Button'ın Faz 3'te aldığı
  * aynı düzeltme).
  */
+/** Doğrudan `<input>`a geçen ARIA ve yerel öznitelikler (`name`, `required`, `inputMode`, `enterKeyHint`…). */
 export type InputNativeAttributes = React.AriaAttributes & {
   name?: string;
   required?: boolean;
@@ -81,7 +83,7 @@ export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   max?: number;
   min?: number;
   /**
-   * `@` ile bahsetme (ant.design Mentions): tetik karakteri yazılınca imlecin
+   * `@` ile bahsetme: tetik karakteri yazılınca imlecin
    * altında öneri listesi açılır, seçilen değer metne yazılır. `mask` ile
    * birlikte çalışmaz.
    */

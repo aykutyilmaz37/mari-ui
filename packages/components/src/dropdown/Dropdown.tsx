@@ -8,7 +8,7 @@ import { getFocusable, getRovingTarget } from "./utils";
 
 export type { DropdownProps };
 
-/**
+/*
  * Faz 13.5 bulgusu: sarmalayıcı `role="menu"` + `tabIndex={0}` taşıyordu ama
  * hem trigger'ı HEM de içeriği kapsıyordu — `DropdownContent`in çocukları
  * gerçek `menuitem`ler değil, tamamen keyfi içerik (bkz. Dropdown.stories.tsx),

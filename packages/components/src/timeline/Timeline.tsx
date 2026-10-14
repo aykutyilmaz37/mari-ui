@@ -133,9 +133,7 @@ function HorizontalRow({ item, last, nextLoading, props }: Readonly<RowProps>) {
 }
 
 /**
- * Faz 16.3 — yapı ant.design Timeline'dan (başlık + içerik, renkli ya da ikonlu
- * nokta, start/end/alternate, karşı tarafta başlık, yatay yön, bekleyen öğe,
- * ters sıra), görünüm kendi token'larımızdan. Ray noktanın sütununda büyüyen
+ * Ray noktanın sütununda büyüyen
  * bir çizgi — içerik uzadıkça kendiliğinden uzar, ölçüm yok.
  *
  * Semantik: kronolojik sıra anlamlı → `<ol>`. Noktalar/ikonlar görsel

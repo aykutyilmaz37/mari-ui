@@ -7,9 +7,7 @@ import { InsetsContext, type SafeAreaInsets } from "./insets";
 export interface ThemeProviderProps {
   /**
    * `@mari-ui/tokens`'ın `lightTheme`/`darkTheme`'i ya da tüketicinin kendi
-   * ürettiği 3. bir tema (aynı `Theme` şekline uyduğu sürece — bkz. plan
-   * backlog madde 10, "3. tema" ihtiyacı web'de olduğu gibi native'de de
-   * sadece bir `Theme` objesi geçmekten ibaret).
+   * ürettiği 3. bir tema.
    */
   theme: Theme;
   /**

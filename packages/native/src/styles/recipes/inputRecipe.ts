@@ -37,15 +37,15 @@ function ring(color: string, alpha: number): ViewStyle {
   return { boxShadow: `0px 0px 0px 3px ${withAlpha(color, alpha)}` } as ViewStyle;
 }
 
-/**
+/*
  * Renk / kenarlık / odak web `Input` ile aynı (getComputedStyle ölçümüyle
  * doğrulandı); boyut native ölçekte (theme/nativeSize):
  * - Köşe her boyutta 8px (web `rounded-md` boyutun köşesini ezer); `pill`
- *   tam yuvarlak + 16px yan boşluk; `square` ve `underlined` köşesiz.
+ *  tam yuvarlak + 16px yan boşluk; `square` ve `underlined` köşesiz.
  * - Dinlenme kenarlığı: renk verilmediyse `canvas.input` (nötr gri), verildiyse
- *   rolün metin rengi. Odakta kenarlık KALINLAŞMAZ (1px) — rolün metin rengine
- *   döner + 3px %20 hale. Ghost: kenarlık yok, odakta `canvas.ring` %40 hale.
- *   Underlined: yalnız alt çizgi, hale yok.
+ *  rolün metin rengi. Odakta kenarlık KALINLAŞMAZ (1px) — rolün metin rengine
+ *  döner + 3px %20 hale. Ghost: kenarlık yok, odakta `canvas.ring` %40 hale.
+ *  Underlined: yalnız alt çizgi, hale yok.
  * - Zemin: outline `surface`, soft `surfaceAlt`, ghost / underlined saydam.
  */
 export function inputRecipe(theme: Theme, options: InputRecipeOptions, config: NativeConfig = defaultNativeConfig): InputRecipeResult {

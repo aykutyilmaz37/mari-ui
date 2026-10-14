@@ -62,7 +62,7 @@ function PresetGroup({ preset, current, disabled, onPick }: Readonly<PresetGroup
   );
 }
 
-/** Hazır renk grupları; her grup başlığı açılır/kapanır (ant.design gibi). Seçili renk ✓ ve `aria-pressed`. */
+/** Hazır renk grupları; her grup başlığı açılır/kapanır. Seçili renk ✓ ve `aria-pressed`. */
 export function ColorPresets({ presets, current, disabled, onPick }: Readonly<{ presets: ColorPreset[]; current: Hsba | null; disabled?: boolean; onPick: (color: Hsba) => void }>) {
   return (
     <div className="flex flex-col gap-2 border-t border-mari-border pt-2">

@@ -285,7 +285,7 @@ function OptionList({ sections, loading, notFoundContent, values, multiple, onCh
 
 /**
  * Seçim alanı: kapalıyken Input'la aynı kutu; dokununca seçenekler
- * BottomSheet'te açılır (kullanıcı kararı). Tekli seçimde dokunulan seçenek
+ * BottomSheet'te açılır. Tekli seçimde dokunulan seçenek
  * seçilir ve panel kapanır; çoklu seçimde panel açık kalır ("Tamam" kapatır).
  */
 export function Select(props: SelectProps) {

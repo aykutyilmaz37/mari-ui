@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 
-/**
+/*
  * Kenardan açılan modal katmanların (Drawer, NavDrawer) ortak davranışı.
  * Faz 13.6'dan önce bu mantık yalnız `menu/_shared/NavDrawer.tsx`'te vardı;
  * `Drawer`da HİÇBİRİ yoktu (odak tuzağı, Escape, kaydırma kilidi, portal) —

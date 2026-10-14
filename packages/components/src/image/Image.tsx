@@ -48,13 +48,14 @@ function placeholderNode(placeholder: ImageProps["placeholder"]): React.ReactNod
   return placeholder !== undefined && typeof placeholder !== "boolean" && typeof placeholder !== "string" ? placeholder : null;
 }
 
-/**
- * Faz 16.7 — yapı ant.design Image'dan (progressive loading: önce düşük
+/*
+ * yapı ant.design Image'dan (progressive loading: önce düşük
  * çözünürlüklü/bulanık ön izleme, asıl görsel yüklenince yumuşak geçiş;
  * `fallback`; `preview`), görünüm token'lardan. Framework'e bağlı değil: düz
  * `<img>` (`loading="lazy"`, `decoding="async"`, `srcSet`/`sizes`); CDN ve
  * boyutlandırma `loader` ile, `next/image`'a gerek yok.
- *
+ */
+/**
  * Dış kutu yeri önceden ayırır (`aspectRatio` ya da `width`/`height`) →
  * yüklenince sayfa kaymaz. `preview` ile kutu bir düğme olur ve tam ekran
  * `ImageViewer` açılır.

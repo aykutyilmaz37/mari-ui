@@ -10,7 +10,7 @@ export interface TableHeaderProps<T extends { id: string }> {
   skeleton?: boolean;
 }
 
-/**
+/*
  * Kullanıcı bulgusu: eskiden başlık dolu bir `bg-mari-neutral-subtle` bloğu +
  * kalın (`font-semibold`), gövdeyle aynı boyutta metin kullanıyordu — "çok
  * irrite duruyor" tepkisi aldı. Modern dashboard tabloları (Linear/Stripe/

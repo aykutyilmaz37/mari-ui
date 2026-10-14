@@ -37,7 +37,7 @@ function useHoldRepeat(action: (direction: 1 | -1) => void) {
 /**
  * Düğme sütunu boyuta göre ölçeklenir. `sm` kutunun iç yüksekliği 22px: iki
  * düğme + 1px ayraç 12px ikonla en az 25px istiyordu → düğmeler kutudan
- * taşıp alt ok kenarlığın üstüne biniyordu (kullanıcı bulgusu). İkon ve
+ * taşıp alt ok kenarlığın üstüne biniyordu. İkon ve
  * genişlik boyutla birlikte küçülür; `min-h-0` düğmelerin paylaşımlı
  * yüksekliğe inmesine izin verir.
  */
@@ -57,10 +57,10 @@ interface StepperProps {
 }
 
 /**
- * Fareyle: ant.design gibi sağda üst üste ▲/▼. Dokunmatikte (pointer-coarse)
+ * Fareyle: sağda üst üste ▲/▼. Dokunmatikte (pointer-coarse)
  * yan yana −/+ — üst üste 16px'lik iki düğme parmakla vurulamaz; yatayda
  * her biri tam yükseklik + görünmez 44px hedef. Düğmeler Tab sırasında
- * değil (klavyede ↑/↓ zaten var, ant.design de böyle); `onPointerDown`
+ * değil; `onPointerDown`
  * `preventDefault` ile odağı alandan almaz.
  */
 function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, decrementLabel, size }: Readonly<StepperProps>) {
@@ -101,9 +101,10 @@ function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, 
   );
 }
 
+/*
+ * yapı ant.design InputNumber'dan; görünüm Input'la birebir.
+ */
 /**
- * Faz 16.1 — yapı ant.design InputNumber'dan; görünüm Input'la birebir.
- *
  * Metin alanı + `role="spinbutton"`: odak dışında biçimli ("1.234,56 ₺"),
  * odakta düzenlemeye uygun ("1234,56") gösterir. Türkçe ondalık virgül,
  * alışkanlıkla yazılan "12.5" de anlaşılır (bkz. `parseNumber`). Harf hiç

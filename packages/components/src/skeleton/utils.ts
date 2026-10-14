@@ -5,21 +5,22 @@ import { skeletonFill } from "../lib/skeleton";
 
 export { getShapeClasses as getAvatarShapeClasses, getSizeStyle as getAvatarSizeStyle } from "../avatar/utils";
 
-/**
- * Faz 15.6 — iskelet parçalarının geometrisi GERÇEK bileşenlerden gelir ki
+/*
+ * iskelet parçalarının geometrisi GERÇEK bileşenlerden gelir ki
  * yüklenince zıplamasın. Eskiden kendi tabloları vardı ve kaymıştı:
  * - Avatar iskeleti 32/48/64px, varsayılanı yuvarlatılmış kareydi; Avatar
- *   24/32/40px ve varsayılanı daire → artık `avatar/utils`'in kendisi.
+ *  24/32/40px ve varsayılanı daire → artık `avatar/utils`'in kendisi.
  * - Button/Input `sm` iskeleti `rounded-md`, gerçeği `rounded-sm` (lib
- *   `sizeClass`).
+ *  `sizeClass`).
  * - `SkeletonButton shape="circle"` 80×32 bir hap çiziyordu; Button'ın
- *   `circle`'ı kare-daire.
- *
+ *  `circle`'ı kare-daire.
+ */
+/**
  * Sabit enum olmayan (tüketici verisi) genişlikler class değil inline stil —
  * Tailwind derleme zamanında olası her değeri üretemez.
  */
 
-/** lib `sizeClass` ile aynı yükseklik + radius (Button, Input). */
+/** Lib `sizeClass` ile aynı yükseklik + radius (Button, Input). */
 const CONTROL_BOX_CLASS: Record<Size, string> = {
   sm: "h-6 rounded-sm",
   md: "h-8 rounded-md",

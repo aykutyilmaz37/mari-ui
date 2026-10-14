@@ -23,7 +23,9 @@ interface ListContextValue {
 
 const ListContext = createContext<ListContextValue>({ size: "md", bordered: false, itemLayout: "horizontal", grid: false, skeleton: false });
 
-/** ant.design ölçüleri: sm 8/16, md 12/24, lg 16/24px (çerçevesizde yatay dolgu yok). */
+/*
+ * ant.design ölçüleri: sm 8/16, md 12/24, lg 16/24px (çerçevesizde yatay dolgu yok).
+ */
 const PAD_Y: Record<Size, string> = { sm: "py-2", md: "py-3", lg: "py-4" };
 const PAD_X: Record<Size, string> = { sm: "px-4", md: "px-6", lg: "px-6" };
 
@@ -140,10 +142,6 @@ function ListPager({
 }
 
 /**
- * Faz 16.3 — yapı ant.design List'ten (header/footer, `ListItemMeta` avatar +
- * başlık + açıklama, ayırıcılı eylemler, `extra`, yatay/dikey düzen, ızgara,
- * sayfalama, "daha fazla yükle"), görünüm kendi token'larımızdan.
- *
  * Semantik: `<ul>` + `<li>`; eylemler kendi `<ul>`sunda. `skeleton`: her satır
  * kendi içeriğini ölçüp kendi şeklinde iskelet çizer (ayırıcılar görünür kalır);
  * veri yoksa sayfa boyu kadar genel satır. `loading`: mevcut satırlar yerinde

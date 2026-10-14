@@ -79,8 +79,7 @@ function yearCells(year: number, picker: PanelPicker, selected: (d: Date) => boo
 }
 
 /**
- * Faz 16.5 — kompakt takvim paneli (DatePicker'ın paneli; ant.design
- * PickerPanel yapısı): «/‹ başlık ›/» gezinmesi; başlıktaki ay/yıl düğmeleri
+ * Kompakt takvim paneli: «/‹ başlık ›/» gezinmesi; başlıktaki ay/yıl düğmeleri
  * ay ve yıl görünümüne geçer. Görünen dönem `aria-live` ile duyurulur.
  */
 export function CalendarPanel(props: Readonly<CalendarPanelProps>) {

@@ -10,7 +10,7 @@ import type { AvatarShape, AvatarSize } from "./types";
  */
 const SIZE_REM: Record<Size, string> = { sm: "1.5rem", md: "2rem", lg: "2.5rem" };
 
-/**
+/*
  * Baş harf font-size'ı ve kare köşe yarıçapı kutuyla orantılı büyür. Faz 15'ten
  * beri baş harf İKİ harf ("AY") olabildiği için ant'ın tek-harf ölçeği
  * (14/18/24px) yerine kutunun ~%40'ı kullanılır: 24→10, 32→14, 40→16px.
@@ -35,7 +35,7 @@ export function getShapeClasses(shape: AvatarShape, size: AvatarSize): string {
 }
 
 /**
- * Faz 15: ilk + son kelimenin baş harfi ("Aykut Yılmaz" → "AY"); tek kelimede
+ * İlk + son kelimenin baş harfi ("Aykut Yılmaz" → "AY"); tek kelimede
  * tek harf. Büyük harf Türkçe kurallarıyla ("ilker" → "İ", "I" değil).
  */
 export function getInitials(alt: string): string {

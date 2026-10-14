@@ -42,11 +42,12 @@ function useThumb(containerRef: React.RefObject<HTMLDivElement | null>, selected
   return rect;
 }
 
-/**
- * Faz 16.1 — ant.design Segmented'ın yapısı, Tabs `pills`in görünümü (aynı
+/*
+ * ant.design Segmented'ın yapısı, Tabs `pills`in görünümü (aynı
  * zemin, aynı kayan beyaz dilim). Tabs'ten ayrı çünkü anlamı farklı: Tabs bir
  * PANEL değiştirir (`tablist`), Segmented bir DEĞER seçer — form kontrolü.
- *
+ */
+/**
  * Erişilebilirlik: gerçek `<input type="radio">`lar + `role="radiogroup"`.
  * Ok tuşları seçimi taşır, Tab gruba tek durakla girer, `name` ile native
  * forma katılır, disabled seçenek atlanır — hepsi tarayıcının kendisinden.

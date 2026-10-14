@@ -8,7 +8,7 @@ export function getMenuItemJustify(justify: MenuItemJustify): string {
   return { left: "justify-start", right: "justify-end", center: "justify-center" }[justify];
 }
 
-/**
+/*
  * Eskiden `onNavigate ?? window.location.href` düşüşü 6 farklı dosyada
  * birbirinden bağımsız kopyalanmıştı (BasicMenuItem, DropdownSubMenu,
  * MegaMenuItem, MegaSubMenu, SidebarItem, MegaSub) — tek bir yerde.
@@ -30,7 +30,7 @@ export function isMenuItemActive(item: MenuItemType, activeKey: string | null): 
   return false;
 }
 
-/**
+/*
  * Yatay nav öğesinin alt göstergesi. Eskiden öğenin kendi `border-b-2`'siydi —
  * öğe `rounded-md` bir `Button` olduğundan çizginin uçları köşe yuvarlaklığıyla
  * bükülüyordu, ve rengi açık `-border` tonuydu (primary DEĞİL). Artık kutunun
@@ -74,7 +74,7 @@ export function getItemClass(item: MenuItemType, activeKey: string | null, color
   );
 }
 
-/**
+/*
  * Faz 13.5 kullanıcı bulgusu: aktif öğe eskiden sadece metin rengiyle
  * ayırt ediliyordu — Button'ın kendi varsayılan `solid`/`primary` dolgusu
  * yüzünden zaten HER öğe koyu mavi bir buton gibi göründüğünden bu incelik
@@ -92,11 +92,11 @@ export function getMenuVerticalItemClass(item: MenuItemType, activeKey: string |
   return isActive ? cn(textClass[color], bgSubtleClass[color], "font-medium") : cn(textHoverClass[color], "hover:bg-mari-surface-alt font-normal");
 }
 
-/**
+/*
  * Eskiden `w-2xs`/`w-6xl`/`w-12` gibi bir karışım kullanıyordu — `2xs`/`6xl`
- * Tailwind'in `w-*` (width) skalasında GERÇEKTEN YOK (Slider'daki
- * `w-lg`/`w-md` hatasının aynısı, bkz. plan). Gerçek genişliklerle düzeltildi.
- *
+ * Tailwind'in `w-*` (width) skalasında GERÇEKTEN YOK. Gerçek genişliklerle düzeltildi.
+ */
+/**
  * Ray 48px'ten 64px'e çıktı: 20px ikon + iki yanda 14px satır dolgusu + 8px
  * nav dolgusu; 48px'te ikon ortalanamıyor ve etiketin ilk harfleri görünüyordu.
  * Hover'da genişleyen ray içeriğin ÜSTÜNE bindiği için gölge alır.

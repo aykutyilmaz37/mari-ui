@@ -9,7 +9,7 @@ export interface TablePaginationProps {
   skeleton?: boolean;
 }
 
-/**
+/*
  * Faz 13.5 kullanıcı isteği ("diğer component'lerde kullandığımız şeyleri
  * burada da uygulayalım"): eskiden burada, `../../pagination`'daki paylaşılan
  * `Pagination` component'iyle NEREDEYSE BİREBİR AYNI bir sayfa-numarası/

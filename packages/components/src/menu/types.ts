@@ -11,10 +11,11 @@ export interface MenuItemType extends LinkBehaviorProps {
   title: string;
   description?: string;
   key: string;
-  /** Eskiden `iconName: string` idi ve silinmiş bir `mock-data/mockIconData`
-   * dosyasından ad->component eşleme yapıyordu (bkz. plan Faz 0 —
-   * mock-data zaten "production ağacında olmamalı" diye kaldırılmıştı, bu
-   * import ÇALIŞMIYORDU). Artık tüketici ikonu doğrudan geçiriyor. */
+  /*
+   * Eskiden `iconName: string` idi ve silinmiş bir `mock-data/mockIconData`
+   * dosyasından ad->component eşleme yapıyordu. Artık tüketici ikonu doğrudan geçiriyor.
+   */
+  /** Öğenin başındaki ikon. */
   icon?: React.ReactNode;
   disabled?: boolean;
   route?: string;
@@ -50,13 +51,13 @@ export type MenuPosition = "default" | "sticky" | "fixed";
 export type SidebarVariant = "hover" | "click" | "drawer";
 export type SidebarPosition = "left" | "right";
 
-/**
+/*
  * Eskiden her menü dosyası `next/navigation`'ın `useRouter`/`usePathname`
- * hook'larına doğrudan bağımlıydı — bu paket bir Next.js uygulaması değil
- * (bkz. plan: "next peer DEĞİL — kütüphane Next'e bağlı olmamalı"). Artık
+ * hook'larına doğrudan bağımlıydı — bu paket bir Next.js uygulaması değil. Artık
  * navigasyon tüketiciden gelen bir callback; route bilgisini tüketici
  * hangi router'ı kullanıyorsa (Next, React Router, düz `<a>`) onunla eşler.
  */
+/** Menülerin ortak gezinme özellikleri: router'dan bağımsız `onNavigate` ve aktif öğe için `currentPath`. */
 export interface MenuNavigationProps {
   /** Bir menü öğesine (route'u olan) tıklandığında çağrılır. Verilmezse tam sayfa geçişi yapılır. */
   onNavigate?: (route: string) => void;

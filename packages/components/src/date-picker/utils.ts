@@ -2,7 +2,7 @@ import { addDays, compareDay, isBetweenDays, isSameDay, isWithin, startOfDay } f
 import type { RangePosition } from "../calendar/_components/DayGrid";
 import type { DatePickerMode, DatePickerPicker } from "./types";
 
-/** Faz 16.5 — DatePicker'ın saf mantığı. */
+/** DatePicker'ın saf mantığı. */
 
 export function defaultFormat(mode: DatePickerMode, picker: DatePickerPicker, seconds = false): string {
   const time = seconds ? "HH:mm:ss" : "HH:mm";

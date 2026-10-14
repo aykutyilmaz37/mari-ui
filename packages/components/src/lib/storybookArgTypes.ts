@@ -1,7 +1,7 @@
 import type { ArgTypes } from "@storybook/react";
 
 /**
- * Faz 4 — Storybook standardı: `@mari-ui/core`'un paylaştığı 5 eksen
+ * Storybook standardı: `@mari-ui/core`'un paylaştığı 5 eksen
  * (color/variant/size/radius/placement) HER component'te tekrar tekrar
  * aynı Türkçe açıklamayla tanımlanmasın diye ortak argType parçaları.
  *

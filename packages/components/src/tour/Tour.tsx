@@ -109,13 +109,14 @@ function Footer({ current, total, step, onPrev, onNext, skeleton }: Readonly<Foo
   );
 }
 
-/**
- * Faz 16.6 — yapı ant.design Tour'dan: arayüzü adım adım tanıtan rehber.
+/*
+ * yapı ant.design Tour'dan: arayüzü adım adım tanıtan rehber.
  * Her adım bir öğeyi vurgular (sayfa kararır, hedefin çevresi açık kalır) ve
  * yanında başlık/açıklama/görsel taşıyan bir panel açar; hedefsiz adım
  * ortada. Panel konumu ve ok Popover ile ortak (`useFloatingPosition`,
  * `FloatingArrow`).
- *
+ */
+/**
  * Erişilebilirlik: panel `role="dialog"`; karartmalıyken modal (odak
  * panelde döner, Escape kapatır, kapanınca odak açılıştan önceki öğeye
  * döner). Açılışta odak "Sonraki"de; adım değişince içerik (adım no +

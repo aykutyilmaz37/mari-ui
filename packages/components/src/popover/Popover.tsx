@@ -119,12 +119,13 @@ function useHoverIntent(setOpen: (open: boolean) => void) {
   return { enter: () => schedule(true, HOVER_OPEN_MS), leave: () => schedule(false, HOVER_CLOSE_MS), cancel: () => clearTimeout(timer.current) };
 }
 
-/**
- * Faz 16.2 — yapı ant.design Popover'dan: başlık + etkileşimli içerik taşıyan
+/*
+ * yapı ant.design Popover'dan: başlık + etkileşimli içerik taşıyan
  * yüzen panel. Tooltip'ten farkı: içinde düğme/form olabilir, bu yüzden
  * gerçek bir (modal olmayan) dialog. Panel, konum ve ok Dropdown ile ortak
  * (`useFloatingPosition`, `FloatingArrow`).
- *
+ */
+/**
  * Erişilebilirlik: tetikleyici `aria-expanded` + `aria-haspopup="dialog"` +
  * (açıkken) `aria-controls`; panel `role="dialog"`, başlık adıdır. Tıklamayla
  * açılınca odak panele geçer; Escape/dışarı tıklama/kenardan Tab kapatır.

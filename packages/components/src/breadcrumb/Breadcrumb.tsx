@@ -21,19 +21,19 @@ import {
 
 export type { BreadcrumbProps };
 
-/**
+/*
  * Faz 13.5 kullanıcı bulgusu (plan denetiminde de not edilmişti): son öğede
  * `aria-current="page"` YOKTU — ekran okuyucu kullanıcıları hiyerarşideki
  * geçerli konumu bilemiyordu. Yapı da düz `<span>` sarmalayıcılardan
- * ant.design'ın gerçek Breadcrumb'ıyla (DOM incelemesi, ant.design/
- * components/breadcrumb) aynı semantik `<nav><ol><li>` listesine çevrildi;
+ * ant.design'ın gerçek Breadcrumb'ıyla aynı semantik `<nav><ol><li>` listesine çevrildi;
  * ayırıcı artık `aria-hidden` (ekran okuyucu her öğe arasında "/" okumasın
  * diye). Ayrıca `onClick` VAR ama `href` YOK olan öğeler eskiden `<span
  * role="none">` idi — tıklanabilirdi ama klavyeyle ASLA erişilemiyordu
  * (AutoComplete/Rate/Switch/Tooltip'te bulunanlarla aynı sınıf gerçek bug);
  * artık gerçek bir `<button>`.
- *
- * Faz 15.5: ikon, öğe başına açılır menü (`menu`, Dropdown ile), `maxItems`
+ */
+/**
+ * İkon, öğe başına açılır menü (`menu`, Dropdown ile), `maxItems`
  * katlama ("…" düğmesi), satır kırılması (375px'te yatay taşma yok), dokunma
  * hedefi, son öğe ön plan renginde ve `skeleton`.
  */

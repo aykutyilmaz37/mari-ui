@@ -13,13 +13,13 @@ export type ButtonClassNames = SlotClassNames<ButtonSlot>;
 export type ButtonLoading =
   | boolean
   | {
-      /** ms — gösterge ancak bu süre dolunca belirir (kısa işlemlerde titreme olmasın). Buton yine HEMEN devre dışı olur. */
+      /** Ms — gösterge ancak bu süre dolunca belirir (kısa işlemlerde titreme olmasın). Buton yine HEMEN devre dışı olur. */
       delay?: number;
       icon?: React.ReactNode;
       iconPosition?: ButtonIconPosition;
     };
 
-/**
+/*
  * `aria-*`, `id`, `data-*` gibi native attribute'lar — eskiden Button
  * bunları hiç desteklemiyordu (kapalı bir prop objesiydi), bu yüzden
  * `aria-label` gibi temel erişilebilirlik prop'ları bile geçirilemiyordu.

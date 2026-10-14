@@ -1,6 +1,5 @@
 /**
- * Faz 16.9 — grafiklerin saf matematiği (paket yok — kullanıcı kararı:
- * "paket bağımlılığı istemiyorum"). d3-scale'in ihtiyaç duyduğumuz küçük
+ * Grafiklerin saf matematiği. d3-scale'in ihtiyaç duyduğumuz küçük
  * kısmı: yuvarlak eksen değerleri, doğrusal ve bant ölçek.
  */
 

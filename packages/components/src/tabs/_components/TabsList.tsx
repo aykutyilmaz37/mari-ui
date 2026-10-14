@@ -79,16 +79,16 @@ function getKeyTarget(key: string, tabs: HTMLButtonElement[], index: number, ver
 }
 
 /**
- * Eski sürümdeki sorunlar (Faz 13.6'da giderildi):
+ * Eski sürümdeki sorunlar:
  * - Gösterge sadece `activeTab` değişince ölçülüyordu — pencere/yazı tipi
- *   yüklenince yanlış yerde kalıyordu. Artık ResizeObserver ile.
+ *  yüklenince yanlış yerde kalıyordu. Artık ResizeObserver ile.
  * - Taşan sekmeler sayfayı yatayda taşırıyordu (mobilde son sekme kartın
- *   dışına çıkıyordu). Artık kaydırılabilir şerit + kenar solması, aktif
- *   sekme görünür alana kaydırılıyor.
+ *  dışına çıkıyordu). Artık kaydırılabilir şerit + kenar solması, aktif
+ *  sekme görünür alana kaydırılıyor.
  * - Ok tuşu gezinmesi yoktu; her sekme ayrı bir Tab durağıydı. Artık
- *   WAI-ARIA Tabs deseni: roving tabindex, ←/→ (dikeyde ↑/↓), Home/End.
+ *  WAI-ARIA Tabs deseni: roving tabindex, ←/→ (dikeyde ↑/↓), Home/End.
  * - `cloneElement` + ref dizisi ile sekme bulunuyordu (sarmalanmış bir
- *   TabsTrigger'ı kaçırıyordu). Artık DOM'dan `[aria-selected=true]`.
+ *  TabsTrigger'ı kaçırıyordu). Artık DOM'dan `[aria-selected=true]`.
  */
 export function TabsList({ children, extra, className, "aria-label": ariaLabel }: Readonly<TabsListProps>) {
   const { activeTab, setActiveTab, isControlled, variant, orientation, size, fill, align, color, activationMode, skeleton } = useTabs();

@@ -1,7 +1,7 @@
 import type { ColorFormat, ColorInfo, Hsba, Rgba } from "./types";
 
 /**
- * Faz 16.4 — ColorPicker'ın saf renk mantığı. İç model HSB(+alfa): 2B alan
+ * ColorPicker'ın saf renk mantığı. İç model HSB(+alfa): 2B alan
  * doygunluk × parlaklık, kaydırıcılar ton ve alfa. Hex/RGB yalnız giriş ve
  * çıkışta hesaplanır — RGB'ye gidip gelmek tonu kaybettirir (ör. siyahta
  * ton 0'a düşer, kullanıcının seçtiği ton kaybolurdu).

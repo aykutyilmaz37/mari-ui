@@ -11,7 +11,7 @@ export type { BackTopProps };
 const reducedMotion = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * Faz 16.6 — FloatButton.BackTop: sayfa (ya da `target`) yeterince
+ * FloatButton.BackTop: sayfa (ya da `target`) yeterince
  * kaydırılınca beliren "başa dön". Hareket azaltma tercihinde anında atlar.
  * Başa dönünce odak sayfanın başına (ilk h1 / main) taşınır — düğme
  * gizlendiğinde odak kaybolmasın ve klavye kullanıcısı baştan devam etsin.

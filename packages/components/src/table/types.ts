@@ -17,9 +17,9 @@ export interface ActionProps<T> {
 
 export type TableColumnAlign = "start" | "center" | "end";
 
-/**
+/*
  * Eskiden `tableHeader: string[]` ve `tableBody: ColumnProps<T>[]` İKİ AYRI
- * paralel diziydi — elle senkron tutulması gerekiyordu (bkz. plan denetimi).
+ * paralel diziydi — elle senkron tutulması gerekiyordu.
  * Artık tek bir `columns` dizisi hem başlığı hem veri eşlemesini taşıyor.
  *
  * `columnName` eskiden `keyof T | string` idi — `| string` kısmı `keyof`
@@ -29,11 +29,11 @@ export type TableColumnAlign = "start" | "center" | "end";
  *
  * `align` eskiden yoktu — hizalama DOM index'ine göre otomatik seçiliyordu
  * (ilk sütun sol, son sütun sağ, ortadakiler merkez). Bu, aynı tablodaki
- * her sütunun farklı hizalanmasına yol açıyordu (kullanıcı bulgusu — "sütunları
- * sol ortalı sağa göre hizalamışız her sütun farklı"). Artık tüm sütunlar
+ * her sütunun farklı hizalanmasına yol açıyordu. Artık tüm sütunlar
  * varsayılan olarak SOLA hizalı; farklı bir hizalama gerekiyorsa (örn. sayısal
  * bir sütun) `align` ile açıkça belirtilir.
  */
+/** Tablo sütunu: başlık, gösterilecek alan (`columnName`), isteğe bağlı `render`, hiza ve davranış ayarları. */
 export interface ColumnDef<T> {
   header: React.ReactNode;
   columnName?: keyof T;
@@ -42,7 +42,7 @@ export interface ColumnDef<T> {
   /** Hücre/başlık metninin hizalanması. Varsayılan: `"start"` (sola hizalı). */
   align?: TableColumnAlign;
   /**
-   * Hücrenin özel içeriği (ant.design `render`): durum için `Tag`, kişi için
+   * Hücrenin özel içeriği: durum için `Tag`, kişi için
    * `Avatar` + isim, biçimlendirilmiş tutar, link… Verilmezse değer düz metin
    * olarak (2 satırda kırpılıp taşarsa tooltip'le) gösterilir. Satır içi
    * düzenleme sırasında `columnName`'li sütunlar yine `Input` olur.

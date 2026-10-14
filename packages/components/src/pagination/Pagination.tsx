@@ -60,8 +60,6 @@ export type { PaginationProps };
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 1000];
 
 /**
- * Yapı ant.design Pagination'dan (kare 32px öğeler, 8px aralık, "…" üzerine
- * gelince çift ok, hızlı atlama, simple mod), görünüm kendi token'larımızdan.
  * Öğeler `Button` yerine yerel bir `<button>` — Button'ın `px-*` dolgusu
  * sayı düğmelerini genişliğe göre farklı boyutlara itiyordu; burada her
  * öğe `min-w` = yükseklik olan bir karedir, iki basamaklı sayılar büyür.
@@ -132,18 +130,22 @@ const fieldClass =
   "border border-mari-input bg-mari-surface text-mari-foreground transition-colors hover:border-mari-primary " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring";
 
-/**
+/*
  * Faz 13.5'ten beri `TablePagination` bu component'i sarmalıyor — tek gerçek
  * sayfa-listesi mantığı burada (bkz. `utils.ts`).
  *
- * Faz 13.6 (kullanıcı bulgusu: "yeni sayfaya geçince tuhaf davranıyor"):
+ * Faz 13.6:
  * - Sayfa listesi artık SABİT sayıda slot üretir; genişlik zıplamaz.
  * - "…" asla tek bir sayfayı gizlemez.
  * - Sayfa aralık dışına düşerse (toplam azaldı, sayfa boyutu büyüdü) son
- *   geçerli sayfaya çekilir; eskiden "901-247 / 247 kayıt" yazıyordu.
+ *  geçerli sayfaya çekilir; eskiden "901-247 / 247 kayıt" yazıyordu.
  * - Kayıt yokken "Sonraki" düğmesi `onPageChange(0)` çağırabiliyordu.
  * - Aktif sayfaya tekrar tıklamak `onPageChange`'i çağırmaz (gereksiz fetch).
  * - Controlled + uncontrolled (`defaultPage`/`defaultPageSize`).
+ */
+/**
+ * Sayfalama: önceki/sonraki, sayfa numaraları (uzun listede `…` ile kısaltılır), isteğe
+ * bağlı sayfa boyutu seçici ve sayfaya atlama; `simple` ile sade görünüm.
  */
 export function Pagination({
   currentPage,

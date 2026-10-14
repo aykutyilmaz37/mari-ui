@@ -11,9 +11,9 @@ export const strokeClass: Record<ColorRole, string> = {
   neutral: "stroke-mari-neutral",
 };
 
-/**
+/*
  * SVG'nin iç koordinat sistemi (viewBox birimi) — ekrandaki boyut `SPINNER_SIZE`.
- * Faz 15.6: eskiden `width/height` bu sayılarla px'ti; kök font büyüyünce
+ * eskiden `width/height` bu sayılarla px'ti; kök font büyüyünce
  * (4K, erişilebilirlik yazı boyutu) spinner küçük kalıyordu (px yasak kuralı).
  */
 export const SPINNER_VIEWBOX: Record<Size, number> = { sm: 16, md: 24, lg: 40 };

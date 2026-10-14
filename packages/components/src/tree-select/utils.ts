@@ -3,7 +3,7 @@ import { conductCheck, getAncestorKeys, getParentKeys, isCheckEligible, toggleCh
 import type { TreeSelectCheckedStrategy } from "./types";
 
 /**
- * Faz 16.4 — TreeSelect'in saf mantığı. İndeks, görünür düğümler, işaret
+ * TreeSelect'in saf mantığı. İndeks, görünür düğümler, işaret
  * yayılımı ve arama Tree'den (`tree/utils`); burada yalnız TreeSelect'e özgü
  * olanlar: değer ↔ işaret dönüşümü (gösterim stratejisi), ilk açık dallar.
  */

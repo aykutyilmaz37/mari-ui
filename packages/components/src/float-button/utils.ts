@@ -1,7 +1,7 @@
 import type { FloatButtonPlacement } from "./types";
 
 /**
- * Faz 16.6 — FloatButton'ın saf yardımcıları. Konum: ekranın köşesine
+ * FloatButton'ın saf yardımcıları. Konum: ekranın köşesine
  * sabit, kenardan 1.5rem; çentikli telefonlarda güvenli alan (safe-area)
  * eklenir — düğme ana ekran çubuğunun altında kalmasın.
  */

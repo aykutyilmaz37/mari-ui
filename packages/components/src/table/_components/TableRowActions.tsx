@@ -17,11 +17,10 @@ export interface TableRowActionsProps<T> {
   onCancelInlineEdit: () => void;
 }
 
-/**
+/*
  * Eskiden `_hook/useTableBody.tsx` diye adlandırılmış bir "hook" bu JSX'i
  * üretiyordu — ama hiçbir React hook kuralı taşımıyordu, düz bir JSX
- * factory'siydi (bkz. plan denetimi: "hook değil, component'e
- * dönüştürülecek"). Artık gerçek bir component.
+ * factory'siydi. Artık gerçek bir component.
  */
 export function TableRowActions<T extends { id: string }>({
   actions,

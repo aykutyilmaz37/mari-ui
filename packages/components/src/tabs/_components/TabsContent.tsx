@@ -6,10 +6,10 @@ import { getTabId, useTabs } from "../useTabs";
 import type { TabsContentProps } from "../types";
 import { skeletonFill } from "../../lib/skeleton";
 
-/**
+/*
  * Panel `tabIndex=0` taşır (WAI-ARIA: içinde odaklanabilir öğe olmayan bir
  * panel de klavyeyle erişilebilsin). Eskiden sabit `p-2` dolgu dayatıyordu —
- * artık sadece sekme çubuğundan ayıran üst boşluk (ant.design: 16px).
+ * artık sadece sekme çubuğundan ayıran üst boşluk.
  */
 export function TabsContent({ children, value, forceMount = false, className }: Readonly<TabsContentProps>) {
   const { activeTab, baseId, keepMounted, orientation, skeleton, registerPanel } = useTabs();

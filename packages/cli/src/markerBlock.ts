@@ -3,7 +3,7 @@
  * tüketicinin KENDİ amacıyla da yazdığı, paylaşılan dosyalardır — özellikle
  * `AGENTS.md`. Bu yüzden `mari-ui`ın yazdığı her bölüm bu işaretler arasına
  * alınır; `sync` SADECE bu blok içeriğini değiştirir, öncesindeki/sonrasındaki
- * hiçbir şeye dokunmaz (bkz. plan Faz 7). Dosya hiç yoksa oluşturulur, varsa
+ * hiçbir şeye dokunmaz. Dosya hiç yoksa oluşturulur, varsa
  * ve markerı taşımıyorsa blok SONA eklenir (mevcut içerik korunur), zaten
  * taşıyorsa sadece iki işaret arası DEĞİŞTİRİLİR.
  */

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { personaNames, personas, resolveThemeConfig, type PersonaName } from "@mari-ui/tokens";
 
 /**
- * YALNIZ DOKÜMAN İÇİN (Faz 21). Storybook araç çubuğundaki Kişilik seçimi
+ * YALNIZ DOKÜMAN İÇİN. Storybook araç çubuğundaki Kişilik seçimi
  * `<html data-persona>`e yazılır ve bu olay yayınlanır (`apps/docs/.storybook/withPersona.tsx`).
  * MDX sayfalarında dekoratör çalışmadığı için Foundations sayfaları seçimi buradan okur.
  */

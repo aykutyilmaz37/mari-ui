@@ -190,9 +190,7 @@ function useSnapControl(motion: Motion, snaps: number[], onClose: () => void, on
   return { settle, nextSnap, scrimOpacity };
 }
 
-/**
- * Tutamaç + başlıktan sürükleme; bırakınca durağa oturur ya da kapanır.
- *
+/*
  * Responder BİR KEZ yaratılır, güncel durakları ref'ten okur: eskiden
  * `[snaps]`e bağlıydı — çağıran her çizimde yeni `snapPoints` dizisi verince
  * (Select) sürükleme ortasında yeniden yaratılıyor, başlangıç yüksekliği 0'a
@@ -200,6 +198,7 @@ function useSnapControl(motion: Motion, snaps: number[], onClose: () => void, on
  * Tutamaç bir Pressable (dokununca sonraki durak): dikey çekişi CAPTURE ile
  * baştan alıyoruz ve bırakmıyoruz — devralma pazarlığına kalmasın.
  */
+/** Tutamaç + başlıktan sürükleme; bırakınca durağa oturur ya da kapanır. */
 function useSheetPan(motion: Motion, snaps: number[], closable: boolean, settle: (index: number, velocity?: number) => void) {
   const { height, current } = motion;
   const live = useRef({ snaps, closable, settle });

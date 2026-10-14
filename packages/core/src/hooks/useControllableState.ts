@@ -18,7 +18,7 @@ export interface UseControllableStateOptions<T> {
  *
  * Not: `"use client"` bu dosyanın kendisinde — bir kütüphane hook'unun
  * client-only olup olmadığı tüketicinin root layout'una değil, dosyanın
- * kendisine bağlı olmalı (Faz 3'ün ana düzeltmelerinden biri buydu).
+ * kendisine bağlı olmalı.
  */
 export function useControllableState<T>({
   value: controlledValue,

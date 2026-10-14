@@ -15,7 +15,7 @@ export interface SkeletonSlotProps {
 }
 
 /**
- * Faz 15 — iskelette bir bölgeyi yer tutucuya çevirir: gerçek içerik
+ * İskelette bir bölgeyi yer tutucuya çevirir: gerçek içerik
  * `invisible` olarak aynı grid hücresinde kalır (yükseklik/genişlik korunur,
  * tab sırasından çıkar), yer tutucu üstüne biner. İçerik yoksa (veri henüz
  * gelmedi) kutuyu yer tutucu belirler — her iki durumda da yüklenince zıplama

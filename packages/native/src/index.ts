@@ -1,15 +1,14 @@
+/*
+ * Faz 5 native pilotu: Button, Input, Card. Faz 16.3 veri gösterimi dalgasında
+ * List, ListItem ve ListItemMeta da eklendi. Diğer web component'leri native
+ * karşılıklarını sonraki dalgalarda alır.
+ */
 /**
  * @mari-ui/native — mari-ui'ın React Native katmanı.
  *
  * `StyleSheet` + `@mari-ui/tokens` JS objesi kullanır; NativeWind veya başka
- * bir babel/metro eklentisi GEREKTİRMEZ (bkz. plan Faz 5 kararı — NativeWind
- * v5 karar anında hâlâ pre-release'ti ve tüketiciye babel+metro kurulumu
- * dayatıyordu, bu kabul edilemezdi). Tüketici tek yapması gereken:
+ * bir babel/metro eklentisi GEREKTİRMEZ. Tüketici tek yapması gereken:
  * `import { Button } from "@mari-ui/native"`.
- *
- * Faz 5 native pilotu: Button, Input, Card. Faz 16.3 veri gösterimi dalgasında
- * List, ListItem ve ListItemMeta da eklendi. Diğer web component'leri native
- * karşılıklarını sonraki dalgalarda alır.
  */
 export { Button } from "./Button";
 export type { ButtonProps, ButtonShape, ButtonIconPosition } from "./Button";

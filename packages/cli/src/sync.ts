@@ -15,7 +15,7 @@ import type { FileTarget } from "./writers/types";
 export const ALL_AGENTS = ["claude", "codex", "cursor", "gemini", "copilot"] as const;
 export type AgentName = (typeof ALL_AGENTS)[number];
 
-/** `rules`: kısa içerik (her istekte okunan dosyalar). `skill`: Claude skill'inin zengin içeriği (Faz 17). */
+/** `rules`: kısa içerik (her istekte okunan dosyalar). `skill`: Claude skill'inin zengin içeriği. */
 export interface AgentRuleBodies {
   rules: string;
   skill: string;
@@ -68,7 +68,7 @@ export interface SyncResult {
   upToDate: string[];
 }
 
-/**
+/*
  * Faz 7'nin çekirdek fonksiyonu: manifest + tema → tek gövde içerik → beş
  * aracın dosyalarına (marker bloğu korunarak) uygulanır. `init` ve `sync`
  * komutlarının İKİSİ DE bunu çağırır — aralarındaki tek fark `init`in ayrıca

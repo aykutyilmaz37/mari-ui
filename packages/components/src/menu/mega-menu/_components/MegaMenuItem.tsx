@@ -32,8 +32,8 @@ export interface MegaMenuItemProps extends MenuNavigationProps {
   className?: string;
 }
 
-/**
- * Faz 15.5: çocuklu öğe bir açma düğmesidir (APG "disclosure navigation"):
+/*
+ * çocuklu öğe bir açma düğmesidir (APG "disclosure navigation"):
  * `aria-expanded` + `aria-controls`, tıklama/Enter/Boşluk/↓ paneli açar ve
  * klavyeden açıldıysa odağı panelin ilk öğesine taşır. Eskiden panel ODAKLA
  * açılıyordu (Tab ile gezerken her öğede panel patlıyordu) ve body'nin sonuna

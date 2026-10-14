@@ -18,7 +18,7 @@ export interface EmptyProps extends SkeletonableProps {
   actions?: React.ReactNode;
   /** `md` (varsayılan): sayfa/bölüm. `sm`: kart, tablo, liste içi — daha az boşluk, küçük ikon. */
   size?: "sm" | "md";
-  /**
+  /*
    * Başlığın etiketi. Varsayılan `p`: boş durum bir belge BÖLÜMÜ değildir —
    * eskiden sabit `<h2>`'ydi, kart/tablo içinde başlık hiyerarşisini bozuyordu.
    * Sayfanın ana içeriği boşsa uygun bir başlık seviyesi verin.
@@ -33,7 +33,7 @@ const SIZE = {
 } as const;
 
 /**
- * Faz 15: varsayılan ikon `FileWarning` idi — boş durum bir HATA değil
+ * Varsayılan ikon `FileWarning` idi — boş durum bir HATA değil
  * (`InboxIcon`). İkon yumuşak bir daire içinde; başlık `h2` yerine `p`
  * (`titleAs`); `onClick` olmadan `buttonText` verilince işe yaramaz, devre dışı
  * bir buton çiziliyordu — artık buton yalnızca bir eylem varsa çıkar.

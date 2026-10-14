@@ -1,5 +1,5 @@
 /**
- * Faz 16.5 — Calendar / DatePicker / TimePicker'ın ortak tarih motoru.
+ * Calendar / DatePicker / TimePicker'ın ortak tarih motoru.
  * Bağımlılık yok: yerel `Date` + `Intl` (varsayılan yerel `tr-TR`). Tüm
  * hesaplar YEREL saatte; gün karşılaştırmaları saat bileşenini yok sayar.
  */

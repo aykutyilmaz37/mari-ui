@@ -149,13 +149,14 @@ function triggerText(showText: ColorPickerProps["showText"], color: Hsba | null,
   return format === "hex" ? text.toUpperCase() : text;
 }
 
-/**
- * Faz 16.4 — yapı ant.design ColorPicker'dan: renk kutulu tetikleyici + panel
+/*
+ * yapı ant.design ColorPicker'dan: renk kutulu tetikleyici + panel
  * (doygunluk/parlaklık alanı, ton ve opaklık kaydırıcıları, HEX/RGB/HSB
  * girişleri, hazır renk grupları, "renk yok"). Panel Popover üstünde (konum,
  * kapanma, odak yönetimi ortak); tetikleyici Input/Select ile aynı yükseklik
  * ve kenarlık.
- *
+ */
+/**
  * Erişilebilirlik: tetikleyici `aria-haspopup="dialog"` + `aria-expanded`,
  * seçili renk açıklamada (`aria-describedby`) okunur. Açılınca odak 2B alana
  * geçer; alan ve kaydırıcılar `role="slider"` ile ok tuşlarıyla kullanılır,

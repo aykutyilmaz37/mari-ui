@@ -142,13 +142,14 @@ function usePickerDismiss(state: PickerState, anchorRef: ElRef<HTMLDivElement>, 
   }, [open, slot]);
 }
 
-/**
- * Faz 16.5 — yapı ant.design DatePicker/RangePicker/TimePicker'dan; 16.0
+/*
+ * yapı ant.design DatePicker/RangePicker/TimePicker'dan; 16.0
  * kararıyla tek motor: `mode="date" | "time" | "datetime"`, `picker`
  * (gün/ay/yıl), `range` (iki alan, gün modunda iki aylık panel, üzerine
  * gelince önizleme). Alan yazılabilir (biçim `format`, ayraçlar esnek);
  * takvim Calendar ile ortak (APG date grid). Bağımlılık yok.
- *
+ */
+/**
  * Erişilebilirlik: alan(lar) `aria-haspopup="dialog"` + `aria-expanded`;
  * fareyle açılınca odak alanda kalır, ↓ odağı takvime (ya da saat
  * sütununa) taşır; Escape kapatır ve alana döner; Enter yazılanı uygular.

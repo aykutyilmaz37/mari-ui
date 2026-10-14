@@ -18,10 +18,11 @@ function displayCount(count: BadgeProps["count"], overflowCount: number): string
   return count;
 }
 
-/**
- * Faz 16.2 — yapı ant.design Badge'den. Bir öğenin (bildirim zili, avatar)
+/*
+ * yapı ant.design Badge'den. Bir öğenin (bildirim zili, avatar)
  * köşesinde sayı ya da nokta; `children` yoksa satır içinde tek başına.
- *
+ */
+/**
  * Erişilebilirlik: kabarcık görseldir (`aria-hidden`) — sarılan düğmenin
  * yanında ayrı bir "3" okunması anlamsız olurdu. Sayı ya `label` ile gizli
  * metin olarak verilir ya da (daha iyisi) düğmenin kendi adına katılır.

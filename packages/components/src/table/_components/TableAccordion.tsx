@@ -21,7 +21,7 @@ export interface TableAccordionProps<T extends { id: string }> {
   pageSize?: number;
 }
 
-/**
+/*
  * `responsive="accordion"` iken dar ekranda (`md` altı) `Table`'ın normal
  * tablo görünümü YERİNE render edilir — kullanıcı bulgusu: "responsive'de
  * tablo görünümünden ziyade accordionlu bir şekilde satırları göstermek

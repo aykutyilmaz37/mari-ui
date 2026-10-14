@@ -25,7 +25,7 @@ export interface DropdownContentProps {
   customVisible?: boolean;
   /**
    * Panelin tetikleyiciyi gösteren küçük bir ok (üçgen) taşımasını sağlar. Ok, panelin hizalandığı
-   * kenardan sabit 12px içeridedir (ant.design gibi); `{ pointAtCenter: true }` verilirse panel,
+   * kenardan sabit 12px içeridedir; `{ pointAtCenter: true }` verilirse panel,
    * ok tetikleyicinin ORTASINI gösterecek şekilde kayar — kebab gibi küçük tetikleyiciler için.
    */
   arrow?: boolean | { pointAtCenter?: boolean };

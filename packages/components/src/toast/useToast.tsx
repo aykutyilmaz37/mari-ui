@@ -70,11 +70,15 @@ function ToastGroup({ position, toasts, onClose }: Readonly<{ position: ToastPos
   );
 }
 
-/**
- * Faz 13.6: ekran okuyucu duyurusu için KALICI iki canlı bölge (polite +
+/*
+ * ekran okuyucu duyurusu için KALICI iki canlı bölge (polite +
  * assertive). Eskiden hiç yoktu — hiçbir toast duyurulmuyordu. Bölgeler hep
  * DOM'da; sadece metinleri değişir (yeni eklenen canlı bölgeyi bazı ekran
  * okuyucular kaçırır). Hata toast'ları `assertive`.
+ */
+/**
+ * Uygulamanın köküne bir kez konur; toast'lar `useToast()` ile gösterilir. Ekran okuyucu
+ * duyuruları için kalıcı canlı bölgeler taşır (hata toast'ları `assertive`).
  */
 export function ToastProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [toasts, setToasts] = useState<ToastEntry[]>([]);

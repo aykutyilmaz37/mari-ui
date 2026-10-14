@@ -27,8 +27,7 @@ function colorRoleVars(prefix: string, role: SemanticColorRole): Record<string, 
 /**
  * Bir `Theme`in TÜMÜNÜ (`--mari-*`) düz bir CSS custom property haritasına
  * çevirir. Hem `scripts/build-css.ts` (derleme zamanında `dist/theme.css`
- * üretir) HEM DE tema stüdyosu (Faz 6, `apps/studio` — çalışma zamanında
- * canlı önizleme için bir DOM node'a inline `style` olarak uygular) AYNI bu
+ * üretir) HEM DE tema stüdyosu AYNI bu
  * fonksiyonu çağırır. Mapping iki yerde ayrı ayrı elle tutulmuyor — biri
  * güncellenip diğeri unutulursa (build script ile stüdyo sessizce
  * birbirinden sapardı) diye tek kaynak.

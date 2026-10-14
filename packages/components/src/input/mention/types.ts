@@ -15,8 +15,7 @@ export interface MentionOption {
 }
 
 /**
- * Faz 16.4 — Input/Textarea'nın `mentions` özelliği (ant.design Mentions'ın
- * yapısı; ayrı bileşen değil, 16.0 kararı). Tetik karakteri (`@`) yazılınca
+ * Input/Textarea'nın `mentions` özelliği. Tetik karakteri (`@`) yazılınca
  * imlecin altında öneri listesi açılır; seçilen değer metne yazılır.
  */
 export interface MentionsConfig {

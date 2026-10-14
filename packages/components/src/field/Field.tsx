@@ -8,16 +8,17 @@ import type { FieldProps } from "./types";
 
 export type { FieldProps };
 
+/*
+ * Doğrulama YOK — kurallar/state tüketicinin (react-hook-form, zod…) işi;
+ * Field yalnız sonucu gösterir. Eskiden her story (Drawer, Modal, Select,
+ * InputNumber) kendi `Field` yardımcısını yazıyor, id'leri elle eşliyordu.
+ */
 /**
- * Faz 16.1 — form alanının düzeni ve erişilebilirlik bağlantıları: etiket,
+ * Form alanının düzeni ve erişilebilirlik bağlantıları: etiket,
  * ipucu, hata, zorunlu işareti. Kendisi bir kontrol DEĞİL; içindeki kontrole
  * (context ile) id, `aria-describedby`, hata durumu (`color="error"` +
  * `aria-invalid`), `required` ve `disabled` verir. Kontrole açıkça verilen
  * prop her zaman kazanır.
- *
- * Doğrulama YOK — kurallar/state tüketicinin (react-hook-form, zod…) işi;
- * Field yalnız sonucu gösterir. Eskiden her story (Drawer, Modal, Select,
- * InputNumber) kendi `Field` yardımcısını yazıyor, id'leri elle eşliyordu.
  *
  * Hata metni `aria-live="polite"` bölgede: gönderimde ortaya çıkınca okunur.
  * Bölge hep DOM'da (sonradan eklenen canlı bölgeyi bazı ekran okuyucular

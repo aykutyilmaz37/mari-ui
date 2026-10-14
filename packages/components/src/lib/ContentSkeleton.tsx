@@ -103,7 +103,7 @@ export interface ContentSkeletonProps {
 }
 
 /**
- * Faz 15.6 — serbest içeriğin (Drawer/Modal gövdesi) KENDİ şeklinde iskeleti.
+ * Serbest içeriğin (Drawer/Modal gövdesi) KENDİ şeklinde iskeleti.
  * Gerçek içerik görünmez olarak yerinde çizilir (yükseklik korunur, yüklenince
  * zıplama olmaz), sonra her metin satırının ve her kontrolün (input, düğme,
  * checkbox kutusu…) kutusu ölçülüp üstüne bir blok konur. Genel "6 satır

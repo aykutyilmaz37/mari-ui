@@ -11,7 +11,7 @@ import { skeletonFill } from "../../lib/skeleton";
 const skeletonTextClass = cn("rounded-sm text-transparent", skeletonFill(true));
 
 /**
- * Faz 13.6: artık `Button`'ı sarmalamıyor — Button'ın `h-8` sabit yüksekliği
+ * Artık `Button`'ı sarmalamıyor — Button'ın `h-8` sabit yüksekliği
  * ve kendi `px-*` dolgusu sekme ölçüleriyle çakışıyor, ikonla etiket ALT
  * ALTA düşüyordu. Yerel `<button role="tab">`:
  * - roving tabindex (yalnız aktif sekme Tab durağı; diğerlerine ok tuşları),

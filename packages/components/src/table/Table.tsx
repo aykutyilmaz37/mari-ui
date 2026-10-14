@@ -11,24 +11,25 @@ import type { TableProps } from "./types";
 
 export type { TableProps };
 
-/**
+/*
  * Eskiden `tableHeader: string[]` ve `tableBody: ColumnProps<T>[]` İKİ AYRI
- * paralel diziydi, elle senkron tutuluyordu (bkz. plan denetimi). Artık tek
+ * paralel diziydi, elle senkron tutuluyordu. Artık tek
  * bir `columns` dizisi.
- *
- * Kullanıcı bulgularına göre (bkz. plan/sohbet) tamamen elden geçirildi:
+ */
+/**
+ * Kullanıcı bulgularına göre tamamen elden geçirildi:
  * - Sütun hizalaması artık DOM index'ine göre değil `col.align`'a göre
- *   (varsayılan sola hizalı, hepsi tutarlı).
+ *  (varsayılan sola hizalı, hepsi tutarlı).
  * - `loading` prop'u KALDIRILDI — anlamsız bir spinner gösteriyordu; gerçek
- *   skeleton yapısı ileride TÜM component'ler için birlikte gelecek.
+ *  skeleton yapısı ileride TÜM component'ler için birlikte gelecek.
  * - Veri boşken artık gerçek `Empty` component'i (bkz. `TableBody`).
  * - İşlemler sütunu tablo yatay kaydırıldığında sağda `sticky` kalır
- *   (`overflow-x-auto` + `<td>`/`<th>`'de `sticky right-0`).
+ *  (`overflow-x-auto` + `<td>`/`<th>`'de `sticky right-0`).
  * - `responsive="accordion"` dar ekranda (`md` altı) satırları tablo yerine
- *   açılır/kapanır kartlar olarak gösterir (bkz. `TableAccordion`).
+ *  açılır/kapanır kartlar olarak gösterir (bkz. `TableAccordion`).
  * - `pagination` verilirse altta sayfalama kontrolleri render edilir;
- *   `paginationMode="client"` iken `Table` kendi diler, `"server"`
- *   (varsayılan) iken `data`'nın zaten o sayfaya ait dilim olduğu varsayılır.
+ *  `paginationMode="client"` iken `Table` kendi diler, `"server"`
+ *  (varsayılan) iken `data`'nın zaten o sayfaya ait dilim olduğu varsayılır.
  */
 export function Table<T extends { id: string }>({
   data,

@@ -22,13 +22,14 @@ export interface MobileNavProps extends MenuNavigationProps {
   label?: string;
 }
 
-/**
+/*
  * Navbar'ların (BasicMenu/MegaMenu) mobil hâli: hamburger düğmesi + soldan
  * kayan çekmece (`NavDrawer`). Kullanıcı bulgusu: iki navbar da hiç
  * responsive değildi — dar ekranda öğeler taşıyor, "Ana Sayfa" gibi
  * başlıklar iki satıra kırılıyor, mega panel/alt menüler hover'a dayalı
  * olduğu için dokunmatik cihazda fiilen kullanılamıyordu.
- *
+ */
+/**
  * Viewport `breakpoint`in üstüne çıkarsa (hamburger CSS ile gizlenince) açık
  * çekmece kendiliğinden kapanır — yoksa kapatma düğmesi olmayan bir masaüstü
  * ekranında asılı kalırdı.

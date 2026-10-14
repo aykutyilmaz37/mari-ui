@@ -20,7 +20,7 @@ export interface BarChartProps<T> extends CartesianChartProps<T> {
 import { GAP, buildBars, num, valueExtent } from "./bars";
 
 /**
- * Faz 16.9 — çubuk grafiği. Kategoriler arası büyüklük karşılaştırması.
+ * Çubuk grafiği. Kategoriler arası büyüklük karşılaştırması.
  * Çubuklar tek tabandan büyür, veri ucu 4px yuvarlak, kalınlık en fazla
  * 1.5rem (bant boşluğu nefes payı kalır). Vuruş hedefi tüm kategori bandı;
  * tooltip o kategorideki tüm serileri gösterir. Negatif değerler sıfır

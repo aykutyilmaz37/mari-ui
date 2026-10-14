@@ -6,7 +6,7 @@ import type { FileTarget } from "./types";
  * bir "skill" olarak okur. Frontmatter dosyanın LİTERAL İLK BAYTLARI olmak
  * zorunda — bu yüzden `prefix` olarak (marker bloğunun DIŞINDA) yazılır.
  *
- * Faz 17: SKILL.md diğer araçlardan ZENGİN içerik alır (kısa kurallar +
+ * SKILL.md diğer araçlardan ZENGİN içerik alır (kısa kurallar +
  * sayfa kurma rehberi) — Claude onu yalnız ilgili işte yükler. Skill her
  * istekte yüklenmediği için kesin kurallar ayrıca `CLAUDE.md`ye de yazılır
  * (her oturumda okunur); ayrıntı yine tek yerde, SKILL.md'de.

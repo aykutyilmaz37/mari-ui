@@ -1,8 +1,8 @@
 import { cn, type ColorRole, type Size } from "@mari-ui/core";
 import { bgSolidClass } from "../lib/colorClasses";
 
-/**
- * Kullanıcı geri bildirimi (Faz 13): eskiden `md` bile 28×64px'ti (`lg`
+/*
+ * Kullanıcı geri bildirimi: eskiden `md` bile 28×64px'ti (`lg`
  * 32×96px) — ant.design'ın switch'i referans alındığında (default 22×44px,
  * small 16×28px) çok büyük duruyordu. Track/thumb oranları ant'a hizalandı:
  * `sm`≈ant'ın small'ı, `md`=ant'ın default'u (birebir), `lg` orantılı
@@ -17,8 +17,7 @@ const TRACK_SIZE_CLASS: Record<Size, string> = {
 /**
  * `switchTrueLabel`/`switchFalseLabel` verildiğinde (ant'ın "Text & icon"
  * örneğindeki gibi) normal track bu metne yer açamıyordu — "Kapalı" gibi
- * bir etiket track'in DIŞINA taşıp kesiliyordu (Faz 13 kullanıcı geri
- * bildirimi). Etiketli kullanım için daha geniş, ayrı bir preset.
+ * bir etiket track'in DIŞINA taşıp kesiliyordu. Etiketli kullanım için daha geniş, ayrı bir preset.
  */
 const TRACK_SIZE_WITH_LABEL_CLASS: Record<Size, string> = {
   sm: "h-4 w-14",
@@ -26,7 +25,7 @@ const TRACK_SIZE_WITH_LABEL_CLASS: Record<Size, string> = {
   lg: "h-7 w-28",
 };
 
-/**
+/*
  * Kullanıcı geri bildirimi: `lg` topu track'in kenarına tam oturmuyordu
  * (devtools'ta elle `calc(100% - 1.675rem)` denenince doğru görünmüştü).
  * Kök sebep: dikey kenar payı (`top-0.5` = 2px, üçü de aynı) ile yatay

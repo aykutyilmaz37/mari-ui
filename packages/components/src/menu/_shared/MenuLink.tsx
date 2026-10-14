@@ -28,11 +28,12 @@ export interface MenuLinkProps extends LinkBehaviorProps {
   title?: string;
 }
 
-/**
- * Faz 15.5 — menü öğeleri eskiden `<button>` + `window.location.href` idi:
+/*
+ * menü öğeleri eskiden `<button>` + `window.location.href` idi:
  * orta tık / "yeni sekmede aç" / adres önizlemesi çalışmıyor, arama motorları
  * menüdeki sayfaları hiç göremiyordu. Artık route'u olan öğe gerçek bir link.
- *
+ */
+/**
  * Router bağımsızdır (component Next mi React Router mı bilmez): `onNavigate`
  * verilmişse DÜZ sol tık engellenip ona devredilir (Next: `router.push`,
  * React Router: `navigate`) → sayfa yenilenmeden geçiş. Değiştirici tuşlu

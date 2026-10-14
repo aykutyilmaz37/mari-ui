@@ -4,9 +4,7 @@ import { spacingDensityBase, type SpacingDensity } from "./runtimeTheme";
 
 /**
  * `scripts/build-css.ts` (paketin KENDİ varsayılan teması için, build
- * zamanında `dist/theme.css` üretir) VE `@mari-ui/cli`'ın `theme` komutu
- * (Faz 7 — bir TÜKETİCİNİN `mari-ui.config.json`'dan türettiği ÖZEL teması
- * için, tüketicinin kendi projesinde çalışma zamanında) AYNI bu iki
+ * zamanında `dist/theme.css` üretir) VE `@mari-ui/cli`'ın `theme` komutu AYNI bu iki
  * fonksiyonu çağırır. CSS bloğu inşa mantığı iki yerde ayrı ayrı elle
  * tutulmuyor — biri güncellenip diğeri unutulursa sessizce birbirinden
  * sapardı (nitekim `themeToCssVariables`e geçişte fiilen bir kere oldu, bkz.
@@ -32,12 +30,12 @@ export interface CssOutputOptions {
   /** Dosyanın başına eklenecek yorum bloğu. Varsayılan: genel bir "üretilmiş dosya" notu. */
   header?: string;
   /**
-   * Faz 16.8.1 — `mari-ui.config.json` `density.spacing`. `"normal"` dışındaysa
+   * `mari-ui.config.json` `density.spacing`. `"normal"` dışındaysa
    * `:root:not([data-density])`e `--spacing` yazılır: son kullanıcının
    * `data-density` seçimi (ThemeCustomizer) her zaman öncelikli kalır.
    */
   spacingDensity?: SpacingDensity;
-  /** Faz 16.8.2 — `mari-ui.config.json` `scale` açıksa 4K'deki kök yazı boyutu (px); bkz. `fluidRootFontSize`. */
+  /** `mari-ui.config.json` `scale` açıksa 4K'deki kök yazı boyutu (px); bkz. `fluidRootFontSize`. */
   fluidRootMax?: number | null;
 }
 
@@ -45,11 +43,15 @@ const DEFAULT_HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.",
   "\n"
 );
 
-/**
+/*
  * Faz 10 (backlog madde 10 — 3. tema desteği): `default` `:root`e yazılır,
  * `named`teki HER giriş kendi `[data-theme="<anahtar>"]` bloğu olur —
  * `dark` da dahil, artık özel bir statü taşımıyor (tüketicinin `"brand"`/
  * `"highContrast"` gibi keyfi sayıda ek teması AYNI mekanizmaya takılabilir).
+ */
+/**
+ * `buildPlainThemeCss`e verilen temalar: `default` `:root`a, `named` içindekiler kendi
+ * `[data-theme="<ad>"]` bloklarına yazılır.
  */
 export interface CssThemeSet {
   /** `:root`e (herhangi bir `data-theme` olmadan varsayılan) yazılacak tema — genelde `lightTheme`. */
@@ -100,8 +102,7 @@ function spacingDensityLines(density: SpacingDensity = "normal"): string[] {
 
 /**
  * SADECE `--mari-*` CSS değişkenleri. Hiçbir şeye bağımlı değildir —
- * Tailwind kurulu olmayan bir tüketicide de çalışır ("Tailwind zorunlu
- * değil" kararının somut karşılığı, bkz. proje planı).
+ * Tailwind kurulu olmayan bir tüketicide de çalışır.
  */
 export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOptions = {}): string {
   const header = options.header ?? DEFAULT_HEADER;

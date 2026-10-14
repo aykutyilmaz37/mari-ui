@@ -17,7 +17,7 @@ export interface LineChartProps<T> extends CartesianChartProps<T> {
   /** Çizginin altını serinin renginde hafif (%10) doldurur — Area grafiği. */
   area?: boolean;
   /**
-   * y ekseni sıfırdan başlasın mı. Varsayılan: `area`da `true` (alan büyüklük
+   * Y ekseni sıfırdan başlasın mı. Varsayılan: `area`da `true` (alan büyüklük
    * anlatır), çizgide `false` (değişim anlatır; sıfır eklemek eğilimi ezer).
    */
   includeZero?: boolean;
@@ -26,7 +26,7 @@ export interface LineChartProps<T> extends CartesianChartProps<T> {
 const toNumber = (v: unknown): number | null => (typeof v === "number" && Number.isFinite(v) ? v : null);
 
 /**
- * Faz 16.9 — çizgi / alan grafiği. Zaman ya da sıralı kategori boyunca
+ * Çizgi / alan grafiği. Zaman ya da sıralı kategori boyunca
  * değişim. 2px çizgi; üzerine gelince dikey kılavuz en yakın noktaya oturur ve
  * o noktadaki TÜM serileri tek tooltip'te gösterir. Klavye: odaklanıp ok
  * tuşlarıyla noktalar gezilir. Eksik (`null`) değer çizgiyi böler — uydurulmaz.

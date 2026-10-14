@@ -3,7 +3,7 @@
 import React, { createContext, useCallback, useContext, useId, useMemo, useRef } from "react";
 import { useDisclosure } from "@mari-ui/core";
 
-/**
+/*
  * Faz 13.5 kullanıcı bulgusu (round 2): panel `document.body`'e portal
  * edildiğinden beri (kırpma düzeltmesi) tetikleyici ile panel arasında
  * `GAP_PX` kadar bir BOŞLUK var ve panel artık `anchorRef`in DOM alt ağacında
@@ -21,7 +21,7 @@ interface DropdownContextType {
   setVisible: (val: boolean) => void;
   /** `DropdownContent`in `position: fixed` konumunu hesaplarken referans aldığı kutu — bkz. `Dropdown.tsx`. */
   anchorRef: React.RefObject<HTMLDivElement | null>;
-  /**
+  /*
    * Portal edilen panelin kendi DOM düğümü. `Dropdown.tsx`'teki dışarı-tıklama
    * algılaması eskiden sadece `anchorRef`i kontrol ediyordu — panel artık
    * `document.body`'e portal edildiğinden `anchorRef`in ALT AĞACINDA DEĞİL,
@@ -46,12 +46,12 @@ interface DropdownContextType {
 
 const DropdownContext = createContext<DropdownContextType | null>(null);
 
-/**
+/*
  * Artık `@mari-ui/core`'un `useDisclosure` hook'u üzerine kurulu. Bu
  * Provider dışa aktarılmıyor (bkz. index.ts) — eskiden `DropdownProvider`
  * `useDropdown.tsx`'te tanımlıydı ama `index.ts`'te export EDİLMİYORDU,
  * yani tüketici `Dropdown`ı kullanabilmek için derin import yapmak zorunda
- * kalıyordu (bkz. plan denetimi). Artık `Dropdown` component'i Provider'ı
+ * kalıyordu. Artık `Dropdown` component'i Provider'ı
  * kendi içine gömüyor; tüketicinin bundan haberi olmasına gerek yok.
  */
 export function DropdownProvider({ children, hover = false, skeleton = false }: Readonly<{ children: React.ReactNode; hover?: boolean; skeleton?: boolean }>) {

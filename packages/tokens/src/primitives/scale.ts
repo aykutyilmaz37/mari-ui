@@ -1,4 +1,4 @@
-/**
+/*
  * Renk dışı token skalaları. Mevcut `globals.css`'te bunların hiçbiri yoktu —
  * bu yüzden component'lerde `w-[32rem]`, `h-[1px]`, `ml-[22px]`, `z-[999]`,
  * `z-[9999]` gibi rastgele kaçış değerleri birikmişti. Faz 3'te bu değerlerin
@@ -115,7 +115,7 @@ export type RadiusScale = keyof typeof radius;
 export type FontSizeScale = keyof typeof fontSize;
 
 /**
- * Faz 15 — `density.radius` preset'i. Tüm radius skalasını orantılı ölçekler
+ * `density.radius` preset'i. Tüm radius skalasını orantılı ölçekler
  * (`none` = tamamen keskin, `md` = varsayılan, skala olduğu gibi). `full` ve
  * `none` anahtarları ölçeklenmez: `full` geometrik olarak yuvarlak şeyler
  * (avatar, switch) içindir, preset'ten etkilenmemeli.
@@ -135,7 +135,7 @@ export function scaleRadius(density: RadiusDensity = "md"): RadiusTokens {
 }
 
 /**
- * Faz 21 — `density.shadow`. Gölge katmanlarının geometrisi aynı kalır, yalnız
+ * `density.shadow`. Gölge katmanlarının geometrisi aynı kalır, yalnız
  * siyahın opaklığı ölçeklenir (`none` = hiç gölge; kartlar kenarlıkla ayrışır).
  */
 export const shadowDensities = ["none", "soft", "normal", "strong"] as const;
@@ -154,7 +154,7 @@ export function scaleShadow(density: ShadowDensity = "normal"): ShadowTokens {
 }
 
 /**
- * Faz 21 — `motion`. Süreler bir çarpanla ölçeklenir; `lively` standart eğriyi
+ * `motion`. Süreler bir çarpanla ölçeklenir; `lively` standart eğriyi
  * hafif taşan (overshoot) bir eğriyle değiştirir. `off` tüm süreleri 0 yapar.
  * İşletim sisteminin "hareketi azalt" tercihi bundan bağımsız olarak her zaman geçerlidir.
  */

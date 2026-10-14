@@ -51,10 +51,11 @@ function Info({ status, percent, format, circle, size, color }: Readonly<{ statu
   return <>{(format ?? defaultFormat)(percent)}</>;
 }
 
-/**
- * Faz 16.2 — yapı ant.design Progress'ten. Çizgi (varsayılan, `steps` ile
+/*
+ * yapı ant.design Progress'ten. Çizgi (varsayılan, `steps` ile
  * parçalı) ve daire. `%100` kendiliğinden başarı; `exception` hata.
- *
+ */
+/**
  * Erişilebilirlik: `role="progressbar"` + `aria-valuenow/min/max` ve okunur
  * `aria-valuetext` ("%45", "3 / 5 dosya", "%100, tamamlandı"). Ad zorunlu —
  * `aria-label` ya da görünür bir başlığa `aria-labelledby`. Durum rengi tek

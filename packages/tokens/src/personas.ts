@@ -1,7 +1,7 @@
 import type { MariUiThemeConfig } from "./theme";
 
 /**
- * Faz 21 — tasarım kişilikleri. "Projeler birbirinin kopyası olmasın" kararının
+ * Tasarım kişilikleri. "Projeler birbirinin kopyası olmasın" kararının
  * kütüphane tarafı: renk + font eşleşmesi + radius + boşluk + gölge + hareket
  * birlikte seçilmiş hazır kombinasyonlar. Yeni bir token ekseni YOK — her kişilik
  * yalnızca `mari-ui.config.json`ın zaten anladığı alanların bir paketi; config'te

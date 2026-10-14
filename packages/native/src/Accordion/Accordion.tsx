@@ -57,7 +57,7 @@ const MIN_ROW = 44;
 const DURATION = 200;
 const HIDDEN_A11Y = { accessibilityElementsHidden: true, "aria-hidden": true, importantForAccessibility: "no-hide-descendants" as const };
 
-/**
+/*
  * Açılma: dış kutunun yüksekliği 0 → içeriğin doğal yüksekliği. İçerik dış
  * kutunun içinde MUTLAK konumlu (top/left/right 0) çizilir ve ölçülür: böylece
  * doğal yüksekliği dış kutunun canlandırılan yüksekliğinden bağımsızdır.
@@ -216,7 +216,7 @@ function Panel({ item, open, onToggle, variant, m, theme, iconPlacement, expandI
   );
 }
 
-/** Başlık + açılır içerik listesi (ant.design Collapse). Başlığın her yerine dokunmak açar. */
+/** Başlık + açılır içerik listesi. Başlığın her yerine dokunmak açar. */
 export function Accordion({
   items,
   activeKey,

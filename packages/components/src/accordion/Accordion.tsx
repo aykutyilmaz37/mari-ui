@@ -13,7 +13,9 @@ export type { AccordionProps, AccordionItem, AccordionVariant };
 
 const EXIT_MS = 200;
 
-/** ant.design: sm 8·12, md 12·16, lg 16·24px; lg'de başlık 16px. */
+/*
+ * ant.design: sm 8·12, md 12·16, lg 16·24px; lg'de başlık 16px.
+ */
 const HEADER_PAD: Record<Size, string> = { sm: "px-3 py-2", md: "px-4 py-3", lg: "px-6 py-4 text-base" };
 const BODY_PAD: Record<Size, string> = { sm: "px-3 py-2", md: "p-4", lg: "px-6 py-4" };
 /** Tonsuz varyantlarda gövde başlığın devamı — üst dolgu küçülür. */
@@ -184,9 +186,7 @@ function Panel({ item, open, onToggle, variant, size, iconPlacement, expandIcon,
 }
 
 /**
- * Faz 16.3 — yapı ant.design Collapse'tan (tüm başlık açar, ok başta ya da
- * sonda, `extra`, tekli mod, dört görünüm, üç boyut, ilk açılışta mount +
- * `destroyOnHidden`), görünüm kendi token'larımızdan. Aç/kapa yüksekliği
+ * Aç/kapa yüksekliği
  * `grid-template-rows` 0fr↔1fr ile canlandırılır (sabit `max-height` yok).
  *
  * Erişilebilirlik (WAI-ARIA APG Accordion): her başlık `<hN><button

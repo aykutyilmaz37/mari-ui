@@ -1,4 +1,4 @@
-/** Faz 16.6 — Tour'un saf yardımcıları. */
+/** Tour'un saf yardımcıları. */
 
 export interface Box {
   top: number;

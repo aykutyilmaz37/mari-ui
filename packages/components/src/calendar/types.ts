@@ -17,7 +17,7 @@ export interface CalendarCellInfo {
 export interface CalendarProps extends SkeletonableProps {
   value?: Date | null;
   defaultValue?: Date | null;
-  /** Seçili gün değişince (gezinme dahil — yıl/ay seçici de değeri taşır, ant.design gibi). */
+  /** Seçili gün değişince. */
   onChange?: (date: Date) => void;
   /** Kullanıcı bir gün/ay seçince; `source` neyle seçildiğini söyler. */
   onSelect?: (date: Date, info: { source: "date" | "month" | "year" | "today" }) => void;

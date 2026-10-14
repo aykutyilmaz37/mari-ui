@@ -20,7 +20,7 @@ export interface SidebarMegaPanelProps extends MenuNavigationProps {
 
 type MegaShape = "rail" | "columns" | "rows";
 
-/**
+/*
  * Panel gövdesi verinin DERİNLİĞİNE göre seçilir (eskiden her durumda
  * `MegaPanel`e veriliyordu — o "ray → grup → bağlantı" yani 4 seviye bekler;
  * 3 seviyede gruplar raya, bağlantılar chevron'lu grup başlıklarına dönüşüyor,

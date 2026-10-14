@@ -11,14 +11,12 @@ import { getVerticalLength, nearestThumb, snap, THUMB_SIZE, toPercent, TRACK_HEI
 export type { SliderProps };
 
 /**
- * Faz 13.6 — yapı ant.design Slider'ından, görünüm kendi token'larımızdan.
- *
  * Eski sürüm görünmez tek bir native `<input type="range">`ın üstüne çizilmiş
  * ray/tutamaçtan ibaretti:
  * - `SliderValue` `[number, number]` kabul ettiği halde ARALIK HİÇ
- *   ÇALIŞMIYORDU — sadece ilk değer çiziliyordu (koddaki eski not bunu
- *   itiraf ediyordu). Üst üste iki tam boyutlu görünmez input'ta tıklamayı
- *   yalnız üstteki alacağı için o mimaride düzgün eklenemezdi.
+ *  ÇALIŞMIYORDU — sadece ilk değer çiziliyordu (koddaki eski not bunu
+ *  itiraf ediyordu). Üst üste iki tam boyutlu görünmez input'ta tıklamayı
+ *  yalnız üstteki alacağı için o mimaride düzgün eklenemezdi.
  * - `step` yoktu; dikey mod bütün bileşeni `-rotate-90` ile döndürüyordu.
  *
  * Artık tutamaçlar `role="slider"` (tam ARIA: valuenow/valuetext/min/max/

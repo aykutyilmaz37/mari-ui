@@ -47,8 +47,8 @@ interface NavBarProps extends NavBarBaseProps {
 
 const placeholder = <span className={cn("block size-full min-h-[1lh] rounded-md", skeletonFill(true))} />;
 
-/**
- * Faz 15.5 — BasicMenu/MegaMenu'nün ortak kabuğu (eskiden iki dosyada kopya):
+/*
+ * BasicMenu/MegaMenu'nün ortak kabuğu (eskiden iki dosyada kopya):
  * logo solda sabit, öğeler `<nav aria-label><ul>` içinde, `actions` sağda
  * sabit; `mobileBreakpoint` altında hamburger + çekmece (CSS ile — SSR'da
  * sıçrama yok). Logo `logoHref` ile link, `onLogoClick` ile düğme, ikisi de
