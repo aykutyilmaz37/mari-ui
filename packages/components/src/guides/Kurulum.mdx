@@ -15,12 +15,12 @@ pnpm add @mari-ui/components @mari-ui/core @mari-ui/tokens
 İsterseniz CLI bunu sizin için yapar ve `mari-ui.config.json` ile AI ajan kurallarını da oluşturur (bkz. **Başlarken / AI Kuralları**):
 
 ```bash
-npx mari-ui init
+npx @mari-ui/cli init
 ```
 
 ## 2. Stil ve fontlar
 
-Projenizde Tailwind olup olmadığına göre **iki yoldan biri** — ikisini birden değil (`npx mari-ui init` hangisinin sizin için doğru olduğunu söyler).
+Projenizde Tailwind olup olmadığına göre **iki yoldan biri** — ikisini birden değil (`npx @mari-ui/cli init` hangisinin sizin için doğru olduğunu söyler).
 
 ### Tailwind v4 kullanıyorsanız (önerilen)
 
@@ -29,7 +29,7 @@ mari-ui sınıflarını **sizin Tailwind'iniz** derler: her sınıf ve sıfırla
 ```css
 @import "tailwindcss";
 @import "@mari-ui/components/tailwind.css";
-@import "./mari-ui-theme.css"; /* npx mari-ui theme çıktısı — kendi config'iniz varsa */
+@import "./mari-ui-theme.css"; /* npx @mari-ui/cli theme çıktısı — kendi config'iniz varsa */
 ```
 
 Tema bütün uygulamaya uygulanır: font, `rounded-*` ölçeği ve yoğunluk (`--spacing`) mari-ui'dan gelir; kendi sayfalarınızda da `bg-mari-surface`, `text-mari-muted`, `shadow-mari-md` gibi sınıfları kullanabilirsiniz. **`@mari-ui/components/styles.css`i ayrıca import etmeyin** — aynı sınıfları ve sıfırlamayı ikinci kez yükler, sonra yüklenen kazanır.
@@ -41,7 +41,7 @@ Hazır derlenmiş CSS:
 ```tsx
 import "@mari-ui/tokens/fonts.css"; // isteğe bağlı — Geist, Manrope, Geist Mono yerel dosyaları
 import "@mari-ui/components/styles.css";
-import "./mari-ui-theme.css"; // npx mari-ui theme çıktısı — kendi config'iniz varsa
+import "./mari-ui-theme.css"; // npx @mari-ui/cli theme çıktısı — kendi config'iniz varsa
 ```
 
 ### Tailwind v3
@@ -50,8 +50,8 @@ Desteklenmez: mari-ui teması v4 söz dizimiyle (`@theme`, `@source`, `@utility`
 
 ### Ortak notlar
 
-- `fonts.css` ağ isteği yapmaz; yüklemezseniz sistem fontu kullanılır. Tasarım kişiliği seçtiyseniz fontlarının Google Fonts bağlantısını `npx mari-ui theme` basar.
-- `mari-ui.config.json` proje kökünde durur; yalnız `npx mari-ui theme` okur (uygulama çalışırken okunmaz). Config'i değiştirince komutu tekrar çalıştırın — `package.json`'a `"prebuild": "mari-ui theme"`, CI'a `npx mari-ui theme --check` ekleyebilirsiniz.
+- `fonts.css` ağ isteği yapmaz; yüklemezseniz sistem fontu kullanılır. Tasarım kişiliği seçtiyseniz fontlarının Google Fonts bağlantısını `npx @mari-ui/cli theme` basar.
+- `mari-ui.config.json` proje kökünde durur; yalnız `npx @mari-ui/cli theme` okur (uygulama çalışırken okunmaz). Config'i değiştirince komutu tekrar çalıştırın — `package.json`'a `"prebuild": "mari-ui theme"`, CI'a `npx @mari-ui/cli theme --check` ekleyebilirsiniz.
 
 ## 3. Kullanım
 

@@ -77,7 +77,7 @@ function printHelp() {
       "",
       "Komutlar:",
       "  init    Bağımlılıkları ekler, mari-ui.config.json oluşturur, AI ajan kural dosyalarını yazar",
-      "  sync    Kural dosyalarını (ve --with-theme ile tema çıktısını) güncel tema/manifest'e göre tazeler",
+      "  sync    Kural dosyalarını güncel tema/manifest'e göre tazeler",
       "  theme   mari-ui.config.json'dan mari-ui-theme.css + mari-ui-theme.ts üretir",
       "",
       "Ortak bayraklar:",
@@ -106,7 +106,7 @@ function runInitCommand(args: ParsedArgs) {
   if (result.ruleFiles) {
     console.log(`✓ AI ajan kural dosyaları yazıldı: ${result.ruleFiles.changed.join(", ") || "(hepsi zaten güncel)"}`);
   } else {
-    console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx mari-ui sync");
+    console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx @mari-ui/cli sync");
   }
   console.log(`\n${tailwindInstructions(result.tailwind).join("\n")}`);
 }

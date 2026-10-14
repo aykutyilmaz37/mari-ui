@@ -23,4 +23,4 @@ Telefon ve bilgisayar aynı Wi-Fi ağında olmalı. Tarayıcıda görmek için E
 
 - `metro.config.js`: `@mari-ui/native` kaynaktan (`src`) çözülür — build gerekmez; React / React Native / react-native-svg tek kopya. Yollar paket adıyla (`require.resolve`), göreli değil.
 - Story listesi: `@mari-ui/native/stories` (paketin `src/stories/registry.ts`'i, `require.context`).
-- Üstteki anahtarlar: koyu tema, marka fontu (Geist / Manrope — `@mari-ui/tokens/fonts`).
+- Üstteki seçiciler: açık/koyu tema ve tasarım kişiliği. Fontlar Geist / Manrope / Geist Mono (`@mari-ui/tokens/fonts`, `expo-font`).

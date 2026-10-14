@@ -125,7 +125,7 @@ function formatPersona(theme: Theme, persona: PersonaName | undefined): string {
 export function buildRulesContent({ manifest, theme, persona }: BuildRulesContentOptions): string {
   return `# mari-ui Tasarım Sistemi Kuralları
 
-Bu dosya \`npx mari-ui sync\` ile OTOMATİK üretilir — \`manifest.json\` (component envanteri + prop sözleşmesi) ve projenin çözümlenmiş temasından türetilir. Elle düzenlemeyin; değişiklik için \`mari-ui.config.json\`ı güncelleyip \`npx mari-ui sync\`i tekrar çalıştırın.
+Bu dosya \`npx @mari-ui/cli sync\` ile OTOMATİK üretilir — \`manifest.json\` (component envanteri + prop sözleşmesi) ve projenin çözümlenmiş temasından türetilir. Elle düzenlemeyin; değişiklik için \`mari-ui.config.json\`ı güncelleyip \`npx @mari-ui/cli sync\`i tekrar çalıştırın.
 
 ## Kesin kurallar
 

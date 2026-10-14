@@ -26,7 +26,7 @@ export function buildClaudeTargets(skillBody: string): FileTarget[] {
     "Bu proje mari-ui tasarım sistemini kullanıyor. Sayfa, form ya da component",
     "kurarken `.claude/skills/mari-ui/SKILL.md` skill'ini kullan (envanter, prop",
     "sözleşmesi, sayfa kalıpları, component seçimi). Bu blok ve skill",
-    "`npx mari-ui sync` ile otomatik güncellenir, elle düzenlenmez.",
+    "`npx @mari-ui/cli sync` ile otomatik güncellenir, elle düzenlenmez.",
     "",
     "Kesin kurallar:",
     "",

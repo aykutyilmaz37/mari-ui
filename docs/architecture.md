@@ -34,16 +34,16 @@ mari-ui'ın paketleri, bir tasarım kararının (ör. marka rengi) token'dan ekr
 2. **CSS değişkenleri** — `cssVariables.ts` her token'ı `--mari-*` değişkenine çevirir (`--mari-color-primary-solid`, `--mari-radius-md`…). Build `dist/theme.css`i üretir: `:root` açık, `[data-theme="dark"]` koyu (+ `prefers-color-scheme` yedeği).
 3. **Tailwind eşlemesi** — `dist/tailwind-theme.css`, `@theme inline` ile `--color-mari-*`, `--radius-*`, `--shadow-mari-*`, `--z-index-mari-*` utility'lerini bu değişkenlere bağlar. `bg-mari-primary-solid` → `var(--mari-color-primary-solid)`.
 4. **Component CSS** — ortak kurallar `packages/components/src/mari.css`te (token eşlemesi `@mari-ui/tokens/tailwind.css` — `tailwindcss` import ETMEZ —, keyframes, base, yoğunluk, `duration-*`). İki giriş: **`tailwind.css`** (Tailwind v4'lü host; `mari.css` + derlenmiş `.js` taraması — host'un tek derlemesi sınıflarımızı da üretir, tekrar yok) ve **`styles.css`** (`@import "tailwindcss"` + `mari.css` → `dist/styles.css`, Tailwind'siz host'lar için hazır CSS). İkisi birlikte yüklenmez; CLI `init` host'un Tailwind sürümüne göre doğru olanı söyler.
-5. **Tüketici teması** — `npx mari-ui theme`, `mari-ui.config.json`dan aynı fonksiyonlarla (`resolveThemeConfig`, `buildPlainThemeCss`) `mari-ui-theme.css` üretir; mari-ui CSS'inden (`tailwind.css` ya da `styles.css`) sonra import edilince değişkenleri ezer. Değişken üzerinden aktığı için component'ler yeniden derlenmez.
+5. **Tüketici teması** — `npx @mari-ui/cli theme`, `mari-ui.config.json`dan aynı fonksiyonlarla (`resolveThemeConfig`, `buildPlainThemeCss`) `mari-ui-theme.css` üretir; mari-ui CSS'inden (`tailwind.css` ya da `styles.css`) sonra import edilince değişkenleri ezer. Değişken üzerinden aktığı için component'ler yeniden derlenmez.
 
 ## Tasarım kişilikleri
 
 Aynı component'lerle kurulan projeler birbirinin kopyası gibi görünmesin diye `@mari-ui/tokens` beş hazır kişilik taşır (`personas.ts`): **Kurumsal**, **Oyunbaz**, **Minimal**, **Editoryal**, **Lüks**. Kişilik yeni bir token ekseni değildir; `mari-ui.config.json`ın zaten anladığı alanların birlikte seçilmiş bir paketidir: renk, font eşleşmesi, köşe ve boşluk yoğunluğu, **gölge yoğunluğu** (`shadow`: none/soft/normal/strong) ve **hareket** (`motion` → `--mari-motion-scale`; `duration-*` ve varsayılan geçiş süresi bu çarpanla ölçeklenir).
 
 - `config.persona` taban seçilir, config'te açıkça yazılan her alan onu ezer (`applyPersona`). Stüdyo dışa aktarırken yalnız kişilikten farklı alanları yazar (`minimizeConfig`).
-- Fontlar yalnız aile adıdır; yüklemek tüketicinin işi. `npx mari-ui theme` kişiliğin Google Fonts bağlantısını basar (`personaFontsUrl`), CSS'e dış `@import` eklemez. React Native paketi font dosyası taşımaz (bilinçli karar): varsayılan sistem fontu; kişilik ailesini isteyen uygulama `expo-font` ile kendisi yükler (`fonts="brand"`). Her aile Türkçe glifler (ğ, İ, ş…) tarayıcıda ölçülerek seçildi.
+- Fontlar yalnız aile adıdır; yüklemek tüketicinin işi. `npx @mari-ui/cli theme` kişiliğin Google Fonts bağlantısını basar (`personaFontsUrl`), CSS'e dış `@import` eklemez. React Native paketi font dosyası taşımaz (bilinçli karar): varsayılan sistem fontu; kişilik ailesini isteyen uygulama `expo-font` ile kendisi yükler (`fonts="brand"`). Her aile Türkçe glifler (ğ, İ, ş…) tarayıcıda ölçülerek seçildi.
 - Aynı kaynak web ve native'i besler: web'de CSS değişkenleri, native'de `Theme.effects` (`shadowStyle`, `useMotionScale`).
-- Seçim noktaları: Storybook araç çubuğundaki Kişilik seçici, `apps/studio`, native-studio'daki kişilik çipleri, `npx mari-ui init --persona <ad>` ve AI kurallarındaki "proje tasarım brief'i" adımı.
+- Seçim noktaları: Storybook araç çubuğundaki Kişilik seçici, `apps/studio`, native-studio'daki kişilik çipleri, `npx @mari-ui/cli init --persona <ad>` ve AI kurallarındaki "proje tasarım brief'i" adımı.
 
 ## Çalışma zamanı ayarları
 

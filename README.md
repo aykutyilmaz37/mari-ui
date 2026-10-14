@@ -8,7 +8,23 @@ Türkçe, token tabanlı, framework'ten bağımsız React tasarım sistemi. Web 
 - **Tema** — `mari-ui.config.json` ile marka rengi, font, köşe ve boşluk yoğunluğu; tema stüdyosunda canlı düzenleme; son kullanıcı için `ThemeCustomizer`.
 - **AI ajan kuralları** — `@mari-ui/cli`, kütüphanenin gerçek prop sözleşmesinden Claude Code, Codex, Cursor, Gemini ve Copilot için kural dosyaları üretir.
 
-## Hızlı başlangıç
+## Paketler
+
+| Paket | |
+|---|---|
+| [`@mari-ui/components`](https://www.npmjs.com/package/@mari-ui/components) | Web component'leri (React / Next.js, RSC uyumlu) |
+| [`@mari-ui/native`](https://www.npmjs.com/package/@mari-ui/native) | React Native component'leri |
+| [`@mari-ui/tokens`](https://www.npmjs.com/package/@mari-ui/tokens) | Token'lar, tema çözümleme, CSS |
+| [`@mari-ui/core`](https://www.npmjs.com/package/@mari-ui/core) | Web ve native'in paylaştığı headless katman |
+| [`@mari-ui/cli`](https://www.npmjs.com/package/@mari-ui/cli) | Kurulum, tema üretimi, AI ajan kuralları |
+
+## Hızlı başlangıç (web)
+
+```bash
+npx @mari-ui/cli init
+```
+
+ya da elle:
 
 ```bash
 pnpm add @mari-ui/components @mari-ui/core @mari-ui/tokens
@@ -29,21 +45,37 @@ import { Button } from "@mari-ui/components/button";
 <Button color="primary">Kaydet</Button>;
 ```
 
-İkisini birden import etmeyin; `npx mari-ui init` projenize uygun olanı söyler. Tailwind v3 desteklenmez. Ayrıntılı kurulum (Next.js App Router, Vite, tema, koyu mod, AI kuralları) Storybook'taki **Başlarken** bölümünde.
+İkisini birden import etmeyin; `npx @mari-ui/cli init` projenize uygun olanı söyler. Tailwind v3 desteklenmez. Ayrıntılı kurulum (Next.js App Router, Vite, tema, koyu mod, AI kuralları) Storybook'taki **Başlarken** bölümünde.
+
+## Hızlı başlangıç (React Native)
+
+```bash
+pnpm add @mari-ui/native @mari-ui/tokens react-native-svg
+```
+
+```tsx
+import { Button } from "@mari-ui/native";
+
+<Button color="primary" onPress={save}>Kaydet</Button>;
+```
+
+Tema cihazın açık/koyu ayarını izler; ayrıntılar [`@mari-ui/native`](packages/native/README.md).
 
 ## Paket grafiği
 
 ```
 apps/
-  docs/        Storybook — component ve kullanım dokümantasyonu
-  studio/      Tema stüdyosu (Next.js) — renk/font/yoğunluk canlı düzenleme, mari-ui.config.json dışa aktarma
+  docs/          Storybook — component ve kullanım dokümantasyonu (web + native)
+  studio/        Tema stüdyosu (Next.js) — renk/kişilik/font/yoğunluk canlı düzenleme, mari-ui.config.json dışa aktarma
+  native-studio/ Expo story tarayıcısı — native component'leri telefonda görmek için
 packages/
   tokens/      @mari-ui/tokens       platform-agnostic tek token kaynağı, tema çözümleme, tema kalıcılığı
   core/        @mari-ui/core         headless mantık: cn(), variant tabloları, paylaşılan eksen tipleri
   components/  @mari-ui/components   web component'leri (her biri ayrı subpath: @mari-ui/components/button)
   native/      @mari-ui/native       React Native component'leri (web ile aynı prop adları, ~45 component)
   cli/         @mari-ui/cli          init / sync / theme — tema üretimi ve AI ajan kuralları
-  modules/     (iskelet)             sayfa modülleri — backend sözleşmesi netleşince
+  modules/     (iskelet)             sayfa modülleri — ilk uygulamanın ihtiyacına göre
+  native-modules/ (iskelet)          cihaz özelliklerinin UI kalıpları (izin, kamera, konum…)
   tsconfig/, eslint-config/          paylaşılan yapılandırma (yayınlanmaz)
 ```
 

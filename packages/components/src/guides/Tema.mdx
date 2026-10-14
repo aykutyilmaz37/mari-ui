@@ -6,7 +6,7 @@ import { Meta } from "@storybook/blocks";
 
 Tema iki katmanlıdır:
 
-1. **Proje teması** — tasarım kişiliği, marka rengi, font, köşe, boşluk, gölge ve hareket. Geliştirici `mari-ui.config.json`da tanımlar, `npx mari-ui theme` CSS'e çevirir.
+1. **Proje teması** — tasarım kişiliği, marka rengi, font, köşe, boşluk, gölge ve hareket. Geliştirici `mari-ui.config.json`da tanımlar, `npx @mari-ui/cli theme` CSS'e çevirir.
 2. **Son kullanıcı ayarı** — açık/koyu/sistem, vurgu rengi, yoğunluk. Kullanıcı `ThemeCustomizer` ile seçer; tarayıcıda saklanır.
 
 İkisi de `--mari-*` CSS değişkenleri üzerinden akar: component'ler yeniden derlenmez, değişiklik anında uygulanır.
@@ -24,14 +24,14 @@ Aynı component'lerle kurulan projeler birbirinin kopyası gibi görünmesin diy
 | Lüks | `luxury` | Moda, mücevher, otel, premium hizmet | Altın / koyu, Jost / Cormorant Garamond, keskin köşe, yavaş hareket |
 
 ```bash
-npx mari-ui init --persona playful   # config'e "persona" yazar (varsa yalnız bu alanı değiştirir)
+npx @mari-ui/cli init --persona playful   # config'e "persona" yazar (varsa yalnız bu alanı değiştirir)
 ```
 
 ```json
 { "persona": "playful", "color": { "primary": "#0f766e" } }
 ```
 
-Kişilik **taban** olur; config'te açıkça yazdığınız her alan onu ezer (yukarıdaki örnekte yalnız marka rengi değişir). Fontlar yalnız aile adıdır: web'de `npx mari-ui theme` çıktısındaki Google Fonts bağlantısını `<head>`e ekleyin (tüm aileler Türkçe karakterleri içerir); yüklenmezse sistem fontuna düşülür. React Native'de kişilik fontları paketle gelmez (bilinçli karar): renk, köşe, gölge ve hareket uygulanır, font varsayılan olarak sistem fontunda kalır.
+Kişilik **taban** olur; config'te açıkça yazdığınız her alan onu ezer (yukarıdaki örnekte yalnız marka rengi değişir). Fontlar yalnız aile adıdır: web'de `npx @mari-ui/cli theme` çıktısındaki Google Fonts bağlantısını `<head>`e ekleyin (tüm aileler Türkçe karakterleri içerir); yüklenmezse sistem fontuna düşülür. React Native'de kişilik fontları paketle gelmez (bilinçli karar): renk, köşe, gölge ve hareket uygulanır, font varsayılan olarak sistem fontunda kalır.
 
 ## Proje teması: `mari-ui.config.json`
 
@@ -61,7 +61,7 @@ Kişilik **taban** olur; config'te açıkça yazdığınız her alan onu ezer (y
 | `scale.fluid`, `scale.max` | `true` / px | Büyük ekranda kök yazı boyutu akışkan büyür (4K'de `max` px'e kadar). |
 
 ```bash
-npx mari-ui theme      # mari-ui-theme.css + mari-ui-theme.ts üretir
+npx @mari-ui/cli theme      # mari-ui-theme.css + mari-ui-theme.ts üretir
 ```
 
 `mari-ui-theme.css`i mari-ui CSS'inden (`@mari-ui/components/tailwind.css` ya da `styles.css`, bkz. Kurulum) **sonra** import edin. `mari-ui-theme.ts` aynı temayı JS objesi olarak verir (React Native ve token'lara koddan erişmek için). Değerleri görerek seçmek için **tema stüdyosu** (`apps/studio`) aynı config'i dışa aktarır.

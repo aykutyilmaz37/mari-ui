@@ -237,7 +237,7 @@ export const CardTabs: Story = {
   </TabsList>
   <TabsContent value="tsx">{'import { Button } from "@mari-ui/components";'}</TabsContent>
   <TabsContent value="native">{'import { Button } from "@mari-ui/native";'}</TabsContent>
-  <TabsContent value="cli">npx mari-ui init</TabsContent>
+  <TabsContent value="cli">npx @mari-ui/cli init</TabsContent>
 </Tabs>`),
   render: () => (
     <Tabs variant="card" defaultActiveTab="tsx">
@@ -248,7 +248,7 @@ export const CardTabs: Story = {
       </TabsList>
       <TabsContent value="tsx">{`import { Button } from "@mari-ui/components";`}</TabsContent>
       <TabsContent value="native">{`import { Button } from "@mari-ui/native";`}</TabsContent>
-      <TabsContent value="cli">npx mari-ui init</TabsContent>
+      <TabsContent value="cli">npx @mari-ui/cli init</TabsContent>
     </Tabs>
   ),
 };
