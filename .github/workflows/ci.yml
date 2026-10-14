@@ -37,8 +37,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build, lint, typecheck, test (tüm workspace paketleri)
-        run: pnpm turbo run build lint typecheck test
+      # Testler coverage ile koşar: her paketin vitest.config.ts'indeki eşik
+      # (bugünkü oranın ~1 puan altı) düşerse CI kırılır.
+      - name: Build, lint, typecheck, test + coverage (tüm workspace paketleri)
+        run: pnpm turbo run build lint typecheck test:coverage
 
       - name: Bağımlılık güvenlik taraması (kritik/yüksek eşiği)
         # `image-size` (react-native > metro, transitif, dev-only) için henüz

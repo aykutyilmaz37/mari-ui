@@ -12,6 +12,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
     "storybook": "turbo run storybook --filter=@mari-ui/docs",
     "native": "pnpm --filter @mari-ui/native-studio start",
     "native:web": "pnpm --filter @mari-ui/native-studio web",
