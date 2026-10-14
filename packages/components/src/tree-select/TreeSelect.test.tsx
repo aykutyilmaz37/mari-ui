@@ -124,10 +124,14 @@ describe("TreeSelect", () => {
 
   it("loadData: tembel dal açılınca yüklenir (aria-busy), çocuklar görünür; hata olursa dal kapanır", async () => {
     const user = userEvent.setup();
+    // Yükleme zamanlayıcıya değil teste bağlı: `aria-busy` yavaş makinede (CI + coverage) yükleme bitmeden görülebilsin.
+    let finishLoad: () => void = () => {};
     function Lazy() {
       const [tree, setTree] = useState<TreeNode[]>([{ key: "ank", title: "Ankara" }, { key: "x", title: "Hatalı" }, { key: "leaf", title: "Yaprak", isLeaf: true }]);
       const loadData = vi.fn(async (node: TreeNode) => {
-        await new Promise((r) => setTimeout(r, 20));
+        await new Promise<void>((resolve) => {
+          finishLoad = resolve;
+        });
         if (node.key === "x") throw new Error("ağ");
         setTree((prev) => prev.map((n) => (n.key === node.key ? { ...n, children: [{ key: "cank", title: "Çankaya" }] } : n)));
       });
@@ -143,10 +147,12 @@ describe("TreeSelect", () => {
     expect(screen.getByRole("treeitem", { name: "Yaprak" })).not.toHaveAttribute("aria-expanded");
     await user.keyboard("{ArrowRight}");
     expect(screen.getByRole("treeitem", { name: "Ankara" })).toHaveAttribute("aria-busy", "true");
+    await act(async () => finishLoad());
     await waitFor(() => expect(screen.getByRole("treeitem", { name: "Çankaya" })).toBeInTheDocument());
     expect(screen.getByRole("treeitem", { name: "Ankara" })).not.toHaveAttribute("aria-busy");
     await user.keyboard("{ArrowDown}{ArrowDown}{ArrowRight}");
     expect(activeName(combo)).toBe("Hatalı");
+    await act(async () => finishLoad());
     await waitFor(() => expect(screen.getByRole("treeitem", { name: "Hatalı" })).toHaveAttribute("aria-expanded", "false"));
     expect(screen.getByRole("treeitem", { name: "Hatalı" })).not.toHaveAttribute("aria-busy");
   });
