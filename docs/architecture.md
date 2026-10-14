@@ -26,7 +26,7 @@ mari-ui'ın paketleri, bir tasarım kararının (ör. marka rengi) token'dan ekr
 | `apps/docs` | Storybook — component dokümantasyonu ve "Başlarken" rehberleri. | |
 | `apps/studio` | Next.js tema stüdyosu: renk/font/yoğunluk canlı düzenleme, kontrast paneli, `mari-ui.config.json` dışa aktarma. | |
 
-`packages/modules/` yalnız klasör iskeleti (sayfa modülleri); backend sözleşmesi netleşene kadar kod yok. Eskiden burada olan `@mari-ui/utils` (dataLayer, captcha, asset yardımcıları) UI'dan bağımsız olduğu için repodan çıkarıldı; ayrı bir proje olarak sürdürülecek.
+`packages/modules/` yalnız klasör iskeleti (sayfa modülleri); backend sözleşmesi netleşene kadar kod yok.
 
 ## Token'dan piksele
 
@@ -41,7 +41,7 @@ mari-ui'ın paketleri, bir tasarım kararının (ör. marka rengi) token'dan ekr
 Aynı component'lerle kurulan projeler birbirinin kopyası gibi görünmesin diye `@mari-ui/tokens` beş hazır kişilik taşır (`personas.ts`): **Kurumsal**, **Oyunbaz**, **Minimal**, **Editoryal**, **Lüks**. Kişilik yeni bir token ekseni değildir; `mari-ui.config.json`ın zaten anladığı alanların birlikte seçilmiş bir paketidir: renk, font eşleşmesi, köşe ve boşluk yoğunluğu, **gölge yoğunluğu** (`shadow`: none/soft/normal/strong) ve **hareket** (`motion` → `--mari-motion-scale`; `duration-*` ve varsayılan geçiş süresi bu çarpanla ölçeklenir).
 
 - `config.persona` taban seçilir, config'te açıkça yazılan her alan onu ezer (`applyPersona`). Stüdyo dışa aktarırken yalnız kişilikten farklı alanları yazar (`minimizeConfig`).
-- Fontlar yalnız aile adıdır; yüklemek tüketicinin işi. `npx mari-ui theme` kişiliğin Google Fonts bağlantısını basar (`personaFontsUrl`), CSS'e dış `@import` eklemez. Native'de yükleme `expo-font` ile. Her aile Türkçe glifler (ğ, İ, ş…) tarayıcıda ölçülerek seçildi.
+- Fontlar yalnız aile adıdır; yüklemek tüketicinin işi. `npx mari-ui theme` kişiliğin Google Fonts bağlantısını basar (`personaFontsUrl`), CSS'e dış `@import` eklemez. React Native paketi font dosyası taşımaz (bilinçli karar): varsayılan sistem fontu; kişilik ailesini isteyen uygulama `expo-font` ile kendisi yükler (`fonts="brand"`). Her aile Türkçe glifler (ğ, İ, ş…) tarayıcıda ölçülerek seçildi.
 - Aynı kaynak web ve native'i besler: web'de CSS değişkenleri, native'de `Theme.effects` (`shadowStyle`, `useMotionScale`).
 - Seçim noktaları: Storybook araç çubuğundaki Kişilik seçici, `apps/studio`, native-studio'daki kişilik çipleri, `npx mari-ui init --persona <ad>` ve AI kurallarındaki "proje tasarım brief'i" adımı.
 

@@ -44,7 +44,6 @@ packages/
   native/      @mari-ui/native       React Native component'leri (web ile aynı prop adları, ~45 component)
   cli/         @mari-ui/cli          init / sync / theme — tema üretimi ve AI ajan kuralları
   modules/     (iskelet)             sayfa modülleri — backend sözleşmesi netleşince
-  (utils)                            UI'dan bağımsız yardımcılar (dataLayer, captcha) ayrı projeye taşındı
   tsconfig/, eslint-config/          paylaşılan yapılandırma (yayınlanmaz)
 ```
 

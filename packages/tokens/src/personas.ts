@@ -8,8 +8,9 @@ import type { MariUiThemeConfig } from "./theme";
  * açıkça yazılan her alan kişiliği ezer (`applyPersona`).
  *
  * Fontlar yalnız aile adıdır; yüklemek tüketicinin işi (web: `googleFonts`
- * listesinden `<link>`, native: `expo-font`). Yüklenmemişse yığındaki sistem
- * fontuna düşer — bozulmaz, yalnız kişilik zayıflar.
+ * listesinden `<link>`). Yüklenmemişse yığındaki sistem fontuna düşer — bozulmaz,
+ * yalnız kişilik zayıflar. React Native paketi font dosyası taşımaz (karar):
+ * varsayılan sistem fontu; kişilik ailesini isteyen uygulama kendisi yükler.
  *
  * Türkçe: her aile ğ Ğ ı İ ş Ş ç Ç ö Ö ü Ü glifleri tarayıcıda ölçülerek seçildi
  * (yalnız `unicode-range`e bakmak yetmez — Fredoka aralığı bildirip ğ/İ/Ş çizmiyordu).
