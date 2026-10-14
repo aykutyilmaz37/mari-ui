@@ -169,7 +169,7 @@ interface TooltipBubbleProps {
   onMouseLeave?: () => void;
 }
 
-function TooltipBubble({ bubbleRef, id, position, skeleton, content, color, variant, className, style, onMouseEnter, onMouseLeave }: TooltipBubbleProps) {
+function TooltipBubble({ bubbleRef, id, position, skeleton, content, color, variant, className, style, onMouseEnter, onMouseLeave }: Readonly<TooltipBubbleProps>) {
   const side = position?.side ?? "top";
   const vertical = side === "top" || side === "bottom";
   return (
@@ -225,7 +225,7 @@ export function Tooltip({
   openDelay = 100,
   openOn = "hover",
   skeleton = false,
-}: TooltipProps) {
+}: Readonly<TooltipProps>) {
   const wrapperRef = useRef<HTMLSpanElement>(null);
   const bubbleRef = useRef<HTMLSpanElement>(null);
   const { visible, setVisible, open, close, closeNow, clearTimer } = useVisibility(alwaysVisible, openOn, wrapperRef, bubbleRef);

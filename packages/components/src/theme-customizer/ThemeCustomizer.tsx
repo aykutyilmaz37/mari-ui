@@ -64,7 +64,7 @@ interface SwatchProps {
 }
 
 /** Gerçek radyo düğmesi (ok tuşları, tek Tab durağı tarayıcıdan) + görünen daire. */
-function Swatch({ name, color, label, checked, disabled, skeleton, onSelect }: SwatchProps) {
+function Swatch({ name, color, label, checked, disabled, skeleton, onSelect }: Readonly<SwatchProps>) {
   if (skeleton) return <span {...skeletonBoxProps("size-8 rounded-full")} />;
   return (
     <label
@@ -106,7 +106,7 @@ export function ThemeCustomizer({
   disabled = false,
   skeleton,
   className,
-}: ThemeCustomizerProps) {
+}: Readonly<ThemeCustomizerProps>) {
   const id = useId();
   const [settings, setSettings] = useControllableState<ThemeSettings>({
     value,

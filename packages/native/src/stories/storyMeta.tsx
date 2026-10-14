@@ -131,7 +131,7 @@ export function withNativeTheme(Story: () => React.ReactElement, context: { glob
   );
 }
 
-function Canvas({ children, radius }: { children: React.ReactNode; radius?: number }) {
+function Canvas({ children, radius }: Readonly<{ children: React.ReactNode; radius?: number }>) {
   const theme = useTheme();
   return <View style={{ padding: 16, gap: 12, backgroundColor: theme.color.canvas.surface, alignItems: "flex-start", borderRadius: radius }}>{children}</View>;
 }
@@ -144,7 +144,7 @@ export const SKELETON_STORY_DOC =
  * Web'deki `SkeletonDemo`nun native karşılığı: üstte İskelet / Yüklendi
  * geçişi, altta component — iki hal arasında yerleşimin kaymadığı görülür.
  */
-export function SkeletonDemo({ children }: { children: (skeleton: boolean) => React.ReactNode }) {
+export function SkeletonDemo({ children }: Readonly<{ children: (skeleton: boolean) => React.ReactNode }>) {
   const [skeleton, setSkeleton] = React.useState(true);
   // Web ile aynı düzen: geçiş ile component arası 16 (`gap-4`).
   return (
@@ -165,12 +165,12 @@ export function SkeletonDemo({ children }: { children: (skeleton: boolean) => Re
 }
 
 /** Story içinde yan yana / alt alta örnek dizmek için. */
-export function Row({ children }: { children: React.ReactNode }) {
+export function Row({ children }: Readonly<{ children: React.ReactNode }>) {
   // Web story'lerinin `flex flex-wrap gap-3` düzeni (12px) — karşılaştırma birebir olsun.
   return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, alignItems: "center" }}>{children}</View>;
 }
 
-export function Stack({ children }: { children: React.ReactNode }) {
+export function Stack({ children }: Readonly<{ children: React.ReactNode }>) {
   return <View style={{ gap: 10, alignSelf: "stretch" }}>{children}</View>;
 }
 

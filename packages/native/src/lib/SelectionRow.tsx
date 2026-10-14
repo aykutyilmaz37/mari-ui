@@ -38,7 +38,7 @@ function RowText({ node, textStyle, skeleton }: { node: React.ReactNode; textSty
  * Açıklama etiketin altında, kontrolün hizasından içeride; ekran okuyucuda
  * etiketle birlikte tek öğe olarak okunur.
  */
-export function SelectionRow({ role, state, onPress, disabled = false, size, control, label, description, skeleton = false, accessibilityLabel, style }: SelectionRowProps) {
+export function SelectionRow({ role, state, onPress, disabled = false, size, control, label, description, skeleton = false, accessibilityLabel, style }: Readonly<SelectionRowProps>) {
   const theme = useTheme();
   const m = useNativeConfig().selection[size];
   const font = nativeFontFamily(theme.fontFamily.sans);

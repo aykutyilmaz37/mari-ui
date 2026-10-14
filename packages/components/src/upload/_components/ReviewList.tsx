@@ -21,7 +21,7 @@ export interface ReviewListProps {
  * (eskiden sadece sil vardı). `next/image` kaldırıldı — bu paket bir
  * Next.js uygulaması değil.
  */
-export function ReviewList({ item, reviewType, handleDelete }: ReviewListProps) {
+export function ReviewList({ item, reviewType, handleDelete }: Readonly<ReviewListProps>) {
   const { file, status, progress } = item;
   const extension = getFileExtension(file).toLocaleUpperCase();
   const isImage = isImageFile(file);

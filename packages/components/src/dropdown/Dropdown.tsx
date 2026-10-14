@@ -20,7 +20,7 @@ export type { DropdownProps };
  * açık kalan bir dropdown'ı klavyeyle veya mouse'la kapatmanın tek yolu
  * trigger'a tekrar tıklamaktı. İkisi de eklendi.
  */
-function DropdownRoot({ children, hover = false, className }: DropdownProps) {
+function DropdownRoot({ children, hover = false, className }: Readonly<DropdownProps>) {
   const { visible, setVisible, anchorRef, panelRef, triggerRef, scheduleHoverClose, cancelHoverClose, skeleton } = useDropdown();
 
   useEffect(() => {
@@ -118,7 +118,7 @@ function DropdownRoot({ children, hover = false, className }: DropdownProps) {
 }
 
 /** `DropdownProvider`ı kendi içine gömer — tüketicinin ayrıca sarması gerekmez. */
-export function Dropdown(props: DropdownProps) {
+export function Dropdown(props: Readonly<DropdownProps>) {
   return (
     <DropdownProvider hover={props.hover} skeleton={props.skeleton}>
       <DropdownRoot {...props} />

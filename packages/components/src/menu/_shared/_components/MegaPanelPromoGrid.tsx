@@ -33,7 +33,7 @@ const SPAN_CLASS: Record<NonNullable<MenuPromoTile["span"]>, string> = {
   full: "col-span-2 aspect-[16/9]",
 };
 
-export function MegaPanelPromoGrid({ tiles, onNavigate, onTileClick, className }: MegaPanelPromoGridProps) {
+export function MegaPanelPromoGrid({ tiles, onNavigate, onTileClick, className }: Readonly<MegaPanelPromoGridProps>) {
   return (
     <div className={cn("grid w-64 shrink-0 grid-cols-2 gap-3 self-start", className)}>
       {tiles.map((tile) => (

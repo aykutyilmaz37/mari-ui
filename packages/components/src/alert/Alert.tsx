@@ -64,7 +64,7 @@ export function Alert({
   role,
   className,
   skeleton = false,
-}: AlertProps) {
+}: Readonly<AlertProps>) {
   const [closing, setClosing] = useState(false);
   const [closed, setClosed] = useState(false);
   if (closed) return null;

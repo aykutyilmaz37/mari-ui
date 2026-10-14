@@ -10,7 +10,7 @@ import { getParagraphClass, getTextClass, getTitleBaseClass, getTitleClass, PARA
  * İskelet satırı: kutu yüksekliği tam bir satır (`1lh`) — metin yüklenince
  * blok zıplamaz; dolgu çubuğu satırın ortasında, yazı gövdesi kadar kalın.
  */
-function SkeletonLine({ width }: { width: string }) {
+function SkeletonLine({ width }: Readonly<{ width: string }>) {
   return (
     <span className="flex h-[1lh] items-center">
       <span className={cn("h-[0.7em] rounded-sm", skeletonFill(true), width)} />
@@ -18,7 +18,7 @@ function SkeletonLine({ width }: { width: string }) {
   );
 }
 
-export function Text({ children, className, color, weight, muted, ellipsis, skeleton = false, ...props }: TextProps) {
+export function Text({ children, className, color, weight, muted, ellipsis, skeleton = false, ...props }: Readonly<TextProps>) {
   if (skeleton) {
     // Metin varsa şeffaf olarak yerinde kalır → iskelet tam o genişlikte. `w-fit`:
     // flex sütununda span bloklaşıp tam genişliğe uzamasın.
@@ -31,7 +31,7 @@ export function Text({ children, className, color, weight, muted, ellipsis, skel
   );
 }
 
-export function Paragraph({ children, className, color, muted, ellipsis, skeleton = false, skeletonRows = 3, ...props }: ParagraphProps) {
+export function Paragraph({ children, className, color, muted, ellipsis, skeleton = false, skeletonRows = 3, ...props }: Readonly<ParagraphProps>) {
   if (skeleton) {
     return (
       <div aria-hidden data-skeleton="" className={cn(PARAGRAPH_BASE_CLASS, className)}>
@@ -48,7 +48,7 @@ export function Paragraph({ children, className, color, muted, ellipsis, skeleto
   );
 }
 
-export function Title({ level = 1, children, className, color, ellipsis, skeleton = false, ...props }: TitleProps) {
+export function Title({ level = 1, children, className, color, ellipsis, skeleton = false, ...props }: Readonly<TitleProps>) {
   if (skeleton) {
     return (
       <div aria-hidden data-skeleton="" className={cn(getTitleBaseClass(level), className)}>

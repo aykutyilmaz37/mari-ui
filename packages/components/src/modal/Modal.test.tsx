@@ -9,7 +9,7 @@ afterEach(() => {
   document.body.style.overflow = "";
 });
 
-function Wrapper(props: Partial<React.ComponentProps<typeof Modal>>) {
+function Wrapper(props: Readonly<Partial<React.ComponentProps<typeof Modal>>>) {
   const [open, setOpen] = useState(false);
   const handleClose = useCallback(() => setOpen(false), []);
   return (

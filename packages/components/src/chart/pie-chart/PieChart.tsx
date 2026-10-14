@@ -56,7 +56,7 @@ export function PieChart({
   skeleton,
   animated = true,
   className,
-}: PieChartProps) {
+}: Readonly<PieChartProps>) {
   const [plotRef, size] = useChartSize<HTMLDivElement>();
   const maskId = `mari-pie-${useId().replace(/[^\w-]/g, "")}`;
   const [active, setActive] = useState<number | null>(null);

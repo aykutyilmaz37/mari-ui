@@ -41,7 +41,7 @@ function DefaultEmpty() {
 }
 
 /** Rows mirror `ListItem` + `ListItemMeta` geometry (line boxes, 2px gap, separators) so loading → loaded doesn't shift. */
-function SkeletonRows({ count, separator }: { count: number; separator?: React.ComponentType | React.ReactElement | null }) {
+function SkeletonRows({ count, separator }: Readonly<{ count: number; separator?: React.ComponentType | React.ReactElement | null }>) {
   const config = useNativeConfig();
   const { size } = useContext(ListContext);
   const metrics = config.list[size];
@@ -68,7 +68,7 @@ function SkeletonRows({ count, separator }: { count: number; separator?: React.C
   );
 }
 
-function InfiniteFooter({ options, onLoadMore }: { options: InfiniteScrollOptions; onLoadMore: () => void }) {
+function InfiniteFooter({ options, onLoadMore }: Readonly<{ options: InfiniteScrollOptions; onLoadMore: () => void }>) {
   const theme = useTheme();
   const config = useNativeConfig();
   const { size } = useContext(ListContext);
@@ -213,7 +213,7 @@ function ListCell(props: ViewProps) {
   return <View {...props} role="listitem" />;
 }
 
-export function ListItem({ children, actions, extra, style, ...viewProps }: ListItemProps) {
+export function ListItem({ children, actions, extra, style, ...viewProps }: Readonly<ListItemProps>) {
   const config = useNativeConfig();
   const { size, itemLayout } = useContext(ListContext);
   const metrics = config.list[size];
@@ -254,7 +254,7 @@ export function ListItem({ children, actions, extra, style, ...viewProps }: List
 }
 
 /** Native avatar + title + description block. */
-export function ListItemMeta({ avatar, title, description, style }: ListItemMetaProps) {
+export function ListItemMeta({ avatar, title, description, style }: Readonly<ListItemMetaProps>) {
   const theme = useTheme();
   const config = useNativeConfig();
   const { size } = useContext(ListContext);
@@ -273,7 +273,7 @@ export function ListItemMeta({ avatar, title, description, style }: ListItemMeta
   );
 }
 
-function MetaText({ value, textStyle }: { value: React.ReactNode; textStyle: { color: string; fontFamily?: string; fontSize: number; lineHeight: number; fontWeight?: "600" } }) {
+function MetaText({ value, textStyle }: Readonly<{ value: React.ReactNode; textStyle: { color: string; fontFamily?: string; fontSize: number; lineHeight: number; fontWeight?: "600" } }>) {
   if (typeof value === "string" || typeof value === "number") return <Text style={textStyle}>{value}</Text>;
   return <View>{value}</View>;
 }

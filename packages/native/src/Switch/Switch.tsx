@@ -60,7 +60,7 @@ interface TrackProps {
   falseLabel?: string;
 }
 
-function SwitchTrack({ on, m, color, disabled, loading, trueLabel, falseLabel }: TrackProps) {
+function SwitchTrack({ on, m, color, disabled, loading, trueLabel, falseLabel }: Readonly<TrackProps>) {
   const theme = useTheme();
   const hasInnerLabel = Boolean(trueLabel || falseLabel);
   const width = hasInnerLabel ? m.labelWidth : m.width;

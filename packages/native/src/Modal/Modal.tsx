@@ -79,7 +79,7 @@ function Slot({ node, style, skeleton }: { node: React.ReactNode; style: object;
   return skeleton ? <SkeletonBox style={{ borderRadius: 4, alignSelf: "flex-start", maxWidth: "100%" }}>{content}</SkeletonBox> : <>{content}</>;
 }
 
-function CloseButton({ onPress, color, left }: { onPress: () => void; color: string; left: boolean }) {
+function CloseButton({ onPress, color, left }: Readonly<{ onPress: () => void; color: string; left: boolean }>) {
   return (
     <Pressable
       onPress={onPress}
@@ -106,7 +106,7 @@ interface FooterProps {
 }
 
 /** Telefonda iki eşit genişlikte düğme; onay varsayılan olarak sağda. */
-function FooterButtons({ position, cancelText, confirmText, onCancel, onConfirm, color, loading, disabled, skeleton }: FooterProps) {
+function FooterButtons({ position, cancelText, confirmText, onCancel, onConfirm, color, loading, disabled, skeleton }: Readonly<FooterProps>) {
   const cancel = <Button key="cancel" style={{ flex: 1 }} variant="outline" color="neutral" onPress={onCancel} skeleton={skeleton}>{cancelText}</Button>;
   const confirm = (
     <Button key="confirm" style={{ flex: 1 }} color={color === "neutral" || !color ? "primary" : color} onPress={onConfirm} loading={loading} disabled={disabled} skeleton={skeleton}>
@@ -116,7 +116,7 @@ function FooterButtons({ position, cancelText, confirmText, onCancel, onConfirm,
   return <View style={{ flexDirection: "row", gap: 12 }}>{position === "right" ? [cancel, confirm] : [confirm, cancel]}</View>;
 }
 
-function ModalHeader({ title, description, iconNode, skeleton, closeOn }: { title: React.ReactNode; description: React.ReactNode; iconNode: React.ReactNode; skeleton: boolean; closeOn?: ModalButtonPosition }) {
+function ModalHeader({ title, description, iconNode, skeleton, closeOn }: Readonly<{ title: React.ReactNode; description: React.ReactNode; iconNode: React.ReactNode; skeleton: boolean; closeOn?: ModalButtonPosition }>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const c = theme.color.canvas;
@@ -138,7 +138,7 @@ function ModalHeader({ title, description, iconNode, skeleton, closeOn }: { titl
 }
 
 /** Uzun içerik kendi içinde kayar. İskelette içerik görünmez yer tutar, üstünde blok. */
-function ModalBody({ children, skeleton, top, bottom, style }: { children: React.ReactNode; skeleton: boolean; top: number; bottom: number; style?: StyleProp<ViewStyle> }) {
+function ModalBody({ children, skeleton, top, bottom, style }: Readonly<{ children: React.ReactNode; skeleton: boolean; top: number; bottom: number; style?: StyleProp<ViewStyle> }>) {
   const theme = useTheme();
   const t = useNativeConfig().typography.body;
   const content = (typeof children === "string" || typeof children === "number") ? <Text style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: t.fontSize, lineHeight: t.lineHeight, color: theme.color.canvas.foreground }}>{children}</Text> : children;
@@ -170,7 +170,7 @@ function resolveFooter(props: ModalProps, confirm: { pending: boolean; handleCon
 }
 
 /** Pencerenin içi: × düğmesi, başlık, kayan gövde, alt bölüm. */
-function ModalPanel({ props, footerNode }: { props: ModalProps; footerNode: React.ReactNode }) {
+function ModalPanel({ props, footerNode }: Readonly<{ props: ModalProps; footerNode: React.ReactNode }>) {
   const { onClose, title, description, icon, color, children, showCloseButton = true, closeButtonPosition = "right", skeleton = false, bodyStyle } = props;
   const theme = useTheme();
   const iconNode = icon ? <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: theme.color[color ?? "primary"].subtle }}>{icon}</View> : null;
@@ -188,7 +188,7 @@ function ModalPanel({ props, footerNode }: { props: ModalProps; footerNode: Reac
   );
 }
 
-export function Modal(props: ModalProps) {
+export function Modal(props: Readonly<ModalProps>) {
   const { open, onClose, title, color, size = "md", width, maskClosable = true, keyboard = true, accessibilityLabel } = props;
   const theme = useTheme();
   const window = useWindowDimensions();

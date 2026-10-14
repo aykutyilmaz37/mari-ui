@@ -31,7 +31,7 @@ export function TableRowActions<T extends { id: string }>({
   onStartInlineEdit,
   onSaveInlineEdit,
   onCancelInlineEdit,
-}: TableRowActionsProps<T>) {
+}: Readonly<TableRowActionsProps<T>>) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Faz 15: her satırın düğmesi eskiden aynı adı ("Sil") taşıyordu — ekran

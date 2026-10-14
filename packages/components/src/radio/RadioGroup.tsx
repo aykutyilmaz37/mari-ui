@@ -25,7 +25,7 @@ export function RadioGroup({
   skeleton: ownSkeleton,
   "aria-label": ownAriaLabel,
   "aria-labelledby": ownAriaLabelledBy,
-}: RadioGroupProps) {
+}: Readonly<RadioGroupProps>) {
   // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
   const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled });
   const skeleton = useFieldSkeleton(ownSkeleton);

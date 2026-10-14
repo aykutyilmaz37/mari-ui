@@ -56,7 +56,7 @@ function bubbleGeometry(height: number, standalone: boolean, offset: [number, nu
   return { ...base, position: "absolute", top: -outer / 2 + y, right: -outer / 2 - x, zIndex: 1 };
 }
 
-export function Badge({ count, overflowCount = 99, showZero = false, dot = false, color = "error", size = "md", label, offset, children, skeleton = false, style }: BadgeProps) {
+export function Badge({ count, overflowCount = 99, showZero = false, dot = false, color = "error", size = "md", label, offset, children, skeleton = false, style }: Readonly<BadgeProps>) {
   const theme = useTheme();
   const metrics = useNativeConfig().badge[size];
   const text = displayCount(count, overflowCount);
@@ -102,7 +102,7 @@ export function Badge({ count, overflowCount = 99, showZero = false, dot = false
 
 const STATUS_DOT = 8;
 
-export function StatusBadge({ color = "neutral", children, processing = false, skeleton = false, style }: StatusBadgeProps) {
+export function StatusBadge({ color = "neutral", children, processing = false, skeleton = false, style }: Readonly<StatusBadgeProps>) {
   const theme = useTheme();
   const subhead = useNativeConfig().typography.h6;
   const halo = usePulse(processing && !skeleton, 0.15);

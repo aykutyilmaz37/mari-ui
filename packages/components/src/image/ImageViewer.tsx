@@ -122,11 +122,11 @@ function ViewerSlide({
   item,
   offset,
   loader,
-}: {
+}: Readonly<{
   item: ImageViewerItem;
   offset: number;
   loader?: ImageLoader;
-}) {
+}>) {
   const active = offset === 0;
   const source = normalizeSource(item.src);
   const [loaded, setLoaded] = useState(false);

@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Drawer } from "./Drawer";
 import { getA11yViolations } from "../testUtils/a11y";
 
-function Harness(props: Partial<React.ComponentProps<typeof Drawer>>) {
+function Harness(props: Readonly<Partial<React.ComponentProps<typeof Drawer>>>) {
   const [open, setOpen] = useState(false);
   return (
     <>

@@ -36,13 +36,13 @@ export interface TransferListProps {
 
 const plainTitle = (title: React.ReactNode, fallback: string) => (typeof title === "string" ? title : fallback);
 
-function RowContent({ item, render }: { item: TransferItem; render: TransferProps["render"] }) {
+function RowContent({ item, render }: Readonly<{ item: TransferItem; render: TransferProps["render"] }>) {
   if (render) return <>{render(item)}</>;
   return <span className="block truncate">{item.title}</span>;
 }
 
 /** Liste gövdesi iskeleti: kutu + değişken uzunlukta satır (gövde yüksekliği `listHeight` ile sabit). */
-function SkeletonRows({ count }: { count: number }) {
+function SkeletonRows({ count }: Readonly<{ count: number }>) {
   const widths = ["w-32", "w-24", "w-40", "w-28", "w-36"];
   return (
     <>
@@ -62,7 +62,7 @@ function SkeletonRows({ count }: { count: number }) {
  * alt bilgi. Liste bir `section`, adı başlık; satırlar gerçek işaret kutuları
  * (Tab ile tek tek, Boşluk ile seçilir; Shift ile aralık seçimi).
  */
-export function TransferList(props: TransferListProps) {
+export function TransferList(props: Readonly<TransferListProps>) {
   const { direction, title, items, selected, onSelect, onRemove, showSearch, searchPlaceholder, filterOption, onSearch, render, showSelectAll, footer, notFoundContent, listHeight, disabled, color, skeleton } = props;
   const titleId = useId();
   const [query, setQuery] = useState("");

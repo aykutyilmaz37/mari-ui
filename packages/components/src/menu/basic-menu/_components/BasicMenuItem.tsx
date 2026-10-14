@@ -22,7 +22,7 @@ export interface BasicMenuItemProps extends MenuNavigationProps {
  * yan yana aynı hizada ve aynı yükseklikte durur. Route'u olan öğe gerçek bir
  * link (`MenuLink`), geçerli sayfa `aria-current="page"` taşır.
  */
-export function BasicMenuItem({ item, activeKey, setActiveKey, color, onNavigate, className }: BasicMenuItemProps) {
+export function BasicMenuItem({ item, activeKey, setActiveKey, color, onNavigate, className }: Readonly<BasicMenuItemProps>) {
   return (
     <MenuLink
       route={item.route}

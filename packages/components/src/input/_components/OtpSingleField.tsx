@@ -66,7 +66,7 @@ export function OtpSingleField({
   inputMode,
   skeleton,
   linePosition,
-}: OtpSingleFieldProps) {
+}: Readonly<OtpSingleFieldProps>) {
   const [code, setCode] = useControllableState<string>({ value, defaultValue: defaultValue.slice(0, length) });
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

@@ -18,7 +18,7 @@ export type SearchInputProps = InputProps & {
 const MIN_TOUCH = 44;
 
 /** Ara düğmesi — Input ikon yuvası `size`/`color` verir; dokunma alanı 44pt. */
-function SearchButton({ label, loading, disabled, onPress, size = 16, color }: { label: string; loading: boolean; disabled?: boolean; onPress: () => void; size?: number; color?: string }) {
+function SearchButton({ label, loading, disabled, onPress, size = 16, color }: Readonly<{ label: string; loading: boolean; disabled?: boolean; onPress: () => void; size?: number; color?: string }>) {
   return (
     <Pressable
       onPress={onPress}

@@ -60,7 +60,7 @@ function tooltipPlacement(placement: FloatButtonPlacement, inGroup: boolean) {
   return placement.startsWith("bottom") ? "top" : "bottom";
 }
 
-function FloatControl({ href, target, label, onClick, className, children }: { href?: string; target?: React.HTMLAttributeAnchorTarget; label?: string; onClick?: FloatButtonProps["onClick"]; className: string; children: React.ReactNode }) {
+function FloatControl({ href, target, label, onClick, className, children }: Readonly<{ href?: string; target?: React.HTMLAttributeAnchorTarget; label?: string; onClick?: FloatButtonProps["onClick"]; className: string; children: React.ReactNode }>) {
   if (href) {
     return (
       <a href={href} target={target} rel={target === "_blank" ? "noopener noreferrer" : undefined} aria-label={label} onClick={onClick} className={className}>
@@ -100,7 +100,7 @@ export function FloatButton({
   "aria-label": ariaLabel,
   className,
   skeleton = false,
-}: FloatButtonProps) {
+}: Readonly<FloatButtonProps>) {
   const group = useContext(FloatGroupContext);
   const shape = group?.shape ?? ownShape;
   const joined = !!group?.joined;

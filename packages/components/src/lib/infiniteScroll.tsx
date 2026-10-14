@@ -50,7 +50,7 @@ export function useInfiniteScroll(sentinel: React.RefObject<HTMLElement | null>,
 }
 
 /** Liste sonu: gözlenen işaretçi + durum + klavye için düğme. */
-export function InfiniteScrollFooter({ options, className }: { options: InfiniteScrollOptions; className?: string }) {
+export function InfiniteScrollFooter({ options, className }: Readonly<{ options: InfiniteScrollOptions; className?: string }>) {
   const sentinel = useRef<HTMLDivElement>(null);
   useInfiniteScroll(sentinel, options);
   const { hasMore, loading = false, onLoadMore, endMessage = "Hepsi bu kadar", loadMoreLabel = "Daha fazla yükle" } = options;

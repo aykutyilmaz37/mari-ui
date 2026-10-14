@@ -21,7 +21,7 @@ export interface SkeletonSlotProps {
  * gelmedi) kutuyu yer tutucu belirler — her iki durumda da yüklenince zıplama
  * olmaz. Serbest içerik taşıyan component'lerin (Card, Carousel…) ortak aracı.
  */
-export function SkeletonSlot({ on, placeholder, flow = "block", className, children }: SkeletonSlotProps) {
+export function SkeletonSlot({ on, placeholder, flow = "block", className, children }: Readonly<SkeletonSlotProps>) {
   if (!on) return <>{children}</>;
   return (
     <div aria-hidden className={cn("grid", className)}>

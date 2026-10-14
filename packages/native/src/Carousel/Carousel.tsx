@@ -225,7 +225,7 @@ export function Carousel({
   beforeChange,
   afterChange,
   onStateChange,
-}: CarouselProps) {
+}: Readonly<CarouselProps>) {
   const items = Children.toArray(children);
   const count = items.length;
   const window = useWindowDimensions();
@@ -294,7 +294,7 @@ function useControlsMirror(state: CarouselControls, ref: CarouselProps["controls
  * Kopyalar yalnız genişlik ölçülünce eklenir: öncesinde iz ilk slaytla başlar
  * (öteleme 0) — ölçüm gecikse de carousel görünür ve doğru slaytta kalır.
  */
-function Track({ items, clones, show, pos, slideWidth, inView, skeleton, itemStyle }: { items: React.ReactNode[]; clones: number; show: number; pos: Animated.Value; slideWidth: number; inView: Set<number>; skeleton: boolean; itemStyle?: StyleProp<ViewStyle> }) {
+function Track({ items, clones, show, pos, slideWidth, inView, skeleton, itemStyle }: Readonly<{ items: React.ReactNode[]; clones: number; show: number; pos: Animated.Value; slideWidth: number; inView: Set<number>; skeleton: boolean; itemStyle?: StyleProp<ViewStyle> }>) {
   const count = items.length;
   const translateX = Animated.multiply(Animated.add(pos, clones), -slideWidth);
   const slides: React.ReactNode[] = [];
@@ -313,7 +313,7 @@ function Track({ items, clones, show, pos, slideWidth, inView, skeleton, itemSty
 }
 
 /** İskelette içerik görünmez yerinde kalır (yükseklik aynı), üstünde kendi kutusunda nabız. */
-function SlideContent({ skeleton, children }: { skeleton: boolean; children: React.ReactNode }) {
+function SlideContent({ skeleton, children }: Readonly<{ skeleton: boolean; children: React.ReactNode }>) {
   const theme = useTheme();
   if (!skeleton) return <>{children}</>;
   return (
@@ -338,7 +338,7 @@ const arrowOpacity = (disabled: boolean, pressed: boolean) => {
   return pressed ? 0.6 : 1;
 };
 
-function ArrowButton({ dir, size, disabled, onPress }: { dir: "prev" | "next"; size: number; disabled: boolean; onPress: () => void }) {
+function ArrowButton({ dir, size, disabled, onPress }: Readonly<{ dir: "prev" | "next"; size: number; disabled: boolean; onPress: () => void }>) {
   const theme = useTheme();
   const Icon = dir === "prev" ? ChevronLeftIcon : ChevronRightIcon;
   return (
@@ -365,7 +365,7 @@ function ArrowButton({ dir, size, disabled, onPress }: { dir: "prev" | "next"; s
 }
 
 /** Oklar çıplak ikon (web gibi daire yok); `sides` dikeyde ortalı, köşelerde ikisi yan yana. */
-function Arrows({ placement, canPrev, canNext, onPrev, onNext }: { placement: ArrowsPlacement; canPrev: boolean; canNext: boolean; onPrev: () => void; onNext: () => void }) {
+function Arrows({ placement, canPrev, canNext, onPrev, onNext }: Readonly<{ placement: ArrowsPlacement; canPrev: boolean; canNext: boolean; onPrev: () => void; onNext: () => void }>) {
   const size = placement === "sides" ? 28 : 24;
   const prev = <ArrowButton dir="prev" size={size} disabled={!canPrev} onPress={onPrev} />;
   const next = <ArrowButton dir="next" size={size} disabled={!canNext} onPress={onNext} />;
@@ -394,7 +394,7 @@ const DOT_OVERLAY: Record<DotPosition, ViewStyle> = {
 };
 
 /** İnce çubuklar (web/ant gibi): pasif 16, aktif 24 genişlik, 4 yükseklik; dokunma hedefi hitSlop ile 24+. */
-function Dots({ count, index, color, skeleton, placement, position, onSelect, lead }: { count: number; index: number; color: ColorRole; skeleton: boolean; placement: DotsPlacement; position: DotPosition; onSelect: (i: number) => void; lead: React.ReactNode }) {
+function Dots({ count, index, color, skeleton, placement, position, onSelect, lead }: Readonly<{ count: number; index: number; color: ColorRole; skeleton: boolean; placement: DotsPlacement; position: DotPosition; onSelect: (i: number) => void; lead: React.ReactNode }>) {
   const theme = useTheme();
   const wrapper: ViewStyle = placement === "overlay" ? { position: "absolute", alignItems: "center", gap: 8, ...DOT_OVERLAY[position] } : { marginTop: 12, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8 };
   return (
@@ -423,7 +423,7 @@ function Dots({ count, index, color, skeleton, placement, position, onSelect, le
   );
 }
 
-function PlayToggle({ playing, onPress }: { playing: boolean; onPress: () => void }) {
+function PlayToggle({ playing, onPress }: Readonly<{ playing: boolean; onPress: () => void }>) {
   const theme = useTheme();
   const Icon = playing ? PauseIcon : PlayIcon;
   return (

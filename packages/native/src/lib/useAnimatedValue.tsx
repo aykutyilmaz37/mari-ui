@@ -85,7 +85,7 @@ export function useAnimatedValue({ text, number, format, mode, enabled }: Animat
  * Yer SON metne göre ayrılır (görünmez, ekran okuyucu onu okur), ara metin
  * üstüne çizilir (gizli) → genişlik zıplamaz, okuyucu ara sayıları duymaz.
  */
-export function AnimatedText({ text, shown, style, numberOfLines, fit = false }: { text: string; shown: string | null; style?: StyleProp<TextStyle>; numberOfLines?: number; /** Sığmazsa yazıyı küçült (iOS/Android; web kısaltır). */ fit?: boolean }) {
+export function AnimatedText({ text, shown, style, numberOfLines, fit = false }: Readonly<{ text: string; shown: string | null; style?: StyleProp<TextStyle>; numberOfLines?: number; /** Sığmazsa yazıyı küçült (iOS/Android; web kısaltır). */ fit?: boolean }>) {
   const shrink = fit ? { adjustsFontSizeToFit: true, minimumFontScale: 0.6 } : null;
   if (shown === null) return <Text numberOfLines={numberOfLines} {...shrink} style={style}>{text}</Text>;
   return (

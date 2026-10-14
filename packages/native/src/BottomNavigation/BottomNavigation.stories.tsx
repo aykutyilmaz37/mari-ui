@@ -62,7 +62,7 @@ const items: BottomNavigationItem[] = [
 };
 
 /** Telefon ekranı gibi çerçeve: üstte AppBar, ortada içerik, altta gezinme. */
-function Screen({ children }: { children: React.ReactNode }) {
+function Screen({ children }: Readonly<{ children: React.ReactNode }>) {
   const theme = useTheme();
   return <View style={{ height: 440, alignSelf: "stretch", borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 16, overflow: "hidden", backgroundColor: theme.color.canvas.surface }}>{children}</View>;
 }

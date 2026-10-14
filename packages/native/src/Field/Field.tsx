@@ -30,7 +30,7 @@ const asText = (node: React.ReactNode) => (typeof node === "string" || typeof no
  * (Input, Textarea, OtpInput, Segmented, Checkbox…) etiketini erişilebilir ad,
  * hatayı/ipucunu erişilebilir ipucu olarak alır; hata varsa kırmızıya geçer.
  */
-export function Field({ label, hint, error, required = false, disabled = false, layout = "vertical", skeleton = false, style, children }: FieldProps) {
+export function Field({ label, hint, error, required = false, disabled = false, layout = "vertical", skeleton = false, style, children }: Readonly<FieldProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const font = nativeFontFamily(theme.fontFamily.sans);

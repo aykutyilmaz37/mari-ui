@@ -114,7 +114,7 @@ export function Tabs({
   skeleton = false,
   style,
   children,
-}: TabsProps) {
+}: Readonly<TabsProps>) {
   const theme = useTheme();
   const m = useNativeConfig().tabs[size];
   const [active, setActive] = useControllable<string | undefined>(activeTab, defaultActiveTab);
@@ -206,7 +206,7 @@ function barStyle(variant: TabsVariant, vertical: boolean, border: string): View
 }
 
 /** Aktif sekmenin göstergesi: line'da 2pt çizgi, pills'te kayan yüzey; card'da yok (sekme kendisi yüzey). */
-function Indicator({ rect, vertical, variant, color, theme }: { rect: LayoutRectangle | undefined; vertical: boolean; variant: TabsVariant; color: ColorRole; theme: Theme }) {
+function Indicator({ rect, vertical, variant, color, theme }: Readonly<{ rect: LayoutRectangle | undefined; vertical: boolean; variant: TabsVariant; color: ColorRole; theme: Theme }>) {
   const { pos, len } = useIndicator(rect, vertical);
   if (!rect || variant === "card") return null;
   const c = theme.color.canvas;
@@ -239,7 +239,7 @@ function useStripScroll(rect: LayoutRectangle | undefined, enabled: boolean) {
   return { scroller, setViewport, onScroll: (x: number) => (scrollX.current = x) };
 }
 
-export function TabsList({ children, extra, accessibilityLabel, style }: TabsListProps) {
+export function TabsList({ children, extra, accessibilityLabel, style }: Readonly<TabsListProps>) {
   const { active, variant, orientation, fill, align, skeleton, m, theme, layouts, color } = useTabs();
   const vertical = orientation === "vertical";
   const c = theme.color.canvas;
@@ -300,7 +300,7 @@ function triggerFrame(variant: TabsVariant, vertical: boolean, active: boolean, 
   return { ...base, paddingHorizontal: vertical ? m.paddingHorizontal : 4 };
 }
 
-export function TabsTrigger({ children, value, icon, count, disabled = false, style }: TabsTriggerProps) {
+export function TabsTrigger({ children, value, icon, count, disabled = false, style }: Readonly<TabsTriggerProps>) {
   const { active, select, color, variant, orientation, fill, skeleton, m, theme, report } = useTabs();
   const on = active === value;
   const vertical = orientation === "vertical";
@@ -341,7 +341,7 @@ export function TabsTrigger({ children, value, icon, count, disabled = false, st
 }
 
 /** Aktif sekmenin paneli. Pasif paneller kaldırılır (`keepMounted` / `forceMount`: gizli tutulur). */
-export function TabsContent({ children, value, forceMount = false, style }: TabsContentProps) {
+export function TabsContent({ children, value, forceMount = false, style }: Readonly<TabsContentProps>) {
   const { active, keepMounted, skeleton, theme } = useTabs();
   const on = active === value;
   const [visited, setVisited] = useState(on);

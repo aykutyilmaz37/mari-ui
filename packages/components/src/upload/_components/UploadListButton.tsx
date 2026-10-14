@@ -7,7 +7,7 @@ export interface UploadListButtonProps {
   disabled?: boolean;
 }
 
-export function UploadListButton({ handleClick, disabled }: UploadListButtonProps) {
+export function UploadListButton({ handleClick, disabled }: Readonly<UploadListButtonProps>) {
   return (
     // `self-start` — ant.design'ın butonu da içeriği kadar geniştir; flex-col
     // ebeveynin `align-items: stretch` varsayılanı (Faz 13'te fark edildi)

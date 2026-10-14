@@ -23,7 +23,7 @@ interface Ctx {
 }
 
 /** Nokta / ikon / dönen gösterge. */
-function Marker({ item, ctx }: { item: TimelineItem; ctx: Ctx }) {
+function Marker({ item, ctx }: Readonly<{ item: TimelineItem; ctx: Ctx }>) {
   const { theme, variant, skeleton } = ctx;
   const color = theme.color[item.color ?? "primary"].solid;
   if (skeleton) return <SkeletonBox style={{ width: DOT, height: DOT, borderRadius: DOT / 2 }} />;
@@ -36,7 +36,7 @@ function Marker({ item, ctx }: { item: TimelineItem; ctx: Ctx }) {
  * Ray parçası. Kesikli çizgi küçük parçalarla çizilir — iOS tek kenarlı
  * `borderStyle: "dashed"`i çizmiyor.
  */
-function Line({ dashed, horizontal, color }: { dashed: boolean; horizontal: boolean; color: string }) {
+function Line({ dashed, horizontal, color }: Readonly<{ dashed: boolean; horizontal: boolean; color: string }>) {
   const along: object = horizontal ? { height: LINE, flex: 1 } : { width: LINE, flex: 1 };
   if (!dashed) return <View style={[along, { backgroundColor: color, borderRadius: 1 }]} />;
   return (
@@ -52,7 +52,7 @@ function Line({ dashed, horizontal, color }: { dashed: boolean; horizontal: bool
 }
 
 /** Metin düğümü: düz metinse stil + iskelette ince çubuk. */
-function Txt({ node, style, ctx, align }: { node: React.ReactNode; style: TextStyle; ctx: Ctx; align?: "left" | "right" | "center" }) {
+function Txt({ node, style, ctx, align }: Readonly<{ node: React.ReactNode; style: TextStyle; ctx: Ctx; align?: "left" | "right" | "center" }>) {
   if (node == null) return null;
   const textAlign = align ?? "left";
   const el = typeof node === "string" || typeof node === "number" ? <Text style={[style, { textAlign }]}>{node}</Text> : node;
@@ -78,7 +78,7 @@ interface RowProps {
 }
 
 /** Dikey satır: [karşı sütun] [ray: işaret + çizgi] [içerik]. */
-function VerticalRow({ item, last, nextLoading, side, threeColumn, balanced, opposite, ctx }: RowProps) {
+function VerticalRow({ item, last, nextLoading, side, threeColumn, balanced, opposite, ctx }: Readonly<RowProps>) {
   const c = ctx.theme.color.canvas;
   const body = (align: "left" | "right") => (
     <View style={{ gap: 2, paddingBottom: last ? 0 : 20, alignItems: align === "right" ? "flex-end" : "flex-start" }}>
@@ -110,7 +110,7 @@ function VerticalRow({ item, last, nextLoading, side, threeColumn, balanced, opp
 const H_ITEM = 168;
 
 /** Yatay: üstte işaret + sağa ray, altında başlık ve içerik. */
-function HorizontalItem({ item, last, nextLoading, ctx }: Omit<RowProps, "side" | "threeColumn" | "balanced" | "opposite">) {
+function HorizontalItem({ item, last, nextLoading, ctx }: Readonly<Omit<RowProps, "side" | "threeColumn" | "balanced" | "opposite">>) {
   return (
     <View role="listitem" style={{ width: H_ITEM, gap: 8 }}>
       <View style={{ flexDirection: "row", alignItems: "center", height: 20, gap: 6 }}>
@@ -133,7 +133,7 @@ function HorizontalItem({ item, last, nextLoading, ctx }: Omit<RowProps, "side" 
  * yatay; ikonlu / dolu / boş nokta, süren adım (`pending`, `loading`). Mantık
  * web Timeline ile aynı (`timelineUtils`).
  */
-export function Timeline({ items, mode = "start", orientation = "vertical", variant = "outlined", titlePlacement = "inline", reverse = false, pending, responsive = 480, accessibilityLabel, skeleton = false, style }: TimelineProps) {
+export function Timeline({ items, mode = "start", orientation = "vertical", variant = "outlined", titlePlacement = "inline", reverse = false, pending, responsive = 480, accessibilityLabel, skeleton = false, style }: Readonly<TimelineProps>) {
   const theme = useTheme();
   const [width, setWidth] = useState<number>();
   const c = theme.color.canvas;

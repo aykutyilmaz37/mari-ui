@@ -93,7 +93,7 @@ interface OptionRowProps {
 }
 
 /** Satırın varsayılan içeriği: ikon, etiket + açıklama, seçiliyse sağda ✓ (iOS liste seçimi). */
-function OptionContent({ option, selected }: { option: SelectOption; selected: boolean }) {
+function OptionContent({ option, selected }: Readonly<{ option: SelectOption; selected: boolean }>) {
   const theme = useTheme();
   const s = useNativeConfig().select;
   const c = theme.color.canvas;
@@ -112,7 +112,7 @@ function OptionContent({ option, selected }: { option: SelectOption; selected: b
   );
 }
 
-function OptionRow({ option, selected, multiple, onPress, render }: OptionRowProps) {
+function OptionRow({ option, selected, multiple, onPress, render }: Readonly<OptionRowProps>) {
   const theme = useTheme();
   const s = useNativeConfig().select;
   const c = theme.color.canvas;
@@ -178,7 +178,7 @@ function freeTextSearchProps(allowFreeText: boolean, onEnter: () => void) {
 }
 
 /** Aramada yazılan, listede birebir yoksa "“…” kullan" satırı (vurgu renginde). */
-function FreeTextRow({ text, label, onPress }: { text: string; label: string; onPress: () => void }) {
+function FreeTextRow({ text, label, onPress }: Readonly<{ text: string; label: string; onPress: () => void }>) {
   const theme = useTheme();
   const s = useNativeConfig().select;
   return (
@@ -218,7 +218,7 @@ interface DisplayProps {
 }
 
 /** Alanın içi: yer tutucu, tekli seçimde etiket (+ikon), çokluda kaldırılabilir etiketler ve "+N". */
-function SelectDisplay({ selected, multiple, maxTagCount, placeholder, disabled, textStyle, mutedColor, onRemove }: DisplayProps) {
+function SelectDisplay({ selected, multiple, maxTagCount, placeholder, disabled, textStyle, mutedColor, onRemove }: Readonly<DisplayProps>) {
   if (selected.length === 0) return <Text numberOfLines={1} style={[textStyle, { color: mutedColor }]}>{placeholder}</Text>;
   if (!multiple) {
     const o = selected[0]!;
@@ -254,7 +254,7 @@ interface ListProps {
 }
 
 /** Paneldeki liste: yükleniyor, boş sonuç ya da (başlıklı) bölümler. */
-function OptionList({ sections, loading, notFoundContent, values, multiple, onChoose, render }: ListProps) {
+function OptionList({ sections, loading, notFoundContent, values, multiple, onChoose, render }: Readonly<ListProps>) {
   const theme = useTheme();
   const s = useNativeConfig().select;
   const c = theme.color.canvas;

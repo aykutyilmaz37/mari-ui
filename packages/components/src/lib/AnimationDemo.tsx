@@ -9,7 +9,7 @@ import { Button } from "../button";
  * "Animasyon" story'si: "Tekrar oynat" bileşeni yeniden bağlar (key), giriş
  * animasyonu baştan çalışır. Paket girişlerinden import edilmez.
  */
-export function AnimationDemo({ children, className }: { children: React.ReactNode; className?: string }) {
+export function AnimationDemo({ children, className }: Readonly<{ children: React.ReactNode; className?: string }>) {
   const [run, setRun] = useState(0);
   return (
     <div className="flex flex-col items-start gap-4">

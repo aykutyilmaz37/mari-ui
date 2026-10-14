@@ -146,7 +146,7 @@ export function Popover({
   role = "dialog",
   className,
   skeleton = false,
-}: PopoverProps) {
+}: Readonly<PopoverProps>) {
   const [open, setOpen] = useControllableState<boolean>({ value: openProp, defaultValue: defaultOpen, onChange: onOpenChange });
   const anchorRef = useRef<HTMLSpanElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);

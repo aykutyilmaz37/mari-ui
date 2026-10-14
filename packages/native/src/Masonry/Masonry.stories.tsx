@@ -31,7 +31,7 @@ export default meta;
 type Story = StoryObj<typeof Masonry>;
 
 /** Telefon ekranı gibi sabit yükseklikte çerçeve — pano kendi içinde kayar. */
-function Screen({ children, height = 520 }: { children: React.ReactNode; height?: number }) {
+function Screen({ children, height = 520 }: Readonly<{ children: React.ReactNode; height?: number }>) {
   const theme = useTheme();
   return <View style={{ height, alignSelf: "stretch", borderWidth: 1, borderColor: theme.color.canvas.border, borderRadius: 16, overflow: "hidden", backgroundColor: theme.color.canvas.surface }}>{children}</View>;
 }

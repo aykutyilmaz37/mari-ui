@@ -28,7 +28,7 @@ interface ColorSliderProps {
 }
 
 /** Ton ve saydamlık için yatay kaydırıcı (`role="slider"`; ←/→ ↑/↓, Shift ile 10×, PageUp/Down, Home/End). */
-export function ColorSlider({ label, value, min, max, step = 1, valueText, background, checker, thumbColor, disabled, onChange, onChangeEnd }: ColorSliderProps) {
+export function ColorSlider({ label, value, min, max, step = 1, valueText, background, checker, thumbColor, disabled, onChange, onChangeEnd }: Readonly<ColorSliderProps>) {
   const drag = usePointerDrag(({ x }) => onChange(Math.round((min + x * (max - min)) / step) * step), onChangeEnd);
   const ratio = (value - min) / (max - min);
 

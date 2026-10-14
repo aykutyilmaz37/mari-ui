@@ -65,7 +65,7 @@ export function Segmented({
   "aria-labelledby": ownAriaLabelledBy,
   className,
   skeleton: ownSkeleton,
-}: SegmentedProps) {
+}: Readonly<SegmentedProps>) {
   // Field içindeyse etiketi grubun adı olur; ipucu/hata, zorunluluk ve devre dışı oradan.
   const field = useFieldGroup({ "aria-label": ownAriaLabel, "aria-labelledby": ownAriaLabelledBy, disabled: ownDisabled });
   const skeleton = useFieldSkeleton(ownSkeleton);

@@ -113,7 +113,7 @@ export interface ContentSkeletonProps {
  * `fallback` gösterilir. Boyut değişince (pencere, çekmece genişliği)
  * `ResizeObserver` ile yeniden ölçülür.
  */
-export function ContentSkeleton({ on, fallback, className, children }: ContentSkeletonProps) {
+export function ContentSkeleton({ on, fallback, className, children }: Readonly<ContentSkeletonProps>) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [blocks, setBlocks] = useState<Block[] | null>(null);
 

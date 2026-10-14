@@ -53,7 +53,7 @@ const PLACEHOLDER = (
  * saydam yapıyordu — kendi rengi olan önek/sonek (₺, %) ve trend (yeşil/kırmızı
  * metin, ikon) iskeletin üstünde görünür kalıyordu (kullanıcı bulgusu).
  */
-function StatisticShell({ title, prefix, suffix, description, footer, size, skeleton, className, children, valueProps, valueAs = "p" }: ShellProps) {
+function StatisticShell({ title, prefix, suffix, description, footer, size, skeleton, className, children, valueProps, valueAs = "p" }: Readonly<ShellProps>) {
   const Value = valueAs;
   return (
     <div className={cn("min-w-0", className)} aria-busy={skeleton || undefined}>
@@ -94,7 +94,7 @@ interface TrendProps {
   mode: ValueAnimation;
 }
 
-function Trend({ trend, locale, animate, mode }: TrendProps) {
+function Trend({ trend, locale, animate, mode }: Readonly<TrendProps>) {
   const tone = trendTone(trend.value, trend.goodWhen ?? "up");
   const nf = new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
   const withUnit = (n: string) => (trend.unit === "points" ? `${n} puan` : `%${n}`);
@@ -145,7 +145,7 @@ export function Statistic({
   skeleton = false,
   animated = true,
   valueAnimation = "count",
-}: StatisticProps) {
+}: Readonly<StatisticProps>) {
   const text = formatValue(value, precision, locale);
   const animate = animated && !skeleton;
   // Sayarken ara değerler hedefin basamak sayısıyla — "1.284.500,5" sayarken 17 ondalık görünmesin.
@@ -194,7 +194,7 @@ function useNow(intervalMs: number, enabled = true): number | null {
  * ekran okuyucu her saniye konuşmaz); kalan süre sözlü olarak
  * `aria-label`da, süre dolunca bir kez duyurulur.
  */
-export function Countdown({ title, target, onFinish, showDays = true, finishedText = "Süre doldu", prefix, suffix, description, size = "md", className, skeleton = false }: CountdownProps) {
+export function Countdown({ title, target, onFinish, showDays = true, finishedText = "Süre doldu", prefix, suffix, description, size = "md", className, skeleton = false }: Readonly<CountdownProps>) {
   const targetMs = typeof target === "number" ? target : target.getTime();
   const now = useNow(1000);
   const remaining = now === null ? null : Math.max(0, targetMs - now);
@@ -236,7 +236,7 @@ export function Countdown({ title, target, onFinish, showDays = true, finishedTe
 }
 
 /** Canlı saat (`<time>`); saniyesiz modda dakikada bir değişir ama saniyede bir kontrol edilir (dakika kaçmasın). */
-export function Clock({ title, timeZone, showSeconds = false, locale = "tr-TR", prefix, suffix, description, size = "md", className, skeleton = false }: ClockProps) {
+export function Clock({ title, timeZone, showSeconds = false, locale = "tr-TR", prefix, suffix, description, size = "md", className, skeleton = false }: Readonly<ClockProps>) {
   const now = useNow(1000);
   const date = now === null ? null : new Date(now);
   const text = date ? new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", second: showSeconds ? "2-digit" : undefined, hour12: false, timeZone }).format(date) : "--:--";
@@ -261,7 +261,7 @@ export function Clock({ title, timeZone, showSeconds = false, locale = "tr-TR", 
  * Kronometre: Başlat / Duraklat / Sıfırla. Salise görünür ama duyurulmaz
  * (`role="timer"`); durdurulunca geçen süre sözlü olarak durum bölgesinde okunur.
  */
-export function Stopwatch({ title, controls = true, autoStart = false, onStop, prefix, suffix, description, size = "md", className, skeleton = false }: StopwatchProps) {
+export function Stopwatch({ title, controls = true, autoStart = false, onStop, prefix, suffix, description, size = "md", className, skeleton = false }: Readonly<StopwatchProps>) {
   const [running, setRunning] = useState(autoStart);
   const [base, setBase] = useState(0);
   const startedAt = useRef<number | null>(autoStart ? Date.now() : null);

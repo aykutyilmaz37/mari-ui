@@ -33,7 +33,7 @@ export interface MobileNavProps extends MenuNavigationProps {
  * çekmece kendiliğinden kapanır — yoksa kapatma düğmesi olmayan bir masaüstü
  * ekranında asılı kalırdı.
  */
-export function MobileNav({ data, color, breakpoint, logo, activeKey, onItemSelect, onNavigate, currentPath, label }: MobileNavProps) {
+export function MobileNav({ data, color, breakpoint, logo, activeKey, onItemSelect, onNavigate, currentPath, label }: Readonly<MobileNavProps>) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
 

@@ -101,7 +101,7 @@ function viewerSource(src: ImageSource, loader: ImageLoader | undefined, stageWi
  * kapat, çift dokun = yakınlaş/sıfırla, iki parmak = yakınlaş, yakınken
  * sürükle = gez, tek dokun = üst/alt çubukları gizle/göster.
  */
-export function ImageViewer(props: ImageViewerProps) {
+export function ImageViewer(props: Readonly<ImageViewerProps>) {
   const [mounted, setMounted] = useState(props.open);
   useEffect(() => {
     if (props.open) setMounted(true);
@@ -286,7 +286,7 @@ function useViewerMotion() {
 }
 
 /** Üst/alt çubuk: yarı saydam yüzey (web `bg-mari-surface/80`). */
-function ChromeBar({ style, children }: { style: React.ComponentProps<typeof View>["style"]; children: React.ReactNode }) {
+function ChromeBar({ style, children }: Readonly<{ style: React.ComponentProps<typeof View>["style"]; children: React.ReactNode }>) {
   const theme = useTheme();
   return (
     <View style={style}>
@@ -297,12 +297,12 @@ function ChromeBar({ style, children }: { style: React.ComponentProps<typeof Vie
 }
 
 /** Görsel açıklaması; düz metin Text'e sarılır. */
-function Caption({ caption }: { caption: React.ReactNode }) {
+function Caption({ caption }: Readonly<{ caption: React.ReactNode }>) {
   if (!caption) return null;
   return <View style={{ paddingHorizontal: 16 }}>{typeof caption === "string" ? <ViewerText style={{ fontSize: 14, lineHeight: 20, textAlign: "center" }}>{caption}</ViewerText> : caption}</View>;
 }
 
-function ViewerText({ style, lines, children }: { style: React.ComponentProps<typeof Text>["style"]; lines?: number; children: React.ReactNode }) {
+function ViewerText({ style, lines, children }: Readonly<{ style: React.ComponentProps<typeof Text>["style"]; lines?: number; children: React.ReactNode }>) {
   const theme = useTheme();
   return (
     <Text numberOfLines={lines} style={[{ fontFamily: nativeFontFamily(theme.fontFamily.sans), color: theme.color.canvas.foreground }, style]}>
@@ -311,7 +311,7 @@ function ViewerText({ style, lines, children }: { style: React.ComponentProps<ty
   );
 }
 
-function ViewerSlide({ item, loader, stageWidth, onNatural }: { item: ImageViewerItem; loader?: ImageLoader; stageWidth: number; onNatural: (key: React.Key, size: Size) => void }) {
+function ViewerSlide({ item, loader, stageWidth, onNatural }: Readonly<{ item: ImageViewerItem; loader?: ImageLoader; stageWidth: number; onNatural: (key: React.Key, size: Size) => void }>) {
   const theme = useTheme();
   const source = viewerSource(item.src, loader, stageWidth);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
@@ -345,7 +345,7 @@ function ViewerSlide({ item, loader, stageWidth, onNatural }: { item: ImageViewe
 }
 
 /** Alt şerit: şimdiki öğe geniş ve ortada (web ile aynı: 44 / 28). */
-function ThumbnailStrip({ items, current, loader, width, onSelect }: { items: ImageViewerItem[]; current: number; loader?: ImageLoader; width: number; onSelect: (index: number) => void }) {
+function ThumbnailStrip({ items, current, loader, width, onSelect }: Readonly<{ items: ImageViewerItem[]; current: number; loader?: ImageLoader; width: number; onSelect: (index: number) => void }>) {
   const theme = useTheme();
   const ref = useRef<{ scrollTo: (options: { x: number; animated?: boolean }) => void } | null>(null);
   const first = useRef(true);

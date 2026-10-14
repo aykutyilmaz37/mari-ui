@@ -35,7 +35,7 @@ export interface CellGridProps {
   skeleton?: boolean;
 }
 
-function GridCellView({ cell, focused, full, content, onClick }: { cell: GridCell; focused: boolean; full: boolean; content: React.ReactNode; onClick: () => void }) {
+function GridCellView({ cell, focused, full, content, onClick }: Readonly<{ cell: GridCell; focused: boolean; full: boolean; content: React.ReactNode; onClick: () => void }>) {
   const solid = cell.selected && !full;
   return (
     <td
@@ -82,7 +82,7 @@ function GridCellView({ cell, focused, full, content, onClick }: { cell: GridCel
 }
 
 /** Ay ve yıl seçimi için 3 sütunlu APG ızgarası (roving tabindex). */
-export function CellGrid({ cells, focusedIndex, onFocusIndex, onSelect, label, columns = 3, variant = "compact", cellRender, takeFocus = false, onPage, skeleton = false }: CellGridProps) {
+export function CellGrid({ cells, focusedIndex, onFocusIndex, onSelect, label, columns = 3, variant = "compact", cellRender, takeFocus = false, onPage, skeleton = false }: Readonly<CellGridProps>) {
   const tableRef = useRef<HTMLTableElement>(null);
   const full = variant === "full";
   // Klavyeyle gezinince odak yeni hücreye taşınır — ay/sayfa değişince eski hücre DOM'dan

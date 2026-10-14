@@ -34,7 +34,7 @@ interface RowProps extends MenuNavigationProps {
 }
 
 /** Yaprak satır: gerçek bir link (`MenuLink`); tıklanınca aktif öğeyi günceller ve paneli kapatır. */
-function LeafRow({ item, activeKey, setActiveKey, color, onNavigate, onAfterSelect }: RowProps) {
+function LeafRow({ item, activeKey, setActiveKey, color, onNavigate, onAfterSelect }: Readonly<RowProps>) {
   return (
     <MenuLink
       route={item.route}
@@ -55,7 +55,7 @@ function LeafRow({ item, activeKey, setActiveKey, color, onNavigate, onAfterSele
 }
 
 /** İç içe alt menü: satırın kendisi tetikleyici, paneli sağa doğru açılır. */
-function FlyoutRow(props: RowProps) {
+function FlyoutRow(props: Readonly<RowProps>) {
   const { item, activeKey, color } = props;
   return (
     <Dropdown hover className="block self-auto">
@@ -142,7 +142,7 @@ function DropdownPanelBody(props: SubMenuPanelBodyProps) {
  *   genişlik mega panel BasicMenu'nün değil `MegaMenu`nün işi.
  * Tetikleyici hem hover hem tıklama/klavye ile açılır (DropdownTrigger).
  */
-export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNavigate, currentPath }: DropdownSubMenuProps) {
+export function DropdownSubMenu({ item, activeKey, setActiveKey, color, onNavigate, currentPath }: Readonly<DropdownSubMenuProps>) {
   if (!item.children) {
     return <BasicMenuItem item={item} activeKey={activeKey} setActiveKey={setActiveKey} color={color} onNavigate={onNavigate} />;
   }

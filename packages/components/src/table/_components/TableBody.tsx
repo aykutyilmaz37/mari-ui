@@ -55,7 +55,7 @@ interface DataCellProps<T extends { id: string }> {
   skeleton: boolean;
 }
 
-function DataCell<T extends { id: string }>({ col, item, rowIndex, columnIndex, isEditing, draft, setDrafts, skeleton }: DataCellProps<T>) {
+function DataCell<T extends { id: string }>({ col, item, rowIndex, columnIndex, isEditing, draft, setDrafts, skeleton }: Readonly<DataCellProps<T>>) {
   const columnName = col.columnName;
   const rawValue = columnName ? item[columnName] : undefined;
   // `0`/`false`/`""` geçerli değerlerdir — sadece null/undefined "-" olur.
@@ -93,7 +93,7 @@ function DataCell<T extends { id: string }>({ col, item, rowIndex, columnIndex, 
 }
 
 /** Veri henüz yokken (`skeleton` + boş `data`) çizilen sahte satırlar — gerçek tek satırlık satırla aynı yükseklik. */
-function PlaceholderRows<T extends { id: string }>({ columns, count }: { columns: ColumnDef<T>[]; count: number }) {
+function PlaceholderRows<T extends { id: string }>({ columns, count }: Readonly<{ columns: ColumnDef<T>[]; count: number }>) {
   return (
     <tbody aria-hidden>
       {Array.from({ length: count }, (_, rowIndex) => (
@@ -115,7 +115,7 @@ function PlaceholderRows<T extends { id: string }>({ columns, count }: { columns
   );
 }
 
-export function TableBody<T extends { id: string }>({ data, columns, emptyState, skeleton = false, pageSize }: TableBodyProps<T>) {
+export function TableBody<T extends { id: string }>({ data, columns, emptyState, skeleton = false, pageSize }: Readonly<TableBodyProps<T>>) {
   // Satır içi düzenleme durumu satır seviyesinde: aksiyon hücresindeki
   // "düzenle" AYNI satırdaki veri hücrelerini de <Input>'a çeviriyor.
   const [editingRowId, setEditingRowId] = useState<string | null>(null);

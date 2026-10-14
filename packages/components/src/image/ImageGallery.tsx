@@ -199,7 +199,7 @@ function GalleryTile({
   onActivate,
   onLongPress,
   onKeyDown,
-}: {
+}: Readonly<{
   item: ImageGalleryItem;
   index: number;
   active: boolean;
@@ -210,7 +210,7 @@ function GalleryTile({
   onActivate: (index: number, event: React.MouseEvent | React.KeyboardEvent) => void;
   onLongPress: (index: number) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-}) {
+}>) {
   const press = useRef<{ timer: ReturnType<typeof setTimeout>; x: number; y: number; fired: boolean } | null>(null);
   const isVideo = item.type === "video";
   // Kapak görseli görüntüleyicideki gibi hazır bir adres: `loader`dan geçmez.
@@ -452,7 +452,7 @@ export function ImageGallery({
   skeleton = false,
   "aria-label": ariaLabel = "Fotoğraflar",
   className,
-}: ImageGalleryProps) {
+}: Readonly<ImageGalleryProps>) {
   const [rawView, setViewState] = useControllableState({ value: viewProp, defaultValue: defaultView, onChange: onViewChange });
   const [columnsSetting = "auto", setColumns] = useControllableState<number | "auto">({
     value: columnsProp,
@@ -679,7 +679,7 @@ function ItemRow({
   selecting,
   isSelected,
   tile,
-}: {
+}: Readonly<{
   rowIndex: number;
   style: React.CSSProperties;
   columns: number;
@@ -690,7 +690,7 @@ function ItemRow({
   selecting: boolean;
   isSelected: (key: React.Key) => boolean;
   tile: TileShared;
-}) {
+}>) {
   return (
     <div role="row" aria-rowindex={rowIndex + 1} style={{ ...style, display: "grid", gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`, gap }}>
       {items.map((item, k) => (
@@ -716,7 +716,7 @@ function SectionHeaderRow({
   label,
   count,
   onDrillDown,
-}: {
+}: Readonly<{
   rowIndex: number;
   style: React.CSSProperties;
   columns: number;
@@ -724,7 +724,7 @@ function SectionHeaderRow({
   label: string;
   count: number;
   onDrillDown?: () => void;
-}) {
+}>) {
   const Heading = `h${headingLevel}` as "h3";
   return (
     <div role="row" aria-rowindex={rowIndex + 1} style={style} className="flex items-end px-1 pb-1.5">
@@ -860,13 +860,13 @@ function GallerySkeleton({
   view,
   gap,
   className,
-}: {
+}: Readonly<{
   toolbar: boolean;
   columns: number | "auto";
   view: GalleryView;
   gap: number;
   className?: string;
-}) {
+}>) {
   const gridRef = useRef<HTMLDivElement>(null);
   const width = useWidth(gridRef, true);
   const cols = columns === "auto" ? autoColumns(width, view, gap) : clampColumns(columns);

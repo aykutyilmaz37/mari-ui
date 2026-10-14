@@ -67,7 +67,7 @@ export interface SubMenuRowContentProps {
  * açıklama" yapısı; renkler tamamen kendi token'larımızdan — karo dinlenmede
  * nötr, hover/aktifte seçili rengin `-subtle` zemini + asıl rengi.
  */
-export function SubMenuRowContent({ item, active, color, trailing }: SubMenuRowContentProps) {
+export function SubMenuRowContent({ item, active, color, trailing }: Readonly<SubMenuRowContentProps>) {
   const interactive = !item.disabled;
   return (
     <>

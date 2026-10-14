@@ -259,7 +259,7 @@ export function StudioApp() {
 }
 
 /** Kenar çubuğu / ana alan bölümü: başlık + isteğe bağlı açıklama + içerik. */
-function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+function Section({ title, hint, children }: Readonly<{ title: string; hint?: string; children: ReactNode }>) {
   return (
     <section className="studio-section">
       <Title level={6}>{title}</Title>

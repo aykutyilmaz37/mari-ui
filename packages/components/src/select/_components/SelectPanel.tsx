@@ -30,7 +30,7 @@ interface SelectPanelProps {
 
 export const optionDomId = (listboxId: string, option: SelectOption) => `${listboxId}-${valueKey(option.value).replace(/[^\w-]/g, "_")}`;
 
-function OptionContent({ option, selected, multiple }: { option: SelectOption; selected: boolean; multiple: boolean }) {
+function OptionContent({ option, selected, multiple }: Readonly<{ option: SelectOption; selected: boolean; multiple: boolean }>) {
   return (
     <>
       {option.icon && <span className="flex shrink-0 items-center text-mari-muted [&>svg]:size-4">{option.icon}</span>}

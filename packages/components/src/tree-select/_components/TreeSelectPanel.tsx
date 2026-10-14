@@ -32,7 +32,7 @@ function checkStateOf(state: TreeSelectState, key: string): CheckState {
   return state.isHalf(key) ? "mixed" : "unchecked";
 }
 
-function Row({ entry, state, treeId, treeLine, titleRender }: { entry: VisibleNode; state: TreeSelectState; treeId: string; treeLine: boolean; titleRender?: TreeSelectProps["titleRender"] }) {
+function Row({ entry, state, treeId, treeLine, titleRender }: Readonly<{ entry: VisibleNode; state: TreeSelectState; treeId: string; treeLine: boolean; titleRender?: TreeSelectProps["titleRender"] }>) {
   const { node, level } = entry;
   const key = node.key;
   const expandable = state.canExpand(node);

@@ -22,7 +22,7 @@ export function Divider({
   // font'la ölçeklenmiyordu). Sayı verilirse `px` kabul edilir (kaçış).
   height = "3rem",
   skeleton = false,
-}: DividerProps) {
+}: Readonly<DividerProps>) {
   const isHorizontal = orientation === "horizontal";
   const baseClass = getBaseClass(isHorizontal, size, className);
   const labelClass = getLabelClass(plain, isHorizontal);

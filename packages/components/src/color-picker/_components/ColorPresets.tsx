@@ -14,7 +14,7 @@ interface PresetGroupProps {
   onPick: (color: Hsba) => void;
 }
 
-function PresetGroup({ preset, current, disabled, onPick }: PresetGroupProps) {
+function PresetGroup({ preset, current, disabled, onPick }: Readonly<PresetGroupProps>) {
   const [open, setOpen] = useState(preset.defaultOpen ?? true);
   const listId = useId();
   const colors = preset.colors.map((text) => ({ text, hsba: parseColor(text) })).filter((c): c is { text: string; hsba: Hsba } => c.hsba !== null);
@@ -63,7 +63,7 @@ function PresetGroup({ preset, current, disabled, onPick }: PresetGroupProps) {
 }
 
 /** Hazır renk grupları; her grup başlığı açılır/kapanır (ant.design gibi). Seçili renk ✓ ve `aria-pressed`. */
-export function ColorPresets({ presets, current, disabled, onPick }: { presets: ColorPreset[]; current: Hsba | null; disabled?: boolean; onPick: (color: Hsba) => void }) {
+export function ColorPresets({ presets, current, disabled, onPick }: Readonly<{ presets: ColorPreset[]; current: Hsba | null; disabled?: boolean; onPick: (color: Hsba) => void }>) {
   return (
     <div className="flex flex-col gap-2 border-t border-mari-border pt-2">
       {presets.map((preset, i) => (

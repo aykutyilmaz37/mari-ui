@@ -21,7 +21,7 @@ interface ColorAreaProps {
  * `slider` (değer = doygunluk), `aria-valuetext` iki ekseni birden söyler,
  * `aria-roledescription` yönü açıklar. ←/→ doygunluk, ↑/↓ parlaklık.
  */
-export function ColorArea({ color, disabled, onChange, onChangeEnd }: ColorAreaProps) {
+export function ColorArea({ color, disabled, onChange, onChangeEnd }: Readonly<ColorAreaProps>) {
   const drag = usePointerDrag(({ x, y }) => onChange(Math.round(x * 100), Math.round((1 - y) * 100)), onChangeEnd);
   const s = Math.round(color.s);
   const b = Math.round(color.b);

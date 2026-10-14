@@ -90,7 +90,7 @@ type Story = StoryObj<typeof Card>;
 
 /* ─────────────────────────── yardımcılar ─────────────────────────── */
 
-function Initials({ text, className = "" }: { text: string; className?: string }) {
+function Initials({ text, className = "" }: Readonly<{ text: string; className?: string }>) {
   return (
     <span aria-hidden className={`flex size-full items-center justify-center bg-mari-primary-subtle font-semibold text-mari-primary-subtle-contrast ${className}`}>
       {text}
@@ -99,7 +99,7 @@ function Initials({ text, className = "" }: { text: string; className?: string }
 }
 
 /** Harici görsel yerine token renkli degrade kapak. */
-function ArtCover({ Icon, tone = "primary", ratio = "aspect-[4/3]" }: { Icon: typeof LaptopIcon; tone?: "primary" | "accent" | "success" | "warning" | "info"; ratio?: string }) {
+function ArtCover({ Icon, tone = "primary", ratio = "aspect-[4/3]" }: Readonly<{ Icon: typeof LaptopIcon; tone?: "primary" | "accent" | "success" | "warning" | "info"; ratio?: string }>) {
   const tones = {
     primary: "from-mari-primary-subtle to-mari-surface-alt text-mari-primary",
     accent: "from-mari-accent-subtle to-mari-surface-alt text-mari-accent",
@@ -193,7 +193,7 @@ const kpis = [
   { label: "Ort. sepet", value: "₺1.254", delta: 3.9, points: [11, 12, 12, 13, 12, 14, 14, 15] },
 ];
 
-function Sparkline({ points, positive }: { points: number[]; positive: boolean }) {
+function Sparkline({ points, positive }: Readonly<{ points: number[]; positive: boolean }>) {
   const max = Math.max(...points);
   const min = Math.min(...points);
   const d = points.map((p, i) => `${(i / (points.length - 1)) * 100},${28 - ((p - min) / (max - min || 1)) * 24}`).join(" ");

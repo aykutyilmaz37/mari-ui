@@ -9,7 +9,7 @@ import { getFilteredOption, splitMatch } from "./utils";
 
 export type { AutoCompleteProps };
 
-function HighlightedValue({ value, searchText }: { value: string; searchText: string }) {
+function HighlightedValue({ value, searchText }: Readonly<{ value: string; searchText: string }>) {
   const parts = splitMatch(value, searchText);
   if (!parts) return <>{value}</>;
   return (
@@ -50,7 +50,7 @@ export function AutoComplete({
   "aria-label": ariaLabel,
   className,
   skeleton = false,
-}: AutoCompleteProps) {
+}: Readonly<AutoCompleteProps>) {
   const [searchText, setSearchText] = useControllableState<string>({ value, defaultValue, onChange: onSearch });
   const [isFocused, setIsFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);

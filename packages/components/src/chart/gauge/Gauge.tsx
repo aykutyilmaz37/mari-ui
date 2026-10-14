@@ -94,7 +94,7 @@ export function Gauge({
   skeleton,
   animated = true,
   className,
-}: GaugeProps) {
+}: Readonly<GaugeProps>) {
   const format = useMemo(() => valueFormatter ?? ((v: number) => new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(v)), [valueFormatter, locale]);
   if (skeleton) {
     return (

@@ -37,7 +37,7 @@ export function Typewriter({
   className,
   style,
   skeleton = false,
-}: TypewriterProps) {
+}: Readonly<TypewriterProps>) {
   const texts = Array.isArray(text) ? text : [text];
   const [ref, state] = useTypewriter<HTMLElement>({ texts, loop, typeSpeed, deleteSpeed, pauseMs, startDelay, trigger, onComplete });
   const Tag = as as React.ElementType;

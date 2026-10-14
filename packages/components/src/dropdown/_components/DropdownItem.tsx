@@ -11,7 +11,7 @@ import { NewTabHint, getLinkAttrs } from "../../lib/linkBehavior";
  * satır yüksekliği), 4px yarıçap, ikon + metin, disabled durumu. Renkler kendi
  * token'larımızdan: hover'da hafif zemin, danger'da hafif kırmızı zemin.
  */
-export function DropdownItem({ children, icon, extra, danger = false, disabled = false, href, target, onClick, className }: DropdownItemProps) {
+export function DropdownItem({ children, icon, extra, danger = false, disabled = false, href, target, onClick, className }: Readonly<DropdownItemProps>) {
   const { setVisible, triggerRef } = useDropdown();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
@@ -60,11 +60,11 @@ export function DropdownItem({ children, icon, extra, danger = false, disabled =
 }
 
 /** Grup başlığı ("Hesap", kullanıcı e-postası…): odaklanılamaz, soluk küçük metin. */
-export function DropdownLabel({ children, className }: { children: React.ReactNode; className?: string }) {
+export function DropdownLabel({ children, className }: Readonly<{ children: React.ReactNode; className?: string }>) {
   return <div className={cn("px-3 pb-1 pt-1.5 text-xs text-mari-muted", className)}>{children}</div>;
 }
 
 /** Menü ayırıcısı: 1px, dikeyde 4px boşluk, hafif çizgi. */
-export function DropdownDivider({ className }: { className?: string }) {
+export function DropdownDivider({ className }: Readonly<{ className?: string }>) {
   return <div role="separator" className={cn("my-1 h-px bg-mari-foreground/[0.06]", className)} />;
 }

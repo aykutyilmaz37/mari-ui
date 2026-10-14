@@ -24,7 +24,7 @@ interface ColorInputsProps {
 }
 
 /** Hex: 6/8 hane yazılınca anında, 3/4 hane alandan çıkınca/Enter'da uygulanır; geçersizse eski değere döner. */
-function HexInput({ color, disabled, onChange }: { color: Hsba; disabled?: boolean; onChange: (c: Hsba) => void }) {
+function HexInput({ color, disabled, onChange }: Readonly<{ color: Hsba; disabled?: boolean; onChange: (c: Hsba) => void }>) {
   const hex = colorInfo(color).hex.slice(1);
   const [text, setText] = useState(hex);
   // Dışarıdan (alan/kaydırıcı) değişince metni eşitle.
@@ -66,7 +66,7 @@ interface ChannelProps {
   onChange: (value: number) => void;
 }
 
-function Channel({ label, value, max, disabled, onChange }: ChannelProps) {
+function Channel({ label, value, max, disabled, onChange }: Readonly<ChannelProps>) {
   return (
     <InputNumber
       size="sm"
@@ -83,7 +83,7 @@ function Channel({ label, value, max, disabled, onChange }: ChannelProps) {
   );
 }
 
-function ChannelInputs({ color, format, disabled, onChange }: { color: Hsba; format: "rgb" | "hsb"; disabled?: boolean; onChange: (c: Hsba) => void }) {
+function ChannelInputs({ color, format, disabled, onChange }: Readonly<{ color: Hsba; format: "rgb" | "hsb"; disabled?: boolean; onChange: (c: Hsba) => void }>) {
   if (format === "hsb") {
     return (
       <>
@@ -108,7 +108,7 @@ function ChannelInputs({ color, format, disabled, onChange }: { color: Hsba; for
 }
 
 /** Biçim seçimi (HEX/RGB/HSB) + o biçimin alanları + saydamlık yüzdesi. */
-export function ColorInputs({ color, format, onFormatChange, disabledAlpha, disabled, onChange }: ColorInputsProps) {
+export function ColorInputs({ color, format, onFormatChange, disabledAlpha, disabled, onChange }: Readonly<ColorInputsProps>) {
   return (
     <div className="flex flex-col gap-2">
       <Segmented size="sm" block aria-label="Renk biçimi" options={FORMAT_OPTIONS} value={format} disabled={disabled} onChange={(v) => onFormatChange(v as ColorFormat)} />

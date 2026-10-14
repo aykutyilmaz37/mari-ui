@@ -26,7 +26,7 @@ export type { TreeProps, TreeNode };
 export type CheckState = "checked" | "mixed" | "unchecked";
 
 /** TreeSelect de kullanır (aynı görsel kutu). */
-export function CheckboxBox({ state, disabled, onClick }: { state: CheckState; disabled: boolean; onClick: (e: React.MouseEvent) => void }) {
+export function CheckboxBox({ state, disabled, onClick }: Readonly<{ state: CheckState; disabled: boolean; onClick: (e: React.MouseEvent) => void }>) {
   const on = state !== "unchecked";
   return (
     // Görsel kutu: durum treeitem'in `aria-checked`ında; tıklama fare içindir, klavyede Space.
@@ -46,7 +46,7 @@ export function CheckboxBox({ state, disabled, onClick }: { state: CheckState; d
 }
 
 /** Başlık + arama vurgusu — TreeSelect de kullanır. */
-export function Title({ node, searchValue, titleRender }: { node: TreeNode; searchValue?: string; titleRender?: TreeProps["titleRender"] }) {
+export function Title({ node, searchValue, titleRender }: Readonly<{ node: TreeNode; searchValue?: string; titleRender?: TreeProps["titleRender"] }>) {
   if (titleRender) return <>{titleRender(node)}</>;
   if (!searchValue || typeof node.title !== "string") return <>{node.title}</>;
   return (
@@ -107,7 +107,7 @@ function treeitemAria({ entry, focused, open, expandable, loading, selected, sel
   } as const;
 }
 
-export function Switcher({ open, expandable, loading, skeleton, onToggle }: Pick<RowProps, "open" | "expandable" | "loading" | "skeleton" | "onToggle">) {
+export function Switcher({ open, expandable, loading, skeleton, onToggle }: Readonly<Pick<RowProps, "open" | "expandable" | "loading" | "skeleton" | "onToggle">>) {
   let icon: React.ReactNode = null;
   if (loading) icon = <Loader2Icon size={14} className="animate-spin text-mari-muted motion-reduce:animate-none" />;
   else if (expandable && skeleton) icon = <span {...skeletonBoxProps("size-3 rounded-sm")} />;
@@ -128,7 +128,7 @@ export function Switcher({ open, expandable, loading, skeleton, onToggle }: Pick
   );
 }
 
-export function Indent({ level, showLine }: { level: number; showLine: boolean }) {
+export function Indent({ level, showLine }: Readonly<{ level: number; showLine: boolean }>) {
   return (
     <>
       {Array.from({ length: level - 1 }, (_, i) => (
@@ -147,7 +147,7 @@ export function Indent({ level, showLine }: { level: number; showLine: boolean }
   );
 }
 
-function Row(props: RowProps) {
+function Row(props: Readonly<RowProps>) {
   const { entry, id, selected, checkState, showLine, blockNode, skeleton } = props;
   const { node, level } = entry;
   const disabled = Boolean(node.disabled);
@@ -269,7 +269,7 @@ function useTreeState(props: TreeProps) {
  * atlama; Enter seçer, Space (onay kutulu ağaçta) işaretler. Dokunmatikte
  * satırlar 44px.
  */
-export function Tree(props: TreeProps) {
+export function Tree(props: Readonly<TreeProps>) {
   const {
     selectable = true,
     multiple = false,

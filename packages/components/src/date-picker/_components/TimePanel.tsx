@@ -19,7 +19,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * (↑/↓, Home/End, PageUp/Down 5'er). Seçili değer sütunun en üstüne kayar
  * (ant.design gibi).
  */
-function Column({ label, values, value, onChange, takeFocus }: ColumnProps) {
+function Column({ label, values, value, onChange, takeFocus }: Readonly<ColumnProps>) {
   const listRef = useRef<HTMLDivElement>(null);
   const navigating = useRef(false);
   const index = Math.max(0, values.indexOf(value));
@@ -85,7 +85,7 @@ export interface TimePanelProps {
 }
 
 /** Saat / dakika / (saniye) sütunları. Her sütun ayrı sekme durağı. */
-export function TimePanel({ value, onChange, seconds, hourStep = 1, minuteStep = 1, secondStep = 1, takeFocus }: TimePanelProps) {
+export function TimePanel({ value, onChange, seconds, hourStep = 1, minuteStep = 1, secondStep = 1, takeFocus }: Readonly<TimePanelProps>) {
   const set = (h: number, m: number, s: number) => {
     const d = new Date(value);
     d.setHours(h, m, s, 0);

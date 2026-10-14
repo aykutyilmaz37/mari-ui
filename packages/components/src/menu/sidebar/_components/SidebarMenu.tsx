@@ -18,7 +18,7 @@ export interface SidebarMenuProps extends Omit<SidebarItemProps, "item" | "reser
  * `SidebarMenu` kendi `activeKey` state'ini tutuyordu, iç seviyede bir öğeye
  * tıklamak üst öğenin "aktif grup" rengini hiç güncellemiyordu.
  */
-export function SidebarMenu({ data, className, ...itemProps }: SidebarMenuProps) {
+export function SidebarMenu({ data, className, ...itemProps }: Readonly<SidebarMenuProps>) {
   const reserveIconSlot = data.some((item) => item.icon && !item.heading);
 
   return (

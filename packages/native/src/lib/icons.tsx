@@ -13,7 +13,7 @@ interface IconProps {
 
 const stroke = (color: string) => ({ stroke: color, strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, fill: "none" });
 
-export function XIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function XIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -23,7 +23,7 @@ export function XIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function EyeIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function EyeIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -33,7 +33,7 @@ export function EyeIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function EyeOffIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function EyeOffIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -71,7 +71,7 @@ export function PlusIcon({ size = 16, color = "currentColor", strokeWidth = 2 }:
   );
 }
 
-export function SearchIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function SearchIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -81,7 +81,7 @@ export function SearchIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function CircleCheckIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function CircleCheckIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -91,7 +91,7 @@ export function CircleCheckIcon({ size = 16, color = "currentColor" }: IconProps
   );
 }
 
-export function InfoIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function InfoIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export function InfoIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function CircleAlertIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function CircleAlertIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -113,7 +113,7 @@ export function CircleAlertIcon({ size = 16, color = "currentColor" }: IconProps
   );
 }
 
-export function CircleXIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function CircleXIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -124,7 +124,7 @@ export function CircleXIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function SparklesIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function SparklesIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -136,7 +136,7 @@ export function SparklesIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function ChevronDownIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function ChevronDownIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path d="m6 9 6 6 6-6" {...stroke(color)} />
@@ -144,7 +144,7 @@ export function ChevronDownIcon({ size = 16, color = "currentColor" }: IconProps
   );
 }
 
-export function ChevronRightIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function ChevronRightIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path d="m9 18 6-6-6-6" {...stroke(color)} />
@@ -152,7 +152,7 @@ export function ChevronRightIcon({ size = 16, color = "currentColor" }: IconProp
   );
 }
 
-export function ChevronLeftIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function ChevronLeftIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path d="m15 18-6-6 6-6" {...stroke(color)} />
@@ -160,7 +160,7 @@ export function ChevronLeftIcon({ size = 16, color = "currentColor" }: IconProps
   );
 }
 
-export function ZoomInIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function ZoomInIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -172,7 +172,7 @@ export function ZoomInIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function ZoomOutIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function ZoomOutIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -183,7 +183,7 @@ export function ZoomOutIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function ImageOffIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function ImageOffIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -197,7 +197,7 @@ export function ImageOffIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function TrendingUpIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function TrendingUpIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -207,7 +207,7 @@ export function TrendingUpIcon({ size = 16, color = "currentColor" }: IconProps)
   );
 }
 
-export function TrendingDownIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function TrendingDownIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -217,7 +217,7 @@ export function TrendingDownIcon({ size = 16, color = "currentColor" }: IconProp
   );
 }
 
-export function PlayIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function PlayIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Polygon points="6 3 20 12 6 21 6 3" {...stroke(color)} />
@@ -225,7 +225,7 @@ export function PlayIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function PauseIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function PauseIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -235,7 +235,7 @@ export function PauseIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function RotateCcwIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function RotateCcwIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -259,7 +259,7 @@ export function StarIcon({ size = 16, fill = "none", color = "currentColor", str
   );
 }
 
-export function InboxIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function InboxIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -269,7 +269,7 @@ export function InboxIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function UploadIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function UploadIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -280,7 +280,7 @@ export function UploadIcon({ size = 16, color = "currentColor" }: IconProps) {
   );
 }
 
-export function FileIcon({ size = 16, color = "currentColor" }: IconProps) {
+export function FileIcon({ size = 16, color = "currentColor" }: Readonly<IconProps>) {
   const s = stroke(color);
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

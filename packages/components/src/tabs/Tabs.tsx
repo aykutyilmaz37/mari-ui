@@ -29,7 +29,7 @@ function useContainerWidth(enabled: boolean) {
  * döner), `fill`, `align`, `keepMounted`, WAI-ARIA ok tuşu gezinmesi, taşan
  * sekmelerde yatay kaydırma. Bkz. `_components/TabsList.tsx`.
  */
-export function Tabs({ className, children, orientation = "horizontal", responsive = 640, ...providerProps }: TabsProps) {
+export function Tabs({ className, children, orientation = "horizontal", responsive = 640, ...providerProps }: Readonly<TabsProps>) {
   const watch = orientation === "vertical" && responsive !== false;
   const [rootRef, width] = useContainerWidth(watch);
   const narrow = watch && width !== undefined && width < (responsive as number);

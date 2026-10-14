@@ -86,7 +86,7 @@ interface PanelProps {
   props: ColorPickerProps;
 }
 
-function ColorPanel({ state, format, setFormat, props }: PanelProps) {
+function ColorPanel({ state, format, setFormat, props }: Readonly<PanelProps>) {
   const { allowClear = false, disabledAlpha = false, presets } = props;
   const { color, draft, set, complete } = state;
   const opaque = colorInfo({ ...draft, a: 1 }).hex;
@@ -161,7 +161,7 @@ function triggerText(showText: ColorPickerProps["showText"], color: Hsba | null,
  * geçer; alan ve kaydırıcılar `role="slider"` ile ok tuşlarıyla kullanılır,
  * her değer metin girişiyle de verilebilir. Escape kapatır, odak geri döner.
  */
-export function ColorPicker(outerProps: ColorPickerProps) {
+export function ColorPicker(outerProps: Readonly<ColorPickerProps>) {
   const props = useFieldControl(outerProps) as ColorPickerProps;
   const {
     defaultFormat = "hex",

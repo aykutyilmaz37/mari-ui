@@ -46,7 +46,7 @@ export interface MegaPanelRailProps extends MenuNavigationProps {
  * `orientation="vertical"` (Sidebar'ın dar yan panelleri) ray'i üstte yatay
  * bir şerit hâline getirir; orada sol şerit/ayraç yerine altta bir ayraç olur.
  */
-export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation, onNavigate, onItemClick, activeKey = null }: MegaPanelRailProps) {
+export function MegaPanelRail({ items, selectedKey, onSelect, color, orientation, onNavigate, onItemClick, activeKey = null }: Readonly<MegaPanelRailProps>) {
   if (items.length === 0) return null;
 
   const horizontal = orientation === "horizontal";

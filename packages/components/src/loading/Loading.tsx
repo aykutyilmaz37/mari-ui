@@ -44,7 +44,7 @@ function useDelayedVisible(spinning: boolean, delay: number): boolean {
   return spinning && delayed;
 }
 
-function Spinner({ size, color, percent }: { size: Size; color: ColorRole; percent?: number }) {
+function Spinner({ size, color, percent }: Readonly<{ size: Size; color: ColorRole; percent?: number }>) {
   const box = SPINNER_VIEWBOX[size];
   const stroke = STROKE_WIDTH[size];
   const radius = (box - stroke) / 2;
@@ -89,7 +89,7 @@ interface IndicatorProps {
   row: boolean;
 }
 
-function IndicatorBlock({ size, color, percent, tip, indicator, row }: IndicatorProps) {
+function IndicatorBlock({ size, color, percent, tip, indicator, row }: Readonly<IndicatorProps>) {
   const determinate = percent !== undefined;
   return (
     <div className={cn("flex items-center gap-2 text-mari-muted", row ? "flex-row" : "flex-col")}>
@@ -118,7 +118,7 @@ function WrapperLoading({
   className,
   children,
   indicator,
-}: {
+}: Readonly<{
   visible: boolean;
   label: string;
   a11yProps: React.HTMLAttributes<HTMLDivElement>;
@@ -126,7 +126,7 @@ function WrapperLoading({
   className?: string;
   children: React.ReactNode;
   indicator: React.ReactNode;
-}) {
+}>) {
   return (
     <div className={cn("relative", className)} aria-busy={visible || undefined}>
       {/* Yüklenirken içerik etkileşime kapalı (inert) — formda çift gönderimi, listede yarım veriye tıklamayı önler. */}
@@ -165,7 +165,7 @@ export function Loading({
   color = "primary",
   indicator,
   className,
-}: LoadingProps) {
+}: Readonly<LoadingProps>) {
   const visible = useDelayedVisible(spinning, delay);
   const label = typeof tip === "string" ? tip : "Yükleniyor";
   const a11yProps = getA11yProps(label, percent);

@@ -61,7 +61,7 @@ export function usePulse(enabled = true, low = 0.55): Animated.Value {
  * köşe, iç boşluk) taşır; dolgu ve kenarlık burada iskelet tonuna çevrilir.
  * `children` görünmez ama yer kaplar (ör. buton etiketi → aynı genişlik).
  */
-export function SkeletonBox({ style, children, animated = true }: { style?: StyleProp<ViewStyle>; children?: ReactNode; animated?: boolean }) {
+export function SkeletonBox({ style, children, animated = true }: Readonly<{ style?: StyleProp<ViewStyle>; children?: ReactNode; animated?: boolean }>) {
   const theme = useTheme();
   const opacity = usePulse(animated);
   return (
@@ -81,7 +81,7 @@ export function SkeletonBox({ style, children, animated = true }: { style?: Styl
  * gövdesi kalınlığında (≈0,7 em) çubuk — Typography ve `Skeleton` ortak
  * kullanır, böylece iskelet satırı gerçek metin satırıyla aynı yükseklikte.
  */
-export function SkeletonLine({ fontSize, lineHeight, width, animated = true }: { fontSize: number; lineHeight: number; width: DimensionValue; animated?: boolean }) {
+export function SkeletonLine({ fontSize, lineHeight, width, animated = true }: Readonly<{ fontSize: number; lineHeight: number; width: DimensionValue; animated?: boolean }>) {
   return (
     <View style={{ height: lineHeight, justifyContent: "center" }}>
       <SkeletonBox animated={animated} style={{ width, height: Math.round(fontSize * 0.7), borderRadius: 4 }} />
@@ -95,7 +95,7 @@ export function SkeletonLine({ fontSize, lineHeight, width, animated = true }: {
  * çubuk. Satırın tamamını boyayan `SkeletonBox`un aksine alt alta iki metin
  * (başlık + alt başlık) birbirine yapışmaz; yüklenince yerleşim kaymaz.
  */
-export function SkeletonText({ fontSize, align = "flex-start", children }: { fontSize: number; align?: "flex-start" | "center"; children: ReactNode }) {
+export function SkeletonText({ fontSize, align = "flex-start", children }: Readonly<{ fontSize: number; align?: "flex-start" | "center"; children: ReactNode }>) {
   return (
     <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ alignItems: align, maxWidth: "100%" }}>
       <View style={{ maxWidth: "100%" }}>

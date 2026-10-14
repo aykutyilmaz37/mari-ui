@@ -66,7 +66,7 @@ export function Button({
   accessibilityLabel,
   accessibilityHint,
   skeleton = false,
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   const load = resolveLoading(loading);
   // Yüklenirken de soluk (web: loading → disabled görünümü, opacity 0.5).
   const styles = useStyles("button", { color, variant, size, shape, block, disabled: disabled || load.isLoading });

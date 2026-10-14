@@ -77,7 +77,7 @@ export function OtpInput({
   skeleton: ownSkeleton,
   layout = "separated",
   linePosition = "center",
-}: OtpInputProps) {
+}: Readonly<OtpInputProps>) {
   // Field içinde: kutucuklu düzen bir GRUP (etiket grubun adı), tek kutu düzeni tek bir ALAN (label htmlFor).
   // Varsayılan "Doğrulama kodu" adı yalnız hiç ad yoksa — Field'ın etiketini ezmesin.
   const inField = useContext(FieldContext) !== null;

@@ -35,7 +35,7 @@ function useTextColor(color: ColorRole | undefined, muted: boolean | undefined):
  * yüksekliğinden çıkar → hangi genişlikte olursa olsun yüklenince kayma yok.
  * Metin yoksa `rows` kadar satır.
  */
-function ParagraphSkeleton({ metrics, rows, ellipsis, style, children }: { metrics: NativeTextSize; rows: number; ellipsis?: TypographyEllipsis; style?: StyleProp<TextStyle>; children?: React.ReactNode }) {
+function ParagraphSkeleton({ metrics, rows, ellipsis, style, children }: Readonly<{ metrics: NativeTextSize; rows: number; ellipsis?: TypographyEllipsis; style?: StyleProp<TextStyle>; children?: React.ReactNode }>) {
   const [measured, setMeasured] = useState<number>();
   const count = Math.max(1, measured ?? Math.floor(rows));
   const lines = Array.from({ length: count }, (_, i) => <SkeletonLine key={i} fontSize={metrics.fontSize} lineHeight={metrics.lineHeight} width={i === count - 1 && count > 1 ? "60%" : "100%"} />);
@@ -56,7 +56,7 @@ function ParagraphSkeleton({ metrics, rows, ellipsis, style, children }: { metri
   );
 }
 
-export function Text({ children, color, weight, muted, ellipsis, skeleton = false, style, ...props }: TextProps) {
+export function Text({ children, color, weight, muted, ellipsis, skeleton = false, style, ...props }: Readonly<TextProps>) {
   const theme = useTheme();
   const metrics = useNativeConfig().typography.body;
   const nested = useContext(InsideText);
@@ -87,7 +87,7 @@ export function Text({ children, color, weight, muted, ellipsis, skeleton = fals
   );
 }
 
-export function Paragraph({ children, color, muted, ellipsis, skeleton = false, skeletonRows = 3, style, ...props }: ParagraphProps) {
+export function Paragraph({ children, color, muted, ellipsis, skeleton = false, skeletonRows = 3, style, ...props }: Readonly<ParagraphProps>) {
   const theme = useTheme();
   const metrics = useNativeConfig().typography.body;
   const textColor = useTextColor(color, muted);
@@ -107,7 +107,7 @@ export function Paragraph({ children, color, muted, ellipsis, skeleton = false, 
   );
 }
 
-export function Title({ level = 1, children, color, ellipsis, skeleton = false, style, ...props }: TitleProps) {
+export function Title({ level = 1, children, color, ellipsis, skeleton = false, style, ...props }: Readonly<TitleProps>) {
   const theme = useTheme();
   const metrics = useNativeConfig().typography[`h${level}`];
   const textColor = useTextColor(color, false);

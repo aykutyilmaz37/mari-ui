@@ -33,7 +33,7 @@ function rowPadding({ size, bordered }: Pick<ListContextValue, "size" | "bordere
 
 const DEFAULT_PAGE_SIZE = 10;
 
-function PlaceholderRow({ layout }: { layout: ListItemLayout }) {
+function PlaceholderRow({ layout }: Readonly<{ layout: ListItemLayout }>) {
   if (layout === "vertical") {
     return (
       <div className="flex flex-col gap-3">
@@ -66,7 +66,7 @@ function PlaceholderRow({ layout }: { layout: ListItemLayout }) {
 const CELL_PLACEHOLDER = <SkeletonBlock active height="7rem" radius="lg" />;
 
 /** Veri henüz yokken (ilk yükleme) satır ya da hücre biçiminde yer tutucular. */
-function Placeholders({ count, ctx, gridClass }: { count: number; ctx: ListContextValue; gridClass?: string }) {
+function Placeholders({ count, ctx, gridClass }: Readonly<{ count: number; ctx: ListContextValue; gridClass?: string }>) {
   const rows = Array.from({ length: count }, (_, i) => i);
   return (
     <div aria-hidden data-skeleton="" className={gridClass ?? "divide-y divide-mari-border"}>
@@ -80,7 +80,7 @@ function Placeholders({ count, ctx, gridClass }: { count: number; ctx: ListConte
 }
 
 /** Başlık/alt bilgi gibi serbest bölge: kenarlığı görünür kalır, içeriği iskelete döner. */
-function Region({ skeleton, className, children }: { skeleton: boolean; className?: string; children: React.ReactNode }) {
+function Region({ skeleton, className, children }: Readonly<{ skeleton: boolean; className?: string; children: React.ReactNode }>) {
   return (
     <div className={className}>
       <ContentSkeleton on={skeleton} fallback={<SkeletonBlock active width="30%" height="0.875rem" radius="sm" />}>
@@ -107,13 +107,13 @@ function ListPager({
   placement,
   skeleton,
   className,
-}: {
+}: Readonly<{
   config: ListPagination;
   paged: ReturnType<typeof usePagedData>;
   placement: "top" | "bottom";
   skeleton: boolean;
   className?: string;
-}) {
+}>) {
   const position = config.position ?? "bottom";
   if (paged.total === 0 || (position !== placement && position !== "both")) return null;
   return (
@@ -174,7 +174,7 @@ export function List<T>({
   skeleton = false,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
-}: ListProps<T>) {
+}: Readonly<ListProps<T>>) {
   const data = dataSource ?? [];
   const config = pagination || undefined;
   const paged = usePagedData(data, config);
@@ -248,7 +248,7 @@ export function List<T>({
   );
 }
 
-function ItemActions({ actions, className }: { actions: React.ReactNode[]; className?: string }) {
+function ItemActions({ actions, className }: Readonly<{ actions: React.ReactNode[]; className?: string }>) {
   return (
     <ul className={cn("flex shrink-0 flex-wrap items-center text-mari-muted", className)}>
       {actions.map((action, i) => (
@@ -290,7 +290,7 @@ function ItemLayout({ ctx, children, actions, extra }: Pick<ListItemProps, "chil
 }
 
 /** Tek satır / ızgara hücresi. `List`in içinde kullanılır. */
-export function ListItem({ children, actions, extra, className, ...rest }: ListItemProps) {
+export function ListItem({ children, actions, extra, className, ...rest }: Readonly<ListItemProps>) {
   const ctx = useContext(ListContext);
 
   if (ctx.grid) {
@@ -315,7 +315,7 @@ export function ListItem({ children, actions, extra, className, ...rest }: ListI
 }
 
 /** Avatar + başlık + açıklama bloğu. */
-export function ListItemMeta({ avatar, title, description, className }: ListItemMetaProps) {
+export function ListItemMeta({ avatar, title, description, className }: Readonly<ListItemMetaProps>) {
   const { itemLayout } = useContext(ListContext);
   const vertical = itemLayout === "vertical";
   return (

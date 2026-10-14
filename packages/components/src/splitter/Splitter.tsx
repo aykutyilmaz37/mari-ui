@@ -24,7 +24,7 @@ const STACK_HANDLE = { sm: "hidden sm:flex", md: "hidden md:flex", lg: "hidden l
  * Panel — `Splitter`ın çocuğu. Kendisi bir şey çizmez; Splitter props'larını
  * okuyup paneli kendi kapsayıcısıyla çizer (boyut Splitter'ın durumunda).
  */
-export function SplitterPanel(props: SplitterPanelProps) {
+export function SplitterPanel(props: Readonly<SplitterPanelProps>) {
   return <>{props.children}</>;
 }
 
@@ -40,7 +40,7 @@ export function SplitterPanel(props: SplitterPanelProps) {
  * - Mobil: `stackBelow` altında paneller alt alta, tutamaçlar gizli (saf CSS).
  * - `storageKey`: kullanıcının ayarladığı düzen hatırlanır.
  */
-export function Splitter({ orientation = "horizontal", stackBelow = "md", storageKey, onResize, onResizeEnd, children, className, style }: SplitterProps) {
+export function Splitter({ orientation = "horizontal", stackBelow = "md", storageKey, onResize, onResizeEnd, children, className, style }: Readonly<SplitterProps>) {
   const panels = Children.toArray(children).filter((c): c is React.ReactElement<SplitterPanelProps> => isValidElement(c));
   const count = panels.length;
   const horizontal = orientation === "horizontal";
@@ -252,7 +252,7 @@ interface SplitterHandleProps {
  * Tutamaç — APG "window splitter": odaklanabilir `separator` bir ARIA widget'ıdır
  * (değer taşır, klavyeyle değişir); lint eklentisi bunu etkileşimsiz sanıyor.
  */
-function SplitterHandle({ horizontal, stack, label, controls, percent, limits: lim, resizable, active, onPointerDown, onKeyDown, collapse }: SplitterHandleProps) {
+function SplitterHandle({ horizontal, stack, label, controls, percent, limits: lim, resizable, active, onPointerDown, onKeyDown, collapse }: Readonly<SplitterHandleProps>) {
   return (
     // Sarmalayıcı: 1px'lik yer + ortak hover grubu. Daraltma düğmesi tutamacın İÇİNDE değil kardeşi
     // (separator içinde düğme = iç içe etkileşimli öğe, axe nested-interactive).
@@ -297,7 +297,7 @@ function SplitterHandle({ horizontal, stack, label, controls, percent, limits: l
   );
 }
 
-function CollapseButton({ horizontal, towardStart, collapsed, label, onClick }: { horizontal: boolean; towardStart: boolean; collapsed: boolean; label: string; onClick: () => void }) {
+function CollapseButton({ horizontal, towardStart, collapsed, label, onClick }: Readonly<{ horizontal: boolean; towardStart: boolean; collapsed: boolean; label: string; onClick: () => void }>) {
   let Icon = towardStart ? ChevronUpIcon : ChevronDownIcon;
   if (horizontal) Icon = towardStart ? ChevronLeftIcon : ChevronRightIcon;
   return (

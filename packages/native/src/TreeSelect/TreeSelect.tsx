@@ -115,7 +115,7 @@ interface Ctx {
 }
 
 /** Eşleşme vurgulu başlık (düz metin değilse olduğu gibi). */
-function NodeTitle({ node, query, ctx, selected }: { node: TreeNode; query: string; ctx: Ctx; selected: boolean }) {
+function NodeTitle({ node, query, ctx, selected }: Readonly<{ node: TreeNode; query: string; ctx: Ctx; selected: boolean }>) {
   const c = ctx.theme.color.canvas;
   const style: TextStyle = { fontFamily: ctx.font, fontSize: ctx.fontSize, lineHeight: ctx.lineHeight, color: node.disabled ? c.muted : c.foreground, fontWeight: selected ? "600" : "400" };
   if (typeof node.title !== "string" && typeof node.title !== "number") return <>{node.title}</>;
@@ -148,7 +148,7 @@ function rowBackground(pressed: boolean, theme: Theme) {
 }
 
 /** Panel satırı: [onay kutusu] [ikon] başlık (+ alt satır) [✓] [› / gösterge]. */
-function Row({ node, subtitle, label, query, checkable, check, selected, branch, loading, onPress, onCheck, ctx }: RowProps) {
+function Row({ node, subtitle, label, query, checkable, check, selected, branch, loading, onPress, onCheck, ctx }: Readonly<RowProps>) {
   const c = ctx.theme.color.canvas;
   const disabled = node.disabled ?? false;
   const name = label ?? nodeText(node);
@@ -178,7 +178,7 @@ function Row({ node, subtitle, label, query, checkable, check, selected, branch,
 }
 
 /** Yol gösterimi: Tümü › Elektronik › Bilgisayar; öncekiler dokunulunca o seviyeye döner. */
-function Breadcrumb({ trail, rootLabel, onJump, ctx }: { trail: TreeNode[]; rootLabel: string; onJump: (depth: number) => void; ctx: Ctx }) {
+function Breadcrumb({ trail, rootLabel, onJump, ctx }: Readonly<{ trail: TreeNode[]; rootLabel: string; onJump: (depth: number) => void; ctx: Ctx }>) {
   const c = ctx.theme.color.canvas;
   const crumbs = [rootLabel, ...trail.map(nodeText)];
   return (
@@ -222,7 +222,7 @@ interface TriggerDisplayProps {
   onRemove: (key: string) => void;
 }
 
-function TriggerDisplay({ nodes, multiple, maxTagCount, placeholder, disabled, textStyle, mutedColor, onRemove }: TriggerDisplayProps) {
+function TriggerDisplay({ nodes, multiple, maxTagCount, placeholder, disabled, textStyle, mutedColor, onRemove }: Readonly<TriggerDisplayProps>) {
   if (nodes.length === 0) return <Text numberOfLines={1} style={[textStyle, { color: mutedColor }]}>{placeholder}</Text>;
   if (!multiple) return <Text numberOfLines={1} style={textStyle}>{nodeText(nodes[0]!)}</Text>;
   const shown = nodes.slice(0, maxTagCount ?? nodes.length);
@@ -283,7 +283,7 @@ interface PanelBodyProps {
 }
 
 /** Panelin içi: aramada düz sonuçlar (yoluyla), değilse yol gösterimi + "(tümü)" + seviye satırları. */
-function PanelBody({ treeData, index, query, trail, setTrail, rootLabel, notFoundContent, checkable, lazy, loadingKey, sel, onDrill, onPick, ctx }: PanelBodyProps) {
+function PanelBody({ treeData, index, query, trail, setTrail, rootLabel, notFoundContent, checkable, lazy, loadingKey, sel, onDrill, onPick, ctx }: Readonly<PanelBodyProps>) {
   const row = (n: TreeNode, opts: { subtitle?: string; label?: string; asLeaf?: boolean } = {}) => {
     const branch = !opts.asLeaf && isExpandable(n, lazy);
     return (

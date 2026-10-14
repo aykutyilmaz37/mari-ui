@@ -166,7 +166,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = "Card";
 
 /** ant.design `Card.Meta`: avatar + başlık + açıklama. */
-export function CardMeta({ avatar, title, description, className }: CardMetaProps) {
+export function CardMeta({ avatar, title, description, className }: Readonly<CardMetaProps>) {
   return (
     <div className={cn("flex min-w-0 gap-4", className)}>
       {avatar && <div className="shrink-0">{avatar}</div>}

@@ -57,7 +57,7 @@ function useScreenReader() {
   return on;
 }
 
-function Stack({ edge, toasts, inset, onClose, onRemoved }: { edge: ToastEdge; toasts: ToastEntry[]; inset: number; onClose: (id: string) => void; onRemoved: (id: string) => void }) {
+function Stack({ edge, toasts, inset, onClose, onRemoved }: Readonly<{ edge: ToastEdge; toasts: ToastEntry[]; inset: number; onClose: (id: string) => void; onRemoved: (id: string) => void }>) {
   if (toasts.length === 0) return null;
   // En yeni kenara en yakın: üstte en üstte, altta en altta.
   const ordered = edge === "top" ? [...toasts].reverse() : toasts;
@@ -99,7 +99,7 @@ function toastEdges(safe: Partial<SafeAreaInsets> | null): { top: number; bottom
   };
 }
 
-export function ToastProvider({ children, insets }: ToastProviderProps) {
+export function ToastProvider({ children, insets }: Readonly<ToastProviderProps>) {
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const closers = useRef(new Map<string, (() => void) | undefined>());
   const screenReader = useScreenReader();

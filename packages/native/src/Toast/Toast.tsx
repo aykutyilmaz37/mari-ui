@@ -132,7 +132,7 @@ function Line({ children, style, skeleton }: { children: React.ReactNode; style:
 }
 
 /** Tek bildirim kartı. Uygulamada doğrudan değil, `useToast().showToast` ile kullanılır. */
-export function ToastView({ title, description, type = "none", closeIcon = true, action, duration, skeleton = false, edge, exiting, onClose, onRemoved }: ToastViewProps) {
+export function ToastView({ title, description, type = "none", closeIcon = true, action, duration, skeleton = false, edge, exiting, onClose, onRemoved }: Readonly<ToastViewProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const font = nativeFontFamily(theme.fontFamily.sans);

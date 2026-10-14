@@ -78,7 +78,7 @@ function useRepeat() {
   return { start, stop };
 }
 
-function Adornment({ node, color, fontSize }: { node: React.ReactNode; color: string; fontSize: number | undefined }) {
+function Adornment({ node, color, fontSize }: Readonly<{ node: React.ReactNode; color: string; fontSize: number | undefined }>) {
   if (node == null) return null;
   if (typeof node === "string" || typeof node === "number") return <Text style={{ color, fontSize }}>{node}</Text>;
   return <View>{node}</View>;
@@ -98,7 +98,7 @@ interface StepButtonProps {
   repeat: ReturnType<typeof useRepeat>;
 }
 
-function StepButton({ kind, label, disabled, size, iconSize, color, pressedBg, radius, onStep, repeat }: StepButtonProps) {
+function StepButton({ kind, label, disabled, size, iconSize, color, pressedBg, radius, onStep, repeat }: Readonly<StepButtonProps>) {
   const Icon = kind === "inc" ? PlusIcon : MinusIcon;
   // Kapsayıcıda overflow:hidden KULLANILMAZ — iOS'ta kırpılan kutudaki TextInput dokunuşla odak almıyordu (simülatörde ölçüldü).
   const corners = kind === "dec" ? { borderTopLeftRadius: radius, borderBottomLeftRadius: radius } : { borderTopRightRadius: radius, borderBottomRightRadius: radius };
@@ -161,7 +161,7 @@ export function InputNumber({
   accessibilityHint: ownHint,
   skeleton: ownSkeleton,
   style,
-}: InputNumberProps) {
+}: Readonly<InputNumberProps>) {
   const field = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel, accessibilityHint: ownHint });
   const theme = useTheme();
   const [current, setCurrent] = useControllable<number | null>(value, defaultValue);

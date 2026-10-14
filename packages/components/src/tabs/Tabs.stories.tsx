@@ -94,7 +94,7 @@ type Story = StoryObj<typeof Tabs>;
 
 /* ─────────────────────────── yardımcılar ─────────────────────────── */
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({ label, hint, children }: Readonly<{ label: string; hint?: string; children: React.ReactNode }>) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-sm font-medium text-mari-foreground">{label}</span>
@@ -105,7 +105,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 }
 
 /** Avatar'ın `src`'si string ise görsel URL'i sayılır — baş harfler için düğüm verilir. */
-function Initials({ text }: { text: string }) {
+function Initials({ text }: Readonly<{ text: string }>) {
   return (
     <span aria-hidden className="flex size-full items-center justify-center bg-mari-primary-subtle text-xs font-semibold text-mari-primary-subtle-contrast">
       {text}
@@ -113,7 +113,7 @@ function Initials({ text }: { text: string }) {
   );
 }
 
-function SettingRow({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function SettingRow({ title, description, children }: Readonly<{ title: string; description: string; children: React.ReactNode }>) {
   return (
     <div className="flex items-start justify-between gap-6 py-4 first:pt-0 last:pb-0">
       <div className="min-w-0">
@@ -302,7 +302,7 @@ const reviews = [
   { name: "Ece T.", rating: 5, date: "28 Ağu", text: "İki cihaza aynı anda bağlanması iş için harika." },
 ];
 
-function Stars({ value }: { value: number }) {
+function Stars({ value }: Readonly<{ value: number }>) {
   return (
     <span className="inline-flex gap-0.5" role="img" aria-label={`5 üzerinden ${value}`}>
       {[1, 2, 3, 4, 5].map((i) => (

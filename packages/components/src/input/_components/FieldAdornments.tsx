@@ -14,7 +14,7 @@ interface ClearButtonProps {
 }
 
 /** Input/Textarea ortak temizle butonu. `invisible` yer ayırır (yazınca metin kaymaz) ve sekme sırasından çıkarır. */
-export function ClearButton({ visible, label, icon, onClear, className }: ClearButtonProps) {
+export function ClearButton({ visible, label, icon, onClear, className }: Readonly<ClearButtonProps>) {
   return (
     <button
       type="button"
@@ -34,7 +34,7 @@ interface PasswordToggleProps {
   iconRender?: (visible: boolean) => React.ReactNode;
 }
 
-export function PasswordToggle({ visible, disabled, onToggle, iconRender }: PasswordToggleProps) {
+export function PasswordToggle({ visible, disabled, onToggle, iconRender }: Readonly<PasswordToggleProps>) {
   const defaultIcon = visible ? <EyeIcon size={16} aria-hidden /> : <EyeOffIcon size={16} aria-hidden />;
   const icon = iconRender ? iconRender(visible) : defaultIcon;
   return (

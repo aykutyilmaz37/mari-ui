@@ -85,7 +85,7 @@ export function Input({
   accessibilityLabel: ownLabel,
   accessibilityHint: ownHint,
   skeleton: ownSkeleton,
-}: InputProps) {
+}: Readonly<InputProps>) {
   // Field içindeyse etiket, ipucu/hata, devre dışı, hata rengi ve iskelet oradan gelir.
   const { disabled, skeleton, accessibilityLabel, accessibilityHint, status } = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel, accessibilityHint: ownHint, status: ownStatus });
   const [current, setCurrent] = useControllableState({ value, defaultValue, onChange: onChangeText });

@@ -29,7 +29,7 @@ const panelLabel = (mode: string, range: boolean) => {
   return range ? "Tarih aralığı seç" : "Tarih seç";
 };
 
-function Presets({ presets, onPick }: { presets: DatePickerPreset<Date | [Date, Date]>[]; onPick: (v: Date | [Date, Date]) => void }) {
+function Presets({ presets, onPick }: Readonly<{ presets: DatePickerPreset<Date | [Date, Date]>[]; onPick: (v: Date | [Date, Date]) => void }>) {
   return (
     <ul aria-label="Hazır seçimler" className="flex shrink-0 flex-row flex-wrap gap-1 border-b border-mari-border p-2 sm:w-36 sm:flex-col sm:border-r sm:border-b-0">
       {presets.map((p, i) => (
@@ -61,7 +61,7 @@ function rangeChecker({ range, picker, draft, slot, hover }: PickerState) {
   return (d: Date) => rangePosition(d, draft[0] ?? null, draft[1] ?? null, slot === 1 && !draft[1] ? hover : null);
 }
 
-function Footer({ state, showNow, needsConfirm }: { state: PickerState; showNow: boolean; needsConfirm: boolean }) {
+function Footer({ state, showNow, needsConfirm }: Readonly<{ state: PickerState; showNow: boolean; needsConfirm: boolean }>) {
   if (!showNow && !needsConfirm) return null;
   return (
     <div className="flex items-center justify-between gap-2 border-t border-mari-border px-3 py-2">

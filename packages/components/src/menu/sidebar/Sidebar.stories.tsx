@@ -353,7 +353,7 @@ const [open, setOpen] = useState(false);
   },
 };
 
-function SidebarSkeleton(args: React.ComponentProps<typeof Sidebar>) {
+function SidebarSkeleton(args: Readonly<React.ComponentProps<typeof Sidebar>>) {
   // Sidebar sabit konumlu (sol kenar); geçiş altında kalmasın diye sağ üstte.
   return (
     <div className="flex justify-end p-4">

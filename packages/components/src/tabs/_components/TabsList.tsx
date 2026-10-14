@@ -90,7 +90,7 @@ function getKeyTarget(key: string, tabs: HTMLButtonElement[], index: number, ver
  * - `cloneElement` + ref dizisi ile sekme bulunuyordu (sarmalanmış bir
  *   TabsTrigger'ı kaçırıyordu). Artık DOM'dan `[aria-selected=true]`.
  */
-export function TabsList({ children, extra, className, cardTabs, "aria-label": ariaLabel }: TabsListProps) {
+export function TabsList({ children, extra, className, cardTabs, "aria-label": ariaLabel }: Readonly<TabsListProps>) {
   const context = useTabs();
   // Eski `cardTabs` prop'u: bu listenin altındaki sekmeler için varyantı
   // `card`'a çevirir (geriye uyumluluk).

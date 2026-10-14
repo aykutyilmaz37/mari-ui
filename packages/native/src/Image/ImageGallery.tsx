@@ -215,7 +215,7 @@ function rowSpan(layout: GalleryLayout, index: number): number {
  * modu (uzun basış), tam ekran `ImageViewer`. Satırlar FlatList'te sanal;
  * konumlar önceden bilindiği için `getItemLayout` ile ölçümsüz.
  */
-export function ImageGallery(props: ImageGalleryProps) {
+export function ImageGallery(props: Readonly<ImageGalleryProps>) {
   const {
     items,
     defaultView = "day",
@@ -319,7 +319,7 @@ export function ImageGallery(props: ImageGalleryProps) {
 }
 
 /** Sanal satırlar: başlık + öğe satırları; konumlar `buildLayout`tan (ölçümsüz). */
-function GalleryGrid({ listRef, layout, sections, flat, view, locale, gap, tile, selection, onDrillDown, infinite, requestMore }: {
+function GalleryGrid({ listRef, layout, sections, flat, view, locale, gap, tile, selection, onDrillDown, infinite, requestMore }: Readonly<{
   listRef: React.RefObject<FlatList<GalleryRow> | null>;
   layout: GalleryLayout;
   sections: GallerySection<ImageGalleryItem>[];
@@ -332,7 +332,7 @@ function GalleryGrid({ listRef, layout, sections, flat, view, locale, gap, tile,
   onDrillDown?: (section: number) => void;
   infinite?: InfiniteScrollOptions;
   requestMore: () => void;
-}) {
+}>) {
   return (
     <FlatList
       ref={listRef}
@@ -363,7 +363,7 @@ interface TileShared {
   onLongPress?: (index: number) => void;
 }
 
-function ItemRow({ items, start, cell, gap, height, tile }: { items: ImageGalleryItem[]; start: number; cell: number; gap: number; height: number; tile: TileShared }) {
+function ItemRow({ items, start, cell, gap, height, tile }: Readonly<{ items: ImageGalleryItem[]; start: number; cell: number; gap: number; height: number; tile: TileShared }>) {
   return (
     <View style={{ height, flexDirection: "row", gap }}>
       {items.map((item, k) => (
@@ -418,7 +418,7 @@ function GalleryTile({ item, index, cell, loader, selection, onOpen, onLongPress
 /** Fotoğrafa bağlı, temadan bağımsız: en açık karede bile beyaz metin AA'yı geçer. */
 const VIDEO_BADGE_BG = "rgba(0, 0, 0, 0.72)";
 
-function VideoBadge({ duration }: { duration?: number }) {
+function VideoBadge({ duration }: Readonly<{ duration?: number }>) {
   const theme = useTheme();
   return (
     <View pointerEvents="none" style={{ position: "absolute", right: 4, bottom: 4, flexDirection: "row", alignItems: "center", gap: 2, borderRadius: 4, paddingHorizontal: 4, backgroundColor: VIDEO_BADGE_BG }}>
@@ -428,7 +428,7 @@ function VideoBadge({ duration }: { duration?: number }) {
   );
 }
 
-function SelectMark({ selected, raised }: { selected: boolean; raised: boolean }) {
+function SelectMark({ selected, raised }: Readonly<{ selected: boolean; raised: boolean }>) {
   const theme = useTheme();
   return (
     <View
@@ -452,7 +452,7 @@ function SelectMark({ selected, raised }: { selected: boolean; raised: boolean }
   );
 }
 
-function SectionHeader({ section, view, locale, height, onDrillDown }: { section: GallerySection<ImageGalleryItem>; view: GalleryView; locale: string; height: number; onDrillDown?: () => void }) {
+function SectionHeader({ section, view, locale, height, onDrillDown }: Readonly<{ section: GallerySection<ImageGalleryItem>; view: GalleryView; locale: string; height: number; onDrillDown?: () => void }>) {
   const theme = useTheme();
   const font = nativeFontFamily(theme.fontFamily.sans);
   const label = sectionLabel(section.date, view, locale);
@@ -498,7 +498,7 @@ function useBarText() {
  * İki satır: üstte başlık + büyüteçler + "Seç", altta tam genişlik görünüm
  * seçici. Seçim modunda üstte sayı + "Vazgeç", altta eylemler + "Tümünü seç".
  */
-function GalleryToolbar({ title, selection, selectable, selectionActions, empty, view, views, onViewChange, columns, cell, onColumnsChange }: ToolbarProps) {
+function GalleryToolbar({ title, selection, selectable, selectionActions, empty, view, views, onViewChange, columns, cell, onColumnsChange }: Readonly<ToolbarProps>) {
   const textStyle = useBarText();
   const second = views.length > 1;
   if (selection.selecting) return <SelectionBar selection={selection} selectionActions={selectionActions} empty={empty} textStyle={textStyle} twoRows={second} />;
@@ -524,7 +524,7 @@ function GalleryToolbar({ title, selection, selectable, selectionActions, empty,
 }
 
 /** Normal çubukla aynı satır sayısı (`twoRows`) — seçime girince ızgara kaymaz. */
-function SelectionBar({ selection, selectionActions, empty, textStyle, twoRows }: { selection: Selection; selectionActions?: ToolbarProps["selectionActions"]; empty: boolean; textStyle: object; twoRows: boolean }) {
+function SelectionBar({ selection, selectionActions, empty, textStyle, twoRows }: Readonly<{ selection: Selection; selectionActions?: ToolbarProps["selectionActions"]; empty: boolean; textStyle: object; twoRows: boolean }>) {
   const count = selection.keys.length;
   const tools = (
     <>
@@ -552,7 +552,7 @@ function SelectionBar({ selection, selectionActions, empty, textStyle, twoRows }
   );
 }
 
-function EmptyState({ text }: { text: React.ReactNode }) {
+function EmptyState({ text }: Readonly<{ text: React.ReactNode }>) {
   const theme = useTheme();
   return (
     <View style={{ minHeight: 160, alignItems: "center", justifyContent: "center" }}>
@@ -587,7 +587,7 @@ function InfiniteFooter({ options, onLoadMore }: { options: InfiniteScrollOption
 }
 
 /** Yüklü hâliyle aynı ölçü: aynı araç çubuğu yüksekliği, aynı sütun hesabı, aynı başlık yüksekliği. */
-function GallerySkeleton({ toolbar, views, columns, view, gap, style }: { toolbar: boolean; views: GalleryView[]; columns: number | "auto"; view: GalleryView; gap: number; style?: StyleProp<ViewStyle> }) {
+function GallerySkeleton({ toolbar, views, columns, view, gap, style }: Readonly<{ toolbar: boolean; views: GalleryView[]; columns: number | "auto"; view: GalleryView; gap: number; style?: StyleProp<ViewStyle> }>) {
   const theme = useTheme();
   const [width, setWidth] = useGridWidth();
   const cols = columns === "auto" ? autoColumns(width, view, gap) : clampColumns(columns);

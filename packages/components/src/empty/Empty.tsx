@@ -52,7 +52,7 @@ export function Empty({
   titleAs: TitleTag = "p",
   className,
   skeleton = false,
-}: EmptyProps) {
+}: Readonly<EmptyProps>) {
   const s = SIZE[size];
 
   if (skeleton) {

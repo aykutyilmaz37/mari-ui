@@ -29,7 +29,7 @@ export function Skeleton({
   title = true,
   className,
   children,
-}: SkeletonProps) {
+}: Readonly<SkeletonProps>) {
   if (loading === false) return <>{children}</>;
 
   const avatarProps: SkeletonAvatarProps = typeof avatar === "boolean" ? {} : avatar;
@@ -86,7 +86,7 @@ export function Skeleton({
  * Serbest şekilli iskelet parçası — kendi yerleşiminizi (kart ızgarası, tablo
  * satırı) gerçek bileşenin ölçüleriyle kurmak için. Görsel; `aria-hidden`.
  */
-export function SkeletonBlock({ width, height = "1rem", radius = "md", active = false, className }: SkeletonBlockProps) {
+export function SkeletonBlock({ width, height = "1rem", radius = "md", active = false, className }: Readonly<SkeletonBlockProps>) {
   const radiusClass = { none: "rounded-none", sm: "rounded-sm", md: "rounded-md", lg: "rounded-lg", xl: "rounded-xl", full: "rounded-full" }[radius];
   return (
     <div

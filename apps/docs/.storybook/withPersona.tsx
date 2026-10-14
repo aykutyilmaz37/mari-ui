@@ -52,7 +52,7 @@ function applyPersona(persona: PersonaName | undefined) {
   document.head.appendChild(link);
 }
 
-function PersonaScope({ persona, children }: { persona: PersonaName | undefined; children: React.ReactNode }) {
+function PersonaScope({ persona, children }: Readonly<{ persona: PersonaName | undefined; children: React.ReactNode }>) {
   useLayoutEffect(() => applyPersona(persona), [persona]);
   return <>{children}</>;
 }

@@ -42,7 +42,7 @@ function getArrowBox(side: Side, offset: number): { style: React.CSSProperties; 
   }
 }
 
-export function FloatingArrow({ side, offset }: { side: Side; offset: number }) {
+export function FloatingArrow({ side, offset }: Readonly<{ side: Side; offset: number }>) {
   const { style, rotation } = getArrowBox(side, offset);
   return (
     <span aria-hidden="true" className="pointer-events-none absolute" style={style}>

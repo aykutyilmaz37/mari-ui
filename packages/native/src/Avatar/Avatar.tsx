@@ -63,7 +63,7 @@ function toImageSource(src: AvatarProps["src"]): ImageSourcePropType | null {
   return src as ImageSourcePropType;
 }
 
-export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, color, onError, skeleton = false, style }: AvatarProps) {
+export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, color, onError, skeleton = false, style }: Readonly<AvatarProps>) {
   const theme = useTheme();
   const metrics = useAvatarMetrics(size);
   const shapeStyle = useShapeStyle(shape, metrics);
@@ -105,7 +105,7 @@ export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, col
 }
 
 /** Üst üste binen avatarlar; her biri zemin renginde 2pt halkayla ayrışır. */
-export function AvatarGroup({ children, max, size = "md", shape = "circle", skeleton, style }: AvatarGroupProps) {
+export function AvatarGroup({ children, max, size = "md", shape = "circle", skeleton, style }: Readonly<AvatarGroupProps>) {
   const theme = useTheme();
   const metrics = useAvatarMetrics(size);
   const shapeStyle = useShapeStyle(shape, metrics);

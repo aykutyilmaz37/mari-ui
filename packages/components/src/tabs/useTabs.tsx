@@ -22,7 +22,7 @@ export function TabsProvider({
   activationMode = "automatic",
   skeleton = false,
   children,
-}: TabsProviderProps) {
+}: Readonly<TabsProviderProps>) {
   const [resolvedActiveTab, setActiveTab] = useControllableState<string>({
     value: activeTab,
     defaultValue: defaultActiveTab,

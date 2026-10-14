@@ -21,7 +21,7 @@ export interface TablePaginationProps {
  * `pageSize`/`totalItems` isimlendirmesinden farklı, Table'ın kendi API'si
  * korunuyor) `Pagination`'ın prop'larına eşliyor.
  */
-export function TablePagination({ pagination, className, skeleton = false }: TablePaginationProps) {
+export function TablePagination({ pagination, className, skeleton = false }: Readonly<TablePaginationProps>) {
   const { page, pageSize, total, pageSizeOptions, onPageChange, onPageSizeChange } = pagination;
 
   return (

@@ -43,7 +43,7 @@ const markExiting = (id: string) => (prev: ToastEntry[]) => {
 const announcementText = (t: Pick<ToastOptions, "title" | "description">) =>
   [t.title, typeof t.description === "string" ? t.description : ""].filter(Boolean).join(". ");
 
-function ToastGroup({ position, toasts, onClose }: { position: ToastPosition; toasts: ToastEntry[]; onClose: (id: string) => void }) {
+function ToastGroup({ position, toasts, onClose }: Readonly<{ position: ToastPosition; toasts: ToastEntry[]; onClose: (id: string) => void }>) {
   if (toasts.length === 0) return null;
   // Kenara en yakın olan en yeni — altta sıra ters çevrilir.
   const ordered = isBottom(position) ? toasts : [...toasts].reverse();
@@ -76,7 +76,7 @@ function ToastGroup({ position, toasts, onClose }: { position: ToastPosition; to
  * DOM'da; sadece metinleri değişir (yeni eklenen canlı bölgeyi bazı ekran
  * okuyucular kaçırır). Hata toast'ları `assertive`.
  */
-export function ToastProvider({ children }: { children: React.ReactNode }) {
+export function ToastProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const [announce, setAnnounce] = useState({ polite: "", assertive: "" });
   const closers = useRef(new Map<string, (() => void) | undefined>());

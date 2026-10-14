@@ -19,7 +19,7 @@ function panelMotion(animation: SidebarAnimation, progress: Animated.Value, slid
  * satırlar. Ekranın üstünde tam ekran katman (Modal). Arkadaki ekranı da
  * hareket ettiren açılışlar (push / reveal / scaleDown) için `SidebarLayout`.
  */
-export function Sidebar(props: SidebarProps) {
+export function Sidebar(props: Readonly<SidebarProps>) {
   const { open, position = "left", animation = "slide", accessibilityLabel = "Ana menü", style } = props;
   const theme = useTheme();
   const { width, screenWidth } = useDrawerWidth();

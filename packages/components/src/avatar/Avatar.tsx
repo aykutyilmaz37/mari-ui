@@ -13,7 +13,7 @@ export type { AvatarProps, AvatarGroupProps };
  * `useState` (resim yükleme hatası takibi) kullanıyor — bu yüzden gerçekten
  * `"use client"` gerekiyor. Tek boyut kaynağı `size` (görsel de kutu da).
  */
-export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, color, onError, skeleton = false, className }: AvatarProps) {
+export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, color, onError, skeleton = false, className }: Readonly<AvatarProps>) {
   const [imgError, setImgError] = useState(false);
 
   if (skeleton) {
@@ -59,7 +59,7 @@ export function Avatar({ alt = "", icon, shape = "circle", size = "md", src, col
 // ikinci harfini bir sonraki avatarın altında bırakıyordu ("DK" → "D").
 const GROUP_OVERLAP_CLASS = { sm: "-space-x-0.5", md: "-space-x-1", lg: "-space-x-1.5" } as const;
 
-export function AvatarGroup({ children, max, size = "md", shape = "circle", className, skeleton }: AvatarGroupProps) {
+export function AvatarGroup({ children, max, size = "md", shape = "circle", className, skeleton }: Readonly<AvatarGroupProps>) {
   const items = Children.toArray(children).filter(isValidElement) as React.ReactElement<AvatarProps>[];
   const visible = max !== undefined && items.length > max ? items.slice(0, max) : items;
   const rest = items.length - visible.length;

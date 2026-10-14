@@ -16,7 +16,7 @@ export interface UploadListProps {
  * SADECE satır hover'ındayken görünür (eskiden hep görünürdü). `uploading`
  * durumunda satırın altında ince bir ilerleme çubuğu belirir.
  */
-export function UploadList({ item, handleDelete }: UploadListProps) {
+export function UploadList({ item, handleDelete }: Readonly<UploadListProps>) {
   const isUploading = item.status === "uploading";
 
   return (

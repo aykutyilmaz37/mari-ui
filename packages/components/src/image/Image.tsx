@@ -30,7 +30,7 @@ function DefaultFallback() {
 }
 
 /** Yüklenirken: bulanık ön izleme → özel içerik → parıltı (öncelik sırasıyla). */
-function PlaceholderLayer({ blurSrc, custom, shimmer, fit }: { blurSrc: string | null; custom: React.ReactNode; shimmer: boolean; fit: ImageFit }) {
+function PlaceholderLayer({ blurSrc, custom, shimmer, fit }: Readonly<{ blurSrc: string | null; custom: React.ReactNode; shimmer: boolean; fit: ImageFit }>) {
   if (blurSrc) {
     return <img src={blurSrc} alt="" aria-hidden draggable={false} className={cn("absolute inset-0 size-full scale-110 blur-lg", FIT_CLASS[fit])} />;
   }
@@ -187,7 +187,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
 });
 
 /** Yüklenemezse: URL yedeği (o da yüklenemezse varsayılan), node ya da varsayılan. */
-function FallbackLayer({ fallback, alt, className }: { fallback: ImageProps["fallback"]; alt: string; className?: string }) {
+function FallbackLayer({ fallback, alt, className }: Readonly<{ fallback: ImageProps["fallback"]; alt: string; className?: string }>) {
   const [urlFailed, setUrlFailed] = useState(false);
   if (typeof fallback === "string" && !urlFailed) {
     return <img src={fallback} alt={alt} onError={() => setUrlFailed(true)} className={cn("block size-full", className)} />;
@@ -208,7 +208,7 @@ function PreviewFrame({
   className,
   style,
   children,
-}: {
+}: Readonly<{
   config: ImagePreviewConfig;
   src: ImageProps["src"];
   alt: string;
@@ -219,7 +219,7 @@ function PreviewFrame({
   className: string;
   style: React.CSSProperties;
   children: React.ReactNode;
-}) {
+}>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useControllableState({ value: config.open, defaultValue: false, onChange: config.onOpenChange });
   const previewSource = config.src ?? src;

@@ -16,7 +16,7 @@ function withToasts(Story: () => React.ReactElement) {
   return <ToastScreen><Story /></ToastScreen>;
 }
 
-function ToastScreen({ children }: { children: React.ReactNode }) {
+function ToastScreen({ children }: Readonly<{ children: React.ReactNode }>) {
   const theme = useTheme();
   return (
     <View style={{ height: 360, alignSelf: "stretch", borderRadius: 16, borderWidth: 1, borderColor: theme.color.canvas.border, overflow: "hidden" }}>
@@ -41,7 +41,7 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-function Show({ label, options, variant }: { label: string; options: ToastOptions; variant?: "outline" | "solid" }) {
+function Show({ label, options, variant }: Readonly<{ label: string; options: ToastOptions; variant?: "outline" | "solid" }>) {
   const { showToast } = useToast();
   return <Button size="sm" variant={variant ?? "outline"} onPress={() => showToast(options)}>{label}</Button>;
 }

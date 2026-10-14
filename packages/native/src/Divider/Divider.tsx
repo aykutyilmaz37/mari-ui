@@ -34,7 +34,7 @@ const SPACING: Record<Size, number> = { sm: 8, md: 16, lg: 24 };
  * destekler). Dört kenarı kesik bir kutu çizip taşanı kırpıyoruz → yalnız üst
  * (yatay) ya da sol (dikey) kenar görünür.
  */
-function Line({ vertical, lineStyle, color, flex, length }: { vertical: boolean; lineStyle: DividerLineStyle; color: string; flex?: boolean; length?: DimensionValue }) {
+function Line({ vertical, lineStyle, color, flex, length }: Readonly<{ vertical: boolean; lineStyle: DividerLineStyle; color: string; flex?: boolean; length?: DimensionValue }>) {
   const along: ViewStyle = flex ? { flex: 1 } : { [vertical ? "height" : "width"]: length };
   if (lineStyle === "solid") {
     return <View style={[along, vertical ? { width: StyleSheet.hairlineWidth } : { height: StyleSheet.hairlineWidth }, { backgroundColor: color }]} />;
@@ -49,7 +49,7 @@ function Line({ vertical, lineStyle, color, flex, length }: { vertical: boolean;
 const LABEL_TEXT = { fontSize: 15, lineHeight: 20, textAlign: "center" } as const;
 
 /** Başlık: HIG Subheadline 15/20; düz metin değilse olduğu gibi çizilir. */
-function Label({ children, skeleton, plain }: { children: React.ReactNode; skeleton: boolean; plain: boolean }) {
+function Label({ children, skeleton, plain }: Readonly<{ children: React.ReactNode; skeleton: boolean; plain: boolean }>) {
   if (skeleton) {
     return (
       <SkeletonBox style={{ borderRadius: 4 }}>
@@ -65,7 +65,7 @@ function Label({ children, skeleton, plain }: { children: React.ReactNode; skele
   );
 }
 
-export function Divider({ children, lineStyle = "solid", orientation = "horizontal", labelAlign = "center", labelMargin = 24, plain = true, size = "md", height = 20, skeleton = false, style }: DividerProps) {
+export function Divider({ children, lineStyle = "solid", orientation = "horizontal", labelAlign = "center", labelMargin = 24, plain = true, size = "md", height = 20, skeleton = false, style }: Readonly<DividerProps>) {
   const theme = useTheme();
   const spacing = SPACING[size];
   const color = theme.color.canvas.border;

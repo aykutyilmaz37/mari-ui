@@ -20,7 +20,7 @@ function Slot({ skeleton, radius, children }: { skeleton: boolean; radius: numbe
   return skeleton ? <SkeletonBox style={{ borderRadius: radius }}>{children}</SkeletonBox> : <View>{children}</View>;
 }
 
-function CardContent({ props, styles, skeleton }: { props: CardProps; styles: CardRecipeResult; skeleton: boolean }) {
+function CardContent({ props, styles, skeleton }: Readonly<{ props: CardProps; styles: CardRecipeResult; skeleton: boolean }>) {
   const { children, title, extra, cover, footer, actions, slotStyles } = props;
   const theme = useTheme();
   const slotRadius = toPx(theme.radius.sm);

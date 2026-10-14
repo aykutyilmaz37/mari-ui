@@ -18,7 +18,7 @@ function personaOf(globals: Record<string, unknown>): { label: string; themes: R
   return { label: personas[name].label, themes: { light: resolved.light, dark: resolved.dark } };
 }
 
-function IrisForm({ mode, theme, label }: { mode: ThemeMode; theme: Theme; label: string }) {
+function IrisForm({ mode, theme, label }: Readonly<{ mode: ThemeMode; theme: Theme; label: string }>) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("Mari Studio");

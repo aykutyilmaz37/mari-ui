@@ -722,7 +722,7 @@ export const Positions: Story = {
 
 /* ─────────────────────────── İskelet ─────────────────────────── */
 
-function SkeletonOverlayDemo({ skeleton }: { skeleton: boolean }) {
+function SkeletonOverlayDemo({ skeleton }: Readonly<{ skeleton: boolean }>) {
   const [open, setOpen] = useState(false);
   return (
     <>

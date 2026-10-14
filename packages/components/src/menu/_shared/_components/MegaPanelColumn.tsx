@@ -26,7 +26,7 @@ export interface MegaPanelColumnProps extends MenuNavigationProps {
  * düz metin bağlantıları: bir mega panelde onlarca öğe var, her birine hover
  * dolgusu vermek görsel gürültü yaratıyor — sadece renk değişiyor.
  */
-export function MegaPanelColumn({ group, color, onNavigate, onItemClick, activeKey = null }: MegaPanelColumnProps) {
+export function MegaPanelColumn({ group, color, onNavigate, onItemClick, activeKey = null }: Readonly<MegaPanelColumnProps>) {
   const leaves = group.children ?? [];
   // Geçerli sayfa "Daha Fazla Gör" arkasında kalıyorsa kolon açık başlar — aktif link gizlenmesin.
   const [expanded, setExpanded] = useState(() => leaves.slice(VISIBLE_LEAF_COUNT).some((leaf) => leaf.key === activeKey));

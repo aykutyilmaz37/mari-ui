@@ -53,7 +53,7 @@ function useTargetBox(active: boolean, el: HTMLElement | null): Box | null {
 }
 
 /** Karartma: hedef dışını örter ve sayfa tıklamalarını engeller (delik de dahil — tur modal). */
-function Mask({ box }: { box: Box | null }) {
+function Mask({ box }: Readonly<{ box: Box | null }>) {
   const [size, setSize] = useState(() => ({ w: typeof window === "undefined" ? 0 : window.innerWidth, h: typeof window === "undefined" ? 0 : window.innerHeight }));
   useEffect(() => {
     const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
@@ -78,7 +78,7 @@ interface FooterProps {
   skeleton: boolean;
 }
 
-function Footer({ current, total, step, onPrev, onNext, skeleton }: FooterProps) {
+function Footer({ current, total, step, onPrev, onNext, skeleton }: Readonly<FooterProps>) {
   const last = current === total - 1;
   return (
     <div className="mt-4 flex items-center gap-2">

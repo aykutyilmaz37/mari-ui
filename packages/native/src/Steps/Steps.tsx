@@ -68,7 +68,7 @@ export interface StepsProps extends SkeletonableProps {
 const plain = (node: React.ReactNode) => (typeof node === "string" || typeof node === "number" ? String(node) : "");
 
 /** İskelette metin kendi kutusunda dolgu, harfler görünmez — gerçek genişlik/satır korunur. */
-function SkText({ skeleton, children }: { skeleton: boolean; children: React.ReactNode }) {
+function SkText({ skeleton, children }: Readonly<{ skeleton: boolean; children: React.ReactNode }>) {
   if (!skeleton) return <>{children}</>;
   return <SkeletonBox style={{ borderRadius: 4, alignSelf: "flex-start" }}>{children}</SkeletonBox>;
 }
@@ -97,7 +97,7 @@ interface IndicatorProps {
 }
 
 /** Halka 5pt taşar — komşu çizgi/başlıkla çakışmasın diye yatay pay. */
-function ProgressRing({ m, theme, color, percent }: { m: NativeStepsSize; theme: Theme; color: ColorRole; percent: number }) {
+function ProgressRing({ m, theme, color, percent }: Readonly<{ m: NativeStepsSize; theme: Theme; color: ColorRole; percent: number }>) {
   const ring = m.indicator + 10;
   const r = ring / 2 - 1;
   const circumference = 2 * Math.PI * r;
@@ -111,7 +111,7 @@ function ProgressRing({ m, theme, color, percent }: { m: NativeStepsSize; theme:
 }
 
 /** Dairenin içi: hata → ×, ikon, tamamlandı → ✓, yoksa numara. */
-function Glyph({ ctx, m, fg, font }: { ctx: Ctx; m: NativeStepsSize; fg: string; font?: string }) {
+function Glyph({ ctx, m, fg, font }: Readonly<{ ctx: Ctx; m: NativeStepsSize; fg: string; font?: string }>) {
   const Icon = ctx.item.icon;
   if (ctx.status === "error") return <XIcon size={m.iconSize} color={fg} />;
   if (Icon) return <Icon size={m.iconSize} color={fg} />;
@@ -119,7 +119,7 @@ function Glyph({ ctx, m, fg, font }: { ctx: Ctx; m: NativeStepsSize; fg: string;
   return <Text style={{ fontFamily: font, fontSize: m.numberFontSize, fontWeight: "600", color: fg, fontVariant: ["tabular-nums"] }}>{getStepNumber(ctx.item, ctx.index)}</Text>;
 }
 
-function StepIndicator({ ctx, m, theme, color, variant, dot, wide, percent, skeleton }: IndicatorProps) {
+function StepIndicator({ ctx, m, theme, color, variant, dot, wide, percent, skeleton }: Readonly<IndicatorProps>) {
   if (dot) {
     const big = ctx.status === "process" || ctx.status === "error";
     const d = big ? 10 : 8;
@@ -163,7 +163,7 @@ export function Steps({
   accessibilityLabel = "İlerleme adımları",
   skeleton = false,
   style,
-}: StepsProps) {
+}: Readonly<StepsProps>) {
   const theme = useTheme();
   const m = useNativeConfig().steps[size];
   const font = nativeFontFamily(theme.fontFamily.sans);

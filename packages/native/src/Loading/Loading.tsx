@@ -52,7 +52,7 @@ function useDelayedVisible(spinning: boolean, delay: number): boolean {
   return spinning && ready;
 }
 
-function Ring({ size, percent, fill, track }: { size: Size; percent: number; fill: string; track: string }) {
+function Ring({ size, percent, fill, track }: Readonly<{ size: Size; percent: number; fill: string; track: string }>) {
   const box = RING[size];
   const stroke = RING_STROKE[size];
   const r = (box - stroke) / 2;
@@ -68,12 +68,12 @@ function Ring({ size, percent, fill, track }: { size: Size; percent: number; fil
 }
 
 /** Belirsiz: platform göstergesi (HIG); belirli: dolan halka. */
-function DefaultMark({ size, percent, fill, track }: { size: Size; percent?: number; fill: string; track: string }) {
+function DefaultMark({ size, percent, fill, track }: Readonly<{ size: Size; percent?: number; fill: string; track: string }>) {
   if (percent !== undefined) return <Ring size={size} percent={percent} fill={fill} track={track} />;
   return <ActivityIndicator aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" size={size === "lg" ? "large" : "small"} color={fill} style={size === "sm" ? { transform: [{ scale: 0.8 }] } : undefined} />;
 }
 
-function Indicator({ size, color, trackColor, percent, tip, indicator, row }: { size: Size; color: ColorRole; trackColor?: ColorRole; percent?: number; tip?: React.ReactNode; indicator?: React.ReactNode; row: boolean }) {
+function Indicator({ size, color, trackColor, percent, tip, indicator, row }: Readonly<{ size: Size; color: ColorRole; trackColor?: ColorRole; percent?: number; tip?: React.ReactNode; indicator?: React.ReactNode; row: boolean }>) {
   const theme = useTheme();
   const fill = theme.color[color].solid;
   const mark = indicator ?? <DefaultMark size={size} percent={percent} fill={fill} track={trackColor ? theme.color[trackColor].subtle : theme.color.canvas.surfaceAlt} />;
@@ -98,7 +98,7 @@ function a11yFor(label: string, percent: number | undefined) {
   return { accessible: true, accessibilityRole: "progressbar" as const, accessibilityLabel: label, accessibilityValue: { min: 0, max: 100, now }, "aria-valuenow": now, "aria-valuemin": 0, "aria-valuemax": 100 };
 }
 
-export function Loading({ spinning = true, size = "md", tip, delay = 0, percent, fullscreen = false, children, color = "primary", trackColor, indicator, accessibilityLabel, style }: LoadingProps) {
+export function Loading({ spinning = true, size = "md", tip, delay = 0, percent, fullscreen = false, children, color = "primary", trackColor, indicator, accessibilityLabel, style }: Readonly<LoadingProps>) {
   const theme = useTheme();
   const visible = useDelayedVisible(spinning, delay);
   const label = accessibilityLabel ?? (typeof tip === "string" ? tip : "Yükleniyor");

@@ -53,7 +53,7 @@ function layoutMotion(animation: SidebarLayoutAnimation, progress: Animated.Valu
  * `scaleDown` (ekran küçülüp yuvarlak köşeli karta dönüşerek çekilir).
  * Menü içeriği ve prop'lar `Sidebar` ile aynı; yalnız ekran `children` olarak verilir.
  */
-export function SidebarLayout(props: SidebarLayoutProps) {
+export function SidebarLayout(props: Readonly<SidebarLayoutProps>) {
   const { open, position = "left", animation = "push", accessibilityLabel = "Ana menü", children, style } = props;
   const theme = useTheme();
   const c = theme.color.canvas;

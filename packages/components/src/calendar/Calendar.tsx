@@ -45,7 +45,7 @@ export function Calendar({
   "aria-label": ariaLabel = "Takvim",
   className,
   skeleton = false,
-}: CalendarProps) {
+}: Readonly<CalendarProps>) {
   const [selected, setSelected] = useControllableState<Date | null>({ value, defaultValue: defaultValue ?? null });
   const [mode, setMode] = useControllableState<CalendarMode>({ value: modeProp, defaultValue: defaultMode });
   const [view, setView] = useState(() => selected ?? startOfDay(new Date()));
@@ -150,7 +150,7 @@ interface HeaderProps {
 }
 
 /** Başlık: (tam ekranda) dönem adı, yıl ve ay seçicileri, Ay/Yıl modu, Bugün. */
-function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate, onModeChange, onToday, todayDisabled, skeleton }: HeaderProps) {
+function CalendarHeader({ fullscreen, mode, view, locale, validRange, onNavigate, onModeChange, onToday, todayDisabled, skeleton }: Readonly<HeaderProps>) {
   const long = monthNames(locale, "long");
   const short = monthNames(locale, "short");
   const keepDay = (y: number, m: number) => new Date(y, m, Math.min(view.getDate(), 28));
@@ -207,7 +207,7 @@ interface YearBodyProps {
 }
 
 /** Yıl modu: 12 ay (3×4 ızgara). */
-function YearBody({ view, selected, today, fullscreen, locale, validRange, cellRender, onNavigate, onPick, skeleton }: YearBodyProps) {
+function YearBody({ view, selected, today, fullscreen, locale, validRange, cellRender, onNavigate, onPick, skeleton }: Readonly<YearBodyProps>) {
   const long = monthNames(locale, "long");
   const short = monthNames(locale, "short");
   const year = view.getFullYear();

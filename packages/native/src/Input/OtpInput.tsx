@@ -71,7 +71,7 @@ export function OtpInput({
   accessibilityHint: ownHint,
   skeleton: ownSkeleton,
   style,
-}: OtpInputProps) {
+}: Readonly<OtpInputProps>) {
   const field = useFieldControl({ disabled: ownDisabled, skeleton: ownSkeleton, accessibilityLabel: ownLabel, accessibilityHint: ownHint, status: ownStatus });
   const theme = useTheme();
   const control = useNativeConfig().sizes[size];

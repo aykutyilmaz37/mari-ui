@@ -16,7 +16,7 @@ export type { TimelineProps, TimelineItem };
 const PLACEHOLDER = <SkeletonBlock active width="60%" height="0.75rem" radius="sm" className="my-1" />;
 
 /** Nokta kutusu = ilk metin satırının yüksekliği (20px) → nokta ilk satırla hizalı. */
-function Dot({ item, filled, skeleton }: { item: TimelineItem; filled: boolean; skeleton: boolean }) {
+function Dot({ item, filled, skeleton }: Readonly<{ item: TimelineItem; filled: boolean; skeleton: boolean }>) {
   const color: ColorRole = item.color ?? "primary";
   let node: React.ReactNode;
   if (skeleton) node = <span {...skeletonBoxProps("size-2.5 rounded-full")} />;
@@ -30,7 +30,7 @@ function Dot({ item, filled, skeleton }: { item: TimelineItem; filled: boolean; 
   );
 }
 
-function Rail({ dashed, horizontal }: { dashed: boolean; horizontal?: boolean }) {
+function Rail({ dashed, horizontal }: Readonly<{ dashed: boolean; horizontal?: boolean }>) {
   return (
     <span
       aria-hidden
@@ -43,7 +43,7 @@ function Rail({ dashed, horizontal }: { dashed: boolean; horizontal?: boolean })
   );
 }
 
-function Title({ children, className }: { children: React.ReactNode; className?: string }) {
+function Title({ children, className }: Readonly<{ children: React.ReactNode; className?: string }>) {
   return <div className={cn("text-xs leading-5 text-mari-muted", className)}>{children}</div>;
 }
 
@@ -62,7 +62,7 @@ function threeColumnClass(mode: TimelineProps["mode"]): string {
   return "sm:grid-cols-[minmax(0,1fr)_1.25rem_minmax(0,3fr)]";
 }
 
-function VerticalRow({ item, index, last, nextLoading, props }: RowProps) {
+function VerticalRow({ item, index, last, nextLoading, props }: Readonly<RowProps>) {
   const { mode, variant, titlePlacement, skeleton } = props;
   const side = resolveSide(mode, index, item.placement);
   const three = isThreeColumn(mode, titlePlacement);
@@ -114,7 +114,7 @@ function VerticalRow({ item, index, last, nextLoading, props }: RowProps) {
   );
 }
 
-function HorizontalRow({ item, last, nextLoading, props }: RowProps) {
+function HorizontalRow({ item, last, nextLoading, props }: Readonly<RowProps>) {
   const { variant, skeleton } = props;
   return (
     <li className="flex min-w-36 flex-1 flex-col">
@@ -154,7 +154,7 @@ export function Timeline({
   skeleton = false,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
-}: TimelineProps) {
+}: Readonly<TimelineProps>) {
   const all = buildItems(items, pending, reverse);
   const horizontal = orientation === "horizontal";
   const scrollRef = useRef<HTMLDivElement>(null);

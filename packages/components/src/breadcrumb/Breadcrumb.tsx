@@ -46,7 +46,7 @@ export function Breadcrumb({
   maxItems,
   skeleton = false,
   "aria-label": ariaLabel = "Gezinme yolu",
-}: BreadcrumbProps) {
+}: Readonly<BreadcrumbProps>) {
   const [expanded, setExpanded] = useState(false);
   const pathsByIndex = getPathsByIndex(items);
   const visible = getVisibleIndexes(items.length, maxItems, expanded);

@@ -38,7 +38,7 @@ export interface SparklineProps extends SkeletonableProps {
  * eğilimi göstermek için. Değer okutmaz (değeri yanındaki sayı taşır); ekseni,
  * tooltip'i yoktur.
  */
-export function Sparkline({ data, label, color = "muted", endColor = "primary", area = false, curve = "smooth", skeleton, animated = true, emptyText = "Veri yok", className }: SparklineProps) {
+export function Sparkline({ data, label, color = "muted", endColor = "primary", area = false, curve = "smooth", skeleton, animated = true, emptyText = "Veri yok", className }: Readonly<SparklineProps>) {
   const [ref, size] = useChartSize<HTMLDivElement>();
   const clipId = `mari-spark-${useId().replace(/[^\w-]/g, "")}`;
   // İskelet: aynı kutuda ince dalga (çizginin kendisi) — düz blok değil.

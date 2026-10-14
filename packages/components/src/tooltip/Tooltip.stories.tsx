@@ -138,7 +138,7 @@ export const IconToolbar: Story = {
   ),
 };
 
-function UserPreview({ skeleton }: { skeleton: boolean }) {
+function UserPreview({ skeleton }: Readonly<{ skeleton: boolean }>) {
   return (
     <div className="pt-20">
       <Tooltip

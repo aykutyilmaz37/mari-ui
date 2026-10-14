@@ -18,7 +18,7 @@ export interface UploadDragDropButtonProps {
  * `dragover` durumu) — eskiden sadece `hover:` vardı, gerçek sürükleme
  * anında görsel geri bildirim yoktu.
  */
-export function UploadDragDropButton({ handleClick, addFiles, disabled = false }: UploadDragDropButtonProps) {
+export function UploadDragDropButton({ handleClick, addFiles, disabled = false }: Readonly<UploadDragDropButtonProps>) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = (event: React.DragEvent<HTMLElement>) => {

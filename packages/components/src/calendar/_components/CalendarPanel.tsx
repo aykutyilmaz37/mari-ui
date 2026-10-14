@@ -83,7 +83,7 @@ function yearCells(year: number, picker: PanelPicker, selected: (d: Date) => boo
  * PickerPanel yapısı): «/‹ başlık ›/» gezinmesi; başlıktaki ay/yıl düğmeleri
  * ay ve yıl görünümüne geçer. Görünen dönem `aria-live` ile duyurulur.
  */
-export function CalendarPanel(props: CalendarPanelProps) {
+export function CalendarPanel(props: Readonly<CalendarPanelProps>) {
   const { picker = "date", initialDate, isSelected, rangeOf, isDisabled, onSelect, onHover, weekStart = 1, locale, showWeek, takeFocus, hidePrev, hideNext, className } = props;
   const [mode, setMode] = useState<PanelPicker>(picker);
   const [innerView, setInnerView] = useState(() => startOfMonth(initialDate));

@@ -24,6 +24,19 @@ export const baseConfig = [
     ignores: ["dist/**", "build/**", ".turbo/**", "storybook-static/**", "node_modules/**"],
   },
   {
+    // Tip bilgisi: sonarjs'in "Sonar way" setindeki 56 kural (prefer-read-only-props,
+    // deprecation, different-types-comparison…) tip ister; bu olmadan SESSİZCE
+    // çalışmıyordu — CLI lint temizken VS Code'daki SonarQube eklentisi uyarı
+    // gösteriyordu. tsconfig'e girmeyen kök config dosyaları varsayılan projeyle.
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        projectService: { allowDefaultProject: ["*.config.ts"] },
+        tsconfigRootDir: process.cwd(),
+      },
+    },
+  },
+  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "warn",

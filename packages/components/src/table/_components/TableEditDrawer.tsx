@@ -17,7 +17,7 @@ export interface TableEditDrawerProps {
  * (`useTableBody` kendi `openRowId` state'ini ayrı tutuyordu). Ölü hook
  * silindi, gerçek component `_components/`e taşındı ve doğru adını aldı.
  */
-export function TableEditDrawer({ title, description, open, onClose, children }: TableEditDrawerProps) {
+export function TableEditDrawer({ title, description, open, onClose, children }: Readonly<TableEditDrawerProps>) {
   return (
     // Faz 13.6: eskiden `header`'a yan yana iki <span> veriliyordu (başlık ve
     // açıklama arasında boşluk bile yoktu, ortalanmıştı). Artık Drawer'ın

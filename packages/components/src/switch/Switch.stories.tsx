@@ -187,7 +187,7 @@ const SETTINGS = [
   { id: "stock", title: "Stok bildirimleri", desc: "Favorileriniz stoğa girince", on: true },
 ];
 
-function SettingsDemo({ skeleton = false }: { skeleton?: boolean }) {
+function SettingsDemo({ skeleton = false }: Readonly<{ skeleton?: boolean }>) {
   return (
     <ul className="max-w-md divide-y divide-mari-border rounded-lg border border-mari-border">
       {SETTINGS.map((s) => (

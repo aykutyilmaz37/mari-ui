@@ -40,7 +40,7 @@ export function Table<T extends { id: string }>({
   paginationMode = "server",
   label,
   skeleton = false,
-}: TableProps<T>) {
+}: Readonly<TableProps<T>>) {
   // Yatay kaydırılan bölge klavyeyle de kaydırılabilmeli (axe
   // `scrollable-region-focusable`): SADECE gerçekten taşarken tab durağı olur —
   // sığan bir tabloya boşuna bir durak eklemesin.

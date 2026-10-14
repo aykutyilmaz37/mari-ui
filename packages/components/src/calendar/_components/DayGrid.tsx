@@ -78,7 +78,7 @@ function compactDayClass(info: DayCellInfo) {
  * ekran okuyucu için DOM'da kalır (`sr-only`); ayrıntı gün seçilince
  * gösterilir (mobil takvim kalıbı).
  */
-function FullDayContent({ info, locale, cellRender }: { info: DayCellInfo; locale?: string; cellRender?: (info: DayCellInfo) => React.ReactNode }) {
+function FullDayContent({ info, locale, cellRender }: Readonly<{ info: DayCellInfo; locale?: string; cellRender?: (info: DayCellInfo) => React.ReactNode }>) {
   const content = cellRender?.(info);
   const hasContent = content !== undefined && content !== null && content !== false && content !== "";
   return (
@@ -103,7 +103,7 @@ function FullDayContent({ info, locale, cellRender }: { info: DayCellInfo; local
 }
 
 /** İskelet gün hücresi: gerçek hücreyle aynı kutu, numara yerine blok. */
-function SkeletonDay({ date, full }: { date: Date; full: boolean }) {
+function SkeletonDay({ date, full }: Readonly<{ date: Date; full: boolean }>) {
   if (full) {
     return (
       <td className="p-0 align-top">
@@ -146,7 +146,7 @@ export function DayGrid({
   label,
   takeFocus = false,
   skeleton = false,
-}: DayGridProps) {
+}: Readonly<DayGridProps>) {
   const tableRef = useRef<HTMLTableElement>(null);
   const today = new Date();
   const weeks = getMonthGrid(view.getFullYear(), view.getMonth(), weekStart);

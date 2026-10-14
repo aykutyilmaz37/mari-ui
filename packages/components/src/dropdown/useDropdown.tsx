@@ -54,7 +54,7 @@ const DropdownContext = createContext<DropdownContextType | null>(null);
  * kalıyordu (bkz. plan denetimi). Artık `Dropdown` component'i Provider'ı
  * kendi içine gömüyor; tüketicinin bundan haberi olmasına gerek yok.
  */
-export function DropdownProvider({ children, hover = false, skeleton = false }: { children: React.ReactNode; hover?: boolean; skeleton?: boolean }) {
+export function DropdownProvider({ children, hover = false, skeleton = false }: Readonly<{ children: React.ReactNode; hover?: boolean; skeleton?: boolean }>) {
   const { isOpen, open, close } = useDisclosure();
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);

@@ -20,7 +20,7 @@ export function Tag({
   closeLabel,
   skeleton = false,
   className,
-}: TagProps) {
+}: Readonly<TagProps>) {
   if (skeleton) {
     return (
       <span {...skeletonBoxProps(cn(TAG_GEOMETRY_CLASS, (variant === "outline" || bordered) && "border border-transparent", className))}>

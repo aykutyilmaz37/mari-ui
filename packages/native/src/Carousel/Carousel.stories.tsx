@@ -50,7 +50,7 @@ const products = [
   { name: "Sırt Çantası", price: "649₺", Icon: ShoppingBag, tone: "error" },
 ] as const;
 
-function ProductCard({ index, gutter = true }: { index: number; gutter?: boolean }) {
+function ProductCard({ index, gutter = true }: Readonly<{ index: number; gutter?: boolean }>) {
   const theme = useTheme();
   const p = products[index % products.length]!;
   const tone = theme.color[p.tone as ColorRole];
@@ -78,7 +78,7 @@ const promos = [
   { key: "yeni", Icon: ShoppingBag, eyebrow: "Yeni Geldi", title: "Sonbahar/Kış Koleksiyonu", description: "İlk 48 saatte alışveriş yapana özel erken erişim.", cta: "Koleksiyonu Gör", tone: "accent" },
 ] as const;
 
-function PromoSlide({ promo }: { promo: (typeof promos)[number] }) {
+function PromoSlide({ promo }: Readonly<{ promo: (typeof promos)[number] }>) {
   const theme = useTheme();
   const tone = theme.color[promo.tone as ColorRole];
   return (
@@ -98,7 +98,7 @@ const testimonials = [
   { name: "Elif Ş.", rating: "★★★★★", text: "Beklediğimden daha kaliteli çıktı, çok memnun kaldım." },
 ];
 
-function Testimonial({ t }: { t: (typeof testimonials)[number] }) {
+function Testimonial({ t }: Readonly<{ t: (typeof testimonials)[number] }>) {
   const theme = useTheme();
   return (
     <View style={{ paddingHorizontal: 6 }}>

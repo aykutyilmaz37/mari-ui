@@ -38,7 +38,7 @@ const meta: Meta<typeof Tabs> = {
 export default meta;
 type Story = StoryObj<typeof Tabs>;
 
-function ProductTabs(props: Omit<TabsProps, "children">) {
+function ProductTabs(props: Readonly<Omit<TabsProps, "children">>) {
   return (
     <Tabs {...props}>
       <TabsList accessibilityLabel="Ürün bilgileri">
@@ -69,7 +69,7 @@ export const Playground: Story = {
 
 const icon = (Icon: typeof User) => ({ color }: { color: string }) => <Icon size={16} color={color} />;
 
-function SettingRow({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function SettingRow({ title, description, children }: Readonly<{ title: string; description: string; children: React.ReactNode }>) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 }}>
       <View style={{ flex: 1, gap: 2 }}>
