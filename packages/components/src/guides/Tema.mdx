@@ -64,7 +64,7 @@ Kişilik **taban** olur; config'te açıkça yazdığınız her alan onu ezer (y
 npx mari-ui theme      # mari-ui-theme.css + mari-ui-theme.ts üretir
 ```
 
-`mari-ui-theme.css`i `@mari-ui/components/styles.css`ten **sonra** import edin. `mari-ui-theme.ts` aynı temayı JS objesi olarak verir (React Native ve token'lara koddan erişmek için). Değerleri görerek seçmek için **tema stüdyosu** (`apps/studio`) aynı config'i dışa aktarır.
+`mari-ui-theme.css`i mari-ui CSS'inden (`@mari-ui/components/tailwind.css` ya da `styles.css`, bkz. Kurulum) **sonra** import edin. `mari-ui-theme.ts` aynı temayı JS objesi olarak verir (React Native ve token'lara koddan erişmek için). Değerleri görerek seçmek için **tema stüdyosu** (`apps/studio`) aynı config'i dışa aktarır.
 
 ### Ek temalar
 
@@ -123,4 +123,4 @@ Kendi CSS'inizde aynı değişkenleri kullanın — sabit renk yazmayın:
 }
 ```
 
-Projeniz Tailwind v4 kullanıyorsa `@mari-ui/tokens/tailwind-theme.css`i import ederek `bg-mari-surface`, `text-mari-muted`, `rounded-md`, `shadow-mari-md` gibi sınıfları kendi kodunuzda da kullanabilirsiniz. Tüm değişkenler **Foundations** sayfalarında.
+Projeniz Tailwind v4 kullanıyorsa Kurulum'daki `@mari-ui/components/tailwind.css` girişi bu sınıfları zaten tanımlar; `bg-mari-surface`, `text-mari-muted`, `rounded-md`, `shadow-mari-md` gibi sınıfları kendi kodunuzda da kullanabilirsiniz. Tüm değişkenler **Foundations** sayfalarında.

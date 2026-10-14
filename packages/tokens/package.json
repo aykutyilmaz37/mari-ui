@@ -16,6 +16,7 @@
     },
     "./theme.css": "./dist/theme.css",
     "./tailwind-theme.css": "./dist/tailwind-theme.css",
+    "./tailwind.css": "./dist/tailwind.css",
     "./schema.json": "./dist/schema.json",
     "./package.json": "./package.json",
     "./fonts.css": "./fonts.css",

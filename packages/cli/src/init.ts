@@ -4,6 +4,7 @@ import { ALL_AGENTS, syncAgentRules, type AgentName, type SyncResult } from "./s
 import type { PersonaName } from "@mari-ui/tokens";
 import { writeDefaultConfigIfMissing, writePersonaConfig } from "./configFile";
 import { ManifestNotFoundError } from "./manifest";
+import { detectTailwind, type TailwindSetup } from "./tailwindSetup";
 
 const REQUIRED_DEPENDENCIES = ["@mari-ui/components", "@mari-ui/core", "@mari-ui/tokens"] as const;
 
@@ -34,12 +35,15 @@ export interface InitResult {
    * ekle, sonra kur, sonra tekrar çalıştır" akışında hiç çökmemesini sağlar.
    */
   ruleFiles: SyncResult | null;
+  /** Host'taki Tailwind kurulumu — CSS talimatı buna göre (bkz. `tailwindSetup.ts`). */
+  tailwind: TailwindSetup;
   /** `package.json` tüketici projede yoksa (nadir ama olası) burada bir uyarı taşınır — dependency ekleme atlanır. */
   packageJsonMissing: boolean;
 }
 
 interface PackageJsonShape {
   dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
   [key: string]: unknown;
 }
 
@@ -63,10 +67,12 @@ export function runInit(options: InitOptions): InitResult {
 
   const addedDependencies: string[] = [];
   const alreadyHadDependencies: string[] = [];
+  let tailwind: TailwindSetup = "none";
 
   if (!packageJsonMissing) {
     const raw = readFileSync(packageJsonPath, "utf8");
     const pkg = JSON.parse(raw) as PackageJsonShape;
+    tailwind = detectTailwind(pkg);
     pkg.dependencies ??= {};
     for (const dep of REQUIRED_DEPENDENCIES) {
       if (pkg.dependencies[dep]) {
@@ -95,5 +101,5 @@ export function runInit(options: InitOptions): InitResult {
     }
   }
 
-  return { addedDependencies, alreadyHadDependencies, configCreated, configUpdated, configPath, ruleFiles, packageJsonMissing };
+  return { addedDependencies, alreadyHadDependencies, configCreated, configUpdated, configPath, ruleFiles, packageJsonMissing, tailwind };
 }

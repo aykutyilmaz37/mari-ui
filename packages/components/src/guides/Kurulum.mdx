@@ -20,16 +20,38 @@ npx mari-ui init
 
 ## 2. Stil ve fontlar
 
-Global CSS giriş noktanızda **bir kez** import edin:
+Projenizde Tailwind olup olmadığına göre **iki yoldan biri** — ikisini birden değil (`npx mari-ui init` hangisinin sizin için doğru olduğunu söyler).
+
+### Tailwind v4 kullanıyorsanız (önerilen)
+
+mari-ui sınıflarını **sizin Tailwind'iniz** derler: her sınıf ve sıfırlama (preflight) sayfada tek kez bulunur, `--spacing` tek. Global CSS dosyanızda:
+
+```css
+@import "tailwindcss";
+@import "@mari-ui/components/tailwind.css";
+@import "./mari-ui-theme.css"; /* npx mari-ui theme çıktısı — kendi config'iniz varsa */
+```
+
+Tema bütün uygulamaya uygulanır: font, `rounded-*` ölçeği ve yoğunluk (`--spacing`) mari-ui'dan gelir; kendi sayfalarınızda da `bg-mari-surface`, `text-mari-muted`, `shadow-mari-md` gibi sınıfları kullanabilirsiniz. **`@mari-ui/components/styles.css`i ayrıca import etmeyin** — aynı sınıfları ve sıfırlamayı ikinci kez yükler, sonra yüklenen kazanır.
+
+### Tailwind kullanmıyorsanız
+
+Hazır derlenmiş CSS:
 
 ```tsx
 import "@mari-ui/tokens/fonts.css"; // isteğe bağlı — Geist, Manrope, Geist Mono yerel dosyaları
 import "@mari-ui/components/styles.css";
+import "./mari-ui-theme.css"; // npx mari-ui theme çıktısı — kendi config'iniz varsa
 ```
 
-- Projenizde **Tailwind gerekmez**: `styles.css` derlenmiş haldedir.
-- `fonts.css` ağ isteği yapmaz; yüklemezseniz sistem fontu kullanılır.
-- Kendi temanızı ürettiyseniz (`npx mari-ui theme` → `mari-ui-theme.css`), onu `styles.css`ten **sonra** import edin.
+### Tailwind v3
+
+Desteklenmez: mari-ui teması v4 söz dizimiyle (`@theme`, `@source`, `@utility`) yazılı, v3 bunları derlemez. `npx @tailwindcss/upgrade` projeyi büyük ölçüde otomatik v4'e taşır. Geçici olarak derlenmiş `styles.css` çalışır ama v3 sınıflarınızla çakışabilir.
+
+### Ortak notlar
+
+- `fonts.css` ağ isteği yapmaz; yüklemezseniz sistem fontu kullanılır. Tasarım kişiliği seçtiyseniz fontlarının Google Fonts bağlantısını `npx mari-ui theme` basar.
+- `mari-ui.config.json` proje kökünde durur; yalnız `npx mari-ui theme` okur (uygulama çalışırken okunmaz). Config'i değiştirince komutu tekrar çalıştırın — `package.json`'a `"prebuild": "mari-ui theme"`, CI'a `npx mari-ui theme --check` ekleyebilirsiniz.
 
 ## 3. Kullanım
 
@@ -63,9 +85,8 @@ import { ToastProvider } from "@mari-ui/components/toast";
 Kayıtlı tema (açık/koyu, vurgu rengi, yoğunluk) sayfa çizilmeden önce uygulansın diye `getThemeScript()` `<head>`e konur — yoksa koyu tema seçen kullanıcı açılışta bir an açık tema görür.
 
 ```tsx
-// app/layout.tsx
-import "@mari-ui/tokens/fonts.css";
-import "@mari-ui/components/styles.css";
+// app/layout.tsx — globals.css yukarıdaki iki yoldan birini içerir
+import "./globals.css";
 import { getThemeScript } from "@mari-ui/tokens";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -97,9 +118,8 @@ export function AppSidebar() {
 ## Vite
 
 ```tsx
-// main.tsx
-import "@mari-ui/tokens/fonts.css";
-import "@mari-ui/components/styles.css";
+// main.tsx — index.css yukarıdaki iki yoldan birini içerir
+import "./index.css";
 ```
 
 Tema script'ini `index.html`e build sırasında eklemek için:
