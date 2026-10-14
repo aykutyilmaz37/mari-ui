@@ -1,6 +1,6 @@
 {
   "name": "@mari-ui/native",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "mari-ui'ın React Native katmanı. StyleSheet + @mari-ui/tokens JS objesi kullanır — NativeWind veya başka bir babel/metro eklentisi gerektirmez, tüketiciye sıfır ek kurulum şartı koyar.",
   "license": "MIT",
   "author": "Aykut Yılmaz",
