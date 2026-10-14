@@ -9,11 +9,17 @@
 //
 // Kimlik: GitHub OIDC (trusted publishing) — token yok; provenance npm'ce eklenir.
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
+
+// changesets/action v2, yayın betiğinin `CHANGESETS_OUTPUT` dosyasına
+// (ndjson `git-tag` olayları) yazmasını bekler; dosya yoksa uyarı verir.
+// Taslak henüz yayın değil: olay yazılmaz → action "yayınlanmadı" sayar,
+// etiket / GitHub Release açmaz.
+if (process.env.CHANGESETS_OUTPUT) writeFileSync(process.env.CHANGESETS_OUTPUT, "");
 const run = (cmd, args, opts = {}) => execFileSync(cmd, args, { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"], ...opts }).trim();
 
 /** Bu sürüm npm'de yayınlanmış mı? (404 → hayır) */
