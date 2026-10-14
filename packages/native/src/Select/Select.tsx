@@ -10,6 +10,7 @@ import { Button } from "../Button";
 import { SearchInput } from "../Input";
 import type { InputShape, InputVariant } from "../Input/types";
 import { Tag } from "../Tag";
+import { FieldTrigger } from "../lib/FieldTrigger";
 import { CheckIcon, ChevronDownIcon, XIcon } from "../lib/icons";
 import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
 import { Spinner } from "../lib/Spinner";
@@ -342,27 +343,24 @@ export function Select(props: SelectProps) {
 
   return (
     <>
-      <Pressable
-        accessibilityRole="button"
+      <FieldTrigger
         accessibilityLabel={field.accessibilityLabel ?? placeholder}
         accessibilityHint={field.accessibilityHint}
         accessibilityValue={hasValue ? { text: selected.map(labelOf).join(", ") } : undefined}
-        accessibilityState={{ expanded: open, disabled: field.disabled }}
-        aria-expanded={open}
-        aria-disabled={field.disabled || undefined}
+        expanded={open}
         disabled={field.disabled}
         onPress={() => setOpen(true)}
         hitSlop={styles.hitSlop}
         style={[styles.container, grow, style]}
-      >
-        <SelectDisplay selected={selected} multiple={multiple} maxTagCount={props.mode === "multiple" ? props.maxTagCount : undefined} placeholder={placeholder} disabled={field.disabled} textStyle={styles.input} mutedColor={styles.mutedColor} onRemove={(v) => commit(values.filter((x) => x !== v))} />
-        {allowClear && hasValue && !field.disabled ? (
+        display={<SelectDisplay selected={selected} multiple={multiple} maxTagCount={props.mode === "multiple" ? props.maxTagCount : undefined} placeholder={placeholder} disabled={field.disabled} textStyle={styles.input} mutedColor={styles.mutedColor} onRemove={(v) => commit(values.filter((x) => x !== v))} />}
+        displayAccessible={multiple && hasValue && !field.disabled}
+        action={allowClear && hasValue && !field.disabled ? (
           <Pressable accessibilityRole="button" accessibilityLabel={clearLabel} hitSlop={12} onPress={() => commit([])}>
             <XIcon size={styles.iconSize - 2} color={styles.mutedColor} />
           </Pressable>
         ) : null}
-        {loading ? <Spinner size={styles.iconSize} color={styles.mutedColor} /> : <ChevronDownIcon size={styles.iconSize} color={styles.mutedColor} />}
-      </Pressable>
+        indicator={loading ? <Spinner size={styles.iconSize} color={styles.mutedColor} /> : <ChevronDownIcon size={styles.iconSize} color={styles.mutedColor} />}
+      />
       <BottomSheet
         open={open}
         onClose={() => setOpen(false)}

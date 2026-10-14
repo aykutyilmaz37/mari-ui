@@ -114,7 +114,7 @@ function BackTopDemo() {
   const listRef = useRef<React.ComponentRef<typeof Animated.ScrollView>>(null);
   return (
     <Screen height={380}>
-      <Animated.ScrollView ref={listRef} onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} nestedScrollEnabled>
+      <Animated.ScrollView ref={listRef} onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} nestedScrollEnabled focusable>
         {ROWS.map((r) => (
           <ListItem key={r.key}>
             <ListItemMeta title={r.title} description={r.body} />

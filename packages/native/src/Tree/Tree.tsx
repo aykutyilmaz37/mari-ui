@@ -102,19 +102,22 @@ function Row(props: RowProps) {
       <View style={{ justifyContent: "center" }}>
         <Toggle {...props} title={title} />
       </View>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={title || undefined}
-        accessibilityState={{ selected, disabled, ...(check ? { checked: check.half ? "mixed" : check.checked } : null) }}
-        disabled={disabled || skeleton}
-        onPress={onPress}
-        // Onay kutusu zaten 44 (dokunma hedefi) — üstüne dolgu eklenirse satır 60'a çıkıyordu.
-        style={({ pressed }) => ({ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: check ? 0 : 6, paddingHorizontal: 8, borderRadius: 8, backgroundColor: rowBackground(selected, pressed, color, theme) })}
-      >
+      {/* Onay kutusu satır düğmesinin KARDEŞİ (düğme içinde düğme geçersiz); seçili zemin ikisini birlikte sarar. */}
+      <View style={{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center", gap: 10, paddingLeft: check ? 8 : 0, borderRadius: 8, backgroundColor: selected ? theme.color[color].subtle : "transparent" }}>
         {check ? <Checkbox checked={check.checked} indeterminate={check.half} disabled={disabled || !isCheckEligible(node)} skeleton={skeleton} onChange={onCheck} accessibilityLabel={title} /> : null}
-        {nodeIcon(node, skeleton, m)}
-        <View style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}>{skeleton ? <SkeletonText fontSize={m.fontSize}>{titleNode}</SkeletonText> : titleNode}</View>
-      </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={title || undefined}
+          accessibilityState={{ selected, disabled }}
+          disabled={disabled || skeleton}
+          onPress={onPress}
+          // Onay kutusu zaten 44 (dokunma hedefi) — üstüne dolgu eklenirse satır 60'a çıkıyordu.
+          style={({ pressed }) => ({ flex: 1, minWidth: 0, alignSelf: "stretch", flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: check ? 0 : 6, paddingLeft: check ? 0 : 8, paddingRight: 8, borderRadius: 8, backgroundColor: rowBackground(selected, pressed, color, theme) })}
+        >
+          {nodeIcon(node, skeleton, m)}
+          <View style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}>{skeleton ? <SkeletonText fontSize={m.fontSize}>{titleNode}</SkeletonText> : titleNode}</View>
+        </Pressable>
+      </View>
     </View>
   );
 }

@@ -3,6 +3,7 @@ import { Pressable, Text, View, type TextStyle } from "react-native";
 import { useStyles } from "../styles/useStyles";
 import { useTheme } from "../theme/useTheme";
 import { toPx } from "../theme/toPx";
+import { InertView } from "../lib/InertView";
 import { SkeletonBox } from "../lib/Skeleton";
 import type { CardRecipeResult } from "../styles/recipes/cardRecipe";
 import type { CardProps } from "./types";
@@ -75,8 +76,6 @@ export const Card: ForwardRefExoticComponent<CardProps & RefAttributes<Component
     testID,
     accessibilityLabel,
     accessibilityHint,
-    accessibilityElementsHidden: skeleton, "aria-hidden": skeleton,
-    importantForAccessibility: skeleton ? "no-hide-descendants" as const : "auto" as const,
   };
   // Kırpma yalnız kapakta (köşeleri yuvarlansın); kapaksız kart taşan öğeyi (Slider baloncuğu) kesmesin.
   const containerStyle = [styles.container, props.cover != null && { overflow: "hidden" as const }, interactive && { minHeight: 44 }, disabled && { opacity: 0.5 }, style];
@@ -95,6 +94,7 @@ export const Card: ForwardRefExoticComponent<CardProps & RefAttributes<Component
       </Pressable>
     );
   }
-  return <View {...shared} style={[containerStyle, (skeleton || disabled) && { pointerEvents: "none" }]}>{content}</View>;
+  // İskelet gizli alt ağaç: ekran okuyucudan ve (web) Tab sırasından çıkar.
+  return <InertView {...shared} hidden={skeleton} style={[containerStyle, (skeleton || disabled) && { pointerEvents: "none" }]}>{content}</InertView>;
 });
 Card.displayName = "Card";

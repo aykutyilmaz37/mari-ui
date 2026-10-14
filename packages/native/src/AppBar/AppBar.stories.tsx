@@ -123,7 +123,7 @@ function LargeDemo() {
   return (
     <Screen height={460}>
       <AppBar size="large" title="Mesajlar" scrollY={scrollY} actions={<AppBarAction icon={icon(Search)} accessibilityLabel="Ara" onPress={noop} />} />
-      <Animated.ScrollView onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} nestedScrollEnabled>
+      <Animated.ScrollView onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} nestedScrollEnabled focusable>
         <View>
           {MESSAGES.map(([name, text, time]) => (
             <ListItem key={name} extra={<Text muted>{time}</Text>}>
@@ -159,7 +159,7 @@ function ScrollBorderDemo() {
   return (
     <Screen>
       <AppBar title="Gizlilik" onBack={noop} scrollY={scrollY} />
-      <Animated.ScrollView onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} nestedScrollEnabled contentContainerStyle={{ padding: 16, gap: 12 }}>
+      <Animated.ScrollView onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} nestedScrollEnabled focusable contentContainerStyle={{ padding: 16, gap: 12 }}>
         {Array.from({ length: 6 }, (_, i) => (
           <Paragraph key={i}>
             Kişisel verileriniz yalnız hizmeti sunmak için işlenir. Hesabınızı sildiğinizde verileriniz 30 gün içinde kalıcı olarak kaldırılır; yasal saklama yükümlülükleri saklıdır.
