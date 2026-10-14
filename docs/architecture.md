@@ -36,6 +36,17 @@ mari-ui'ın paketleri, bir tasarım kararının (ör. marka rengi) token'dan ekr
 4. **Component CSS** — ortak kurallar `packages/components/src/mari.css`te (token eşlemesi `@mari-ui/tokens/tailwind.css` — `tailwindcss` import ETMEZ —, keyframes, base, yoğunluk, `duration-*`). İki giriş: **`tailwind.css`** (Tailwind v4'lü host; `mari.css` + derlenmiş `.js` taraması — host'un tek derlemesi sınıflarımızı da üretir, tekrar yok) ve **`styles.css`** (`@import "tailwindcss"` + `mari.css` → `dist/styles.css`, Tailwind'siz host'lar için hazır CSS). İkisi birlikte yüklenmez; CLI `init` host'un Tailwind sürümüne göre doğru olanı söyler.
 5. **Tüketici teması** — `npx mari-ui theme`, `mari-ui.config.json`dan aynı fonksiyonlarla (`resolveThemeConfig`, `buildPlainThemeCss`) `mari-ui-theme.css` üretir; mari-ui CSS'inden (`tailwind.css` ya da `styles.css`) sonra import edilince değişkenleri ezer. Değişken üzerinden aktığı için component'ler yeniden derlenmez.
 
+## Tasarım kişilikleri
+
+Aynı component'lerle kurulan projeler birbirinin kopyası gibi görünmesin diye `@mari-ui/tokens` beş hazır kişilik taşır (`personas.ts`): **Kurumsal**, **Oyunbaz**, **Minimal**, **Editoryal**, **Lüks**. Kişilik yeni bir token ekseni değildir; `mari-ui.config.json`ın zaten anladığı alanların birlikte seçilmiş bir paketidir: renk, font eşleşmesi, köşe ve boşluk yoğunluğu, **gölge yoğunluğu** (`shadow`: none/soft/normal/strong) ve **hareket** (`motion` → `--mari-motion-scale`; `duration-*` ve varsayılan geçiş süresi bu çarpanla ölçeklenir).
+
+- `config.persona` taban seçilir, config'te açıkça yazılan her alan onu ezer (`applyPersona`). Stüdyo dışa aktarırken yalnız kişilikten farklı alanları yazar (`minimizeConfig`).
+- Fontlar yalnız aile adıdır; yüklemek tüketicinin işi. `npx mari-ui theme` kişiliğin Google Fonts bağlantısını basar (`personaFontsUrl`), CSS'e dış `@import` eklemez. React Native paketi font dosyası taşımaz (bilinçli karar): varsayılan sistem fontu; kişilik ailesini isteyen uygulama `expo-font` ile kendisi yükler (`fonts="brand"`). Her aile Türkçe glifler (ğ, İ, ş…) tarayıcıda ölçülerek seçildi.
+- Aynı kaynak web ve native'i besler: web'de CSS değişkenleri, native'de `Theme.effects` (`shadowStyle`, `useMotionScale`).
+- Seçim noktaları: Storybook araç çubuğundaki Kişilik seçici, `apps/studio`, native-studio'daki kişilik çipleri, `npx mari-ui init --persona <ad>` ve AI kurallarındaki "proje tasarım brief'i" adımı.
+
+## Çalışma zamanı ayarları
+
 Renk, köşe ve boşluk yoğunluğu CSS değişkeni olduğundan **çalışma zamanında** değişebilir: `data-theme` (açık/koyu/ek temalar), `data-density` (Tailwind v4'ün `--spacing` tabanı), akışkan kök yazı boyutu (`scale.fluid`, 4K'de büyür). Son kullanıcı ayarları `ThemeCustomizer` + `saveTheme`/`loadTheme` ile saklanır; `getThemeScript()` sayfa çizilmeden önce çalışıp yanıp sönmeyi (FOUC) önler.
 
 ## Build
@@ -43,7 +54,16 @@ Renk, köşe ve boşluk yoğunluğu CSS değişkeni olduğundan **çalışma zam
 - `turbo run build` paketleri bağımlılık sırasıyla derler (`tokens → core → components/native → cli`).
 - `@mari-ui/components`: `tsup` her `src/<klasör>/index.ts`i ayrı ESM girişi yapar (`scripts/discoverEntries.ts`). Tip bildirimleri tsup'ta değil tek bir `tsc` ile (`build:types`): ~90 girişte tsup'ın dts işçisi bellek yetersizliğiyle düşüyordu.
 - `build:manifest` (`scripts/build-manifest.ts`, ts-morph) her girişin gerçek export'larını ve prop'larını (`@deprecated` dahil) `dist/manifest.json`a yazar.
-- CI (`.github/workflows/ci.yml`): `pnpm turbo run build lint typecheck test` + `pnpm audit --audit-level critical`, Node 22.
+- CI (`.github/workflows/ci.yml`, Node 22): `pnpm turbo run build lint typecheck test:coverage`, ardından derlenmiş Storybook üzerinde story testleri (`test-storybook:ci`) ve `pnpm audit --audit-level critical`.
+
+## Kalite kapıları
+
+| Kapı | Ne yakalar |
+|---|---|
+| ESLint, **tip bilgili** (`projectService`) | `sonarjs` "Sonar way" kural setinin tamamı (tip isteyen 56 kural dahil), `jsx-a11y`, `react-hooks`. Kural kapatmaları VS Code'daki SonarQube for IDE ile eşlenir: kökteki `.vscode/settings.json` (`sonarlint.rules`). |
+| Vitest + coverage (v8) | Paket başına eşik, bugünkü oranın ~1 puan altına kilitli (`vitest.config.ts`); oran düşerse CI kırılır, test eklendikçe elle yükseltilir. |
+| Story testleri (`@storybook/test-runner`, Playwright) | Web + native, her story açılır: çizim / `play` hatası ve axe ihlali testi kırar (`apps/docs/.storybook/test-runner.ts`, azaltılmış hareketle). Native component'lerin çizimini bu katman kapsar (unit testleri yalnız saf yardımcılar). |
+| `pnpm audit` | Kritik bağımlılık açıkları ([SECURITY.md](../SECURITY.md)). |
 
 ## AI ajan kuralları
 
@@ -60,7 +80,9 @@ Renk, köşe ve boşluk yoğunluğu CSS değişkeni olduğundan **çalışma zam
 | Grafikler saf SVG, paket bağımlılığı yok | Boyut, SSR uyumu, token'larla tam uyum. |
 | Her component `skeleton` taşır | Yüklenince yerleşim kaymaz; iskelet component'in kendi geometrisinde. |
 | Animasyonlar varsayılan açık, `motion-reduce` ile kapalı | Canlı his, erişilebilirlik tercihi her zaman kazanır. |
-| Erişilebilirlik üç katman: jsx-a11y + axe testleri + Storybook a11y | Biri diğerinin yakalayamadığını yakalar ([ACCESSIBILITY.md](../ACCESSIBILITY.md)). |
+| Erişilebilirlik dört katman: jsx-a11y + axe unit testleri + Storybook a11y paneli + CI'da her story'de axe | Biri diğerinin yakalayamadığını yakalar ([ACCESSIBILITY.md](../ACCESSIBILITY.md)). |
+| Component props `Readonly<…>` | Props içeride değiştirilmez; Sonar'ın `prefer-read-only-props` kuralı. |
+| `@deprecated` takma ad yalnız yayından SONRA | Yayın öncesi eski adlar doğrudan kaldırılır (mergen-next geçişinden kalanlar 2026-10'da silindi). Yayından sonra bir ad değişirse JSDoc `@deprecated` + gerekçe yazılır; manifest bunu AI kurallarına "kullanmayın" listesi olarak taşır. |
 
 ## Yayın
 
