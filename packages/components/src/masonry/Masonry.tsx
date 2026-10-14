@@ -53,11 +53,12 @@ function useMeasuredLayout(listRef: React.RefObject<HTMLUListElement | null>, co
   return layout;
 }
 
-/**
- * Faz 16.3 — yapı ant.design Masonry'den (farklı yükseklikteki öğeler, her
+/*
+ * yapı ant.design Masonry'den (farklı yükseklikteki öğeler, her
  * biri en kısa sütuna; duyarlı sütun sayısı; `gutter`; `onLayoutChange`),
  * görünüm kendi token'larımızdan (öğelerin kendisi — Card, görsel — tüketicinin).
- *
+ */
+/**
  * DOM sırası = öğe sırası: yalnız görsel konum hesaplanır (mutlak konum), Tab ve
  * ekran okuyucu sırası verideki gibi kalır. Ölçüm gelmeden (SSR, ilk kare, JS
  * kapalı) CSS `columns` ile makul bir yerleşim çizilir; ölçülünce kesin konum.

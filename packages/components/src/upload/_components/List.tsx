@@ -9,7 +9,7 @@ export interface UploadListProps {
   handleDelete: (id: string) => void;
 }
 
-/**
+/*
  * ant.design'ın varsayılan dosya listesiyle birebir karşılaştırıldı: satır
  * sadece ataç ikonu + dosya adından oluşur (uzantı/boyut AYRICA yazılmaz —
  * eskiden "ad.ext (UZANTI) (boyut)" şeklinde kalabalıktı). Silme ikonu

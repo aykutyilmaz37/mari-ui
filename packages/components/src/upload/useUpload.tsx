@@ -11,8 +11,8 @@ export interface UseUploadOptions {
   max: number;
 }
 
-/**
- * Faz 13 (kullanıcı geri bildirimi — ant.design ile birebir karşılaştırma):
+/*
+ * Faz 13:
  * eskiden burada sadece çıplak `File[]` tutuluyordu, her dosya HEP "hazır"
  * durumundaydı — ant'ın dosya listesinin/picture-card'ının asıl karakteri
  * olan "yükleniyor" (ilerleme çubuğu) → "tamamlandı" geçişi hiç yoktu, tüm

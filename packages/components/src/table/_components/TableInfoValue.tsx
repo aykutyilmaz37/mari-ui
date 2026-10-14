@@ -8,7 +8,7 @@ export interface TableInfoValueProps {
   value: string;
 }
 
-/**
+/*
  * Kullanıcı bulgusu: `line-clamp-2` bir telefon numarasını ("0532 111
  * 22...") ortasından kesiyordu — `info` prop'u verilmediği sürece kullanıcının
  * tam değeri okumasının HİÇBİR yolu yoktu. Artık `info` (her zaman tooltip)

@@ -85,7 +85,7 @@ function Swatch({ name, color, label, checked, disabled, skeleton, onSelect }: R
 }
 
 /**
- * Faz 16.8 — son kullanıcının uygulamanın görünümünü kişiselleştirdiği panel:
+ * Son kullanıcının uygulamanın görünümünü kişiselleştirdiği panel:
  * mod (açık/koyu/sistem), vurgu rengi, boşluk yoğunluğu. Kendi tasarımımız
  * (ant referansı yok). Satır içi durur; Popover/Drawer/ayarlar sayfasına
  * yerleştirmek tüketicinin işi.

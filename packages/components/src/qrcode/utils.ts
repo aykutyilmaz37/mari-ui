@@ -2,7 +2,7 @@ import qrcode from "qrcode-generator";
 import type { QRCornerDotType, QRCornerSquareType, QRDotType, QRErrorLevel } from "./types";
 
 /**
- * Faz 16.3 — kullanıcının `qr-code-generator` projesindeki `renderQRtoSVG`
+ * Kullanıcının `qr-code-generator` projesindeki `renderQRtoSVG`
  * mantığının saf (DOM'suz, SSR'da çalışan) portu. Birim = 1 modül: viewBox
  * modül cinsindendir, boyut CSS ile verilir → her çözünürlükte keskin.
  */

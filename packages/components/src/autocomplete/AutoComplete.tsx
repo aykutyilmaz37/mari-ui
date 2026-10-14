@@ -22,10 +22,10 @@ function HighlightedValue({ value, searchText }: Readonly<{ value: string; searc
 }
 
 /**
- * ARIA "combobox" deseni (Faz 13): `role="combobox"`/`listbox`/`option` +
+ * ARIA "combobox" deseni: `role="combobox"`/`listbox`/`option` +
  * Ok tuşları/Enter/Escape.
  *
- * Faz 15: temizleme bir `<svg onClick>` idi — buton değildi, klavyeyle
+ * Temizleme bir `<svg onClick>` idi — buton değildi, klavyeyle
  * erişilemiyordu ve alan boşken de görünüyordu → Input'un etiketli
  * `allowClear`'ı. Liste yükseklik sınırı yoktu (100 seçenek sayfayı uzatırdı);
  * klavyeyle gezinirken aktif seçenek görünür alana kaydırılır. Eşleşen kısım

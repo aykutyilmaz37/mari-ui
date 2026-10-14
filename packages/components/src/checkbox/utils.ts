@@ -15,7 +15,9 @@ const SIZE_CLASS: Record<Size, string> = {
   lg: "h-5 w-5 text-base",
 };
 
-/** Çentik ikonu kutuyla orantılı — eskiden her boyutta sabit 16px'ti (sm'nin 12px kutusundan taşıyordu). */
+/*
+ * Çentik ikonu kutuyla orantılı — eskiden her boyutta sabit 16px'ti (sm'nin 12px kutusundan taşıyordu).
+ */
 const CHECK_ICON_CLASS: Record<Size, string> = {
   sm: "size-2.5",
   md: "size-3",

@@ -9,7 +9,7 @@ import { getDotSizeClasses, getSizeClasses, getVariantClasses, getVariantDotClas
 
 export type { RadioProps };
 
-/**
+/*
  * Eskiden `isChecked` sadece İLK render'da `defaultChecked ?? checked ?? false`
  * ile kuruluyor, sonra `checked` prop'u değiştiğinde bir `useEffect` ile
  * SENKRONİZE edilmeye çalışılıyordu — ama JSX zaten `checked ?? isChecked`

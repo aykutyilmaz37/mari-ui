@@ -9,7 +9,7 @@ export interface TableEditDrawerProps {
   children: React.ReactNode;
 }
 
-/**
+/*
  * Eskiden `_hook/useItemDrawer.tsx` içinde tanımlıydı, `AddNewItem` adını
  * taşıyordu (yanıltıcı — "yeni ekleme" değil "düzenleme" çekmecesi) ve
  * dosyanın kendisi bir `useItemDrawer()` hook'u da export ediyordu — ama bu

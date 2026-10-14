@@ -45,9 +45,8 @@ function OptionContent({ option, selected, multiple }: Readonly<{ option: Select
 }
 
 /**
- * Faz 16.1 — Select'in listesi. `document.body`'ye portal edilir, konum
- * `useFloatingPosition`dan (Dropdown ile ortak); genişlik tetikleyicininki
- * (ant.design `popupMatchSelectWidth`). Odak listede DEĞİL tetikleyicide
+ * Select'in listesi. `document.body`'ye portal edilir, konum
+ * `useFloatingPosition`dan (Dropdown ile ortak); genişlik tetikleyicininki. Odak listede DEĞİL tetikleyicide
  * kalır; aktif seçenek `aria-activedescendant` ile bildirilir (APG combobox).
  * Seçenekler `onMouseDown` ile `preventDefault` — tıklamak tetikleyicinin
  * odağını (dolayısıyla açık listeyi) kaybettirmesin.

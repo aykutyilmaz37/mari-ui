@@ -9,17 +9,11 @@ import { DropdownSubMenu } from "./_components/DropdownSubMenu";
 
 export type BasicMenuProps = NavBarBaseProps & MenuColorProps;
 
-/**
+/*
  * `currentPath` eskiden kabul edilip hiç kullanılmıyordu — sayfa yenilendiğinde
  * (veya SSR'da) aktif öğe her zaman `data[0]`e düşüyordu, gerçek route ne
- * olursa olsun (Faz 13.5 bulgusu). Artık `findActiveKeyByRoute` ile
+ * olursa olsun. Artık `findActiveKeyByRoute` ile
  * `currentPath`e karşılık gelen öğe varsa o başlangıçta aktif.
- *
- * 2026-09-22: `data[0]`e geri düşme davranışı KALDIRILDI — Sidebar hiçbir
- * zaman böyle bir varsayılan seçmiyordu (`findActiveKeyByRoute` eşleşmezse
- * `null` kalır) ve `currentPath` hiç eşleşmediğinde ilk öğeyi "aktif" göstermek
- * yanıltıcıydı (kullanıcı nav'da olmayan bir sayfadaysa bile ilk öğe vurgulanırdı).
- * BasicMenu artık Sidebar'la tutarlı: eşleşme yoksa hiçbir öğe aktif görünmez.
  *
  * Faz 13.5 kullanıcı bulgusu: logo ve öğeler eskiden TEK bir flex satırında,
  * yan yana render ediliyordu — "logo solda sabit, öğeler ortada/sağda, eylem
@@ -28,13 +22,19 @@ export type BasicMenuProps = NavBarBaseProps & MenuColorProps;
  * `padding` yoktu, öğeler kenara yapışıyordu. Artık logo/öğeler/`actions`
  * üç ayrı grup — `justify-between` ile logo sabit solda, `actions` sabit
  * sağda kalır, öğeler aradaki alanı `menuItemJustify`e göre kullanır.
+ */
+/**
+ * 2026-09-22: `data[0]`e geri düşme davranışı KALDIRILDI — Sidebar hiçbir
+ * zaman böyle bir varsayılan seçmiyordu (`findActiveKeyByRoute` eşleşmezse
+ * `null` kalır) ve `currentPath` hiç eşleşmediğinde ilk öğeyi "aktif" göstermek
+ * yanıltıcıydı (kullanıcı nav'da olmayan bir sayfadaysa bile ilk öğe vurgulanırdı).
+ * BasicMenu artık Sidebar'la tutarlı: eşleşme yoksa hiçbir öğe aktif görünmez.
  *
- * Responsive (kullanıcı bulgusu — hiç düşünülmemişti; dar ekranda öğeler
- * taşıyor ve başlıklar iki satıra kırılıyordu): `mobileBreakpoint` altında
+ * Responsive: `mobileBreakpoint` altında
  * öğeler CSS ile gizlenir, logonun soluna hamburger gelir (`MobileNav`).
  * JS ile değil CSS ile gizlendiği için SSR/hydration'da sıçrama yok.
  *
- * Faz 15.5: çubuk kabuğu (logo, `<nav><ul>`, `actions`, mobil çekmece,
+ * Çubuk kabuğu (logo, `<nav><ul>`, `actions`, mobil çekmece,
  * sticky, iskelet) MegaMenu ile ortak `NavBar`da. Route'u olan öğeler gerçek
  * link (`MenuLink`), geçerli sayfa `aria-current="page"`.
  */

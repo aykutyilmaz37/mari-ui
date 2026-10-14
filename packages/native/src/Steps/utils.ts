@@ -21,7 +21,7 @@ export function resolveStepStatus(item: { step?: number; status?: StepStatus }, 
 
 export type StepsLayout = "inline" | "stacked" | "vertical" | "compact";
 
-/** inline: başlık yanında · stacked: altında ortalı · vertical: dikey liste · compact: dar ekranda göstergeler + "Adım 2/4 · Başlık". */
+/** İnline: başlık yanında · stacked: altında ortalı · vertical: dikey liste · compact: dar ekranda göstergeler + "Adım 2/4 · Başlık". */
 export function resolveLayout(vertical: boolean, isNarrow: boolean, responsiveLayout: "vertical" | "compact", dot: boolean, labelPlacement: "horizontal" | "vertical"): StepsLayout {
   if (vertical) return "vertical";
   if (isNarrow) return responsiveLayout === "compact" ? "compact" : "vertical";
@@ -36,7 +36,7 @@ export interface IndicatorColors {
 }
 
 /**
- * Gösterge dairesi (ant.design v6 yapısı, kendi token'larımız): filled —
+ * Gösterge dairesi: filled —
  * tamamlanan tonlu, geçerli dolu, bekleyen nötr tonlu; outlined — hepsi
  * çerçeveli. Hata her zaman `error` rolüyle.
  */
@@ -65,7 +65,7 @@ export function titleStyle(theme: Theme, status: StepStatus): { color: string; f
   return { color: theme.color.canvas.muted, fontWeight: "400" };
 }
 
-/** Bir adımdan sonrakine uzanan çizgi, bu adım tamamlandıysa renkli (ant.design ile aynı). */
+/** Bir adımdan sonrakine uzanan çizgi, bu adım tamamlandıysa renkli. */
 export function railColor(theme: Theme, status: StepStatus, color: ColorRole): string {
   return status === "finish" ? theme.color[color].solid : theme.color.canvas.border;
 }

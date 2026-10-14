@@ -323,7 +323,7 @@ function PanelBody({ treeData, index, query, trail, setTrail, rootLabel, notFoun
 
 /**
  * Ağaçtan değer seçme alanı: kapalıyken Input kutusu; dokununca BottomSheet'te
- * aşağı inen menü (kullanıcı kararı) — yol gösterimi, çocuklu satır içeri iner,
+ * aşağı inen menü — yol gösterimi, çocuklu satır içeri iner,
  * dalın kendisi seviyenin başındaki "(tümü)" satırıyla seçilir. Arama düz
  * sonuç listesi (yoluyla). Tekli seçim paneli kapatır; çoklu / onay kutulu
  * "Tamam" ile kapanır. Mantık web TreeSelect ile aynı (`treeUtils`).

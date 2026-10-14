@@ -38,13 +38,14 @@ function matchesAcceptToken(file: File, token: string): boolean {
   return candidates.has(ext) || candidates.has(EXTENSION_ALIASES[ext] ?? "");
 }
 
+/*
+ * eskiden yalnız TEK bir değer ve MIME alt türüyle karşılaştırma vardı —
+ * "image/*" (en yaygın değer) her dosyayı reddediyor ("*" ≠ "png"), ".jpg"
+ * MIME'daki "jpeg" ile eşleşmiyor, "image/png,image/jpeg" hiç çalışmıyordu.
+ */
 /**
  * `allowedType` native `accept` sözdizimini izler: virgülle ayrılmış MIME
  * türleri ("image/png"), joker ("image/*") ve uzantılar (".png" ya da "png").
- *
- * Faz 15: eskiden yalnız TEK bir değer ve MIME alt türüyle karşılaştırma vardı —
- * "image/*" (en yaygın değer) her dosyayı reddediyor ("*" ≠ "png"), ".jpg"
- * MIME'daki "jpeg" ile eşleşmiyor, "image/png,image/jpeg" hiç çalışmıyordu.
  */
 export function isFileValid({
   file,

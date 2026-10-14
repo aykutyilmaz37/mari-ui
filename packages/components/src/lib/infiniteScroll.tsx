@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 
 /**
- * Faz 16.3 — List ve Masonry'nin ortak sonsuz kaydırma sözleşmesi.
+ * List ve Masonry'nin ortak sonsuz kaydırma sözleşmesi.
  *
  * Erişilebilirlik: yalnız kaydırmaya bağlı yükleme klavye kullanıcısını
  * sayfa sonuna (alt bilgiye) hiç ulaştırmayabilir. Bu yüzden işaretçinin

@@ -21,11 +21,12 @@ function StatusIcon({ icon, color }: Readonly<{ icon: PopconfirmProps["icon"]; c
   return <Icon aria-hidden size={16} className={cn("mt-0.5 shrink-0", textClass[color])} />;
 }
 
-/**
- * Faz 16.2 — yapı ant.design Popconfirm'den: bir eylemin hemen yanında,
+/*
+ * yapı ant.design Popconfirm'den: bir eylemin hemen yanında,
  * sayfayı karartmadan "emin misiniz?" sorusu. Popover'ın üstüne kurulu
  * (konum, ok, odak, kapatma yolları ortak).
- *
+ */
+/**
  * Erişilebilirlik: panel `role="alertdialog"`, soru adı, açıklama
  * `aria-describedby`. Yıkıcı onayda (`error`/`warning`) ilk odak "Vazgeç"te —
  * Enter'a basan kullanıcı yanlışlıkla silmesin; diğerlerinde onay düğmesinde.

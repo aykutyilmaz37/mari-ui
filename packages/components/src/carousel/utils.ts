@@ -7,9 +7,8 @@ import { bgSolidClass } from "../lib/colorClasses";
 // silindi; buraya bunun yerine gerçekten kullanılan, token'a bağlı renk
 // yardımcıları eklendi.
 
-/**
- * ant.design'ın gerçek Carousel'i (`getComputedStyle`, ant.design/components/
- * carousel) noktaları hiçbir zaman YUVARLAK göstermez — ikisi de (aktif/pasif)
+/*
+ * ant.design'ın gerçek Carousel'i noktaları hiçbir zaman YUVARLAK göstermez — ikisi de (aktif/pasif)
  * ince bir çubuk (ant'ta tam olarak 3px yükseklik); sadece genişlik farklı
  * (pasif 16px, aktif 24px). Eskiden pasif nokta yuvarlak (8x8), aktif nokta
  * kalın bir hap (24x8) oluyordu — ant'ın "hep aynı ince çubuk, sadece uzayan"

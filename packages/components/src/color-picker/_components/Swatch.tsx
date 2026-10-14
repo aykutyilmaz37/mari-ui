@@ -9,7 +9,7 @@ import { colorInfo } from "../utils";
 export const CHECKER_CLASS =
   "bg-[conic-gradient(var(--mari-color-border)_25%,var(--mari-color-surface)_0_50%,var(--mari-color-border)_0_75%,var(--mari-color-surface)_0)] bg-[length:0.5rem_0.5rem]";
 
-/** Renk yok: zemin + köşeden köşeye kırmızı çizgi (ant.design'ın "temizlendi" işareti). */
+/** Renk yok: zemin + köşeden köşeye kırmızı çizgi. */
 const EMPTY_CLASS = "bg-mari-surface bg-[linear-gradient(to_top_right,transparent_calc(50%-1px),var(--mari-color-error)_calc(50%-1px)_calc(50%+1px),transparent_calc(50%+1px))]";
 
 interface SwatchProps {

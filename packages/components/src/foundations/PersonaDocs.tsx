@@ -4,7 +4,7 @@ import { contrastRatio, type HexColor } from "@mari-ui/tokens";
 import { usePersonaTheme } from "./usePersonaTheme";
 
 /**
- * YALNIZ DOKÜMAN İÇİN (Faz 21) — Foundations MDX sayfalarının seçili kişiliğe
+ * YALNIZ DOKÜMAN İÇİN — Foundations MDX sayfalarının seçili kişiliğe
  * göre değişen parçaları. Değerler `@mari-ui/tokens`ın çözdüğü temadan okunur;
  * sayfadaki örnek çizimler zaten CSS değişkenlerinden boyanır.
  */

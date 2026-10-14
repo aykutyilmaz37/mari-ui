@@ -14,12 +14,13 @@ export type SearchInputProps = InputProps & {
   searchLabel?: string;
 };
 
-/**
- * Faz 15: `onSearch` eskiden YALNIZCA butona tıklanınca çağrılıyordu — Enter
+/*
+ * `onSearch` eskiden YALNIZCA butona tıklanınca çağrılıyordu — Enter
  * sadece `onPressEnter`'ı tetikliyordu, klavyeyle arama yapan kullanıcı sonuç
  * alamıyordu. Butonun erişilebilir adı yoktu. Mobil klavyede Enter tuşu artık
  * "Ara" etiketli (`enterKeyHint="search"`).
  */
+/** Arama alanı: Enter ya da arama düğmesi `onSearch`ı çağırır; mobil klavyede Enter tuşu "Ara" olarak görünür. */
 export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   ({ icon, iconPosition = "end", onSearch, onPressEnter, loading = false, searchLabel = "Ara", ...rest }, ref) => {
     const inputRef = useRef<HTMLInputElement>(null);

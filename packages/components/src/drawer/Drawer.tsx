@@ -16,7 +16,7 @@ export type { DrawerProps };
 
 const EXIT_MS = 300;
 
-/**
+/*
  * Açılışta odak sırası: `[data-autofocus]` → gövdedeki ilk alan → Kapat →
  * panel. Başlıktaki `extra` aksiyonlarına ASLA ilk odak verilmez — Faz 13.6
  * incelemesinde yükleniyor durumunda açılan düzenleme çekmecesinde ilk odak
@@ -52,21 +52,20 @@ function getCustomSizeStyle(side: boolean, custom: boolean, width?: number | str
 }
 
 /**
- * Faz 13.6 — yapı ant.design Drawer'ından (başlık 16/24px dolgu + 16px/600,
- * gövde 24px, alt çubuk), görünüm kendi token'larımızdan; overlay davranışı
+ * ; overlay davranışı
  * `lib/overlay.ts`'te NavDrawer ile ortak.
  *
  * Eski sürümdeki sorunlar:
  * - `role="dialog"`/`aria-modal`/erişilebilir ad yoktu; odak içeri
- *   taşınmıyor, Tab sayfaya kaçıyor, Escape kapatmıyordu.
+ *  taşınmıyor, Tab sayfaya kaçıyor, Escape kapatmıyordu.
  * - Kapalıyken DOM'da kalıyordu (sadece opacity) — içindeki düğmeler Tab ile
- *   odaklanabiliyordu. Artık kapanış animasyonundan sonra unmount.
+ *  odaklanabiliyordu. Artık kapanış animasyonundan sonra unmount.
  * - Sayfa kaydırması kilitlenmiyordu; portal yoktu (overflow/transform'lu bir
- *   atanın içinde kırpılabiliyordu).
+ *  atanın içinde kırpılabiliyordu).
  * - Başlık ortalıydı; yan çekmece mobilde ekranı taşıyordu (`w-96` sabit).
  * - `loading` düz "Yükleniyor..." metniydi.
  *
- * Faz 15.6 — `skeleton` artık yalnız gövdeyi değil
+ * `skeleton` artık yalnız gövdeyi değil
  * başlık/açıklama/extra/alt çubuğu da iskelete çevirir; Kapat düğmesi canlı
  * kalır. Her bölge `ContentSkeleton` ile içeriğin kendi şeklinde (satır satır
  * metin, alan alan form, düğme düğme alt çubuk) iskelete döner; gerçek içerik

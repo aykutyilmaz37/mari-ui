@@ -18,7 +18,7 @@ export interface SelectOption {
   searchText?: string;
 }
 
-/** Başlıklı seçenek grubu (ant.design `OptGroup`). */
+/** Başlıklı seçenek grubu. */
 export interface SelectOptionGroup {
   label: React.ReactNode;
   options: SelectOption[];

@@ -46,12 +46,13 @@ function MoveButton({ direction, enabled, label, text, onMove, skeleton }: MoveB
   );
 }
 
-/**
- * Faz 16.4 — yapı ant.design Transfer'den: iki liste (kaynak/hedef) arasında
+/*
+ * yapı ant.design Transfer'den: iki liste (kaynak/hedef) arasında
  * işaretlenen öğeleri taşıma. Başlıkta tümünü seç + sayaç, isteğe bağlı arama
  * (Türkçe/aksansız), Shift ile aralık seçimi, `oneWay` (hedefte satır başına
  * "kaldır"), `render`/`footer`. Dar ekranda listeler alt alta.
- *
+ */
+/**
  * Erişilebilirlik: bileşen bir `group` (Field etiketi adıdır); her liste
  * başlığıyla adlandırılmış `section`, satırlar gerçek işaret kutuları. Taşıma
  * düğmelerinin adı eylemi söyler ("Seçilenleri Hedef listesine taşı"); taşıma

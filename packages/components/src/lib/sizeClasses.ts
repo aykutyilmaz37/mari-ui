@@ -9,7 +9,7 @@ import type { ExtendedSize } from "@mari-ui/core";
  * Neden: renk ekseni tema stüdyosunda ÇALIŞMA ZAMANINDA değişebilir
  * (kullanıcı primary/accent'i değiştirir) — bu yüzden renk CSS değişkeni
  * üzerinden akmalı. Boyut/radius skalası ise `mari-ui.config.json`'da
- * sadece bir PRESET seçimi (Faz 6'daki `density.radius`); rastgele bir
+ * sadece bir PRESET seçimi; rastgele bir
  * değere çekilebilir olması gerekmiyor. Bu ayrım, gereksiz yere ikinci bir
  * özel Tailwind namespace'i icat etmekten kaçınır.
  *
@@ -48,7 +48,7 @@ export const fontSizeClass: Record<ExtendedSize, string> = {
 };
 
 /**
- * Faz 15 — dokunmatik hedef. Varsayılan kontroller masaüstü yoğunluğunda
+ * Dokunmatik hedef. Varsayılan kontroller masaüstü yoğunluğunda
  * (md = 32px); parmakla kullanımda önerilen en az 44px. GÖRÜNÜMÜ DEĞİŞTİRMEDEN
  * yalnızca kaba işaretçili (dokunmatik) cihazlarda görünmez bir `::before`
  * katmanı tıklama alanını 44px'e tamamlar. Öğe `relative` olmalı.

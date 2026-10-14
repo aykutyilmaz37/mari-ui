@@ -10,15 +10,16 @@ export interface LoadingProps {
   tip?: React.ReactNode;
   /**
    * Spinner'ı bu kadar ms SONRA göster. Hızlı biten isteklerde yanıp sönmeyi
-   * önler (ant.design `delay`). Varsayılan: `0`.
+   * önler. Varsayılan: `0`.
    */
   delay?: number;
   /** Belirli ilerleme (0-100): dönen yay yerine dolan halka + yüzde. */
   percent?: number;
-  /**
+  /*
    * Tüm ekranı kaplayan örtü + ortada spinner (sayfa geçişi, hesap hazırlama).
    * Faz 13.6'dan önce `<Loading />` HER ZAMAN tam ekrandı; artık varsayılan satır içi.
    */
+  /** Tüm ekranı kaplayan örtü ve ortada gösterge (sayfa geçişi, uzun hazırlık). Varsayılan: satır içi. */
   fullscreen?: boolean;
   /**
    * Verilirse sarmalama modu: içerik yerinde kalır (düzen kaymaz), yüklenirken

@@ -37,12 +37,13 @@ export function floatButtonClass({ color, shape, joined, hasDescription }: { col
   );
 }
 
-/**
- * Faz 16.6 — yapı ant.design FloatButton'dan: sayfanın köşesinde sabit,
+/*
+ * yapı ant.design FloatButton'dan: sayfanın köşesinde sabit,
  * içerikten bağımsız eylem düğmesi (yardım, sohbet, yeni oluştur). İkon +
  * (kare şekilde) kısa açıklama, ipucu, rozet, bağlantı. Grup içinde konumu
  * grup belirler.
- *
+ */
+/**
  * Erişilebilirlik: gerçek `<button>`/`<a>`; ikon-yalnız düğmede ad
  * `aria-label` ya da `tooltip` (düz metinse) — ipucu tek başına ad değildir,
  * metni ada da yazılır. Dokunmatikte 44px hedef. Sayfanın içeriğini örtmemesi
@@ -75,12 +76,13 @@ function FloatControl({ href, target, label, onClick, className, children }: Rea
   );
 }
 
-/**
- * Faz 16.6 — yapı ant.design FloatButton'dan: sayfanın köşesinde sabit,
+/*
+ * yapı ant.design FloatButton'dan: sayfanın köşesinde sabit,
  * içerikten bağımsız eylem düğmesi (yardım, sohbet, yeni oluştur). İkon +
  * (kare şekilde) kısa açıklama, ipucu, rozet, bağlantı. Grup içinde konumu
  * grup belirler.
- *
+ */
+/**
  * Erişilebilirlik: gerçek `<button>`/`<a>`; ikon-yalnız düğmede ad
  * `aria-label` ya da `tooltip` (düz metinse) — ipucu tek başına ad değildir,
  * metni ada da yazılır. Dokunmatikte 44px hedef. Sayfanın içeriğini örtmemesi

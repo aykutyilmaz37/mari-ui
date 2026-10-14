@@ -14,7 +14,7 @@ export interface CardProps extends SkeletonableProps {
   cover?: ReactNode;
   footer?: ReactNode;
   /**
-   * Kartın en altında eşit bölünmüş aksiyon çubuğu (ant.design `actions`):
+   * Kartın en altında eşit bölünmüş aksiyon çubuğu:
    * her öğe bir düğme/link olmalı. Ör. `[<Button …>Düzenle</Button>, …]`.
    */
   actions?: ReactNode[];

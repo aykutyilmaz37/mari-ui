@@ -61,7 +61,7 @@ export function Upload({
   // Native `accept` çıplak uzantıyı ("png") yok sayar — ".png"ye çevrilir.
   const acceptAttr = toAcceptAttribute(fileType);
 
-  /**
+  /*
    * Eskiden sadece `files?.[0]` alınıyordu — `max > 1` olsa bile "gözat"
    * butonuyla asla birden fazla dosya SEÇİLEMİYORDU (native input `multiple`
    * taşımadığı için OS diyaloğu da tek seçime kilitliydi). Sürükle-bırak

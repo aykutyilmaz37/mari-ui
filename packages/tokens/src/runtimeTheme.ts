@@ -7,7 +7,7 @@ import { deriveColorRole, type ColorShade, type SemanticColorRole, type ThemeMod
 import { darkTheme, lightTheme } from "./theme";
 
 /**
- * Faz 16.8 — son kullanıcı tema ayarları (ThemeCustomizer). `mari-ui.config.json`
+ * Son kullanıcı tema ayarları (ThemeCustomizer). `mari-ui.config.json`
  * (geliştiricinin derleme zamanı teması) ile KARIŞTIRILMAMALI: burada yalnızca
  * çalışma zamanında, kullanıcının kendi seçtiği üç eksen var — mod, vurgu rengi
  * (`primary` rampası) ve boşluk yoğunluğu. Config'teki `density` alanı bugün
@@ -45,7 +45,7 @@ const shadeOrder: ColorShade[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 90
 const PREFERRED_PRIMARY_SHADE: Record<ThemeMode, ColorShade> = { light: 600, dark: 400 };
 
 /**
- * Otomatik kontrast düzeltmesi (kullanıcı kararı: "uyarma, düzelt"). Dolgu
+ * Otomatik kontrast düzeltmesi. Dolgu
  * üstü metin zaten `deriveColorRole`de her renkte AA'yı geçiyor (beyaz / koyu
  * mürekkep / siyah arasından seçilir); eksik kalan, dolgunun KENDİSİNİN sayfa
  * zeminine karşı görünürlüğü (WCAG 1.4.11, ≥3:1) — açık sarı/yeşil/camgöbeği

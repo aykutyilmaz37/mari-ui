@@ -25,7 +25,7 @@ export function getDotSizeClasses(size: Size): string {
  * `color` verilmediyse dinlenme halindeki (seçilmemiş) kenarlık nötr/gri
  * (`border-mari-input`) — sadece seçilince rol rengine bürünür.
  *
- * Faz 15: `solid` varyantında dolgu `checked:` önekisizdi — SEÇİLMEMİŞ radio
+ * `solid` varyantında dolgu `checked:` önekisizdi — SEÇİLMEMİŞ radio
  * da tamamen dolu çiziliyor, bir grupta hepsi seçili görünüyordu. Açıkça
  * verilen renk (doğrulama) ve seçili halka rol renginde (açık `-border` tonu <3:1).
  */

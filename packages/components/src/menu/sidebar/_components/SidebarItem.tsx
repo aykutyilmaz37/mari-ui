@@ -147,7 +147,7 @@ function RowSlot({ props, level, children }: Readonly<{ props: SidebarItemProps;
   );
 }
 
-/**
+/*
  * `dropdown` modu: satırın kendisi tetikleyici — panel TAM o satırın yanında
  * açılır (eskiden tetikleyicisiz bir Dropdown'ın satırın ALTINA düşen sıfır
  * yükseklikli çıpasına hizalanıyordu). İçerik BasicMenu'nün alt menü paneliyle aynı.
@@ -178,7 +178,7 @@ function SidebarDropdownItem(props: Readonly<SidebarItemProps>) {
   );
 }
 
-/**
+/*
  * Sidebar satırı. Yapı modern yan menülerden (Linear/Vercel/GitHub): sabit
  * 20px ikon yuvası + etiket + sağa yaslı chevron; aktif yaprak = rol renginin
  * `-subtle` zemini + rengin kendisi, aktif yaprağı İÇEREN üst öğe = sadece
@@ -197,7 +197,7 @@ export function SidebarItem(props: Readonly<SidebarItemProps>) {
 }
 
 /**
- * `mega` modunun kök satırı. Faz 15.5: panel artık ODAKLA açılmıyor (Tab ile
+ * `mega` modunun kök satırı. panel artık ODAKLA açılmıyor (Tab ile
  * gezerken her satırda panel açılıyordu) — fareyle üzerine gelince, ya da
  * Enter/Boşluk/→ (sağdaki sidebar'da ←) ile açılır ve odak panele taşınır.
  * Çocuksuz satır gerçek bir link.

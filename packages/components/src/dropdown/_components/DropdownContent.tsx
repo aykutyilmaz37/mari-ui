@@ -17,7 +17,7 @@ import { getFocusable } from "../utils";
  * değil, panel AÇIK KALDIĞI SÜRECE her karede yeniden hesaplanır: içerik
  * asenkron yüklenip sayfa düzenini geç kaydırdığında ölçüm eskimesin. Hesabın
  * kendisi (yön, hiza, flip, kelepçeleme, ok) `computePanelPosition`da —
- * floating-ui gibi bir kütüphaneye geçilmedi (bkz. plan: "floating-ui kapsam dışı").
+ * floating-ui gibi bir kütüphaneye geçilmedi.
  *
  * Yükseklik, foundations/Elevation'daki kurala göre `elevationClass.md`
  * (Dropdown/popover için `shadow-mari-md` + ince `border-mari-border`);

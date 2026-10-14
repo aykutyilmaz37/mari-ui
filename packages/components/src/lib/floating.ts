@@ -1,6 +1,6 @@
 import type { Placement } from "@mari-ui/core";
 
-/**
+/*
  * Yüzen paneller (Dropdown, Tooltip) için ortak konumlandırma — Faz 15'te
  * `dropdown/utils.ts`'ten taşındı; Tooltip'in kendi 4-yönlü, kıstırmasız
  * hesabının yerini aldı (mobilde ekrandan taşıyordu).
@@ -24,9 +24,9 @@ export interface Box {
 }
 
 export interface ArrowOptions {
-  /** Okun ORTASININ panelin hizalandığı kenardan uzaklığı (ant.design: 12px kenar boşluğu + 8px yarım genişlik). */
+  /** Okun ORTASININ panelin hizalandığı kenardan uzaklığı. */
   inset: number;
-  /** `true`: panel, okun ortası TETİKLEYİCİNİN ortasına gelecek şekilde kayar (ant.design `arrow.pointAtCenter`). */
+  /** `true`: panel, okun ortası TETİKLEYİCİNİN ortasına gelecek şekilde kayar. */
   pointAtCenter: boolean;
 }
 

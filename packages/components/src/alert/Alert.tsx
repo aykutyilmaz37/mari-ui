@@ -43,7 +43,6 @@ function renderIcon(icon: AlertProps["icon"], color: ColorRole): React.ReactNode
 }
 
 /**
- * Faz 16.2 — yapı ant.design Alert'ten, görünüm kendi token'larımızdan
  * (tonlu zemin + rol renginde ince kenarlık ve ikon; metin gövde renginde —
  * renkli uzun metin okunmaz). Eylem sağda, dar ekranda metnin altına iner.
  *

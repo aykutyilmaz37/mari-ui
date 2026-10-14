@@ -32,17 +32,18 @@ interface Position {
   arrowOffset: number;
 }
 
-/**
+/*
  * Faz 15 (yeniden yazım):
  * - Konum `lib/floating`'deki `computePanelPosition` ile (Dropdown'la ORTAK):
- *   12 yerleşim, yer yoksa karşı yöne döner, ekran içinde kıstırılır. Eskiden
- *   4 sabit yön + kıstırma yoktu: mobilde 672px'e kadar genişleyen balon
- *   ekrandan taşıyor, üstteki bir tetikleyicide ekranın dışına çıkıyordu.
+ *  12 yerleşim, yer yoksa karşı yöne döner, ekran içinde kıstırılır. Eskiden
+ *  4 sabit yön + kıstırma yoktu: mobilde 672px'e kadar genişleyen balon
+ *  ekrandan taşıyor, üstteki bir tetikleyicide ekranın dışına çıkıyordu.
  * - Balonun ÜZERİNE gelinebilir (WCAG 1.4.13): fare tetikleyiciden balona
- *   geçerken kapanmaz; kısa bir kapanma gecikmesi aradaki boşluğu köprüler.
+ *  geçerken kapanmaz; kısa bir kapanma gecikmesi aradaki boşluğu köprüler.
  * - Fareyle açılış `openDelay` kadar gecikir (üzerinden geçerken titremesin);
- *   odakla açılış anlık.
- *
+ *  odakla açılış anlık.
+ */
+/**
  * Önceki kararlar korunur: `document.body`'e portal + `fixed` (kaydırılabilir
  * kapsayıcıda kırpılmaz), `role="tooltip"` + tetikleyiciye `aria-describedby`,
  * Escape kapatır, sarmalayıcı `self-start` (flex'te gerilmesin).

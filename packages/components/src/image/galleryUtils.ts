@@ -1,5 +1,5 @@
 /**
- * Faz 16.7 — ImageGallery'nin saf mantığı: tarihe göre bölümleme, sütun
+ * ImageGallery'nin saf mantığı: tarihe göre bölümleme, sütun
  * sayısı, sanal yerleşim (satır konumları), görünür aralık ve ızgara tuşları.
  * DOM'a dokunmaz → test edilebilir.
  */

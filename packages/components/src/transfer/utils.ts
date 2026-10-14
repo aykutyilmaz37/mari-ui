@@ -1,9 +1,7 @@
 import { foldForSearch } from "../autocomplete/utils";
 import type { TransferDirection, TransferItem } from "./types";
 
-/**
- * Faz 16.4 — Transfer'in saf mantığı (bileşenden bağımsız test edilir).
- */
+/** Transfer'in saf mantığı (bileşenden bağımsız test edilir). */
 
 /** Sol: hedefte olmayanlar (dataSource sırası). Sağ: hedef anahtarlarının sırası (dataSource'ta olmayan anahtar düşer). */
 export function splitLists(dataSource: readonly TransferItem[], targetKeys: readonly string[]) {

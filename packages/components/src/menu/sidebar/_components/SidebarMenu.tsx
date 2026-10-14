@@ -10,13 +10,14 @@ export interface SidebarMenuProps extends Omit<SidebarItemProps, "item" | "reser
   className?: string;
 }
 
-/**
- * Bir seviyenin listesi. `heading: true` öğeler etkileşimsiz bölüm
- * etiketleri — ray daraltılmışken yazı yerine ince bir ayraç olurlar.
- *
+/*
  * Aktif anahtar artık `Sidebar`da TEK yerde tutuluyor: eskiden her iç içe
  * `SidebarMenu` kendi `activeKey` state'ini tutuyordu, iç seviyede bir öğeye
  * tıklamak üst öğenin "aktif grup" rengini hiç güncellemiyordu.
+ */
+/**
+ * Bir seviyenin listesi. `heading: true` öğeler etkileşimsiz bölüm
+ * etiketleri — ray daraltılmışken yazı yerine ince bir ayraç olurlar.
  */
 export function SidebarMenu({ data, className, ...itemProps }: Readonly<SidebarMenuProps>) {
   const reserveIconSlot = data.some((item) => item.icon && !item.heading);

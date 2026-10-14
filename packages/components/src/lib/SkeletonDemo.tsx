@@ -6,7 +6,7 @@ import { Segmented } from "../segmented";
 /**
  * YALNIZ STORY'LER İÇİN — her bileşenin "İskelet" story'si aynı düzende:
  * üstte İskelet / Yüklendi geçişi, altta bileşen. İki hal arasında geçince
- * yerleşimin kaymadığı görülür (Faz 15 sözleşmesi). Paket girişlerinden
+ * yerleşimin kaymadığı görülür. Paket girişlerinden
  * import edilmez.
  */
 export function SkeletonDemo({ children, className }: Readonly<{ children: (skeleton: boolean) => React.ReactNode; className?: string }>) {

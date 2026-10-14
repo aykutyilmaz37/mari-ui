@@ -1,5 +1,5 @@
 /**
- * Faz 16.1 — InputNumber'ın saf sayı mantığı (DOM'suz, ayrıca test edilir).
+ * InputNumber'ın saf sayı mantığı (DOM'suz, ayrıca test edilir).
  *
  * Neden `type="number"` değil: tarayıcı Türkçe ondalık virgülü ve binlik
  * ayıracını (1.234,56) göstermez/kabul etmez, min/max'ı yazarken sınırlamaz,

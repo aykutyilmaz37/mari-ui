@@ -2,18 +2,18 @@ import { personas, type PersonaName, type Theme } from "@mari-ui/tokens";
 import type { Manifest } from "./manifest";
 import { SKILL_GUIDE, formatMustRules } from "./skillGuide";
 
-/**
+/*
  * Faz 7'nin tek içerik kaynağı: `manifest.json` (component envanteri + prop
  * sözleşmesi + eksenler, hepsi introspect edilmiş) ve çözümlenmiş tema
  * (kullanıcının GERÇEK renkleri — varsayılan veya `mari-ui.config.json`).
  * Bu string BEŞ ARACIN da (Claude/Codex/Cursor/Gemini/Copilot) dosyasına
  * (bazen aynen, bazen bir frontmatter'la sarmalanmış) gider — içerik burada
  * TEK yerde üretilir, her araç için ayrı ayrı yazılmaz.
- *
+ */
+/**
  * Anti-pattern'ler ve doğru/yanlış örnekler (aşağıdaki `ANTI_PATTERNS`)
  * bilinçli olarak ELLE yazılı: bunlar koddan türetilemeyen, bu projenin
- * GERÇEK geçmişinden gelen dersler (Faz 3'te fiilen bulunup düzeltilen
- * bug'lar — bkz. plan git log'u). Component envanteri/prop sözleşmesi/
+ * GERÇEK geçmişinden gelen dersler. Component envanteri/prop sözleşmesi/
  * eksenler ise TAMAMEN `manifest.json`dan gelir, elle tutulmaz.
  */
 
@@ -96,13 +96,13 @@ function formatThemeTokens(theme: Theme): string {
 export interface BuildRulesContentOptions {
   manifest: Manifest;
   theme: Theme;
-  /** Faz 21 — `mari-ui.config.json` `persona`; yoksa varsayılan kişilik (Yumuşak iris). */
+  /** `mari-ui.config.json` `persona`; yoksa varsayılan kişilik (Yumuşak iris). */
   persona?: PersonaName;
 }
 
 const firstFamily = (stack: string) => stack.split(",")[0]?.trim().replace(/^["']|["']$/g, "") ?? stack;
 
-/** Faz 21 — projenin tasarım kişiliği: AI düzeni ve tonu buna göre seçsin. */
+/** Projenin tasarım kişiliği: AI düzeni ve tonu buna göre seçsin. */
 function formatPersona(theme: Theme, persona: PersonaName | undefined): string {
   const head = persona
     ? `**${personas[persona].label}** (\`${persona}\`) — ${personas[persona].description}`
@@ -166,7 +166,7 @@ ${ANTI_PATTERNS.map((p) => `### ${p.title}\n\n- ❌ \`${p.wrong}\`\n- ✅ \`${p.
 }
 
 /**
- * Faz 17 — Claude skill'inin (`SKILL.md`) gövdesi: kısa kural içeriği +
+ * Claude skill'inin (`SKILL.md`) gövdesi: kısa kural içeriği +
  * ayrıntılı sayfa kurma rehberi. Diğer araçların dosyaları kısa kalır
  * (her istekte okunuyorlar); Claude skill'i yalnız ilgili işte yükler.
  */

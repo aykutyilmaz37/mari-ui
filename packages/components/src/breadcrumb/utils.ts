@@ -1,8 +1,8 @@
 import { cn } from "@mari-ui/core";
 import { touchTargetClass } from "../lib/sizeClasses";
 
-/**
- * Faz 15.5 — yapı ant.design Breadcrumb'dan (ölçüldü): 14px / 22px satır,
+/*
+ * yapı ant.design Breadcrumb'dan (ölçüldü): 14px / 22px satır,
  * öğeler arası 8px ayırıcı boşluğu, bağlantılar soluk, son öğe (geçerli sayfa)
  * ön plan renginde; bağlantı hover'da 4px yarıçaplı hafif bir zemin alır
  * (`px-1 -mx-1`: zemin metnin iki yanına taşar, hizalama bozulmaz). Uzun

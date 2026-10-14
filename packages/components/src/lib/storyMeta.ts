@@ -1,14 +1,15 @@
-/**
+/*
  * Faz 13 (madde 18 — tasarım geçişi): Storybook düzeni ant.design/components
  * yapısına oturtuldu. Her component sayfası aynı iskelete sahip olsun diye
  * bu iki helper kullanılır:
- *
- *  - `componentDoc({...})` → autodocs sayfasının component açıklaması:
- *    özet + **Ne Zaman Kullanılır** / **Ne Zaman Kullanılmaz** madde listeleri
- *    (ant'ın "When To Use" bölümü) + **Erişilebilirlik** notu. Tek markdown
- *    string döndürür; `parameters.docs.description.component`'e verilir.
+ */
+/**
+ * `componentDoc({...})` → autodocs sayfasının component açıklaması:
+ *  özet + **Ne Zaman Kullanılır** / **Ne Zaman Kullanılmaz** madde listeleri
+ *  (ant'ın "When To Use" bölümü) + **Erişilebilirlik** notu. Tek markdown
+ *  string döndürür; `parameters.docs.description.component`'e verilir.
  *  - `storyDoc("...")` → tek bir story'nin autodocs açıklaması (ant'ın her
- *    demo'sunun altındaki paragraf).
+ *  demo'sunun altındaki paragraf).
  *
  * NEDEN helper bir `Meta` OBJESİ değil de string döndürüyor: Storybook'un
  * statik CSF indeksleyicisi `export default`'un başlatıcısının bir
@@ -51,7 +52,7 @@ function bulletList(heading: string, items?: string[]): string {
   return `\n\n### ${heading}\n\n${bullets}`;
 }
 
-/** ant düzeninde bir component autodocs açıklaması üretir. */
+/** Ant düzeninde bir component autodocs açıklaması üretir. */
 export function componentDoc(input: ComponentDocInput): string {
   return (
     input.summary +
@@ -62,7 +63,7 @@ export function componentDoc(input: ComponentDocInput): string {
 }
 
 /**
- * Faz 21 — Playground gibi argümanla değişen story'ler için kodu argümandan üreten
+ * Playground gibi argümanla değişen story'ler için kodu argümandan üreten
  * fonksiyon. Storybook'un kendi JSX dökümü ref'leri `[Circular]`, ikon/loader gibi
  * fonksiyonları `() => {}` diye basıyordu; bu fonksiyon `source.transform`a bağlanır,
  * kod o anki argümanlarla temiz yazılır.
@@ -123,7 +124,7 @@ export function storyDoc(
   };
 }
 
-/**
+/*
  * Faz 13.5 kullanıcı bulgusu: bir story `render: () => <HelperComponent />`
  * gibi harici, adlandırılmış bir yardımcı component'e yönlendirirse,
  * Storybook'un "Show code" paneli JSX'i statik olarak açamayıp ham CSF story

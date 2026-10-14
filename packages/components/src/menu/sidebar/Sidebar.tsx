@@ -31,9 +31,10 @@ export interface SidebarProps extends MenuNavigationProps, MenuColorProps, Skele
   dropdown?: boolean;
   /** Alt öğeler sidebar'ın yanında tam yükseklikte bir mega panelde. */
   mega?: boolean;
-  /** Eskiden varsayılan değeri hardcoded `/images/fb.png` idi — bir
-   * kütüphanenin varsayılanı olarak marka varlığı barındırmak yanlıştı
-   * (bkz. plan denetimi). Artık verilmezse hiç logo render edilmez. */
+  /*
+   * Eskiden varsayılan değeri hardcoded `/images/fb.png` idi — bir
+   * kütüphanenin varsayılanı olarak marka varlığı barındırmak yanlıştı. Artık verilmezse hiç logo render edilmez.
+   */
   logo?: React.ReactNode;
   /** Verilirse logo bu adrese giden gerçek bir link olur (genelde `"/"`). */
   logoHref?: string;
@@ -59,22 +60,23 @@ const RAIL_OPEN_DELAY_MS = 80;
 const RAIL_CLOSE_DELAY_MS = 250;
 const MEGA_CLOSE_DELAY_MS = 200;
 
+/*
+ * Kullanıcı bulguları (2026-09-25) ve karşılıkları:
+ * - Daraltılmış rayda etiketler yarım harf olarak kesiliyordu → etiketler
+ *  soluyor, ikonlar 64px rayda ortalı; ikonu olmayan öğe baş harfiyle.
+ * - Hover genişlemesi fare üzerinden geçer geçmez tetikleniyor ve 500ms
+ *  sürüyordu → kısa bir açılma gecikmesi + gecikmeli kapanma (hover-intent),
+ *  200ms geçiş; klavye odağı da rayı genişletiyor (eskiden Tab'la gezen
+ *  kullanıcı kesik bir ray görüyordu).
+ * - `dropdown` paneli hover edilen satıra hizalı değildi → satırın kendisi
+ *  tetikleyici. `mega` 2 seviyeli veride anlamsız bir "chip" şeridi
+ *  gösteriyordu → düz veride açıklamalı satırlar, 3 seviyede ray + kolonlar.
+ * - Amazon örneği → `variant="drawer"` (bkz. `NavDrawer`).
+ */
 /**
  * Dikey gezinme menüsü.
  *
- * Kullanıcı bulguları (2026-09-25) ve karşılıkları:
- * - Daraltılmış rayda etiketler yarım harf olarak kesiliyordu → etiketler
- *   soluyor, ikonlar 64px rayda ortalı; ikonu olmayan öğe baş harfiyle.
- * - Hover genişlemesi fare üzerinden geçer geçmez tetikleniyor ve 500ms
- *   sürüyordu → kısa bir açılma gecikmesi + gecikmeli kapanma (hover-intent),
- *   200ms geçiş; klavye odağı da rayı genişletiyor (eskiden Tab'la gezen
- *   kullanıcı kesik bir ray görüyordu).
- * - `dropdown` paneli hover edilen satıra hizalı değildi → satırın kendisi
- *   tetikleyici. `mega` 2 seviyeli veride anlamsız bir "chip" şeridi
- *   gösteriyordu → düz veride açıklamalı satırlar, 3 seviyede ray + kolonlar.
- * - Amazon örneği → `variant="drawer"` (bkz. `NavDrawer`).
- *
- * Faz 15.5: yaprak satırlar gerçek link (`MenuLink`: `target`/`reloadDocument`,
+ * Yaprak satırlar gerçek link (`MenuLink`: `target`/`reloadDocument`,
  * `onNavigate` yalnız düz sol tıkı yakalar). Satırlar arasında ↑/↓/Home/End/harf.
  * `mega` paneli odakla açılmıyor (Tab ile gezerken her satırda açılıyordu):
  * hover ya da Enter/Boşluk/→ açar ve odağı panele taşır; panelde ok tuşları,

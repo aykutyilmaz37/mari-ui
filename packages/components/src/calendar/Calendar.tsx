@@ -21,11 +21,16 @@ function yearOptions(year: number, range?: [Date, Date]) {
   return Array.from({ length: to - from + 1 }, (_, i) => ({ value: from + i, label: String(from + i) }));
 }
 
-/**
- * Faz 16.5 — yapı ant.design Calendar'dan: başlıkta yıl + ay seçici ve
+/*
+ * yapı ant.design Calendar'dan: başlıkta yıl + ay seçici ve
  * Ay/Yıl modu; `fullscreen` (varsayılan) büyük hücreler ve `cellRender`
  * içeriği (etkinlik takvimi), `fullscreen={false}` kompakt kart. Gün
  * ızgarası DatePicker ile ortak (APG date grid, klavye).
+ */
+/**
+ * Ay ya da yıl görünümlü takvim; başlıkta yıl ve ay seçici. `fullscreen` (varsayılan) büyük
+ * hücreli etkinlik takvimi (`cellRender`), `fullscreen={false}` kompakt kart. Gün
+ * ızgarasında klavyeyle gezinilir.
  */
 export function Calendar({
   value,
@@ -60,7 +65,9 @@ export function Calendar({
   const isDisabled = disabledChecker(validRange, disabledDate);
   const long = monthNames(locale, "long");
 
-  /** Gezinme (yıl/ay seçici, ay dışına klavye) değeri de taşır — ant.design davranışı. */
+  /*
+   * Gezinme (yıl/ay seçici, ay dışına klavye) değeri de taşır — ant.design davranışı.
+   */
   const navigate = (next: Date, nextMode: CalendarMode = mode) => {
     setView(next);
     onPanelChange?.(next, nextMode);

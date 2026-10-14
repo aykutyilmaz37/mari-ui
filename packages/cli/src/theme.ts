@@ -21,7 +21,7 @@ export interface ThemeCommandResult {
   themeTsContent: string;
   /** `check: true` iken: iki dosyadan en az biri bayatsa `true`. */
   stale?: boolean;
-  /** Faz 21 — config'te kişilik varsa fontlarının Google Fonts adresi (CSS'e eklenmez; uygulama bilerek yükler). */
+  /** Config'te kişilik varsa fontlarının Google Fonts adresi (CSS'e eklenmez; uygulama bilerek yükler). */
   fontsUrl?: string;
 }
 
@@ -43,17 +43,18 @@ function buildThemeTsContent(resolved: ReturnType<typeof resolveThemeConfig>): s
   ].join("\n");
 }
 
+/*
+ * Faz 10 (backlog madde 10 — 3. tema desteği): `config.themes`teki HER ek
+ * isimli tema de (varsa) aynı CSS çıktısına `[data-theme="<isim>"]` olarak
+ * eklenir — tüketici `mari-ui.config.json`a bir `themes.brand` girdisi
+ * eklemesi yeterli, CLI'ı ayrıca çağırmasına gerek yok.
+ */
 /**
  * `mari-ui.config.json`ı gerçek CSS'e (web) ve bir TS token objesine
  * (native/başka platformlar) çözer. `resolveThemeConfig`/`buildPlainThemeCss`
  * `@mari-ui/tokens`ın KENDİ build script'inin (`scripts/build-css.ts`, paketin
  * varsayılan teması için) kullandığı AYNI fonksiyonlardır — mantık burada
  * ikinci kez yazılmıyor (bkz. `packages/tokens/src/cssOutput.ts`teki not).
- *
- * Faz 10 (backlog madde 10 — 3. tema desteği): `config.themes`teki HER ek
- * isimli tema de (varsa) aynı CSS çıktısına `[data-theme="<isim>"]` olarak
- * eklenir — tüketici `mari-ui.config.json`a bir `themes.brand` girdisi
- * eklemesi yeterli, CLI'ı ayrıca çağırmasına gerek yok.
  */
 export function runThemeCommand(options: ThemeCommandOptions): ThemeCommandResult {
   const { targetDir, configPath, outDir = targetDir, check = false } = options;

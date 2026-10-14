@@ -1,13 +1,14 @@
-/**
+/*
  * Host projede Tailwind var mı, hangi sürüm — `init` doğru CSS kurulumunu buna
  * göre söyler (plan §23 madde 2, "Strateji B"):
- *
- * - **v4:** host'un kendi Tailwind'i mari-ui sınıflarını da derler —
- *   `@mari-ui/components/tailwind.css` import edilir, derlenmiş `styles.css` EDİLMEZ
- *   (ikisi birlikte aynı sınıfları ve preflight'ı iki kez yükler).
+ */
+/**
+ * **v4:** host'un kendi Tailwind'i mari-ui sınıflarını da derler —
+ *  `@mari-ui/components/tailwind.css` import edilir, derlenmiş `styles.css` EDİLMEZ
+ *  (ikisi birlikte aynı sınıfları ve preflight'ı iki kez yükler).
  * - **v3:** desteklenmez — tema dosyalarımız v4 söz dizimi (`@theme`, `@source`,
- *   `@utility`). Derlenmiş `styles.css` çalışır ama host'un v3 sınıflarıyla çakışır;
- *   önerilen yol Tailwind'in resmi yükseltme aracı.
+ *  `@utility`). Derlenmiş `styles.css` çalışır ama host'un v3 sınıflarıyla çakışır;
+ *  önerilen yol Tailwind'in resmi yükseltme aracı.
  * - **yok:** derlenmiş `@mari-ui/components/styles.css`.
  */
 export type TailwindSetup = "v4" | "v3" | "none";

@@ -142,13 +142,14 @@ function TriggerControl({ controlRef, comboboxProps, state, searchable, placehol
   );
 }
 
-/**
- * Faz 16.4 — yapı ant.design TreeSelect'ten: Select'in tetikleyicisi (boyut,
+/*
+ * yapı ant.design TreeSelect'ten: Select'in tetikleyicisi (boyut,
  * varyant, etiketler, arama, temizle — birebir aynı görünüm) + açılır panelde
  * ağaç. Saf mantık Tree ile ortak (`tree/utils`: indeks, görünür düğümler,
  * işaret yayılımı, Türkçe arama, APG tuşları). Modlar: tekli, `multiple`,
  * `checkable` (onay kutuları + `showCheckedStrategy`).
- *
+ */
+/**
  * Erişilebilirlik (APG combobox + tree popup): tetikleyici `role="combobox"`
  * `aria-haspopup="tree"`; odak HİÇ panele geçmez, aktif düğüm
  * `aria-activedescendant`. ↑/↓ gezinir, → açar/ilk çocuğa iner, ← kapatır/

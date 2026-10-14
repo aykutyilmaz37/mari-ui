@@ -46,7 +46,7 @@ export interface OtpInputProps extends SkeletonableProps {
 
 const WIDTH_CLASS: Record<Size, string> = { sm: "w-6 p-0", md: "w-8 p-0", lg: "w-10 p-0" };
 
-/** İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-conditional`). */
+/** İç içe ternary yerine ayrık fonksiyon. */
 function resolveDisplayValue(rawValue: string, formatter: ((val: string) => string) | undefined, mask: boolean): string {
   if (formatter) return formatter(rawValue);
   if (mask && rawValue) return "•";
@@ -93,7 +93,7 @@ export function OtpInput({
   };
 
   /**
-   * Faz 15: hücrelerde artık `maxLength=1` YOK — o, 6 haneli bir kodun
+   * Hücrelerde artık `maxLength=1` YOK — o, 6 haneli bir kodun
    * yapıştırılmasını VE iOS/Android'in SMS kodunu otomatik doldurmasını
    * (`autocomplete="one-time-code"`, kodun tamamını ilk hücreye yazar) tek
    * haneye kırpıyordu. Uzun giriş buradan hücrelere dağıtılır; dolu bir

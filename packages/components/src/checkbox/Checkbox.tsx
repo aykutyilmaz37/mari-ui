@@ -11,7 +11,7 @@ import { getCheckIconClass, getIndeterminateSizeClasses, getShapeClasses, getSiz
 
 export type { CheckboxProps };
 
-/**
+/*
  * `useControllableState` ile controlled/uncontrolled ayrımı artık burada
  * elle yazılmıyor (eskiden `useState(defaultChecked ?? checked ?? false)`
  * ile başlatılıp `checked={typeof checked === "boolean" ? checked :

@@ -2,7 +2,7 @@ import { MOTION_FACTOR, SHADOW_DENSITY_FACTOR, type Theme } from "@mari-ui/token
 import type { ViewStyle } from "react-native";
 
 /**
- * Faz 21 — kişiliğin hareket seviyesi (`theme.effects.motion`). Geçiş
+ * Kişiliğin hareket seviyesi (`theme.effects.motion`). Geçiş
  * animasyonlarının ms değerini çarpanla ölçekler (`off` = 0, `calm` = 1.4,
  * `lively` = 0.85). Yükleme göstergeleri, sayaçlar ve sürükleme fiziği bunu
  * KULLANMAZ — onlar işlev, kişilik değil. "Hareketi azalt" ayrıca geçerli.
@@ -20,7 +20,7 @@ export interface ShadowSpec {
 }
 
 /**
- * Faz 21 — kişiliğin gölge yoğunluğu (`theme.effects.shadow`). Web'deki gibi
+ * Kişiliğin gölge yoğunluğu (`theme.effects.shadow`). Web'deki gibi
  * geometri sabit, opaklık ölçeklenir; `none`da gölge ve Android elevation
  * tamamen kalkar (yüzey kenarlığıyla ayrışır).
  */

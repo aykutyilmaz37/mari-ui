@@ -34,7 +34,7 @@ export interface SparklineProps extends SkeletonableProps {
 }
 
 /**
- * Faz 16.9 — eksensiz mini çizgi. Statistic kartlarında, tablo hücrelerinde
+ * Eksensiz mini çizgi. Statistic kartlarında, tablo hücrelerinde
  * eğilimi göstermek için. Değer okutmaz (değeri yanındaki sayı taşır); ekseni,
  * tooltip'i yoktur.
  */

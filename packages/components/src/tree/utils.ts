@@ -1,7 +1,7 @@
 import type { TreeCheckInfo, TreeNode } from "./types";
 
 /**
- * Faz 16.3 — Tree'nin saf mantığı (DOM/React yok). TreeSelect (16.4) aynı
+ * Tree'nin saf mantığı (DOM/React yok). TreeSelect (16.4) aynı
  * fonksiyonları kullanacak: indeks, görünür düğümler, işaret yayılımı, arama.
  */
 

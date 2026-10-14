@@ -10,7 +10,7 @@ export interface UploadDragDropButtonProps {
   disabled?: boolean;
 }
 
-/**
+/*
  * ant.design'ın sürükle-bırak alanıyla birebir karşılaştırıldı: büyük,
  * renkli bir "gelen kutusu" ikonu + kalın bir ana başlık + soluk bir
  * ikincil ipucu satırı. Eskiden küçük generik bir `UploadIcon` + tek satır

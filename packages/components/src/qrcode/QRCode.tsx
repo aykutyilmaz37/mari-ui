@@ -47,13 +47,14 @@ function StatusLayer({ status, onRefresh }: Readonly<{ status: Exclude<QRStatus,
   );
 }
 
-/**
- * Faz 16.3 — yapı ant.design QRCode'dan (değer, boyut, hata düzeltme, renk,
+/*
+ * yapı ant.design QRCode'dan (değer, boyut, hata düzeltme, renk,
  * ikon, kenarlık, durum katmanı: loading/expired/scanned + Yenile), çizim
  * kullanıcının `qr-code-generator` projesindeki renderer'dan (nokta stilleri,
  * köşe şekilleri, gradyan, logo). Tek bağımlılık `qrcode-generator` (MIT, sıfır
  * bağımlılık). Saf SVG → SSR'da da çizilir, her çözünürlükte keskin.
- *
+ */
+/**
  * Varsayılan renkler temadan bağımsız koyu-üstü-açık: bazı okuyucular ters
  * (açık-üstü-koyu) QR'ı çözemez. Erişilebilirlik: `role="img"` + ad; kodun
  * içeriğini (URL) görünür metin olarak da verin — görme engelli kullanıcı

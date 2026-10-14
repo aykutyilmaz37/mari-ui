@@ -20,7 +20,7 @@ const PLACEHOLDER = (
 );
 
 /**
- * Faz 13.6 — eski sürümdeki sorunlar:
+ * Eski sürümdeki sorunlar:
  * - Kapat "düğmesi" `onClick`li bir SVG'ydi: klavyeyle ulaşılamıyor, adı yoktu.
  * - Başlık `<h1>`, açıklama `<h6>`dı — sayfanın başlık hiyerarşisini bozuyordu.
  * - 5 sn sabit süre, üzerine gelince/odaklanınca DURMUYORDU (WCAG 2.2.1).
@@ -29,7 +29,7 @@ const PLACEHOLDER = (
  * Duyuru Provider'daki kalıcı canlı bölgeden yapılır (bkz. useToast.tsx) —
  * bu kart sadece görsel + etkileşimli kısım.
  *
- * Faz 15.6 — `skeleton` (ikon/başlık/açıklama/aksiyon `ContentSkeleton`,
+ * `skeleton` (ikon/başlık/açıklama/aksiyon `ContentSkeleton`,
  * Kapat canlı, sayaç durur); Kapat (28px) ve aksiyon bağlantısı (20px)
  * dokunmatikte 44px hedef.
  */

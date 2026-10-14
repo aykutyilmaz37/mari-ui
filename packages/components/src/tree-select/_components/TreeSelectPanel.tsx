@@ -92,7 +92,7 @@ function Row({ entry, state, treeId, treeLine, titleRender }: Readonly<{ entry: 
 }
 
 /**
- * Faz 16.4 — TreeSelect paneli: `document.body`'ye portal, konum
+ * TreeSelect paneli: `document.body`'ye portal, konum
  * `useFloatingPosition` (Select ile ortak), genişlik en az tetikleyicininki.
  * Satır görünümü Tree'nin parçalarıyla (girinti, açma oku, onay kutusu, arama
  * vurgusu). Panelde `mousedown` engellenir — tıklamak combobox'un odağını

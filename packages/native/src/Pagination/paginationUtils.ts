@@ -18,11 +18,10 @@ export function clampPage(page: number, totalPages: number): number {
  * yol açıyordu:
  *
  * 1. Düğme sayısı sayfadan sayfaya DEĞİŞİYORDU (1. sayfada 5, 5. sayfada 9
- *    öğe) — tüm bileşenin genişliği her tıklamada zıplıyor, tıklanan
- *    düğmeler imlecin altından kayıyordu ("yeni sayfaya geçince tuhaf
- *    davranıyor" kullanıcı bulgusu).
+ *  öğe) — tüm bileşenin genişliği her tıklamada zıplıyor, tıklanan
+ *  düğmeler imlecin altından kayıyordu.
  * 2. "…" bazen TEK bir sayfayı gizliyordu (10 sayfada 5. sayfa: `1 … 3`) —
- *    o slota doğrudan "2" yazmak aynı yeri kaplar ve bir tıklama kazandırır.
+ *  o slota doğrudan "2" yazmak aynı yeri kaplar ve bir tıklama kazandırır.
  *
  * Yeni algoritma sabit sayıda slot üretir (`siblingCount * 2 + 5`): ilk ve
  * son sayfa her zaman görünür, aktif sayfanın iki yanında `siblingCount`
@@ -52,7 +51,7 @@ export function getPageItems(totalPages: number, currentPage: number, siblingCou
 }
 
 /**
- * Faz 15.5 — dar kapsayıcıda (375px telefon) sayfa listesi taşıyordu. Verilen
+ * Dar kapsayıcıda (375px telefon) sayfa listesi taşıyordu. Verilen
  * genişliğe sığan en büyük komşu sayısını (`maxSiblings`'ten 0'a) döner;
  * 0 komşu bile sığmıyorsa `-1` (→ `simple` görünüm). Slot sayısı
  * `getPageItems` ile aynı: `min(toplam, 2s+5)` + önceki/sonraki okları.
@@ -65,7 +64,7 @@ export function fitSiblingCount(available: number, slotWidth: number, gap: numbe
   return -1;
 }
 
-/** "…" düğmesinin kaç sayfa atlayacağı — görünür pencere genişliği kadar (ant.design ile aynı: varsayılan 5). */
+/** "…" düğmesinin kaç sayfa atlayacağı — görünür pencere genişliği kadar. */
 export function getJumpSize(siblingCount = 1): number {
   return Math.max(0, Math.trunc(siblingCount)) * 2 + 3;
 }
@@ -76,7 +75,7 @@ export function resolvePageClickTarget(page: PageItem, currentPage: number, tota
   return clampPage(page.direction === "left" ? currentPage - jump : currentPage + jump, totalPages);
 }
 
-/**
+/*
  * Sayfa boyutu değiştiğinde kullanıcının baktığı İLK kaydı görünür tutan
  * sayfayı bulur. Eskiden sayfa numarası olduğu gibi kalıyordu — 10/sayfa'da
  * 10. sayfadayken 100/sayfa'ya geçince "10. sayfa / 3 sayfa" gibi aralık

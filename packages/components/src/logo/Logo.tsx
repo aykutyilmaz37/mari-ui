@@ -10,7 +10,7 @@ export interface MariLogoProps extends Omit<SVGProps<SVGSVGElement>, "width" | "
 }
 
 /**
- * Faz 21 — işaret temanın `primary` rolünden boyanır (kişilik ve koyu tema ile değişir);
+ * İşaret temanın `primary` rolünden boyanır (kişilik ve koyu tema ile değişir);
  * değişken yoksa (tema CSS'i yüklenmemiş) varsayılan iris tonlarına düşer.
  */
 function IrisMark() {

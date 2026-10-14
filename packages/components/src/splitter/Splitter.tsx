@@ -29,13 +29,13 @@ export function SplitterPanel(props: Readonly<SplitterPanelProps>) {
 }
 
 /**
- * Bölünmüş görünüm (ant.design Splitter yapısı): paneller arasındaki
+ * Bölünmüş görünüm: paneller arasındaki
  * tutamaç sürüklenerek ya da klavyeyle boyut değiştirir. Liste + detay,
  * düzenleyici + önizleme gibi iş ekranları için.
  *
- * - Tutamaç APG "window splitter": `role="separator"`, odaklanır; ←/→ (dikeyde
- *   ↑/↓) 16px, Shift ile 64px; Home/End min/max; Enter daraltılabilir paneli
- *   kapatır/açar. Değer: önceki panelin yüzdesi.
+ * Tutamaç APG "window splitter": `role="separator"`, odaklanır; ←/→ (dikeyde
+ *  ↑/↓) 16px, Shift ile 64px; Home/End min/max; Enter daraltılabilir paneli
+ *  kapatır/açar. Değer: önceki panelin yüzdesi.
  * - Yalnız iki komşu panel değişir; min/max her zaman korunur.
  * - Mobil: `stackBelow` altında paneller alt alta, tutamaçlar gizli (saf CSS).
  * - `storageKey`: kullanıcının ayarladığı düzen hatırlanır.

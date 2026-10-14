@@ -3,7 +3,9 @@ import { CircleAlertIcon, CircleCheckIcon, CircleXIcon, InfoIcon } from "lucide-
 import { textClass } from "../lib/colorClasses";
 import type { ToastPosition, ToastType } from "./types";
 
-/** Durum ikonu rol renginde (eskiden içi dolu daire + kontrast renk — küçükte seçilmiyordu). */
+/*
+ * Durum ikonu rol renginde (eskiden içi dolu daire + kontrast renk — küçükte seçilmiyordu).
+ */
 export function getToastIcon(type: ToastType | undefined): React.ReactNode {
   const map = { error: CircleXIcon, success: CircleCheckIcon, warning: CircleAlertIcon, info: InfoIcon } as const;
   if (!type || !(type in map)) return null;

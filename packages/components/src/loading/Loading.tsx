@@ -9,19 +9,17 @@ import { clampPercent, SPINNER_SIZE, SPINNER_VIEWBOX, STROKE_WIDTH, strokeClass,
 export type { LoadingProps };
 
 /**
- * Faz 13.6 — yapı ant.design Spin'den, görünüm kendi token'larımızdan.
- *
  * Eski sürüm tek bir şey yapabiliyordu: `fixed inset-0` tam ekran bir spinner.
  * - Bir kartın/formun İÇİNDE kullanılamıyordu; örtü de yoktu — alttaki
- *   sayfa yükleme sırasında tıklanabiliyordu.
+ *  sayfa yükleme sırasında tıklanabiliyordu.
  * - `role="status"` yoktu (gizli "Yükleniyor..." metni hiç duyurulmuyordu);
- *   boyut, açıklama, gecikme yoktu.
+ *  boyut, açıklama, gecikme yoktu.
  *
  * Artık üç mod: satır içi (varsayılan), sarmalama (`children` — içerik yerinde
  * kalır, soluklaşır, `inert` olur; düzen kaymaz), tam ekran (`fullscreen`).
  * `delay` hızlı biten isteklerde yanıp sönmeyi önler; `percent` belirli ilerleme.
  *
- * Faz 15.6: spinner boyutu rem (px kök fontla ölçeklenmiyordu); `aria-valuenow`
+ * Spinner boyutu rem (px kök fontla ölçeklenmiyordu); `aria-valuenow`
  * da sınırlanır (percent=150 → 150/100 duyuruluyordu); tam ekran `document.body`'ye
  * portal edilir (transform'lu bir atanın içinde `fixed` ekranı kaplamıyordu);
  * mod başına ayrık bileşenler (sonar cognitive-complexity).

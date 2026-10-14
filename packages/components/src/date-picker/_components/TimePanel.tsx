@@ -16,8 +16,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
  * Tek sütun (saat, dakika ya da saniye): APG listbox, seçim odağı izler
- * (↑/↓, Home/End, PageUp/Down 5'er). Seçili değer sütunun en üstüne kayar
- * (ant.design gibi).
+ * (↑/↓, Home/End, PageUp/Down 5'er). Seçili değer sütunun en üstüne kayar.
  */
 function Column({ label, values, value, onChange, takeFocus }: Readonly<ColumnProps>) {
   const listRef = useRef<HTMLDivElement>(null);

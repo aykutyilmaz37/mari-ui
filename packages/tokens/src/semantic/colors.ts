@@ -32,7 +32,7 @@ export interface CanvasTokens {
   surface: string;
   surfaceAlt: string;
   border: string;
-  /**
+  /*
    * Form alanı (input/textarea/select) kenarlığı. `border`den bilinçli olarak
    * AYRI: koyu temada saf-siyaha yakın bir yüzeyde `border` neredeyse görünmez
    * kalıyordu ("input kayboldu" — Faz 13 audit). `input` her iki temada da
@@ -52,12 +52,12 @@ export interface CanvasTokens {
   muted: string;
   disabled: string;
   /**
-   * Puan yıldızı dolgusu (Faz 15, kullanıcı kararı): `warning`'den BAĞIMSIZ,
+   * Puan yıldızı dolgusu: `warning`'den BAĞIMSIZ,
    * parlak sarı. Sarı beyaz zeminde 3:1 veremeyeceği için yıldız ayrıca
    * `ratingStroke` konturu taşır — görünüm sarı, sınır erişilebilir.
    */
   rating: string;
-  /** Yıldız konturu — varsayılan olarak dolguyla aynı (kullanıcı kararı); temalar ayrı bir kontur verebilir. */
+  /** Yıldız konturu — varsayılan olarak dolguyla aynı; temalar ayrı bir kontur verebilir. */
   ratingStroke: string;
 }
 
@@ -73,7 +73,7 @@ export interface SemanticColorTokens {
 }
 
 const LIGHT_SURFACE = neutralRamp[50];
-/**
+/*
  * Puan yıldızı sarısı — rol paletinden bağımsız sabit. Kullanıcı kararı
  * (2026-09-28): kontur DOLGUYLA AYNI renk — koyu konturlu denemeler (#a16207,
  * #b28903) görsel olarak beğenilmedi. Bilinen ödünleşim: açık zeminde yıldızın

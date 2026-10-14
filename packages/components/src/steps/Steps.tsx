@@ -19,7 +19,6 @@ import {
 export type { StepsProps };
 
 /**
- * Faz 13.6 — yapı ant.design v6 Steps'ten, görünüm kendi token'larımızdan:
  * 32px (sm: 24px) daire gösterge, yatayda başlığın hemen yanından bir
  * sonraki adıma uzanan ince çizgi, dört durum (wait/process/finish/error),
  * filled/outlined, başlık-altı yerleşim, nokta, ilerleme halkası.
@@ -65,7 +64,7 @@ const skeletonTextClass = cn("rounded-sm text-transparent box-decoration-clone",
 const skeletonIndicatorClass = cn("border-transparent text-transparent [&_svg]:invisible", skeletonFill(true));
 
 /**
- * inline: başlık göstergenin yanında; stacked: altında ortalı; vertical:
+ * İnline: başlık göstergenin yanında; stacked: altında ortalı; vertical:
  * dikey liste; compact: dar ekranda sadece göstergeler + altta geçerli adımın
  * başlığı ("Adım 2/4 · Teslimat").
  */

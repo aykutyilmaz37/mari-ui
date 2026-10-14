@@ -6,7 +6,7 @@ import { getBaseClass, getLabelClass, getLabelMarginStyle, getLineClass } from "
 
 /**
  * Hook yok, browser API yok — saf sunum. Eski kodda gereksiz yere
- * `"use client"` taşıyordu (bkz. plan Faz 3 denetimi); kaldırıldı.
+ * `"use client"` taşıyordu; kaldırıldı.
  */
 export function Divider({
   children,

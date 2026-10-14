@@ -2,7 +2,7 @@ import { cn, type ColorRole, type Size } from "@mari-ui/core";
 import { bgSolidClass, bgSubtleClass, textClass, textSubtleContrastClass } from "../lib/colorClasses";
 import type { TabsOrientation, TabsVariant } from "./types";
 
-/**
+/*
  * Yapı ant.design Tabs'tan (çizgili: 12px dikey dolgu, 32px aralık, 2px
  * gösterge, 1px taban; kart: 8/16px dolgu, 2px aralık, üst köşeler 8px),
  * görünüm kendi token'larımızdan. Tüm class'lar literal — Tailwind tarayıcısı
@@ -44,7 +44,7 @@ export function getListClass(variant: TabsVariant, orientation: TabsOrientation,
   );
 }
 
-/**
+/*
  * Taban çizgisi dış kapsayıcıda `inset` gölge olarak çiziliyor (border değil):
  * inset gölge çocukların ALTINDA boyanır, böylece gösterge (line) ve aktif
  * kartın alt kenarı (card) çizginin ÜSTÜNE biner — ant.design ile aynı.

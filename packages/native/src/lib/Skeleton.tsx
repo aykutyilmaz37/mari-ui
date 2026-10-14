@@ -4,7 +4,7 @@ import { useTheme } from "../theme/useTheme";
 import { skeletonColor } from "../theme/skeletonColor";
 
 /**
- * Native `skeleton` sözleşmesi — web'deki (Faz 15) ile aynı: veri gelene kadar
+ * Native `skeleton` sözleşmesi — web'deki ile aynı: veri gelene kadar
  * component KENDİ geometrisinde (aynı yükseklik, köşe, genişlik) yer tutucu
  * çizer → yüklenince yerleşim kaymaz. Yer tutucu ekran okuyucudan gizlidir.
  * `loading` ≠ `skeleton`: `loading` süren bir EYLEM (Button spinner'ı),

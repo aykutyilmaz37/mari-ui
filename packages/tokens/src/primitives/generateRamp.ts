@@ -1,12 +1,13 @@
 import type { HexColor } from "../contrast";
 import type { ColorRamp } from "./ramps";
 
-/**
+/*
  * Faz 1'deki `primaryRamp`/`accentRamp` vb. ELLE seçilmiş, sabit rampalardı —
  * "modern mavi + turuncu" varsayılanı için yeterliydi ama Faz 6'nın tema
  * stüdyosu tüketicinin KENDİ seçtiği herhangi bir anchor rengi için tam bir
  * 11 tonluk rampa üretebilmeyi gerektiriyor. Bu dosya o üretici.
- *
+ */
+/**
  * Yöntem: anchor rengi HSL'e çevrilir ve DEĞİŞMEDEN `500` tonuna yerleştirilir
  * (kullanıcı "bu rengi seçtim" dediğinde tam olarak o rengi bir yerde
  * GÖRMELİ). Diğer tonlar aynı hue/saturation'ı koruyup lightness'ı sabit bir

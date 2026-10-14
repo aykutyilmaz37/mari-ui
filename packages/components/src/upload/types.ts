@@ -4,9 +4,10 @@ export type ListType = "list" | "review";
 export type InputType = "button" | "dragDrop" | "review";
 export type ReviewType = "square" | "circle";
 
-/** Bir dosyanın yükleme durumu — gerçek bir sunucu/`action` yok, bu yüzden
- * `uploading` → `done` geçişi simüle edilir (ant.design'ın kendi demo
- * sayfalarının da yaptığı gibi), ama UI bu durumu GERÇEKTEN render eder. */
+/**
+ * Bir dosyanın yükleme durumu — gerçek bir sunucu/`action` yok, bu yüzden
+ * `uploading` → `done` geçişi simüle edilir, ama UI bu durumu GERÇEKTEN render eder.
+ */
 export type UploadFileStatus = "uploading" | "done";
 
 export interface UploadFileItem {
@@ -23,11 +24,12 @@ export interface UploadProps extends SkeletonableProps {
   max?: number;
   listType?: ListType;
   reviewType?: ReviewType;
-  /**
+  /*
    * Liste her değiştiğinde (ekleme, silme, yükleme tamamlandı) çağrılır.
    * `files`: listedeki dosyalar; `items`: durum/ilerleme bilgisiyle.
    * Eskiden HİÇ yoktu — bileşen seçilen dosyaları tüketiciye veremiyordu.
    */
+  /** Liste değişince (ekleme ya da silme) çağrılır: seçilen dosyalar ve listenin güncel hali. */
   onChange?: (files: File[], items: UploadFileItem[]) => void;
   disabled?: boolean;
 }

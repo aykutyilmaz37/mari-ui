@@ -4,7 +4,10 @@ import type { SkeletonableProps } from "../lib/skeleton";
 
 export type PageItem = number | { type: "ellipsis"; direction: "left" | "right" };
 
-/** Aktif sayfa düğmesinin görünümü. `outline` ant.design'daki varsayılan yapıya karşılık gelir. */
+/*
+ * Aktif sayfa düğmesinin görünümü. `outline` ant.design'daki varsayılan yapıya karşılık gelir.
+ */
+/** Sayfa düğmelerinin görünümü. */
 export type PaginationVariant = "outline" | "soft" | "solid";
 
 export type PaginationAlign = "start" | "center" | "end" | "between";

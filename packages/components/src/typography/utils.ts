@@ -2,7 +2,7 @@ import { cn, type ColorRole } from "@mari-ui/core";
 import { textClass } from "../lib/colorClasses";
 import type { TextWeight, TitleLevel, TypographyEllipsis } from "./types";
 
-/**
+/*
  * Eskiden Typography'nin HİÇBİR varsayılan stili yoktu (font boyutu, ağırlık,
  * satır yüksekliği — hiçbiri). Bu, diğer component'lerin AŞIRI stillenmiş
  * olmasıyla tam ters bir dengesizlikti. Burada minimal ama tutarlı bir tip
@@ -45,8 +45,7 @@ export function getTitleClass(level: TitleLevel, color: ColorRole | undefined, c
 }
 
 /**
- * İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-
- * conditional`) — `getTextClass`/`getParagraphClass`teki BİREBİR AYNI
+ * İç içe ternary yerine ayrık fonksiyon — `getTextClass`/`getParagraphClass`teki BİREBİR AYNI
  * mantığı da tek yerde topluyor (ikisi ayrı ayrı yazıyordu).
  */
 function resolveMutedOrColorClass(muted: boolean | undefined, color: ColorRole | undefined): string {

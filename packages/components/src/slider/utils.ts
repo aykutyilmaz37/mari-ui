@@ -1,9 +1,6 @@
 import type { Size } from "@mari-ui/core";
 
-/**
- * Dikey slider'ın yüksekliği. Yatay slider kapsayıcının tam genişliğini alır
- * (Faz 13.6'ya kadar `size` yatay uzunluğu da 10/16/24rem'e sabitliyordu).
- */
+/** Dikey slider'ın yüksekliği. Yatay slider kapsayıcının tam genişliğini alır. */
 const VERTICAL_LENGTH: Record<Size, string> = {
   sm: "10rem",
   md: "14rem",
@@ -14,7 +11,9 @@ export function getVerticalLength(size: Size): string {
   return VERTICAL_LENGTH[size];
 }
 
-/** ant.design rail/handle oranlarına yakın: sm≈4/12px, md≈6/16px, lg≈8/20px. */
+/*
+ * ant.design rail/handle oranlarına yakın: sm≈4/12px, md≈6/16px, lg≈8/20px.
+ */
 export const TRACK_HEIGHT: Record<Size, string> = {
   sm: "0.25rem",
   md: "0.375rem",

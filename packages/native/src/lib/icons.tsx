@@ -1,6 +1,6 @@
 import Svg, { Circle, Line, Path, Polygon, Polyline, Rect } from "react-native-svg";
 
-/**
+/*
  * Paketin kendi iç ikonları — lucide'ın (web'de kullanılan) BİREBİR aynı
  * çizimleri; tüketicinin lucide kurmasına gerek yok. 24'lük görünüm kutusu,
  * 2 kalınlık, yuvarlak uçlar (lucide varsayılanı). `react-native-svg` peer

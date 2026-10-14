@@ -1,6 +1,6 @@
 import type { Option } from "./types";
 
-/**
+/*
  * Arama için katlama: Türkçe küçük harf + aksanları at + ı→i. Böylece
  * "istanbul" → "İstanbul", "sehir" → "Şehir", "IĞDIR" → "Iğdır" bulunur.
  * Eskiden düz `toLowerCase()` vardı: "İstanbul".toLowerCase() JS'te

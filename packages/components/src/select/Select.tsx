@@ -127,12 +127,13 @@ function SelectSuffix({ loading, open }: Readonly<{ loading: boolean; open: bool
   );
 }
 
-/**
- * Faz 16.1 — yapı/davranış ant.design Select'ten, görünüm Input'la birebir
+/*
+ * yapı/davranış ant.design Select'ten, görünüm Input'la birebir
  * aynı (boyut, varyant, kenarlık, odak halkası, dokunma hedefi `lib`
  * paylaşımlı). Tekli ve çoklu (`mode="multiple"`, etiketler) seçim, gruplar,
  * arama (`showSearch`, Türkçe/aksansız), temizleme, yükleniyor, `skeleton`.
- *
+ */
+/**
  * Erişilebilirlik (APG combobox): arama yoksa tetikleyici `<button
  * role="combobox">` (label `htmlFor` ile bağlanabilir, native disabled),
  * aramada `<input role="combobox">`. Odak HİÇ listeye geçmez; aktif seçenek

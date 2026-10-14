@@ -13,10 +13,7 @@ const ICON_BY_COLOR: Record<ColorRole, React.ComponentType<{ className?: string;
   neutral: InfoIcon,
 };
 
-/**
- * Durum ikonu tonlu bir dairenin içinde (ant.design confirm düzeninin
- * yapısı). `color` yoksa ve özel `icon` da yoksa hiç ikon gösterilmez.
- */
+/** Durum ikonu tonlu bir dairenin içinde. `color` yoksa ve özel `icon` da yoksa hiç ikon gösterilmez. */
 export function renderModalIcon(color: ColorRole | undefined, icon: React.ReactNode): React.ReactNode {
   if (!color && !icon) return null;
   const role = color ?? "neutral";
@@ -28,7 +25,9 @@ export function renderModalIcon(color: ColorRole | undefined, icon: React.ReactN
   );
 }
 
-/** ant.design: varsayılan 520px. */
+/*
+ * ant.design: varsayılan 520px.
+ */
 export const sizeMap: Record<Size, string> = {
   sm: "sm:max-w-[25rem]",
   md: "sm:max-w-[32.5rem]",

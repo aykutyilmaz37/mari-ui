@@ -11,7 +11,7 @@ import { cn, type ColorRole, type ColorVariantStyle } from "@mari-ui/core";
  * çalışma zamanında "bg-mari-primary-solid" olur ama tarayıcı bunu asla
  * göremez — kaynak metinde hâlâ kesik bir template literal olarak durur.
  * Bu repoda `Skeleton`/`Tag`/`Loading`'i sessizce bozan hata tam olarak
- * buydu (bkz. plan Faz 3); burada aynı hatayı tekrarlamamak için tabloyu
+ * buydu; burada aynı hatayı tekrarlamamak için tabloyu
  * elle, tam string'lerle yazıyoruz.
  */
 export const bgSolidClass: Record<ColorRole, string> = {
@@ -216,8 +216,8 @@ export function colorVariantToClassName(style: ColorVariantStyle): string {
   return cn(bg, hoverBg, text, border, border && "border");
 }
 
-/**
- * Faz 15 — işaretlenebilir kontroller (Checkbox/Radio) için `checked:` önekli
+/*
+ * işaretlenebilir kontroller (Checkbox/Radio) için `checked:` önekli
  * literal tablolar. Önek runtime'da birleştirilmez (Tailwind taraması).
  * Kenarlık dolguyla AYNI (`-solid`): eskiden açık `-border` tonuydu, dolu
  * kutunun etrafında soluk bir hare gibi duruyordu ve 3:1'i geçmiyordu.

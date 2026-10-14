@@ -21,7 +21,7 @@ export function useTheme(): Theme {
   return withFonts(systemScheme === "dark" ? darkTheme : lightTheme, "system");
 }
 
-/** Faz 21 — temanın süre çarpanı (`theme.effects.motion`); sayı olduğu için effect bağımlılığına güvenle girer. */
+/** Temanın süre çarpanı (`theme.effects.motion`); sayı olduğu için effect bağımlılığına güvenle girer. */
 export function useMotionScale(): number {
   return MOTION_FACTOR[useTheme().effects.motion];
 }

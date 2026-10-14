@@ -4,7 +4,7 @@ import { borderStrongColorClass } from "../lib/colorClasses";
 import { sizeClass } from "../lib/sizeClasses";
 import type { InputShape, InputVariant } from "./types";
 
-/**
+/*
  * Kendi `SIZE_CLASS`/`TEXTAREA_SIZE_CLASS` tabloları vardı — `lib.sizeClass`
  * ile SAYISAL OLARAK zaten birebir aynıydı (yükseklik/padding/font). Faz 13
  * gereği tek kaynağa bağlandı; rakip tablo silindi.
@@ -18,8 +18,8 @@ export function getTextareaSizeClasses(size: Size): string {
   return cn(sizeClass[size], "h-auto");
 }
 
-/**
- * Odakta kenarlık ROL RENGİNE döner (Faz 15): eskiden açık `-border` tonuydu
+/*
+ * Odakta kenarlık ROL RENGİNE döner: eskiden açık `-border` tonuydu
  * (#93c6f6 ≈ 1.8:1 beyazda — WCAG 1.4.11'in 3:1'ini geçmiyordu; outline
  * Button'da bulunan sorunun aynısı). Ayrıca ofsetli outline yerine kenarlığa
  * yapışık yumuşak bir hale (`ring`) — modern form alanı görünümü, iki ayrı
@@ -46,14 +46,14 @@ export const FIELD_BASE_CLASS = "transition-[color,background-color,border-color
 export const FIELD_DISABLED_CLASS = "opacity-50 cursor-not-allowed [&_*]:cursor-not-allowed";
 
 /**
- * iOS Safari 16px'ten küçük yazılı bir alana odaklanınca sayfayı yakınlaştırır
+ * İOS Safari 16px'ten küçük yazılı bir alana odaklanınca sayfayı yakınlaştırır
  * (ve geri uzaklaştırmaz). Dar ekranda alanın METNİ en az 16px olur; `sm` (640px)
  * ve üstünde boyut ölçeğinin kendi fontu geçerli.
  */
 export const FIELD_MOBILE_TEXT_CLASS = "max-sm:text-base";
 
-/**
- * Kullanıcı geri bildirimi (Faz 13): `color` verilmediyse (yani gerçek bir
+/*
+ * Kullanıcı geri bildirimi: `color` verilmediyse (yani gerçek bir
  * doğrulama durumu YOKSA) dinlenme halindeki kenarlık HER ZAMAN nötr/gri
  * olmalı (`border-mari-input` — Faz 13.0a'da tam bunun için eklenen ama o
  * zamana kadar hiç tüketilmeyen token) — eskiden varsayılan `"primary"`e
@@ -81,7 +81,7 @@ export function getVariantClasses(variant: InputVariant, color: ColorRole | unde
   }
 }
 
-/**
+/*
  * `underlined` her zaman köşesiz — eskiden `shape` sınıfı varyanttan SONRA
  * geldiği için `rounded-md` kazanıyor ve alt çizginin uçları bükülüyordu.
  */
@@ -94,7 +94,7 @@ export function isClearable(allowClear: boolean | { clearIcon?: React.ReactNode 
   return typeof allowClear === "boolean" ? allowClear : !!allowClear;
 }
 
-/**
+/*
  * Temizle düğmesi alanı GERÇEK bir değişiklik olarak boşaltır: yerel değer
  * setter'ı + `input` olayı → React `onChange`'i gerçek bir ChangeEvent'le
  * çalışır. Eskiden yalnız iç state siliniyordu; kontrollü kullanımda

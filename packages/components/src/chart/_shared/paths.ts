@@ -1,5 +1,5 @@
 /**
- * Faz 16.9 — SVG `d` yolları (d3-shape'in ihtiyaç duyduğumuz kısmı):
+ * SVG `d` yolları (d3-shape'in ihtiyaç duyduğumuz kısmı):
  * düz/yumuşak çizgi, alan, pasta/halka dilimi, yay.
  */
 

@@ -6,7 +6,7 @@ export const CONFIG_FILE_NAME = "mari-ui.config.json";
 
 /**
  * `dist/schema.json`'daki `editable`in kendi varsayılanlarıyla BİREBİR aynı
- * — bkz. `packages/tokens/scripts/build-schema.ts`. `themes` (Faz 10)
+ * — bkz. `packages/tokens/scripts/build-schema.ts`. `themes`
  * BİLİNÇLİ OLARAK burada YOK: opsiyonel, opt-in bir alan — taze bir
  * `mari-ui.config.json`ı gereksiz bir `"themes": {}` satırıyla
  * kirletmemek için varsayılan çıktıdan çıkarıldı (yine de `MariUiThemeConfig`
@@ -34,7 +34,7 @@ export function writeDefaultConfigIfMissing(targetDir: string): { created: boole
 }
 
 /**
- * Faz 21 — `init --persona`. Dosya yoksa YALNIZ `{ "persona": … }` yazılır: her şey
+ * `init --persona`. Dosya yoksa YALNIZ `{ "persona": … }` yazılır: her şey
  * kişilikten gelir, açıkça yazılan alanlar ileride onu ezer. Dosya varsa yalnız
  * `persona` alanı eklenir/değişir — kullanıcının diğer seçimlerine dokunulmaz
  * (bayrak açık bir istek olduğu için idempotent kuralın tek istisnası bu alan).

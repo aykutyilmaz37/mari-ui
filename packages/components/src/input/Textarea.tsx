@@ -63,7 +63,7 @@ export interface TextareaProps extends SkeletonableProps {
   mentions?: MentionsConfig;
 }
 
-/**
+/*
  * `autoSize` yüksekliği: içerik yüksekliğini satır yüksekliği × min/max'a
  * kıstırır. Eskiden `{ minRows, maxRows }` tipte vardı ama HİÇ uygulanmıyordu —
  * alan sınırsız uzuyordu.
@@ -81,13 +81,17 @@ function fitHeight(el: HTMLTextAreaElement, autoSize: TextareaAutoSize) {
   el.style.overflowY = maxRows && el.scrollHeight > height ? "auto" : "hidden";
 }
 
-/**
+/*
  * Eskiden `TextareaProps = Omit<InputProps, ...>` ile `Input`tan türetiliyordu
  * ama `onBlur`/`onFocus` Omit listesinde YOKTU — `InputProps.onBlur`'un tipi
  * `FormEvent<HTMLInputElement>` idi ve `{...rest}` ile `<textarea>`'ya
  * yayıldığında (`FocusEventHandler<HTMLTextAreaElement>` beklenen yerde)
- * gerçek bir TS hatasıydı (bkz. plan denetimi). Artık Textarea kendi tam
+ * gerçek bir TS hatasıydı. Artık Textarea kendi tam
  * tip setini tanımlıyor, `Input`tan miras almıyor.
+ */
+/**
+ * Çok satırlı metin alanı. `autoSize` ile içeriğe göre uzar (`{ minRows, maxRows }`
+ * sınırlarıyla); Input ile aynı görünüm ve renk eksenleri.
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>((outerProps, ref) => {
   // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.

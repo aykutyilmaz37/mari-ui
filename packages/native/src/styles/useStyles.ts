@@ -16,18 +16,18 @@ const recipeFns = {
   card: cardRecipe,
 } as const;
 
-/**
+/*
  * Bildirimsel stil API'si (plan Faz 5): component yazarken elle bir
  * `StyleSheet.create` objesi kurulmaz, `useStyles("button", { color,
  * variant, size, ... })` çağrılır — recipe (bkz. `recipes/*.ts`) güncel
  * temaya (`useTheme()`) göre çözülmüş somut RN stilini döner.
- *
+ */
+/**
  * Kasıtlı olarak `useMemo` YOK: bu stiller zaten prop'lara göre DEĞİŞKEN —
  * klasik "component başına bir kere, modül seviyesinde `StyleSheet.create`"
  * paterni burada geçerli değil. Memoization burada gerçek bir performans
  * kazancı değil, sadece bağımlılık dizisini elle bakımlı tutma yükü demek
- * olurdu. İleride profiling gerçekten gerektirdiğini gösterirse eklenir
- * (bkz. plan backlog madde 18 — component bazlı ince ayar turu).
+ * olurdu. İleride profiling gerçekten gerektirdiğini gösterirse eklenir.
  */
 export function useStyles<K extends keyof RecipeMap>(name: K, options: RecipeMap[K]["options"]): RecipeMap[K]["result"] {
   const theme = useTheme();

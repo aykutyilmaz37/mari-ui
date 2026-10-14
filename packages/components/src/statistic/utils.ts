@@ -1,8 +1,6 @@
-/**
- * Faz 16.2 — Statistic ailesinin saf yardımcıları (DOM'suz, ayrıca test edilir).
- */
+/** Statistic ailesinin saf yardımcıları (DOM'suz, ayrıca test edilir). */
 
-/** tr-TR sayı: `1234567.8` → "1.234.567,8"; `precision` sabit basamak. */
+/** Tr-TR sayı: `1234567.8` → "1.234.567,8"; `precision` sabit basamak. */
 export function formatValue(value: number | string, precision: number | undefined, locale: string): string {
   if (typeof value === "string") return value;
   return new Intl.NumberFormat(locale, { minimumFractionDigits: precision ?? 0, maximumFractionDigits: precision ?? 20 }).format(value);

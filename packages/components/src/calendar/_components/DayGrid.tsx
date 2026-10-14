@@ -123,7 +123,7 @@ function SkeletonDay({ date, full }: Readonly<{ date: Date; full: boolean }>) {
 }
 
 /**
- * Faz 16.5 — APG "date grid": `<table role="grid">`, sütun başlıkları gün
+ * APG "date grid": `<table role="grid">`, sütun başlıkları gün
  * adları (tam adı `abbr`), hücreler roving tabindex (yalnız odaklı gün
  * sekme durağı). ←/→ gün, ↑/↓ hafta, Home/End hafta başı/sonu, PageUp/Down ay
  * (Shift ile yıl), Enter/Boşluk seçer. Ay dışına taşan odak `onFocusChange`

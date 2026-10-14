@@ -5,7 +5,7 @@ import { ExternalLinkIcon } from "lucide-react";
 export type LinkTarget = "_self" | "_blank" | "_parent" | "_top" | (string & {});
 
 /**
- * Faz 15.5 — bir linkin router'a (`onNavigate`) devredilip devredilmeyeceğini
+ * Bir linkin router'a (`onNavigate`) devredilip devredilmeyeceğini
  * belirleyen ortak alanlar (menü öğeleri, Breadcrumb, DropdownItem).
  */
 export interface LinkBehaviorProps {

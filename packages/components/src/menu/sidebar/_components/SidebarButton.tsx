@@ -11,7 +11,7 @@ export interface SidebarButtonProps {
   controlsId: string;
 }
 
-/**
+/*
  * `variant="click"`in aç/kapa düğmesi. Eskiden bir ▶ "oynat" ikonuydu
  * (döndürülerek yön veriliyordu) — anlamı "medya oynat"; kenar çubuğu
  * için standart olan panel aç/kapa ikonları kullanılıyor. Kenara yapışık

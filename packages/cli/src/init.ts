@@ -20,7 +20,7 @@ export interface InitOptions {
   targetDir: string;
   agents?: readonly AgentName[];
   manifestPath?: string;
-  /** Faz 21 — tasarım kişiliği; config'e `persona` olarak yazılır. */
+  /** Tasarım kişiliği; config'e `persona` olarak yazılır. */
   persona?: PersonaName;
 }
 
@@ -52,13 +52,14 @@ interface PackageJsonShape {
   [key: string]: unknown;
 }
 
-/**
+/*
  * Tüketici projeye üç bağımlılığı ekler, `mari-ui.config.json`ı (varsa
  * DOKUNMADAN) oluşturur ve AI ajan kural dosyalarını yazar. Plan'ın kendi
  * ilkesi burada da geçerli: **component seçtirmez** — tek paket kurulur,
  * kullanılmayan component'ler zaten tree-shaking ile bundle'a girmez (bkz.
  * `@mari-ui/components`'in `sideEffects` ve subpath export mimarisi, Faz 3).
- *
+ */
+/**
  * CSS import'u OTOMATİK YAPILMAZ (elle bir dosyaya eklemek gerekir) —
  * projenin `globals.css`/`app/layout.tsx` gibi giriş noktasını GÜVENİLİR
  * şekilde tahmin etmenin bir yolu yok; yanlış bir dosyaya eklemek sessizce

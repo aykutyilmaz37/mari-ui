@@ -13,7 +13,7 @@ export interface ReviewListProps {
   handleDelete: (id: string) => void;
 }
 
-/**
+/*
  * ant.design'ın "Pictures Wall" (picture-card) karosuyla birebir
  * karşılaştırıldı: `uploading` durumunda küçük resim yerine "Yükleniyor..."
  * + ince bir ilerleme çubuğu gösterilir; tamamlanınca gerçek küçük resme

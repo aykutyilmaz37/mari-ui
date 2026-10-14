@@ -130,10 +130,10 @@ function usePrefersReducedMotion(): boolean {
 /* ========== Oklar ========== */
 
 /**
- * Oklar çıplak ikon (arka plan/daire yok, kullanıcı isteği); rastgele slayt
+ * Oklar çıplak ikon; rastgele slayt
  * içeriği üzerinde okunabilirlik için `drop-shadow`. `hover` görünürlüğünde
  * `group-hover` ile belirir, klavye odağında (`focus-visible`) yine görünür.
- * Faz 15: dokunmatikte görünmez 44px hedef (`touchTargetSquareClass`).
+ * dokunmatikte görünmez 44px hedef (`touchTargetSquareClass`).
  */
 function CarouselArrows({
   placement,

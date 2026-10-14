@@ -95,7 +95,7 @@ function PlaceholderLayer({ blurSrc, custom, pulse, resizeMode }: Readonly<{ blu
 }
 
 /**
- * Web `Image`ın native karşılığı (yapı ant.design Image): kademeli yükleme
+ * Web `Image`ın native karşılığı: kademeli yükleme
  * (bulanık ön izleme → asıl görsel yumuşak geçişle), `fallback`, `preview`
  * (tam ekran `ImageViewer`). Kutu yeri önceden ayırır (`aspectRatio` ya da
  * `width`/`height`) → yüklenince ekran kaymaz. CDN boyutlandırma `loader` ile:

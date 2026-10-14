@@ -30,7 +30,7 @@ export function resolveStepStatus(
   return "wait";
 }
 
-/**
+/*
  * Gösterge dairesinin renkleri. Yapı ant.design v6'dan (filled: tamamlanan
  * = tonlu, geçerli = dolu, bekleyen = nötr tonlu; outlined: hepsi çerçeveli),
  * renkler kendi token'larımızdan. Hata her zaman `error` rolüyle çizilir.
@@ -77,7 +77,7 @@ export function getTitleClass(status: StepStatus): string {
   }
 }
 
-/**
+/*
  * Bir adımdan sonrakine uzanan çizgi, SONRAKİ adıma varılmışsa renklidir
  * (yani bu adım tamamlanmışsa) — ant.design ile aynı.
  */

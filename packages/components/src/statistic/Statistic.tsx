@@ -45,13 +45,13 @@ const PLACEHOLDER = (
   </div>
 );
 
-/**
+/*
  * Ortak düzen: soluk başlık, büyük değer (önek/sonekle), altta trend ya da
  * açıklama. İskelet `ContentSkeleton` ile içeriğin KENDİ şeklinde: her metin
  * satırı ve ikon kendi genişliğinde blok, gerçek içerik görünmez olarak yerinde
  * (yükseklik zıplamaz). Eskiden bölgeleri tam genişlik çubuğa çevirip metni
  * saydam yapıyordu — kendi rengi olan önek/sonek (₺, %) ve trend (yeşil/kırmızı
- * metin, ikon) iskeletin üstünde görünür kalıyordu (kullanıcı bulgusu).
+ * metin, ikon) iskeletin üstünde görünür kalıyordu.
  */
 function StatisticShell({ title, prefix, suffix, description, footer, size, skeleton, className, children, valueProps, valueAs = "p" }: Readonly<ShellProps>) {
   const Value = valueAs;
@@ -127,7 +127,7 @@ function Trend({ trend, locale, animate, mode }: Readonly<TrendProps>) {
 }
 
 /**
- * Faz 16.2 — sayısal KPI (ant.design Statistic): başlık, tr-TR biçimli değer,
+ * Sayısal KPI: başlık, tr-TR biçimli değer,
  * önek/sonek, trend. Trendin rengi yönden değil ANLAMdan (`goodWhen`):
  * maliyetin düşmesi yeşil. Yön ve anlam ekran okuyucuya sözle de söylenir.
  */

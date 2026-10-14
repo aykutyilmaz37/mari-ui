@@ -5,14 +5,14 @@ import { getAvatarShapeClasses, getAvatarSizeStyle, getLineClass, skeletonFill, 
 
 export type { SkeletonProps };
 
-/** İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-conditional`). */
+/** İç içe ternary yerine ayrık fonksiyon. */
 function resolveParagraphWidths(width: SkeletonParagraphProps["width"], rows: number): (string | number | undefined)[] {
   if (Array.isArray(width)) return width;
   if (width !== undefined) return [...Array(rows - 1).fill(undefined), width];
   return [];
 }
 
-/** İç içe ternary yerine ayrık fonksiyon (Faz 8, SonarJS `no-nested-conditional`). */
+/** İç içe ternary yerine ayrık fonksiyon. */
 function resolveFallbackWidthClass(explicitWidth: string | number | undefined, isLastRow: boolean): string | undefined {
   if (explicitWidth !== undefined) return undefined;
   return isLastRow ? "w-3/5" : "w-full";

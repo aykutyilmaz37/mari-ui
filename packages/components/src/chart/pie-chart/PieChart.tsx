@@ -36,7 +36,7 @@ export interface PieChartProps extends ChartBaseProps {
 }
 
 /**
- * Faz 16.9 — pasta / halka grafiği. Bir bütünün az sayıda parçası. Dilimler
+ * Pasta / halka grafiği. Bir bütünün az sayıda parçası. Dilimler
  * arasında 2px yüzey boşluğu; üzerine gelince dilim hafifçe dışa çıkar ve
  * tooltip ad, değer, yüzde gösterir. Lejant her zaman var (kimlik yalnız
  * renge kalmaz); yüzdeler lejantta. Sıfır ve negatif değerler çizilmez.

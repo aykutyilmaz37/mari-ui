@@ -199,7 +199,7 @@ function ViewerSlide({
 }
 
 /**
- * Faz 16.7 — tam ekran görsel/video görüntüleyici. Yapı iPhone Fotoğraflar'dan:
+ * Tam ekran görsel/video görüntüleyici. Yapı iPhone Fotoğraflar'dan:
  * küçük resimden büyüyerek açılış, yana kaydırarak geçiş, aşağı çekerek kapatma,
  * iki parmak / tekerlek / çift dokunuşla yakınlaştırma + kaydırma, dokununca
  * araç çubuklarını gizleme, alt şerit. Görünüm token'lardan (arka plan =

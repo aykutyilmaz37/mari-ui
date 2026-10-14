@@ -5,7 +5,7 @@ import { runThemeCommand } from "./theme";
 import { tailwindInstructions } from "./tailwindSetup";
 import { personaNames, personas, type PersonaName } from "@mari-ui/tokens";
 
-/**
+/*
  * Kasıtlı olarak hiçbir argv-parsing kütüphanesi (commander/yargs/...) YOK —
  * sadece 3 komut ve az sayıda bayrak var, elle yazılmış ~30 satırlık bir
  * parser bir bağımlılık eklemekten daha az risk taşıyor (bkz. proje planının
@@ -92,8 +92,7 @@ function printHelp() {
 }
 
 /**
- * Her komut kendi fonksiyonuna ayrıldı (Faz 8, SonarJS `cognitive-
- * complexity`) — hepsi tek bir `main()` switch'inde toplandığında bilişsel
+ * Her komut kendi fonksiyonuna ayrıldı — hepsi tek bir `main()` switch'inde toplandığında bilişsel
  * karmaşıklık 25'e çıkıp izin verilen 15'i aşıyordu.
  */
 function runInitCommand(args: ParsedArgs) {

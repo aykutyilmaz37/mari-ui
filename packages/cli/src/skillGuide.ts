@@ -1,12 +1,12 @@
 /**
- * Faz 17 — tüketici projede AI'ın "proje nasıl kurulur ve tasarlanır"
- * bilgisi. İki katman (kullanıcı kararı, plan §20 "17.0 KARARLAR"):
+ * Tüketici projede AI'ın "proje nasıl kurulur ve tasarlanır"
+ * bilgisi. İki katman:
  *
- * - `MUST_RULES`: az sayıda KESİN kural. Kısa tutulur; her araç dosyasına ve
- *   `CLAUDE.md`ye girer (her istekte okunur).
+ * `MUST_RULES`: az sayıda KESİN kural. Kısa tutulur; her araç dosyasına ve
+ *  `CLAUDE.md`ye girer (her istekte okunur).
  * - `SKILL_GUIDE`: ÖNERİ niteliğinde ayrıntılı rehber (sayfa kurma adımları,
- *   layout kalıpları, component seçimi). Yalnız Claude skill'ine (`SKILL.md`)
- *   girer — Claude onu ilgili işte yükler, kural dosyalarını şişirmez.
+ *  layout kalıpları, component seçimi). Yalnız Claude skill'ine (`SKILL.md`)
+ *  girer — Claude onu ilgili işte yükler, kural dosyalarını şişirmez.
  *
  * Framework'ten bağımsız (Next/Vite/… dikte edilmez). Elle yazılı: bunlar
  * koddan türetilemeyen tasarım kararları. Component adları `manifest.json`daki

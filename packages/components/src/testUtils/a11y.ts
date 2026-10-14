@@ -1,6 +1,6 @@
 import { run } from "axe-core";
 
-/**
+/*
  * Faz 9 (backlog madde 14 — erişilebilirlik disiplini): Faz 4'ün
  * `@storybook/addon-a11y`si sadece Storybook AÇILIP GÖZLE bakıldığında
  * çalışıyordu. Bu yardımcı AYNI axe-core motorunu (Storybook'un addon'ının

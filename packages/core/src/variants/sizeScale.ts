@@ -45,7 +45,7 @@ function shiftRadiusKey(key: RadiusScale, offset: number): RadiusScale {
  * height/padding/fontSize değeri buradan, `@mari-ui/tokens`'tan gelir —
  * component'ler kendi `getSizeClasses` sözlüğünü elle yazmaz.
  *
- * `radiusDensity` (Faz 6 — tema stüdyosunun `density.radius` seçimi):
+ * `radiusDensity`:
  * `"md"` (varsayılan) her boyutun `BASE_RADIUS_KEY`'ini olduğu gibi kullanır.
  * Başka bir değer, "md"e göre skala üzerindeki OFFSET'i her boyuta uygular —
  * yani `"sm"` seçilirse her boyut bir adım keskinleşir, `"full"` seçilirse

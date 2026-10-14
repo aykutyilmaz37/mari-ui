@@ -81,7 +81,7 @@ function RowList({ items, ...rest }: Omit<RowProps, "item"> & { items: MenuItemT
 
 export type SubMenuPanelBodyProps = Omit<RowProps, "item"> & { items: MenuItemType[] };
 
-/**
+/*
  * Gruplu (başlıklı kolonlar) görünüm yalnızca HER çocuk bir grupsa. Eskiden
  * tek bir çocuğun alt öğesi olması yetiyordu: karışık veride düz öğeler de
  * "grup" sayılıp kendi başlıklarıyla tekrar ediliyordu ("ÜRÜN LİSTESİ →
