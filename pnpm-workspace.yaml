@@ -7,6 +7,8 @@ packages:
 nodeLinker: hoisted
 allowBuilds:
   '@parcel/watcher': true
+  # test-runner (jest) zincirinden; postinstall yalnız ikili doğrulaması, ikili optionalDependencies ile gelir.
+  '@swc/core': false
   esbuild: true
 # Faz 8 — bağımlılık güvenlik taraması (pnpm audit'te fiilen bulunan CVE'ler).
 # Transitif bağımlılıkların (Storybook/tsup zincirinden gelen vite/uuid/

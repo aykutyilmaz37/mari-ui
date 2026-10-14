@@ -37,8 +37,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build, lint, typecheck, test (tüm workspace paketleri)
-        run: pnpm turbo run build lint typecheck test
+      # Testler coverage ile koşar: her paketin vitest.config.ts'indeki eşik
+      # (bugünkü oranın ~1 puan altı) düşerse CI kırılır.
+      - name: Build, lint, typecheck, test + coverage (tüm workspace paketleri)
+        run: pnpm turbo run build lint typecheck test:coverage
+
+      # Storybook bir önceki adımda statik derlendi (apps/docs build). Her story
+      # (web + native) Playwright'ta açılır: çizim / `play` hatası ve axe ihlali
+      # testi kırar — bkz. apps/docs/.storybook/test-runner.ts.
+      - name: Playwright tarayıcısı
+        run: pnpm -F @mari-ui/docs exec playwright install --with-deps chromium
+
+      - name: Story testleri (çizim + etkileşim + axe)
+        run: pnpm -F @mari-ui/docs test-storybook:ci
 
       - name: Bağımlılık güvenlik taraması (kritik/yüksek eşiği)
         # `image-size` (react-native > metro, transitif, dev-only) için henüz

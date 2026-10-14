@@ -6,6 +6,8 @@
     "storybook": "storybook dev -p 6006",
     "build": "storybook build",
     "build-storybook": "storybook build",
+    "test-storybook": "test-storybook",
+    "test-storybook:ci": "concurrently -k -s first -n SB,TEST \"http-server storybook-static --port 6106 --silent\" \"wait-on tcp:127.0.0.1:6106 && test-storybook --url http://127.0.0.1:6106\"",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf storybook-static .turbo"
@@ -15,9 +17,9 @@
     "@mari-ui/core": "workspace:*",
     "@mari-ui/native": "workspace:*",
     "@mari-ui/tokens": "workspace:*",
+    "lucide-react-native": "^1.52.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "lucide-react-native": "^1.52.0",
     "react-native-svg": "15.15.4",
     "react-native-web": "^0.21.3"
   },
@@ -32,12 +34,17 @@
     "@storybook/react": "^8.6.18",
     "@storybook/react-vite": "^8.6.18",
     "@storybook/test": "^8.6.18",
+    "@storybook/test-runner": "0.22.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "axe-playwright": "2.2.2",
+    "concurrently": "9.1.2",
     "eslint": "^9.17.0",
     "eslint-plugin-storybook": "^0.11.1",
+    "http-server": "14.1.1",
     "storybook": "^8.6.18",
     "typescript": "^5.7.0",
-    "vite": "^5.4.11"
+    "vite": "^5.4.11",
+    "wait-on": "8.0.3"
   }
 }

@@ -19,7 +19,8 @@ describe("cleanTypeText", () => {
   });
 });
 
-describe("resolveComponents (gerçek kaynak kodu üzerinde — fixture değil)", () => {
+// Her test gerçek kaynakla bir ts-morph projesi kurar; coverage (v8) açıkken 5 sn'yi aşıyordu.
+describe("resolveComponents (gerçek kaynak kodu üzerinde — fixture değil)", { timeout: 30_000 }, () => {
   it("Button: gerçek prop'ları ve terk edilmiş `type`'ı JSDoc'tan doğru çıkarır", () => {
     const project = buildProject();
     const [button] = resolveComponents(project, "button", join(PACKAGE_ROOT, "src/button/index.ts"));

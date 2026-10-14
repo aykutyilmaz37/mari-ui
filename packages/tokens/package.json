@@ -1,7 +1,7 @@
 {
   "name": "@mari-ui/tokens",
   "version": "0.1.0",
-  "description": "mari-ui design system'inin platform-agnostic token kayna\u011f\u0131 (renk, spacing, radius, typography, shadow, z-index, motion).",
+  "description": "mari-ui design system'inin platform-agnostic token kaynağı (renk, spacing, radius, typography, shadow, z-index, motion).",
   "license": "MIT",
   "type": "module",
   "sideEffects": [
@@ -31,6 +31,7 @@
     "build": "tsup && tsx scripts/build-css.ts && tsx scripts/build-schema.ts",
     "dev": "concurrently -n tsup,css,schema -c blue,magenta,green \"tsup --watch\" \"tsx watch scripts/build-css.ts\" \"tsx watch scripts/build-schema.ts\"",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -40,6 +41,7 @@
     "@mari-ui/eslint-config": "workspace:*",
     "@mari-ui/tsconfig": "workspace:*",
     "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "3.2.7",
     "concurrently": "^9.1.2",
     "eslint": "^9.17.0",
     "tsup": "^8.3.5",
