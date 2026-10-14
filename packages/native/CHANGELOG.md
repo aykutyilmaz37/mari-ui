@@ -1,5 +1,12 @@
 # @mari-ui/native
 
+## 0.1.2
+
+### Patch Changes
+
+- @mari-ui/core@0.1.2
+  - @mari-ui/tokens@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
