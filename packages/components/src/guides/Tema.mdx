@@ -24,8 +24,12 @@ Aynı component'lerle kurulan projeler birbirinin kopyası gibi görünmesin diy
 | Lüks | `luxury` | Moda, mücevher, otel, premium hizmet | Altın / koyu, Jost / Cormorant Garamond, keskin köşe, yavaş hareket |
 
 ```bash
-npx @mari-ui/cli init --persona playful   # config'e "persona" yazar (varsa yalnız bu alanı değiştirir)
+npx @mari-ui/cli theme                     # sorar: Varsayılan, kişiliklerden biri ya da Özel (kendi renkleriniz)
+npx @mari-ui/cli theme --persona playful   # sormadan (CI, betik)
+npx @mari-ui/cli theme --primary "#0f766e" # sormadan özel tema
 ```
+
+**Özel** seçilirse birincil renk, vurgu rengi, köşe yuvarlaklığı ve yoğunluk sorulur. Seçim config'in tema alanlarını baştan yazar; ek temalar (`themes`) ve büyük ekran ayarı korunur.
 
 ```json
 { "persona": "playful", "color": { "primary": "#0f766e" } }

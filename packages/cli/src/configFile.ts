@@ -51,3 +51,16 @@ export function writePersonaConfig(targetDir: string, persona: PersonaName): { c
   writeFileSync(path, `${JSON.stringify(Object.assign({ persona }, current, { persona }), null, 2)}\n`, "utf8");
   return { created: false, updated: true, path };
 }
+
+/** Config dosyası varsa okur, yoksa `undefined` (sihirbazın "mevcut ayarı koru" seçeneği için). */
+export function readConfigIfExists(targetDir: string): MariUiThemeConfig | undefined {
+  const path = configFilePath(targetDir);
+  return existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as MariUiThemeConfig) : undefined;
+}
+
+/** Config'i olduğu gibi yazar (`theme` sihirbazı / bayrakları — açık bir tema seçimi). */
+export function writeConfig(targetDir: string, config: MariUiThemeConfig): string {
+  const path = configFilePath(targetDir);
+  writeFileSync(path, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+  return path;
+}

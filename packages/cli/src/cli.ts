@@ -4,6 +4,9 @@ import { ALL_AGENTS, syncAgentRules, type AgentName } from "./sync";
 import { runThemeCommand } from "./theme";
 import { tailwindInstructions } from "./tailwindSetup";
 import { personaNames, personas, type PersonaName } from "@mari-ui/tokens";
+import { readConfigIfExists, writeConfig } from "./configFile";
+import { choiceFromFlags, configFromChoice, describeConfig, parsePersonaFlag, type ThemeChoice } from "./themeChoice";
+import { askThemeChoice, WizardCancelled } from "./themeWizard";
 
 /*
  * Kasıtlı olarak hiçbir argv-parsing kütüphanesi (commander/yargs/...) YOK —
@@ -21,19 +24,24 @@ interface ParsedArgs {
   config?: string;
   out?: string;
   manifest?: string;
-  persona?: PersonaName;
+  persona?: PersonaName | "default";
+  primary?: string;
+  accent?: string;
+  /** Soru sorma: bayraklar ya da mevcut config kullanılır. */
+  yes: boolean;
 }
 
-function parsePersona(value: string | undefined): PersonaName | undefined {
-  if (value && (personaNames as readonly string[]).includes(value)) return value as PersonaName;
-  console.warn(`[@mari-ui/cli] Bilinmeyen kişilik: ${value ?? "(boş)"}. Geçerli: ${personaNames.join(", ")}`);
+function parsePersona(value: string | undefined): PersonaName | "default" | undefined {
+  const parsed = parsePersonaFlag(value);
+  if (parsed) return parsed;
+  console.warn(`[@mari-ui/cli] Bilinmeyen tema: ${value ?? "(boş)"}. Geçerli: default, ${personaNames.join(", ")}`);
   process.exitCode = 1;
   return undefined;
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
   const [command = "help", ...rest] = argv;
-  const parsed: ParsedArgs = { command, dir: process.cwd(), check: false };
+  const parsed: ParsedArgs = { command, dir: process.cwd(), check: false, yes: false };
 
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
@@ -62,6 +70,16 @@ function parseArgs(argv: string[]): ParsedArgs {
       case "--persona":
         parsed.persona = parsePersona(rest[++i]);
         break;
+      case "--primary":
+        parsed.primary = rest[++i];
+        break;
+      case "--accent":
+        parsed.accent = rest[++i];
+        break;
+      case "--yes":
+      case "-y":
+        parsed.yes = true;
+        break;
       default:
         console.warn(`[@mari-ui/cli] Bilinmeyen bayrak yok sayıldı: ${arg}`);
     }
@@ -78,15 +96,20 @@ function printHelp() {
       "Komutlar:",
       "  init    Bağımlılıkları ekler, mari-ui.config.json oluşturur, AI ajan kural dosyalarını yazar",
       "  sync    Kural dosyalarını güncel tema/manifest'e göre tazeler",
-      "  theme   mari-ui.config.json'dan mari-ui-theme.css + mari-ui-theme.ts üretir",
+      "  theme   Temayı seçtirir (varsayılan, hazır kişilik ya da özel) ve mari-ui-theme.css + mari-ui-theme.ts üretir",
       "",
       "Ortak bayraklar:",
       "  --dir <yol>       Hedef proje kökü (varsayılan: mevcut dizin)",
       "  --agents <liste>  Virgülle ayrılmış: claude,codex,cursor,gemini,copilot (varsayılan: hepsi)",
       "  --check           Hiçbir şey YAZMAZ; bayat dosya varsa çıkış kodu 1 (CI için)",
       "",
-      "init bayrakları:",
-      "  --persona <ad>    Tasarım kişiliği: " + personaNames.map((n) => n + " (" + personas[n].label + ")").join(", "),
+      "Tema bayrakları (init / theme — verilirse soru sorulmaz):",
+      "  --persona <ad>    default (Yumuşak iris) ya da kişilik: " + personaNames.map((n) => n + " (" + personas[n].label + ")").join(", "),
+      "  --primary <#hex>  Özel tema: marka rengi (örnek: #0f766e)",
+      "  --accent <#hex>   Özel tema: vurgu rengi (isteğe bağlı)",
+      "  -y, --yes         Hiç soru sorma: bayraklar ya da mevcut mari-ui.config.json kullanılır",
+      "",
+      "Soru yalnız etkileşimli terminalde sorulur; CI'da bayraklar ya da mevcut config kullanılır.",
     ].join("\n")
   );
 }
@@ -95,9 +118,27 @@ function printHelp() {
  * Her komut kendi fonksiyonuna ayrıldı — hepsi tek bir `main()` switch'inde toplandığında bilişsel
  * karmaşıklık 25'e çıkıp izin verilen 15'i aşıyordu.
  */
-function runInitCommand(args: ParsedArgs) {
+/** Etkileşimli terminal mi ve soru sorulabilir mi? (CI, boru, `--yes` → hayır) */
+function canAsk(args: ParsedArgs): boolean {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY) && !args.yes && !args.check;
+}
+
+/** Bayraklardan tema seçimi; geçersiz renkte açıklayıcı hata verip çıkar. */
+function flagChoice(args: ParsedArgs): ThemeChoice | undefined {
+  try {
+    return choiceFromFlags(args);
+  } catch (err) {
+    console.error(`✗ ${(err as Error).message}`);
+    process.exit(1);
+  }
+}
+
+async function runInitCommand(args: ParsedArgs) {
   if (process.exitCode) return;
-  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, persona: args.persona });
+  let theme = flagChoice(args);
+  // Config yoksa ve bayrak verilmediyse temayı sor; varsa init ona dokunmaz (değiştirmek: `theme`).
+  if (!theme && canAsk(args) && !readConfigIfExists(args.dir)) theme = (await askThemeChoice(undefined)) ?? undefined;
+  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, theme });
   if (result.addedDependencies.length > 0) {
     console.log(`✓ package.json'a eklendi: ${result.addedDependencies.join(", ")}`);
   }
@@ -129,12 +170,30 @@ function runSyncCommand(args: ParsedArgs) {
   console.log("✓ Tüm AI ajan kural dosyaları güncel.");
 }
 
-function runThemeCliCommand(args: ParsedArgs) {
+/**
+ * `theme`: önce tema seçimi (bayrak → sihirbaz → mevcut config), sonra
+ * çıktılar. Seçim config'in tema alanlarını baştan yazar; ek temalar (`themes`)
+ * ve büyük ekran (`scale`) korunur. `--config` verildiyse o dosya kullanılır, sorulmaz.
+ */
+async function runThemeCliCommand(args: ParsedArgs) {
+  if (process.exitCode) return;
+  if (!args.config && !args.check) {
+    const current = readConfigIfExists(args.dir);
+    const choice = flagChoice(args) ?? (canAsk(args) ? await askThemeChoice(current) : undefined);
+    if (choice) {
+      const config = configFromChoice(choice, current);
+      writeConfig(args.dir, config);
+      console.log(`✓ Tema: ${describeConfig(config)} — mari-ui.config.json güncellendi.`);
+    } else if (!current) {
+      console.log("• mari-ui.config.json yok — varsayılan tema (Yumuşak iris) kullanılıyor.");
+    }
+  }
   const result = runThemeCommand({ targetDir: args.dir, configPath: args.config, outDir: args.out, check: args.check });
   if (!args.check) {
     console.log(`✓ Yazıldı: ${result.cssPath}`);
     console.log(`✓ Yazıldı: ${result.themeTsPath}`);
-    if (result.fontsUrl) console.log(`\nKişilik fontları (web): <link rel="stylesheet" href="${result.fontsUrl}">`);
+    console.log(`\nGlobal CSS'inizde mari-ui CSS'inden SONRA import edin (örnek: src/index.css içinden):\n  @import "../mari-ui-theme.css";`);
+    if (result.fontsUrl) console.log(`\nKişilik fontları (web) — <head>'e ekleyin:\n  <link rel="stylesheet" href="${result.fontsUrl}">`);
     return;
   }
   if (result.stale) {
@@ -144,18 +203,18 @@ function runThemeCliCommand(args: ParsedArgs) {
   console.log("✓ Tema çıktıları güncel.");
 }
 
-function main() {
+async function main() {
   const args = parseArgs(process.argv.slice(2));
 
   switch (args.command) {
     case "init":
-      runInitCommand(args);
+      await runInitCommand(args);
       break;
     case "sync":
       runSyncCommand(args);
       break;
     case "theme":
-      runThemeCliCommand(args);
+      await runThemeCliCommand(args);
       break;
     default:
       printHelp();
@@ -163,4 +222,11 @@ function main() {
   }
 }
 
-main();
+main().catch((err: unknown) => {
+  // Sihirbazdan çıkış (Ctrl+C) hata değil; mesajı sihirbaz zaten bastı.
+  if (err instanceof WizardCancelled) {
+    process.exitCode = 130;
+    return;
+  }
+  throw err;
+});

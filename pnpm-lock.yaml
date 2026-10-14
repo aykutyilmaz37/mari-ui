@@ -321,6 +321,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@clack/prompts':
+        specifier: 1.8.1
+        version: 1.8.1
       '@mari-ui/tokens':
         specifier: workspace:*
         version: link:../tokens
