@@ -66,4 +66,4 @@ Node ≥ 20, pnpm. Katkı süreci ve yeni component kontrol listesi: [CONTRIBUTI
 
 ## Durum
 
-Paketler `0.1.0`; henüz npm'e yayınlanmadı ve bir sürüm/yayın süreci (changesets vb.) kurulmadı. CI her PR'da build, tip bilgili lint, tip kontrolü, eşikli coverage, story testleri (Playwright + axe) ve bağımlılık taramasını çalıştırır.
+Paketler `0.x` (npm, public, MIT); sürüm ve yayın changesets ile — bkz. [CONTRIBUTING.md](CONTRIBUTING.md#sürüm-ve-yayın). CI her PR'da build, tip bilgili lint, tip kontrolü, eşikli coverage, story testleri (Playwright + axe) ve bağımlılık taramasını çalıştırır.

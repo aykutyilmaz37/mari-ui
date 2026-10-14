@@ -3,6 +3,16 @@
   "version": "0.1.0",
   "description": "mari-ui'ın web ve native arasında paylaşılan headless katmanı: ortak tipler, variant çözümleme, cn() ve headless hook'lar.",
   "license": "MIT",
+  "author": "Aykut Yılmaz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aykutyilmaz37/mari-ui.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/aykutyilmaz37/mari-ui#readme",
+  "bugs": {
+    "url": "https://github.com/aykutyilmaz37/mari-ui/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -50,5 +60,9 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.0",
     "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

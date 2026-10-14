@@ -97,3 +97,13 @@ pnpm --filter @mari-ui/components exec vitest run src/<ad>
 - AI kural rehberi (`packages/cli/src/skillGuide.ts`): yeni component bir sayfa kalıbının parçasıysa rehbere bir satır; adı geçen her component gerçek manifest'te var olmalı (test denetler).
 - Token ekleme/değiştirme: `packages/tokens` → CSS değişkeni (`cssVariables.ts`) + Tailwind teması (`cssOutput.ts`) + gerekiyorsa şema.
 - Storybook "Genel Bakış" sayfası (`packages/components/src/Overview.mdx`): `SECTIONS` listesine yeni component için bir satır. Doküman sayfası adresleri `--doküman` ile biter (doküman sekmesinin adı Türkçe), `--docs` değil.
+
+## Sürüm ve yayın
+
+Yayınlanan paketler: `@mari-ui/tokens`, `core`, `components`, `native`, `cli` (npm, public, MIT). Beşi birlikte sürümlenir.
+
+1. Kullanıcıyı etkileyen bir değişiklikte PR'a changeset ekleyin: `pnpm changeset` (`0.x` döneminde kırıcı değişiklik `minor`, geri kalan `patch`). Yalnız doküman/test/iç araç değişikliği changeset istemez.
+2. main'e birleşince `.github/workflows/release.yml` bir **"chore: sürüm paketleri"** PR'ı açar ya da günceller (sürüm + `CHANGELOG.md`).
+3. O PR merge edilince paketler npm'e yayınlanır (provenance imzalı).
+
+İlk kurulum (bir kez, repo sahibi): npm'de `mari-ui` organizasyonu, GitHub'da `NPM_TOKEN` secret'ı (npm "Automation" token), repo değişkeni `RELEASE_ENABLED=true`; provenance için repo public olmalı.
