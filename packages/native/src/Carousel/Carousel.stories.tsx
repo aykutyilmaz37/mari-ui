@@ -84,9 +84,9 @@ function PromoSlide({ promo }: { promo: (typeof promos)[number] }) {
   return (
     <View style={{ height: 320, alignItems: "center", justifyContent: "center", gap: 10, paddingHorizontal: 32, paddingBottom: 28, backgroundColor: tone.subtle }}>
       <promo.Icon size={40} color={tone.subtleContrast} />
-      <Text weight="semibold" style={{ fontSize: 12, letterSpacing: 0.6, textTransform: "uppercase", color: tone.subtleContrast, opacity: 0.8 }}>{promo.eyebrow}</Text>
+      <Text weight="semibold" style={{ fontSize: 12, letterSpacing: 0.6, textTransform: "uppercase", color: tone.subtleContrast }}>{promo.eyebrow}</Text>
       <Title level={4} style={{ textAlign: "center", color: tone.subtleContrast }}>{promo.title}</Title>
-      <Text style={{ fontSize: 14, textAlign: "center", color: tone.subtleContrast, opacity: 0.9 }}>{promo.description}</Text>
+      <Text style={{ fontSize: 14, textAlign: "center", color: tone.subtleContrast }}>{promo.description}</Text>
       <Button style={{ marginTop: 6 }}>{promo.cta}</Button>
     </View>
   );

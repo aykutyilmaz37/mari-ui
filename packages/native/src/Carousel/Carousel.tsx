@@ -2,6 +2,7 @@ import React, { Children, isValidElement, useEffect, useMemo, useRef, useState }
 import { Animated, Easing, PanResponder, Platform, Pressable, View, useWindowDimensions, type StyleProp, type ViewStyle } from "react-native";
 import type { ColorRole } from "@mari-ui/core";
 import { ChevronLeftIcon, ChevronRightIcon, PauseIcon, PlayIcon } from "../lib/icons";
+import { InertView } from "../lib/InertView";
 import { SkeletonBox, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
 import { skeletonColor } from "../theme/skeletonColor";
 import { toPx } from "../theme/toPx";
@@ -69,7 +70,6 @@ export interface CarouselProps extends SkeletonableProps {
 }
 
 const DRAG_SLOP = 8;
-const HIDDEN = { accessibilityElementsHidden: true, "aria-hidden": true, importantForAccessibility: "no-hide-descendants" as const };
 
 interface Geometry {
   count: number;
@@ -304,9 +304,9 @@ function Track({ items, clones, show, pos, slideWidth, inView, skeleton, itemSty
     const hidden = i < 0 || i >= count || !inView.has(real);
     const key = isValidElement(item) && item.key != null ? `${String(item.key)}~${i}` : `slide~${i}`;
     slides.push(
-      <View key={key} style={[{ width: `${100 / show}%`, flexShrink: 0 }, itemStyle]} {...(hidden ? HIDDEN : null)}>
+      <InertView key={key} hidden={hidden} style={[{ width: `${100 / show}%`, flexShrink: 0 }, itemStyle]}>
         <SlideContent skeleton={skeleton}>{item}</SlideContent>
-      </View>
+      </InertView>
     );
   }
   return <Animated.View style={{ flexDirection: "row", transform: [{ translateX }] }}>{slides}</Animated.View>;
@@ -318,9 +318,9 @@ function SlideContent({ skeleton, children }: { skeleton: boolean; children: Rea
   if (!skeleton) return <>{children}</>;
   return (
     <View>
-      <View style={{ opacity: 0 }} {...HIDDEN}>
+      <InertView hidden style={{ opacity: 0 }}>
         {children}
-      </View>
+      </InertView>
       <SkeletonBox style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: toPx(theme.radius.lg) }} />
     </View>
   );
@@ -398,7 +398,7 @@ function Dots({ count, index, color, skeleton, placement, position, onSelect, le
   const theme = useTheme();
   const wrapper: ViewStyle = placement === "overlay" ? { position: "absolute", alignItems: "center", gap: 8, ...DOT_OVERLAY[position] } : { marginTop: 12, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8 };
   return (
-    <View pointerEvents="box-none" style={wrapper} {...(skeleton ? HIDDEN : null)}>
+    <InertView hidden={skeleton} pointerEvents="box-none" style={wrapper}>
       {lead}
       <View pointerEvents="box-none" role={skeleton ? undefined : "tablist"} aria-label={skeleton ? undefined : "Slaytlar"} style={{ flexDirection: wrapper.flexDirection ?? "column", alignItems: "center", gap: 8 }}>
       {Array.from({ length: count }, (_, i) => {
@@ -419,7 +419,7 @@ function Dots({ count, index, color, skeleton, placement, position, onSelect, le
         );
       })}
       </View>
-    </View>
+    </InertView>
   );
 }
 

@@ -7,6 +7,7 @@ import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
 import { shadowStyle } from "../theme/effects";
 import { useMotionScale, useTheme } from "../theme/useTheme";
+import { InertView } from "../lib/InertView";
 import { SkeletonBox, useReduceMotion, type SkeletonableProps } from "../lib/Skeleton";
 import { useControllable } from "../lib/useControllable";
 
@@ -259,7 +260,7 @@ export function TabsList({ children, extra, accessibilityLabel, style }: TabsLis
   );
 
   return (
-    <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} aria-label={accessibilityLabel} style={[axis, barStyle(variant, vertical, c.border), vertical ? { alignSelf: "flex-start" } : null, style]}>
+    <InertView hidden={skeleton} accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} aria-label={accessibilityLabel} style={[axis, barStyle(variant, vertical, c.border), vertical ? { alignSelf: "flex-start" } : null, style]}>
       {scrolls ? (
         <ScrollView
           ref={strip.scroller as never}
@@ -277,7 +278,7 @@ export function TabsList({ children, extra, accessibilityLabel, style }: TabsLis
         content
       )}
       {extra == null ? null : <View style={{ paddingLeft: 12 }}>{extra}</View>}
-    </View>
+    </InertView>
   );
 }
 

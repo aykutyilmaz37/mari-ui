@@ -121,6 +121,7 @@ export function Masonry({ items, columns = { base: 2, sm: 3, md: 4 }, gutter = "
               return (
                 <View
                   key={s.key}
+                  role="listitem"
                   // Ölçülmemiş öğe görünmez çizilir (yüksekliği alınır), sonra yerine oturur.
                   onLayout={s.h === undefined ? (e) => setHeight(s.key, e.nativeEvent.layout.height) : undefined}
                   style={{ position: "absolute", left: p.left, top: p.top, width: p.width, opacity: known ? 1 : 0 }}
