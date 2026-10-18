@@ -13,6 +13,7 @@ import { accentRamp, primaryRamp } from "../src/primitives/ramps";
 import { radiusDensities, fontFamily, shadowDensities, motionLevels } from "../src/primitives/scale";
 import { personaNames, personas } from "../src/personas";
 import { spacingDensities } from "../src/runtimeTheme";
+import { colorTokenNames } from "../src/colorTokens";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_FILE = resolve(__dirname, "../dist/schema.json");
@@ -37,6 +38,20 @@ const schema = {
           "kullanıcı bu rengi farklı bir tona çevirse bile solid/subtle metin renkleri " +
           "WCAG AA'yı geçecek şekilde yeniden hesaplanır.",
         default: accentRamp[600],
+      },
+      tokens: {
+        type: "record",
+        description:
+          "Herhangi bir `--mari-color-*` token'ını birebir ezer (önek olmadan, örn. `surface`, `neutral-solid`, `chart-1`). " +
+          "Açık temaya ve `:root`a uygulanır. Türetilmiş değerin yerine geçer — o token için kontrast garantisi kalkar.",
+        keys: [...colorTokenNames],
+        default: {},
+      },
+      darkTokens: {
+        type: "record",
+        description: "`tokens` ile aynı, koyu tema (`[data-theme=\"dark\"]`) için.",
+        keys: [...colorTokenNames],
+        default: {},
       },
     },
     typography: {

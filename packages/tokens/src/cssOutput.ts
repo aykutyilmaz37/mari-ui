@@ -1,5 +1,6 @@
 import type { Theme } from "./theme";
 import { themeToCssVariables } from "./cssVariables";
+import { colorTokenNames } from "./colorTokens";
 import { spacingDensityBase, type SpacingDensity } from "./runtimeTheme";
 
 /**
@@ -137,29 +138,7 @@ export function buildPlainThemeCss(themeSet: CssThemeSet, options: CssOutputOpti
   return lines.join("\n");
 }
 
-const THEME_TOKEN_KEYS = [
-  ...["primary", "accent", "success", "error", "warning", "info", "neutral"].flatMap((role) => [
-    `${role}`,
-    `${role}-solid`,
-    `${role}-solid-contrast`,
-    `${role}-solid-hover`,
-    `${role}-subtle`,
-    `${role}-subtle-contrast`,
-    `${role}-border`,
-  ]),
-  "surface",
-  "surface-alt",
-  "border",
-  "input",
-  "ring",
-  "scrim",
-  "foreground",
-  "muted",
-  "disabled",
-  "rating",
-  "rating-stroke",
-  ...Array.from({ length: 8 }, (_, i) => `chart-${i + 1}`),
-];
+const THEME_TOKEN_KEYS = colorTokenNames;
 
 function buildThemeInlineBlock(theme: Theme): string {
   const colorLines = THEME_TOKEN_KEYS.map((key) => `  --color-mari-${key}: var(--mari-color-${key});`);

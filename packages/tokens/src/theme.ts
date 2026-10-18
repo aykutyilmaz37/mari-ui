@@ -5,6 +5,7 @@ import { buildSemanticColors, type ColorRole, type SemanticColorTokens } from ".
 import type { ThemeMode } from "./semantic/deriveColorRole";
 import type { SpacingDensity } from "./runtimeTheme";
 import { applyPersona, type PersonaName } from "./personas";
+import { applyColorTokenOverrides, type ColorTokenOverrides } from "./colorTokens";
 
 /*
  * `sans`/`mono` burada bilinçli olarak `string` — Faz 6'nın tema stüdyosu tüketicinin kendi font ailesi string'ini geçirebilmeli, sabit iki literalle sınırlı kalamaz.
@@ -36,6 +37,8 @@ export interface Theme {
    */
   name: string;
   color: SemanticColorTokens;
+  /** Config'teki `color.tokens` ezmeleri (ham). `chart-*` gibi `color`da karşılığı olmayanlar CSS çıktısında uygulanır. */
+  colorOverrides?: ColorTokenOverrides;
   spacing: typeof primitives.spacing;
   radius: primitives.RadiusTokens;
   fontFamily: ThemeFontFamily;
@@ -57,6 +60,7 @@ export type ThemeEffectOptions = Pick<BuildThemeOptions, "radiusDensity" | "shad
 interface BuildThemeOptions {
   name?: string;
   rampOverrides?: Partial<Record<ColorRole, ColorRamp>>;
+  colorOverrides?: ColorTokenOverrides;
   fontFamily?: Partial<ThemeFontFamily>;
   radiusDensity?: primitives.RadiusDensity;
   shadowDensity?: primitives.ShadowDensity;
@@ -70,7 +74,8 @@ function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
   return {
     mode,
     name: options.name ?? mode,
-    color: buildSemanticColors(mode, options.rampOverrides),
+    color: applyColorTokenOverrides(buildSemanticColors(mode, options.rampOverrides), options.colorOverrides),
+    colorOverrides: options.colorOverrides,
     spacing: primitives.spacing,
     radius: primitives.scaleRadius(options.radiusDensity),
     fontFamily: { ...primitives.fontFamily, ...options.fontFamily },
@@ -113,6 +118,13 @@ export interface MariUiThemeConfig {
   color?: {
     primary?: HexColor;
     accent?: HexColor;
+    /**
+     * Herhangi bir `--mari-color-*` token'ını birebir ezer (önek olmadan: `surface`, `neutral-solid`, `chart-1` …).
+     * Türetilmiş değerin yerine geçer; kontrast garantisi bu token için sizde. Açık temaya (ve `:root`a) uygulanır.
+     */
+    tokens?: ColorTokenOverrides;
+    /** `tokens` ile aynı, koyu tema için. */
+    darkTokens?: ColorTokenOverrides;
   };
   typography?: {
     fontFamilySans?: string;
@@ -179,7 +191,7 @@ export interface ResolvedMariUiTheme {
   themes: Record<string, Theme>;
 }
 
-function resolveBuildThemeOptions(config: { color?: Exclude<MariUiThemeConfig["color"], undefined>; typography?: Exclude<MariUiThemeConfig["typography"], undefined> } = {}, name?: string): BuildThemeOptions {
+function resolveBuildThemeOptions(config: { color?: Exclude<MariUiThemeConfig["color"], undefined>; typography?: Exclude<MariUiThemeConfig["typography"], undefined> } = {}, name?: string, mode: ThemeMode = "light"): BuildThemeOptions {
   const rampOverrides: Partial<Record<ColorRole, ColorRamp>> = {};
   if (config.color?.primary && config.color.primary.toLowerCase() !== defaultThemeConfig.color.primary) rampOverrides.primary = primitives.generateRamp(config.color.primary);
   if (config.color?.accent && config.color.accent.toLowerCase() !== defaultThemeConfig.color.accent) rampOverrides.accent = primitives.generateRamp(config.color.accent);
@@ -189,7 +201,8 @@ function resolveBuildThemeOptions(config: { color?: Exclude<MariUiThemeConfig["c
   if (config.typography?.fontFamilyMono) fontFamilyOverride.mono = config.typography.fontFamilyMono;
 
   if (config.typography?.fontFamilyHeading) fontFamilyOverride.heading = config.typography.fontFamilyHeading;
-  return { name, rampOverrides, fontFamily: fontFamilyOverride };
+  const colorOverrides = mode === "dark" ? config.color?.darkTokens : config.color?.tokens;
+  return { name, rampOverrides, fontFamily: fontFamilyOverride, colorOverrides };
 }
 
 /**
@@ -213,7 +226,8 @@ export function resolveThemeConfig(input: MariUiThemeConfig = {}): ResolvedMariU
   const config = applyPersona(input);
   const radiusDensity = config.density?.radius ?? "md";
   const effects: ThemeEffectOptions = { radiusDensity, shadowDensity: config.density?.shadow, motion: config.motion };
-  const baseOptions = { ...resolveBuildThemeOptions(config), ...effects };
+  const lightOptions = { ...resolveBuildThemeOptions(config), ...effects };
+  const darkOptions = { ...resolveBuildThemeOptions(config, undefined, "dark"), ...effects };
 
   // Ek tema rengi BAĞIMSIZ (her tema kendi paletini taşır, Faz 10), fontu ise
   // uygulama geneli: üst seviye (kişilik dahil) aileler miras alınır, temanın
@@ -226,8 +240,8 @@ export function resolveThemeConfig(input: MariUiThemeConfig = {}): ResolvedMariU
   }
 
   return {
-    light: buildTheme("light", { ...baseOptions, name: "light" }),
-    dark: buildTheme("dark", { ...baseOptions, name: "dark" }),
+    light: buildTheme("light", { ...lightOptions, name: "light" }),
+    dark: buildTheme("dark", { ...darkOptions, name: "dark" }),
     radiusDensity,
     spacingDensity: config.density?.spacing ?? "normal",
     fluidRootMax: config.scale?.fluid ? (config.scale.max ?? defaultThemeConfig.scale.max) : null,

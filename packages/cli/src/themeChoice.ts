@@ -38,14 +38,17 @@ export function configFromChoice(choice: ThemeChoice, current: MariUiThemeConfig
   const kept: MariUiThemeConfig = {};
   if (current.scale) kept.scale = current.scale;
   if (current.themes) kept.themes = current.themes;
+  // Elle ezilen token'lar (`color.tokens`/`darkTokens`) sihirbaz seçiminden bağımsız ince ayardır; korunur.
+  const { tokens, darkTokens } = current.color ?? {};
+  const keptColor = { ...(tokens && { tokens }), ...(darkTokens && { darkTokens }) };
 
-  if (choice.kind === "persona") return { persona: choice.name, ...kept };
+  if (choice.kind === "persona") return { persona: choice.name, ...(tokens || darkTokens ? { color: keptColor } : {}), ...kept };
   if (choice.kind === "default") {
     const { color, typography, density, motion } = defaultThemeConfig;
-    return { color, typography, density, motion, ...kept };
+    return { color: { ...color, ...keptColor }, typography, density, motion, ...kept };
   }
   return {
-    color: { primary: normalizeHex(choice.primary), accent: normalizeHex(choice.accent ?? defaultThemeConfig.color.accent) },
+    color: { primary: normalizeHex(choice.primary), accent: normalizeHex(choice.accent ?? defaultThemeConfig.color.accent), ...keptColor },
     density: { ...defaultThemeConfig.density, radius: choice.radius ?? defaultThemeConfig.density.radius, spacing: choice.spacing ?? defaultThemeConfig.density.spacing },
     ...kept,
   };
