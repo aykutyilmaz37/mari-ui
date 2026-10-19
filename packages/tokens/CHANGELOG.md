@@ -1,5 +1,11 @@
 # @mari-ui/tokens
 
+## 0.3.0
+
+### Minor Changes
+
+- 2c78611: mari-ui.config.json: `color.tokens` / `color.darkTokens` ile tüm `--mari-color-*` token'ları (surface, border, neutral-solid, chart-1 …) birebir ezilebilir; CLI tema sihirbazı bu ezmeleri korur.
+
 ## 0.2.0
 
 No changes in this release.

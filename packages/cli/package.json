@@ -1,6 +1,6 @@
 {
   "name": "@mari-ui/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "mari-ui'ı bir tüketici projesine kuran ve AI ajan kural dosyalarını (Claude/Codex/Cursor/Gemini/Copilot) senkron tutan CLI.",
   "license": "MIT",
   "author": "Aykut Yılmaz",
