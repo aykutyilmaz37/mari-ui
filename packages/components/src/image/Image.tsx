@@ -77,6 +77,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     loading = "lazy",
     priority = false,
     preview = false,
+    fade = true,
     skeleton = false,
     className,
     wrapperClassName,
@@ -89,6 +90,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
 ) {
   const source = normalizeSource(src);
   const [status, setStatus] = useState<Status>("loading");
+  const [cached, setCached] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   const resolved = source ? resolveImage(source, { loader, width, widths, quality }) : null;
@@ -102,7 +104,10 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     setStatus("loading");
     // SSR'dan gelen ya da önbellekteki görsel hidrasyondan önce yüklenmiş olabilir — `onLoad` hiç gelmez.
     const img = imgRef.current;
-    if (img?.complete) setStatus(img.naturalWidth > 0 ? "loaded" : "error");
+    const ready = !!img?.complete;
+    // Önbellekten gelen görselde geçiş atlanır — küçük ikonlarda soluk görünmesin.
+    setCached(ready);
+    if (ready) setStatus(img.naturalWidth > 0 ? "loaded" : "error");
   }, [key]);
 
   const boxStyle = getBoxStyle({ width, height, aspectRatio, source });
@@ -151,7 +156,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
             onError?.(event);
           }}
           className={cn(
-            "relative block size-full transition-opacity duration-500 motion-reduce:transition-none",
+            "relative block size-full",
+            fade && !cached && "transition-opacity duration-500 motion-reduce:transition-none",
             FIT_CLASS[fit],
             loaded ? "opacity-100" : "opacity-0",
             className

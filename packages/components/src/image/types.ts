@@ -80,6 +80,11 @@ export interface ImageProps extends NativeImgProps, SkeletonableProps {
   loading?: "lazy" | "eager";
   /** Ekranın ilk görünen kısmındaki (LCP) görsel: hemen ve yüksek öncelikle yükler. */
   priority?: boolean;
+  /**
+   * Yüklenince opaklık geçişiyle belirir. Önbellekten gelen görselde geçiş zaten atlanır;
+   * küçük ikonlarda (bayrak vb.) hiç istemiyorsanız `false`. Varsayılan: `true`.
+   */
+  fade?: boolean;
   /** Tıklayınca tam ekran görüntüleyicide açılır. */
   preview?: boolean | ImagePreviewConfig;
   /** Dış kutunun sınıfı (radius, kenarlık, boyut). `className` `<img>`'ye gider. */

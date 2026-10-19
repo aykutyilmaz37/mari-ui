@@ -47,7 +47,8 @@ export interface DropdownProps {
    */
   skeleton?: boolean;
   /**
-   * Sarmalayıcı kutunun sınıfı. Varsayılan `inline-block self-start`: kutu
+   * Sarmalayıcı kutunun sınıfı. Varsayılan `inline-block self-center`: kutu (flex satırda dikey ortalanır, toolbar düğmeleriyle hizalı kalır;
+   * üste yapışmasını istiyorsanız `"self-start"` verin). Kutu
    * tetikleyicinin boyutuna sarılır, panel de TETİKLEYİCİYE hizalanır. Tetikleyici
    * kapsayıcının tam genişliğini kaplayacaksa (`w-full` menü satırı) `"block self-auto"` verin.
    */

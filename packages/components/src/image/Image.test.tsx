@@ -16,6 +16,16 @@ describe("Image", () => {
     expect(img).toHaveClass("opacity-100");
   });
 
+  it("fade={false} opaklık geçişini kaldırır", () => {
+    render(<Image src="/a.jpg" alt="Bayrak" fade={false} />);
+    expect(screen.getByRole("img", { name: "Bayrak" })).not.toHaveClass("transition-opacity");
+  });
+
+  it("varsayılanda geçiş sınıfı vardır", () => {
+    render(<Image src="/a.jpg" alt="Foto" />);
+    expect(screen.getByRole("img", { name: "Foto" })).toHaveClass("transition-opacity");
+  });
+
   it("kutu oranı yer ayırır", () => {
     const { container } = render(<Image src="/a.jpg" alt="x" width={200} height={100} />);
     const box = container.firstElementChild as HTMLElement;
