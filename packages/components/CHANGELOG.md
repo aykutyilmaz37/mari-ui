@@ -1,5 +1,14 @@
 # @mari-ui/components
 
+## 0.3.0
+
+### Patch Changes
+
+- d36705a: İşletim sisteminin "hareketi azalt" tercihi artık tüm `duration-*` geçişlerini anında bitirir (`--mari-motion-scale: 0`); config'teki `motion` seviyesini ezer.
+- Updated dependencies [2c78611]
+  - @mari-ui/tokens@0.3.0
+  - @mari-ui/core@0.3.0
+
 ## 0.2.0
 
 ### Patch Changes
