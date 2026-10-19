@@ -149,3 +149,13 @@
 @utility duration-* {
   transition-duration: calc(--value(integer) * 1ms * var(--mari-motion-scale, 1));
 }
+
+/*
+ * İşletim sisteminin "hareketi azalt" tercihi config'teki `motion`ı ezer: geçişler anında biter.
+ * `:root:root` — tema CSS'indeki `:root { --mari-motion-scale }` yüklenme sırasından bağımsız kaybetsin.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root:root {
+    --mari-motion-scale: 0;
+  }
+}
