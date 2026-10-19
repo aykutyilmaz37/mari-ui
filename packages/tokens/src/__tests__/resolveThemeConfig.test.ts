@@ -12,6 +12,20 @@ describe("resolveThemeConfig", () => {
     expect(resolved.radiusDensity).toBe("md");
   });
 
+  it("color.tokens / darkTokens: her renk token'ı birebir ezilir (tema objesi + CSS, chart dahil)", () => {
+    const resolved = resolveThemeConfig({
+      color: { tokens: { surface: "#fbf8f3", "neutral-solid-hover": "#4f4136", "chart-1": "#123456" }, darkTokens: { foreground: "#eeeeee" } },
+    });
+    expect(resolved.light.color.canvas.surface).toBe("#fbf8f3");
+    expect(resolved.light.color.neutral.solidHover).toBe("#4f4136");
+    expect(resolved.light.color.neutral.solid).toBe(lightTheme.color.neutral.solid);
+    const lightVars = themeToCssVariables(resolved.light);
+    expect(lightVars["--mari-color-surface"]).toBe("#fbf8f3");
+    expect(lightVars["--mari-color-chart-1"]).toBe("#123456");
+    expect(resolved.dark.color.canvas.surface).toBe(darkTheme.color.canvas.surface);
+    expect(themeToCssVariables(resolved.dark)["--mari-color-foreground"]).toBe("#eeeeee");
+  });
+
   it("color.primary verilirse SADECE primary değişir, accent/success/... aynı kalır", () => {
     const resolved = resolveThemeConfig({ color: { primary: "#7c3aed" } });
     expect(resolved.light.color.primary).not.toEqual(lightTheme.color.primary);

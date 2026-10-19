@@ -53,6 +53,7 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   vars["--mari-color-rating-stroke"] = c.ratingStroke;
   // Faz 16.9 — grafik serileri; moda göre doğrulanmış set (bkz. primitives/chartPalette).
   chartPalette[theme.mode].forEach((hex, i) => (vars[`--mari-color-chart-${i + 1}`] = hex));
+  for (const [name, value] of Object.entries(theme.colorOverrides ?? {})) if (value) vars[`--mari-color-${name}`] = value;
 
   for (const [key, value] of Object.entries(theme.spacing)) vars[`--mari-space-${cssSafeKey(key)}`] = value;
   for (const [key, value] of Object.entries(theme.radius)) vars[`--mari-radius-${key}`] = value;
