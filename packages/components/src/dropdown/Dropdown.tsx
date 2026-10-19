@@ -101,7 +101,7 @@ function DropdownRoot({ children, hover = false, className }: Readonly<DropdownP
   return (
     <div
       ref={anchorRef}
-      className={cn("inline-block self-start", className)}
+      className={cn("inline-block self-center", className)}
       onMouseEnter={
         hover && !skeleton
           ? () => {

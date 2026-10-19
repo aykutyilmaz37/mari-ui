@@ -9,13 +9,13 @@ import { skeletonBoxProps } from "../../lib/skeleton";
 
 export function DropdownTrigger({ children, className, color, variant, onClick, "aria-label": ariaLabel }: Readonly<DropdownTriggerProps>) {
   const { visible, setVisible, triggerRef, panelId, focusPanelOnOpenRef, hoverMode, skeleton } = useDropdown();
-  const classes = cn("cursor-pointer", getTriggerClasses(color, variant), className);
+  const classes = cn("inline-flex cursor-pointer items-center", getTriggerClasses(color, variant), className);
 
   // İskelet: tetikleyicinin kendi sınıfları (boyut, radius, flex düzeni) korunur,
   // içerik görünmez olarak yerinde kalır → yüklenince kutu zıplamaz; tıklanamaz.
   if (skeleton) {
     return (
-      <span {...skeletonBoxProps(cn("inline-block", classes, "*:invisible"))}>
+      <span {...skeletonBoxProps(cn("inline-flex items-center", classes, "*:invisible"))}>
         {children}
       </span>
     );

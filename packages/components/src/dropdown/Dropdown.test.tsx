@@ -142,6 +142,7 @@ describe("Dropdown", () => {
     setup();
     const wrapper = screen.getByRole("button", { name: "Menüyü Aç" }).parentElement as HTMLElement;
     expect(wrapper.className).toContain("inline-block");
+    expect(wrapper.className).toContain("self-center");
     expect(wrapper.className).not.toMatch(/(^|\s)relative(\s|$)/);
   });
 

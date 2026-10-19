@@ -80,8 +80,8 @@ export const shadow = {
  * kendi z-index'ini seçiyordu). Artık her overlay türü bu skaladan okur.
  */
 export const zIndex = {
-  dropdown: 1000,
-  sticky: 1100,
+  dropdown: 1100,
+  sticky: 1000,
   drawer: 1200,
   modal: 1300,
   toast: 1400,
