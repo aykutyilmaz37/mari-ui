@@ -1,5 +1,14 @@
 # @mari-ui/components
 
+## 0.3.1
+
+### Patch Changes
+
+- fac8f3d: Açılır paneller (`Dropdown`, `Popover`, `Select`…) yapışkan menünün altında kalmıyor: z-index skalasında `dropdown` artık `sticky`'nin üstünde (sticky 1000, dropdown 1100). `Dropdown` sarmalayıcısı flex satırlarda dikey ortalanıyor (`self-center`), `DropdownTrigger` `inline-flex items-center` olduğundan fazladan satır boşluğu almıyor. `Image` önbellekten gelen görselde opaklık geçişini atlıyor ve yeni `fade={false}` prop'u var.
+- Updated dependencies [fac8f3d]
+  - @mari-ui/tokens@0.3.1
+  - @mari-ui/core@0.3.1
+
 ## 0.3.0
 
 ### Patch Changes

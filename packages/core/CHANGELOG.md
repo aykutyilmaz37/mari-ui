@@ -1,5 +1,12 @@
 # @mari-ui/core
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [fac8f3d]
+  - @mari-ui/tokens@0.3.1
+
 ## 0.3.0
 
 ### Patch Changes
