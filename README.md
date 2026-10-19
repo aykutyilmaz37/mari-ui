@@ -1,6 +1,6 @@
 # mari-ui
 
-<img src="assets/brand/mari-ui-logo.png" alt="mari-ui" width="320" />
+<img src="assets/brand/mari-ui-logo.svg" alt="mari-ui" width="320" />
 
 Türkçe, token tabanlı, framework'ten bağımsız React tasarım sistemi. Web (React / Next.js, RSC uyumlu) ve React Native aynı token ve prop sözleşmesinden beslenir; renk, tipografi, boşluk tek kaynaktan (`@mari-ui/tokens`) türer, açık ve koyu tema WCAG AA kontrastıyla otomatik hesaplanır.
 
