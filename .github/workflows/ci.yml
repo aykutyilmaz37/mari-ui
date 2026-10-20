@@ -10,6 +10,13 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Elle: görsel referansları (apps/docs/__visual__) seçilen branch'te yeniden üretip commit'ler.
+  workflow_dispatch:
+    inputs:
+      update_visual:
+        description: "Görsel referansları güncelle"
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -21,6 +28,9 @@ jobs:
     # ubuntu-latest 2026-10-19'dan itibaren Ubuntu 26'ya geçiyor; Playwright'ın sistem
     # bağımlılıkları (story testleri) yeni sürümde doğrulanana kadar sabit.
     runs-on: ubuntu-24.04
+    # write: yalnız elle tetiklenen "görsel referansları güncelle" commit'i için.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
 
@@ -57,13 +67,33 @@ jobs:
         run: pnpm turbo run test:coverage --concurrency=1
 
       # Storybook bir önceki adımda statik derlendi (apps/docs build). Her story
-      # (web + native) Playwright'ta açılır: çizim / `play` hatası ve axe ihlali
-      # testi kırar — bkz. apps/docs/.storybook/test-runner.ts.
-      - name: Playwright tarayıcısı
-        run: pnpm -F @mari-ui/docs exec playwright install --with-deps chromium
+      # (web + native) Playwright'ta açılır: çizim / `play` hatası, axe ihlali ve
+      # görsel fark (apps/docs/__visual__ referanslarına karşı) testi kırar — bkz.
+      # apps/docs/.storybook/test-runner.ts. Playwright'ın resmi imajında koşar:
+      # referanslar bu imajda üretildi, font/render her koşuda birebir aynı olsun.
+      # Referansları güncellemek: Actions → CI → "Run workflow" (update_visual).
+      - name: Story testleri (çizim + etkileşim + axe + görsel)
+        run: >-
+          docker run --rm --ipc=host -v "$PWD":/w -w /w/apps/docs -e CI=true -e VISUAL=1
+          mcr.microsoft.com/playwright:v1.64.0-noble
+          bash -c 'export PATH=/w/node_modules/.bin:$PATH && concurrently -k -s first -n SB,TEST
+          "http-server storybook-static --port 6106 --silent"
+          "wait-on tcp:127.0.0.1:6106 && test-storybook --url http://127.0.0.1:6106 ${{ inputs.update_visual && '-u' || '' }}"'
 
-      - name: Story testleri (çizim + etkileşim + axe)
-        run: pnpm -F @mari-ui/docs test-storybook:ci
+      - name: Görsel fark görüntüleri
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff
+          path: apps/docs/__visual__/__diff_output__/
+
+      - name: Görsel referansları commit'le
+        if: inputs.update_visual
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/docs/__visual__
+          git diff --cached --quiet || (git commit -m "test(docs): görsel referanslar güncellendi" && git push)
 
       - name: Bağımlılık güvenlik taraması (kritik/yüksek eşiği)
         # `image-size` (react-native > metro, transitif, dev-only) için henüz

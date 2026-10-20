@@ -47,3 +47,6 @@ next-env.d.ts
 
 # tokens package build script cache
 .vite
+
+# görsel regresyon fark çıktıları (apps/docs/.storybook/test-runner.ts)
+__diff_output__/
