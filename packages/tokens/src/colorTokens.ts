@@ -38,13 +38,14 @@ export type ColorTokenName = RoleTokenName | keyof typeof CANVAS_KEYS | ChartTok
 export type ColorTokenOverrides = Partial<Record<ColorTokenName, string>>;
 
 /** Sıralı tüm renk token adları — Tailwind `@theme` eşlemesi ve şema bu listeden okur. */
-export const colorTokenNames: ColorTokenName[] = [
+// `@__PURE__` IIFE: modül seviyesindeki hesaplama, kullanılmadığında tüketici bundle'ından düşebilsin.
+export const colorTokenNames: ColorTokenName[] = /* @__PURE__ */ (() => [
   ...ROLES.flatMap((role) => Object.keys(ROLE_SUFFIX).map((suffix) => `${role}${suffix}` as RoleTokenName)),
   ...(Object.keys(CANVAS_KEYS) as Array<keyof typeof CANVAS_KEYS>),
   ...Array.from({ length: 8 }, (_, i) => `chart-${i + 1}` as ChartTokenName),
-];
+])();
 
-const tokenNameSet = new Set<string>(colorTokenNames);
+const tokenNameSet = /* @__PURE__ */ new Set<string>(colorTokenNames);
 
 export function isColorTokenName(name: string): name is ColorTokenName {
   return tokenNameSet.has(name);

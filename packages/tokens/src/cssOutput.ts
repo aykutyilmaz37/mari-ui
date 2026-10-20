@@ -40,7 +40,7 @@ export interface CssOutputOptions {
   fluidRootMax?: number | null;
 }
 
-const DEFAULT_HEADER = ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.", " * Kaynak: @mari-ui/tokens (theme.ts + cssOutput.ts)", " */", ""].join(
+const DEFAULT_HEADER = /* @__PURE__ */ ["/**", " * ÜRETİLMİŞ DOSYA — elle düzenlemeyin.", " * Kaynak: @mari-ui/tokens (theme.ts + cssOutput.ts)", " */", ""].join(
   "\n"
 );
 

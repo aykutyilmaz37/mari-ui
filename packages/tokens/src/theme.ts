@@ -6,6 +6,7 @@ import type { ThemeMode } from "./semantic/deriveColorRole";
 import type { SpacingDensity } from "./runtimeTheme";
 import { applyPersona, type PersonaName } from "./personas";
 import { applyColorTokenOverrides, type ColorTokenOverrides } from "./colorTokens";
+import { darkTheme, lightTheme } from "./defaultThemes.generated";
 
 /*
  * `sans`/`mono` burada bilinçli olarak `string` — Faz 6'nın tema stüdyosu tüketicinin kendi font ailesi string'ini geçirebilmeli, sabit iki literalle sınırlı kalamaz.
@@ -91,9 +92,13 @@ function buildTheme(mode: ThemeMode, options: BuildThemeOptions = {}): Theme {
   };
 }
 
-/** Web `@theme`/CSS değişkenleri ve native `StyleSheet` için tek gerçek kaynak. */
-export const lightTheme: Theme = buildTheme("light");
-export const darkTheme: Theme = buildTheme("dark");
+/**
+ * Web `@theme`/CSS değişkenleri ve native `StyleSheet` için tek gerçek kaynak:
+ * `buildTheme("light" | "dark")` çıktısı, build öncesi düz veriye çevrilmiş hâli
+ * (bkz. `scripts/build-default-themes.ts`). Böylece yalnız varsayılan temayı
+ * okuyan tüketici (native `useTheme`) renk türetme zincirini bundle'a almaz.
+ */
+export { lightTheme, darkTheme };
 
 export const themes = { light: lightTheme, dark: darkTheme } as const;
 
@@ -165,13 +170,15 @@ export interface MariUiThemeConfig {
 }
 
 /** CLI, stüdyo ve şema için tek varsayılan config kaynağı. */
-export const defaultThemeConfig = {
-  color: { primary: primitives.primaryRamp[600], accent: primitives.accentRamp[600] },
-  typography: { fontFamilySans: primitives.fontFamily.sans, fontFamilyMono: primitives.fontFamily.mono, fontFamilyHeading: primitives.fontFamily.heading },
-  density: { radius: "md", spacing: "normal", shadow: "normal" },
-  motion: "normal",
-  scale: { fluid: false as boolean, max: 22 },
-} satisfies Required<Omit<MariUiThemeConfig, "themes" | "persona">>;
+// `@__PURE__` IIFE: özellik erişimleri bundler'a yan etkili görünür; kullanılmazsa bundle'dan düşer.
+export const defaultThemeConfig = /* @__PURE__ */ (() =>
+  ({
+    color: { primary: primitives.primaryRamp[600], accent: primitives.accentRamp[600] },
+    typography: { fontFamilySans: primitives.fontFamily.sans, fontFamilyMono: primitives.fontFamily.mono, fontFamilyHeading: primitives.fontFamily.heading },
+    density: { radius: "md", spacing: "normal", shadow: "normal" },
+    motion: "normal",
+    scale: { fluid: false as boolean, max: 22 },
+  }) satisfies Required<Omit<MariUiThemeConfig, "themes" | "persona">>)();
 
 export interface NamedThemeInput {
   base: ThemeMode;

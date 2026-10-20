@@ -35,7 +35,8 @@ const SERIF_FALLBACK = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = '"JetBrains Mono", ui-monospace, SFMono-Regular, monospace';
 const MONO_FONT = "JetBrains Mono:wght@400;500";
 
-export const personas: Record<PersonaName, Persona> = {
+// `@__PURE__` IIFE: şablon dizgeleri bundler'a yan etkisiz görünmediği için sarmalı; kullanılmazsa bundle'dan düşer.
+export const personas: Record<PersonaName, Persona> = /* @__PURE__ */ (() => ({
   corporate: {
     name: "corporate",
     label: "Kurumsal",
@@ -96,7 +97,7 @@ export const personas: Record<PersonaName, Persona> = {
       motion: "calm",
     },
   },
-};
+}))();
 
 /** Kişilik yoksa config aynen döner; varsa kişilik taban olur, config'teki her alan onu ezer. */
 export function applyPersona(config: MariUiThemeConfig): MariUiThemeConfig {
