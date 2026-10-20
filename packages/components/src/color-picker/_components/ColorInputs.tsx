@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Input } from "../../input";
+import { PlainInput } from "../../input/PlainInput";
 import { InputNumber } from "../../input-number";
 import { Segmented } from "../../segmented";
 import type { ColorFormat, Hsba } from "../types";
@@ -38,7 +38,7 @@ function HexInput({ color, disabled, onChange }: Readonly<{ color: Hsba; disable
   };
 
   return (
-    <Input
+    <PlainInput
       size="sm"
       aria-label="Hex renk kodu"
       icon={<span className="text-mari-muted">#</span>}

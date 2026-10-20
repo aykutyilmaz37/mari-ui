@@ -49,6 +49,8 @@ const PACKAGES = {
     folderToName: (f) => f,
     infra: [],
     banned: { button: ["transfer", "tree", "carousel", "table", "date-picker"] },
+    // Faz 4b: Input'u yalnız iç alan olarak kullananlar maske kütüphanesini taşımaz (PlainInput).
+    bannedDeps: Object.fromEntries(["autocomplete", "slider", "transfer", "table", "color-picker"].map((e) => [e, ["@react-input/mask"]])),
     textMarker: (c) => `mari-${c}`,
   },
   native: {
@@ -170,10 +172,11 @@ async function measure(pkg) {
   return { rows, leaks };
 }
 
-// Elle yazılmış, açık sızıntı iddiası: button tek başına ağır bileşen getirmemeli.
+// Elle yazılmış, açık sızıntı iddiası: button tek başına ağır bileşen, iç alanlar maske kütüphanesi getirmemeli.
 async function bannedCheck(pkg) {
   const problems = [];
-  for (const [entry, banned] of Object.entries(pkg.banned)) {
+  for (const entry of new Set([...Object.keys(pkg.banned), ...Object.keys(pkg.bannedDeps ?? {})])) {
+    const banned = pkg.banned[entry] ?? [];
     const { metafile, code } = await bundle({ contents: `export * from "${pkg.name}/${entry}";`, pkg, metafile: true });
     const owners = new Set(distInputsOf(pkg, metafile).flatMap((p) => [...ownersOf(pkg, p)]));
     const text = new TextDecoder().decode(code);
