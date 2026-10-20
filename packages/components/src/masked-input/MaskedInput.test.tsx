@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Input } from "../input/Input";
 import { clearNativeValue } from "../input/utils";
 import { getA11yViolations } from "../testUtils/a11y";
@@ -13,6 +13,12 @@ import { MaskedInput } from "./MaskedInput";
  * kütüphanesinin seçim takibiyle uyuşmuyor (gerçek tarayıcıda sorun yok).
  */
 describe("MaskedInput", () => {
+  // Maske kütüphanesi odaktaki alanın imlecini setTimeout döngüsüyle izler ve döngüyü
+  // yalnız blur'da durdurur; test bitince jsdom kapanırken döngü "window is not defined" atardı.
+  afterEach(() => {
+    (document.activeElement as HTMLElement | null)?.blur();
+  });
+
   it.each([
     ["sade", { id: "a", "aria-label": "Telefon", placeholder: "(___) ___ __ __" }],
     ["ikon + temizle + boyut + renk", { id: "b", "aria-label": "Kart", allowClear: true, size: "sm", color: "error", icon: <span>#</span> }],

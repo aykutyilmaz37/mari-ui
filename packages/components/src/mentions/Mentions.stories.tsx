@@ -8,7 +8,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { baseSizeArgType } from "../lib/storybookArgTypes";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
 import { Field } from "../field";
@@ -48,10 +49,35 @@ const meta: Meta<typeof MentionTextarea> = {
 export default meta;
 type Story = StoryObj<typeof MentionTextarea>;
 
+// Playground kodlarında kopyalanabilir, kısa bir ekip listesi.
+const TEAM_CODE = `const team = [
+  { value: "ayse.demir", label: "Ayşe Demir", description: "Ürün tasarımcısı" },
+  { value: "mehmet.kaya", label: "Mehmet Kaya", description: "Arka uç geliştirici" },
+];`;
+
 export const Playground: Story = {
-  ...storyDoc("MentionTextarea; kontrollerden satır sayısı ve yer tutucu. `@` yazın."),
+  ...storyDoc(
+    "MentionTextarea; kontrollerden satır sayısı ve yer tutucu. `@` yazın.",
+    (args) => `${TEAM_CODE}\n\n<MentionTextarea ${jsxProps(args)} mentions={{ options: team }} />`
+  ),
   args: { rows: 3, placeholder: "Yorum yazın, @ ile birini etiketleyin", "aria-label": "Yorum" },
   render: (args) => <MentionTextarea {...args} mentions={{ options: TEAM }} />,
+};
+
+export const InputPlayground: StoryObj<typeof MentionInput> = {
+  name: "Playground (MentionInput)",
+  ...storyDoc(
+    "Tek satırlık MentionInput; Input'un tüm prop'ları (boyut, varyant, temizle) geçerli. `@` yazın.",
+    (args) => `${TEAM_CODE}\n\n<MentionInput ${jsxProps(args)} mentions={{ options: team }} />`
+  ),
+  argTypes: {
+    size: baseSizeArgType,
+    variant: { control: "select", options: ["outline", "soft", "ghost", "underlined"] },
+    allowClear: { control: "boolean" },
+  },
+  args: { "aria-label": "Görev başlığı", placeholder: "Görev başlığı, @ ile atayın", size: "md", variant: "outline", allowClear: true },
+  render: (args) => <MentionInput {...args} mentions={{ options: TEAM }} />,
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
 };
 
 const TEAM: MentionOption[] = [

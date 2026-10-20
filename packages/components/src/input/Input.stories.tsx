@@ -6,7 +6,7 @@ import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Input } from "./index";
 import type { InputProps } from "./index";
-import { MaskedInput as MaskedField, type MaskedInputProps } from "../masked-input";
+import { MaskedInput as MaskedField } from "../masked-input";
 
 const meta: Meta<typeof Input> = {
   title: "Veri Girişi/Input",
@@ -29,7 +29,7 @@ const meta: Meta<typeof Input> = {
             "Çok satırlı metin için — `Textarea`.",
             "Sabit uzunlukta kod/OTP girişi için — `OtpInput`.",
             "Bir listeden filtreli seçim için — `AutoComplete`.",
-            "Telefon/kart gibi biçimli giriş için — `MaskedInput`.",
+            "Telefon/kart gibi biçimli giriş için — `MaskedInput` (kendi sayfası: Veri Girişi/MaskedInput).",
           ],
           a11y:
             "Her alanın görünür bir etiketi olmalı (`<label htmlFor>` + `id`, ya da `aria-label`) — placeholder etiket sayılmaz. " +
@@ -194,24 +194,6 @@ export const CustomCountFormatter: StoryObj<InputProps> = {
     count: {
       formatter: ({ count, maxLength }) => `${maxLength! - count} karakter kaldı`,
     },
-  },
-  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
-};
-
-export const MaskedInput: StoryObj<MaskedInputProps> = {
-  name: "Maskeli",
-  ...storyDoc(
-    "`MaskedInput` (`@mari-ui/components/masked-input`): `mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası). Mobilde sayısal klavye için `inputMode=\"tel\"`.",
-    (args) => `<MaskedInput ${jsxProps(args, { skip: ["icon"] })} icon={<PhoneIcon size={16} />} />`
-  ),
-  render: (args) => <MaskedField {...args} />,
-  args: {
-    "aria-label": "Cep telefonu",
-    placeholder: "0(5__) ___ __ __",
-    mask: "0(5__) ___ __ __",
-    inputMode: "tel",
-    icon: <PhoneIcon size={16} />,
-    allowClear: true,
   },
   decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
 };
