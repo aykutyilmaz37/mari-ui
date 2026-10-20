@@ -8,7 +8,8 @@
  *
  * `StyleSheet` + `@mari-ui/tokens` JS objesi kullanır; NativeWind veya başka
  * bir babel/metro eklentisi GEREKTİRMEZ. Tüketici tek yapması gereken:
- * `import { Button } from "@mari-ui/native"`.
+ * `import { Button } from "@mari-ui/native/button"`
+ * (subpath — yalnız Button'ın kodu gelir; kök barrel tüm paketi getirir).
  */
 export { Button } from "./Button";
 export type { ButtonProps, ButtonShape, ButtonIconPosition } from "./Button";
@@ -145,13 +146,5 @@ export type { PaginationProps, PaginationVariant } from "./Pagination";
 export { NativeConfigProvider, useNativeConfig } from "./nativeConfig";
 export type { NativeConfig, NativeConfigOverrides, NativeControlSize, NativeCardSize, NativeListSize, NativeTextSize, NativeTextStyle, NativeAvatarSize, NativeBadgeSize, NativeTagSize, NativeSelectionSize, NativeSwitchSize, NativeSegmentedSize, NativeSliderSize, NativeStatisticSize, NativeStepsSize, NativeAccordionSize, NativeTabsSize, NativeSelectSize, NativeAppBarSize, NativeBottomNavigationSize, NativeSidebarSize, NativeTreeSize } from "./nativeConfig";
 
-export { ThemeProvider } from "./theme/ThemeProvider";
-export type { ThemeProviderProps } from "./theme/ThemeProvider";
-export { useTheme } from "./theme/useTheme";
-export { SafeAreaInsetsProvider, useSafeInsets } from "./theme/insets";
-export type { SafeAreaInsets } from "./theme/insets";
-export { BRAND_FONT_FAMILIES, withFonts } from "./theme/fonts";
-export type { NativeFonts } from "./theme/fonts";
-export { useStyles } from "./styles/useStyles";
-export { SkeletonBox } from "./lib/Skeleton";
-export type { SkeletonableProps } from "./lib/Skeleton";
+export { ThemeProvider, useTheme, SafeAreaInsetsProvider, useSafeInsets, BRAND_FONT_FAMILIES, withFonts, useStyles, SkeletonBox } from "./theme";
+export type { ThemeProviderProps, SafeAreaInsets, NativeFonts, SkeletonableProps } from "./theme";
