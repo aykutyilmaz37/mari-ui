@@ -4,7 +4,7 @@ import React, { createContext, useCallback, useContext, useId, useMemo, useState
 import { useControllableState } from "@mari-ui/core";
 import type { TabsContextType, TabsProps } from "./types";
 
-export const TabsContext = createContext<TabsContextType | null>(null);
+export const TabsContext = /* @__PURE__ */ createContext<TabsContextType | null>(null);
 
 type TabsProviderProps = Omit<TabsProps, "className" | "responsive">;
 

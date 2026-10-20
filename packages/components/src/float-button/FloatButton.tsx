@@ -13,7 +13,7 @@ import { PLACEMENT_CLASS } from "./utils";
 export type { FloatButtonProps };
 
 /** Grup içindeki düğmeler sabit konumlanmaz; şekil gruptan gelir. */
-export const FloatGroupContext = createContext<{ shape: FloatButtonShape; joined: boolean; skeleton?: boolean } | null>(null);
+export const FloatGroupContext = /* @__PURE__ */ createContext<{ shape: FloatButtonShape; joined: boolean; skeleton?: boolean } | null>(null);
 
 const SHAPE_CLASS: Record<FloatButtonShape, string> = { circle: "rounded-full", square: "rounded-lg" };
 

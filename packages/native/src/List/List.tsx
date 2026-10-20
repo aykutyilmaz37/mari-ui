@@ -17,7 +17,7 @@ interface ListContextValue {
   itemLayout: ListItemLayout;
 }
 
-const ListContext = createContext<ListContextValue>({ size: "md", bordered: false, itemLayout: "horizontal" });
+const ListContext = /* @__PURE__ */ createContext<ListContextValue>({ size: "md", bordered: false, itemLayout: "horizontal" });
 
 function DefaultSeparator() {
   const theme = useTheme();
@@ -205,7 +205,7 @@ function ListInner<ItemT>(
 }
 
 /** Native, virtualized list. Scroll, refresh and windowing props pass through to `FlatList`; `infinite` adds guarded paging. */
-export const List = React.forwardRef(ListInner) as <ItemT>(props: ListProps<ItemT> & React.RefAttributes<FlatList<ItemT>>) => React.ReactElement;
+export const List = /* @__PURE__ */ React.forwardRef(ListInner) as <ItemT>(props: ListProps<ItemT> & React.RefAttributes<FlatList<ItemT>>) => React.ReactElement;
 
 /** A padded row rendered by `List`. */
 /** Her hücre bir liste öğesi: `list` rolünün altında `listitem` (web'de ekran okuyucu "öğe 3/12" der). */

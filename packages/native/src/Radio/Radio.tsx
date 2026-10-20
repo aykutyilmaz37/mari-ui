@@ -66,7 +66,7 @@ interface GroupContextValue {
   skeleton: boolean;
 }
 
-const GroupContext = createContext<GroupContextValue | null>(null);
+const GroupContext = /* @__PURE__ */ createContext<GroupContextValue | null>(null);
 
 export function Radio({ value, checked, defaultChecked = false, disabled = false, onChange, label, description, size, variant, color, skeleton, accessibilityLabel, style }: Readonly<RadioProps>) {
   const theme = useTheme();

@@ -44,7 +44,7 @@ interface DropdownContextType {
   cancelHoverClose: () => void;
 }
 
-const DropdownContext = createContext<DropdownContextType | null>(null);
+const DropdownContext = /* @__PURE__ */ createContext<DropdownContextType | null>(null);
 
 /*
  * Artık `@mari-ui/core`'un `useDisclosure` hook'u üzerine kurulu. Bu

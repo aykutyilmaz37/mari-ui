@@ -23,9 +23,6 @@ export interface QRCodeProps extends Omit<WebQRCodeProps, "size" | "className" |
   style?: StyleProp<ViewStyle>;
 }
 
-/** Her temada koyu-üstü-açık: bazı okuyucular ters (açık-üstü-koyu) QR'ı çözemez. */
-const DEFAULT_COLOR = neutralRamp[950];
-
 function StatusLayer({ status, onRefresh }: Readonly<{ status: Exclude<QRStatus, "active">; onRefresh?: () => void }>) {
   const theme = useTheme();
   const c = theme.color.canvas;
@@ -116,7 +113,8 @@ export function QRCode({
   value,
   size = 160,
   errorLevel,
-  color = DEFAULT_COLOR,
+  // Her temada koyu-üstü-açık: bazı okuyucular ters (açık-üstü-koyu) QR'ı çözemez.
+  color = neutralRamp[950],
   colorEnd,
   bgColor = "#ffffff",
   cornerColor,

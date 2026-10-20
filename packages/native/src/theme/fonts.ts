@@ -19,7 +19,7 @@ export const BRAND_FONT_FAMILIES = ["Geist", "Manrope", "Geist Mono"] as const;
 /** `nativeFontFamily` bu değerler için `undefined` döner → RN platform fontunu kullanır. */
 const SYSTEM_FAMILY: Theme["fontFamily"] = { sans: "system-ui", mono: "ui-monospace", heading: "system-ui" };
 
-const systemCache = new WeakMap<Theme, Theme>();
+const systemCache = /* @__PURE__ */ new WeakMap<Theme, Theme>();
 
 /** Temayı font kipine göre döner; sistem kopyası tema başına bir kez üretilir (kimlik sabit → gereksiz render yok). */
 export function withFonts(theme: Theme, fonts: NativeFonts): Theme {

@@ -45,7 +45,7 @@ interface NavBarProps extends NavBarBaseProps {
   children?: React.ReactNode;
 }
 
-const placeholder = <span className={cn("block size-full min-h-[1lh] rounded-md", skeletonFill(true))} />;
+const placeholder = <span className={/* @__PURE__ */ cn("block size-full min-h-[1lh] rounded-md", /* @__PURE__ */ skeletonFill(true))} />;
 
 /*
  * BasicMenu/MegaMenu'nün ortak kabuğu (eskiden iki dosyada kopya):

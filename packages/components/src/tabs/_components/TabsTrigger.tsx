@@ -8,7 +8,7 @@ import type { TabsTriggerProps } from "../types";
 import { skeletonFill } from "../../lib/skeleton";
 
 /** İskelette etiket: kendi metin kutusunda dolgu, harfler görünmez (genişlik korunur). */
-const skeletonTextClass = cn("rounded-sm text-transparent", skeletonFill(true));
+const skeletonTextClass = /* @__PURE__ */ cn("rounded-sm text-transparent", /* @__PURE__ */ skeletonFill(true));
 
 /**
  * Artık `Button`'ı sarmalamıyor — Button'ın `h-8` sabit yüksekliği
@@ -18,7 +18,7 @@ const skeletonTextClass = cn("rounded-sm text-transparent", skeletonFill(true));
  * - `useId` tabanlı id'ler (iki Tabs aynı `value`'yu kullanınca çakışıyordu),
  * - `icon` / `count` / `disabled`.
  */
-export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ children, value, icon, count, disabled, className }, ref) => {
+export const TabsTrigger = /* @__PURE__ */ forwardRef<HTMLButtonElement, TabsTriggerProps>(function TabsTrigger({ children, value, icon, count, disabled, className }, ref) {
   const { activeTab, setActiveTab, baseId, color, variant, orientation, size, fill, skeleton, mountedPanels } = useTabs();
   const active = activeTab === value;
 
@@ -48,5 +48,3 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(({ ch
     </button>
   );
 });
-
-TabsTrigger.displayName = "TabsTrigger";

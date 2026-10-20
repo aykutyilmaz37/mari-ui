@@ -59,9 +59,9 @@ type StepsLayout = "inline" | "stacked" | "vertical" | "compact";
  * açıklamanın gerçek genişliğini ve satır kırılmasını korur (sıfır zıplama).
  * `box-decoration-clone`: çok satırlı açıklamada her satır ayrı yuvarlanır.
  */
-const skeletonTextClass = cn("rounded-sm text-transparent box-decoration-clone", skeletonFill(true));
+const skeletonTextClass = /* @__PURE__ */ cn("rounded-sm text-transparent box-decoration-clone", /* @__PURE__ */ skeletonFill(true));
 /** İskelette gösterge: aynı daire, durum rengi/kenarlığı yok, içerik görünmez. */
-const skeletonIndicatorClass = cn("border-transparent text-transparent [&_svg]:invisible", skeletonFill(true));
+const skeletonIndicatorClass = /* @__PURE__ */ cn("border-transparent text-transparent [&_svg]:invisible", /* @__PURE__ */ skeletonFill(true));
 
 /**
  * İnline: başlık göstergenin yanında; stacked: altında ortalı; vertical:

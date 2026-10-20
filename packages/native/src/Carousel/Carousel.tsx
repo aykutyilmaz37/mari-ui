@@ -331,7 +331,9 @@ function SlideContent({ skeleton, children }: Readonly<{ skeleton: boolean; chil
  * `drop-shadow`). iOS'ta zeminsiz kutunun gölgesi içeriğin şeklini izler;
  * web'de (react-native-web) kutu gölgesi olur — orada yok.
  */
-const ICON_SHADOW: ViewStyle = Platform.OS === "web" ? {} : { shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 0, height: 1 } };
+// Fonksiyon: modül seviyesindeki `Platform.OS` erişimi yan etkili sayılır (tree-shaking, Faz 4c).
+const NATIVE_ICON_SHADOW: ViewStyle = { shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 2, shadowOffset: { width: 0, height: 1 } };
+const iconShadow = (): ViewStyle => (Platform.OS === "web" ? {} : NATIVE_ICON_SHADOW);
 
 const arrowOpacity = (disabled: boolean, pressed: boolean) => {
   if (disabled) return 0.4;
@@ -357,7 +359,7 @@ function ArrowButton({ dir, size, disabled, onPress }: Readonly<{ dir: "prev" | 
         justifyContent: "center",
       })}
     >
-      <View style={ICON_SHADOW}>
+      <View style={iconShadow()}>
         <Icon size={size} color={theme.color.canvas.foreground} />
       </View>
     </Pressable>

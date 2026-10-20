@@ -10,8 +10,6 @@ import { buildQRModel } from "./utils";
 
 export type { QRCodeProps };
 
-const DEFAULT_COLOR = neutralRamp[950];
-
 function StatusLayer({ status, onRefresh }: Readonly<{ status: Exclude<QRStatus, "active">; onRefresh?: () => void }>) {
   if (status === "loading") {
     return (
@@ -64,7 +62,7 @@ export function QRCode({
   value,
   size = "10rem",
   errorLevel,
-  color = DEFAULT_COLOR,
+  color = neutralRamp[950],
   colorEnd,
   bgColor = "#ffffff",
   cornerColor,

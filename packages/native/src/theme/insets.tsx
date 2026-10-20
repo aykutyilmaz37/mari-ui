@@ -16,7 +16,7 @@ export interface SafeAreaInsets {
  * ImageViewer) kendi `topInset` / `bottomInset` prop'u verilmezse bunu kullanır.
  * `null` = sağlayıcı yok → bileşen kendi platform varsayılanına düşer.
  */
-export const InsetsContext = createContext<Partial<SafeAreaInsets> | null>(null);
+export const InsetsContext = /* @__PURE__ */ createContext<Partial<SafeAreaInsets> | null>(null);
 
 export function useSafeInsets(): Partial<SafeAreaInsets> | null {
   return useContext(InsetsContext);

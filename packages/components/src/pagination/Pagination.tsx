@@ -105,17 +105,13 @@ function activeClasses(color: ColorRole, variant: PaginationVariant): string {
 const itemBaseClass =
   "relative inline-flex shrink-0 items-center justify-center border tabular-nums select-none " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mari-ring";
-/**
- * Dokunmatikte yalnızca DİKEY genişleme: öğeler arası 8px boşluk yatayda
- * 44px'e tamamlamaya yetmiyor, kare genişleme komşunun alanına binerdi.
+/*
+ * Dokunma hedefi `touchTargetClass[size]`: dokunmatikte yalnızca DİKEY genişleme —
+ * öğeler arası 8px boşluk yatayda 44px'e tamamlamaya yetmiyor, kare genişleme
+ * komşunun alanına binerdi.
  */
-const itemTouchClass: Record<Size, string> = {
-  sm: touchTargetClass.sm,
-  md: touchTargetClass.md,
-  lg: touchTargetClass.lg,
-};
 /** İskelette düğme: kendi kare kutusunda dolgu, içerik görünmez, etkileşimsiz. */
-const skeletonItemClass = cn("pointer-events-none border-transparent text-transparent [&_svg]:invisible", skeletonFill(true));
+const skeletonItemClass = /* @__PURE__ */ cn("pointer-events-none border-transparent text-transparent [&_svg]:invisible", /* @__PURE__ */ skeletonFill(true));
 const idleItemClass = "border-transparent text-mari-foreground hover:bg-mari-neutral-subtle cursor-pointer";
 // Sadece ok/"…" düğmelerinde hover geçişi. Sayfa numaralarında BİLİNÇLİ
 // OLARAK geçiş yok: aktif vurgu bir slottan diğerine geçerken 150ms'lik
@@ -225,7 +221,7 @@ export function Pagination({
   const sizeChangerVisible = showSizeChanger ?? onPageSizeChange !== undefined;
   const icon = iconSize[size];
   // İskelette düğmeler yerinde kalır (aynı kare kutu) ama dolgu olur, Tab sırasından çıkar.
-  const itemClass = (stateClass: string) => cn(itemBaseClass, itemSizeClass[size], itemTouchClass[size], skeleton ? skeletonItemClass : stateClass);
+  const itemClass = (stateClass: string) => cn(itemBaseClass, itemSizeClass[size], touchTargetClass[size], skeleton ? skeletonItemClass : stateClass);
   const skeletonTab = skeleton ? -1 : undefined;
   const barPlaceholder = <span className={cn("block size-full min-h-[1lh] rounded-md", skeletonFill(true))} />;
 

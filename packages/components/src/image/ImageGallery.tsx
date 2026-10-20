@@ -769,7 +769,7 @@ interface GalleryToolbarProps {
 }
 
 /** Yapışkan üst çubuk: normalde başlık + görünüm + sütun + "Seç"; seçim modunda sayı + eylemler. */
-const GalleryToolbar = React.forwardRef<HTMLDivElement, GalleryToolbarProps>(function GalleryToolbar(
+const GalleryToolbar = /* @__PURE__ */ React.forwardRef<HTMLDivElement, GalleryToolbarProps>(function GalleryToolbar(
   {
     title,
     selecting,

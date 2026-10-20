@@ -49,8 +49,9 @@ export interface BottomSheetProps extends SkeletonableProps {
 
 const HANDLE_AREA = 24;
 const OPEN_MS = 280;
-const KEYBOARD_BEHAVIOR = Platform.OS === "ios" ? ("padding" as const) : undefined;
-const DEFAULT_INSET = Platform.OS === "ios" ? 28 : 16;
+// Fonksiyonlar: modül seviyesindeki `Platform.OS` erişimi yan etkili sayılır (tree-shaking, Faz 4c).
+const keyboardBehavior = () => (Platform.OS === "ios" ? ("padding" as const) : undefined);
+const defaultInset = () => (Platform.OS === "ios" ? 28 : 16);
 const noop = () => undefined;
 
 function useReduceMotion() {
@@ -303,7 +304,7 @@ function sheetHandlers(props: BottomSheetProps, safe: Partial<SafeAreaInsets> | 
     onRequestClose: props.keyboard === false ? noop : props.onClose,
     onMaskPress: props.maskClosable === false ? undefined : props.onClose,
     label: typeof props.title === "string" ? props.title : props.accessibilityLabel,
-    inset: props.bottomInset ?? (safe ? Math.max(safe.bottom ?? 0, 16) : DEFAULT_INSET),
+    inset: props.bottomInset ?? (safe ? Math.max(safe.bottom ?? 0, 16) : defaultInset()),
   };
 }
 
@@ -345,7 +346,7 @@ export function BottomSheet(props: Readonly<BottomSheetProps>) {
       <Animated.View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: scrimColor(theme), opacity: scrimOpacity }}>
         <Pressable accessible={false} style={{ flex: 1 }} onPress={h.onMaskPress} />
       </Animated.View>
-      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={{ flex: 1, justifyContent: "flex-end" }}>
+      <KeyboardAvoidingView behavior={keyboardBehavior()} pointerEvents="box-none" style={{ flex: 1, justifyContent: "flex-end" }}>
         <Animated.View
           accessibilityViewIsModal
           aria-modal

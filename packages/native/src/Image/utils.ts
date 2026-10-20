@@ -58,9 +58,6 @@ export function parseRatio(value: number | string | undefined): number | undefin
   return ratio !== undefined && Number.isFinite(ratio) && ratio > 0 ? ratio : undefined;
 }
 
-/** Boyut bilinmezken (ne oran ne boyut) iskelet/yer tutucu için makul oran — web ile aynı. */
-export const FALLBACK_RATIO = 4 / 3;
-
 export interface BoxStyle {
   width?: number | `${number}%`;
   height?: number | `${number}%`;
@@ -108,7 +105,8 @@ export function getBoxStyle({
   if (hasH && !(ratio !== undefined && hasW)) style.height = height as BoxStyle["height"];
   let estimated = false;
   if (ratio === undefined && !(hasW && hasH)) {
-    ratio = FALLBACK_RATIO;
+    // Boyut bilinmezken (ne oran ne boyut) iskelet/yer tutucu için makul oran — web ile aynı.
+    ratio = 4 / 3;
     estimated = true;
   }
   if (ratio !== undefined) {

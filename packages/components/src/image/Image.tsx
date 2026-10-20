@@ -60,7 +60,7 @@ function placeholderNode(placeholder: ImageProps["placeholder"]): React.ReactNod
  * yüklenince sayfa kaymaz. `preview` ile kutu bir düğme olur ve tam ekran
  * `ImageViewer` açılır.
  */
-export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
+export const Image = /* @__PURE__ */ forwardRef<HTMLImageElement, ImageProps>(function Image(
   {
     src,
     alt,

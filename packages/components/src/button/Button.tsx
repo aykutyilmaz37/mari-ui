@@ -16,7 +16,7 @@ export type { ButtonProps };
  * `onClick` gibi bir handler geçtiğinde React bunu otomatik olarak client
  * boundary'sine taşır — Button'ın kendisinin client-only olması gerekmez.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+export const Button = /* @__PURE__ */ forwardRef<HTMLButtonElement, ButtonProps>(function Button(props, ref) {
   const {
     color = "primary",
     variant = "solid",
@@ -159,5 +159,3 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) =>
     </button>
   );
 });
-
-Button.displayName = "Button";

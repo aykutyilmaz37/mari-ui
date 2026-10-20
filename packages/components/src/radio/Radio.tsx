@@ -18,8 +18,8 @@ export type { RadioProps };
  */
 const DESCRIPTION_INDENT_CLASS = { sm: "pl-5", md: "pl-6", lg: "pl-7" } as const;
 
-export const Radio = forwardRef<HTMLInputElement, RadioProps>(
-  (
+export const Radio = /* @__PURE__ */ forwardRef<HTMLInputElement, RadioProps>(
+  function Radio(
     {
       autoFocus = false,
       checked,
@@ -41,7 +41,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       skeleton = false,
     },
     ref
-  ) => {
+  ) {
     const inputRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => inputRef.current!, []);
 
@@ -118,5 +118,3 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
     );
   }
 );
-
-Radio.displayName = "Radio";

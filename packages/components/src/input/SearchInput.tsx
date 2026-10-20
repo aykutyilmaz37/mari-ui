@@ -21,8 +21,8 @@ export type SearchInputProps = InputProps & {
  * "Ara" etiketli (`enterKeyHint="search"`).
  */
 /** Arama alanı: Enter ya da arama düğmesi `onSearch`ı çağırır; mobil klavyede Enter tuşu "Ara" olarak görünür. */
-export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ icon, iconPosition = "end", onSearch, onPressEnter, loading = false, searchLabel = "Ara", ...rest }, ref) => {
+export const SearchInput = /* @__PURE__ */ forwardRef<HTMLInputElement, SearchInputProps>(
+  function SearchInput({ icon, iconPosition = "end", onSearch, onPressEnter, loading = false, searchLabel = "Ara", ...rest }, ref) {
     const inputRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(ref, () => inputRef.current!, []);
 
@@ -58,5 +58,3 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     );
   }
 );
-
-SearchInput.displayName = "SearchInput";

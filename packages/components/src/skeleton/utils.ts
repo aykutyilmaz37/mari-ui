@@ -29,9 +29,9 @@ const CONTROL_BOX_CLASS: Record<Size, string> = {
 };
 
 export const INPUT_SIZE_CLASS: Record<Size, string> = {
-  sm: cn(CONTROL_BOX_CLASS.sm, "w-full"),
-  md: cn(CONTROL_BOX_CLASS.md, "w-full"),
-  lg: cn(CONTROL_BOX_CLASS.lg, "w-full"),
+  sm: "h-6 rounded-sm w-full",
+  md: "h-8 rounded-md w-full",
+  lg: "h-10 rounded-md w-full",
 };
 
 const BUTTON_WIDTH_CLASS: Record<Size, string> = { sm: "w-16", md: "w-20", lg: "w-24" };

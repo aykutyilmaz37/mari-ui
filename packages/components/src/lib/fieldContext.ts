@@ -26,7 +26,7 @@ export interface FieldContextValue {
   skeleton: boolean;
 }
 
-export const FieldContext = createContext<FieldContextValue | null>(null);
+export const FieldContext = /* @__PURE__ */ createContext<FieldContextValue | null>(null);
 
 const joinIds = (...ids: Array<string | undefined>) => ids.filter(Boolean).join(" ") || undefined;
 

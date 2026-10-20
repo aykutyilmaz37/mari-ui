@@ -83,8 +83,9 @@ const STRIP_CURRENT = 44;
 const STRIP_GAP = 2;
 const STRIP_MARGIN = 6;
 
-const DEFAULT_TOP = Platform.OS === "ios" ? 54 : (StatusBar.currentHeight ?? 24);
-const DEFAULT_BOTTOM = Platform.OS === "ios" ? 28 : 16;
+// Fonksiyonlar: modül seviyesindeki `Platform.OS` erişimi yan etkili sayılır (tree-shaking, Faz 4c).
+const defaultTop = () => (Platform.OS === "ios" ? 54 : (StatusBar.currentHeight ?? 24));
+const defaultBottom = () => (Platform.OS === "ios" ? 28 : 16);
 
 /** Görüntüleyicide istenecek genişlik: sahne × 2 (yakınlaştırmada keskin kalsın). */
 function viewerSource(src: ImageSource, loader: ImageLoader | undefined, stageWidth: number): ImageSourcePropType | null {
@@ -140,8 +141,8 @@ function touchGeometry(touches: readonly NativeTouchEvent[], stage: Size) {
  */
 function ViewerContent({ items, open, onClose, index, defaultIndex = 0, onIndexChange, loader, thumbnails, actions, accessibilityLabel, topInset: topInsetProp, bottomInset: bottomInsetProp, onExited }: ImageViewerProps & { onExited: () => void }) {
   const safe = useSafeInsets();
-  const topInset = topInsetProp ?? (safe?.top === undefined ? DEFAULT_TOP : safe.top + 4);
-  const bottomInset = bottomInsetProp ?? (safe?.bottom === undefined ? DEFAULT_BOTTOM : Math.max(safe.bottom, 16));
+  const topInset = topInsetProp ?? (safe?.top === undefined ? defaultTop() : safe.top + 4);
+  const bottomInset = bottomInsetProp ?? (safe?.bottom === undefined ? defaultBottom() : Math.max(safe.bottom, 16));
   const theme = useTheme();
   const window = useWindowDimensions();
   const stage = useMemo<Size>(() => ({ width: window.width, height: window.height }), [window.width, window.height]);

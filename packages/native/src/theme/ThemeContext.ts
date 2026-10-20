@@ -9,4 +9,4 @@ import type { Theme } from "@mari-ui/tokens";
  * sadece 3. bir özel tema veya sistemi geçersiz kılmak
  * isteyen tüketiciler için vardır.
  */
-export const ThemeContext = createContext<Theme | null>(null);
+export const ThemeContext = /* @__PURE__ */ createContext<Theme | null>(null);

@@ -42,7 +42,7 @@ export interface ToastProviderProps {
   insets?: { top?: number; bottom?: number };
 }
 
-const ToastContext = createContext<ToastContextValue | null>(null);
+const ToastContext = /* @__PURE__ */ createContext<ToastContextValue | null>(null);
 
 let seq = 0;
 const nextId = () => `toast-${++seq}`;

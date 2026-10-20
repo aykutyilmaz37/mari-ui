@@ -30,7 +30,7 @@ interface ToastEntry extends ToastData {
   exiting?: boolean;
 }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+const ToastContext = /* @__PURE__ */ createContext<ToastContextType | undefined>(undefined);
 
 /** Modül seviyesinde — `useCallback > setTimeout > setState > filter` iç içeliği 4'ü aşmasın. */
 const withoutToast = (id: string) => (prev: ToastEntry[]) => prev.filter((t) => t.id !== id);
