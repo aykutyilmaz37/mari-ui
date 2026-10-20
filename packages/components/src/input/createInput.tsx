@@ -7,8 +7,10 @@ import { touchTargetClass } from "../lib/sizeClasses";
 import { cn, useControllableState } from "@mari-ui/core";
 import { useFieldControl } from "../lib/fieldContext";
 import type { InputProps } from "./types";
-import type { useMention } from "./mention/useMention";
+import type { MentionsConfig } from "../mentions/types";
+import type { useMention } from "../mentions/useMention";
 import { ClearButton, clearIconOf, PasswordToggle } from "./_components/FieldAdornments";
+import { useNoMention } from "./noMention";
 import {
   FIELD_BASE_CLASS,
   FIELD_DISABLED_CLASS,
@@ -22,27 +24,34 @@ import {
 
 /**
  * Input'un isteğe bağlı, ağır özellikleri (bundle performansı Faz 4b): `mask`
- * (@react-input/mask, ~5 KB min+gz) ve `mentions` (öneri paneli, ~3 KB). Public
- * `Input` ikisini de alır; bu özellikleri hiç kullanmayan iç bileşenler
- * (AutoComplete, Slider, Transfer, Table, ColorPicker) `PlainInput`'u kullanır ve
- * o kodu bundle'a almaz. Verilmeyen özellik için prop'lar yok sayılır — bu yüzden
- * `PlainInput`'un tipinde `mask`/`replacement`/`mentions` hiç yoktur.
+ * (@react-input/mask, ~5 KB min+gz) ve `mentions` (Select'in öneri paneli, ~3 KB).
+ * Her biri kendi subpath'inde ayrı bir bileşen: `Input` hiçbirini almaz,
+ * `MaskedInput` (`@mari-ui/components/masked-input`) maskeyi, `MentionInput`
+ * (`@mari-ui/components/mentions`) bahsetmeyi alır — düz Input kullanan sayfa bu
+ * kodu indirmez. Aynı entry'de dursalardı tree-shaking yetmezdi: `export *`
+ * ölçümünde de gerçek tüketicide de birlikte geliyorlardı. Verilmeyen özelliğin
+ * prop'ları yok sayılır — bu yüzden her bileşenin public tipinde yalnız kendi
+ * özelliği var.
  */
 export interface InputFeatures {
   MaskInput?: typeof InputMask;
   useMention?: typeof useMention;
 }
 
-// Bahsetme kapalıyken `useMention`'ın döndürdüğüyle birebir aynı.
-const NO_MENTION: ReturnType<typeof useMention> = { controlProps: {}, panel: null, handleKeyDown: () => false, close: () => {} };
-const useNoMention: typeof useMention = () => NO_MENTION;
 
-export function createInput(features: InputFeatures) {
-  const Input = forwardRef<HTMLInputElement, InputProps>((outerProps, ref) => {
+/** `createInput`in iç prop seti: public `InputProps` + özelliklerin (varsa) prop'ları. */
+export type InputFeatureProps = InputProps & {
+  mask?: string;
+  replacement?: Record<string, RegExp>;
+  mentions?: MentionsConfig;
+};
+
+export function createInput(features: InputFeatures, displayName = "Input") {
+  const Input = forwardRef<HTMLInputElement, InputFeatureProps>((outerProps, ref) => {
     // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
     return <InputInner {...useFieldControl(outerProps)} forwardedRef={ref} features={features} />;
   });
-  Input.displayName = "Input";
+  Input.displayName = displayName;
   return Input;
 }
 
@@ -87,7 +96,7 @@ const InputInner = (
       min,
       mentions,
       ...nativeProps
-    }: InputProps & { forwardedRef: React.ForwardedRef<HTMLInputElement>; features: InputFeatures }
+    }: InputFeatureProps & { forwardedRef: React.ForwardedRef<HTMLInputElement>; features: InputFeatures }
   ) => {
     const innerRef = React.useRef<HTMLInputElement | null>(null);
     const setRefs = (el: HTMLInputElement | null) => {

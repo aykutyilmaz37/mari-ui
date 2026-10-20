@@ -1,10 +1,14 @@
 "use client";
 
-import { InputMask } from "@react-input/mask";
-import { useMention } from "./mention/useMention";
+import type React from "react";
 import { createInput } from "./createInput";
+import type { InputProps } from "./types";
 
 export type { InputProps } from "./types";
 
-/** Tam özellikli Input: `mask` ve `mentions` dahil (bkz. `createInput`). */
-export const Input = /* @__PURE__ */ createInput({ MaskInput: InputMask, useMention });
+/**
+ * Tek satırlık metin alanı. Maske için `MaskedInput`
+ * (`@mari-ui/components/masked-input`), `@` ile bahsetme için `MentionInput`
+ * (`@mari-ui/components/mentions`) — ikisinin kodu da burada yok (bkz. `createInput`).
+ */
+export const Input = /* @__PURE__ */ createInput({}) as React.ForwardRefExoticComponent<InputProps & React.RefAttributes<HTMLInputElement>>;

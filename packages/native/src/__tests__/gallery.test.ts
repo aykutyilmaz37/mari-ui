@@ -6,7 +6,7 @@ import {
   formatDuration,
   groupItems,
   sectionLabel,
-} from "../Image/galleryUtils";
+} from "../ImageGallery/galleryUtils";
 
 const d = (y: number, m: number, day: number) => new Date(y, m - 1, day, 12);
 const items = [

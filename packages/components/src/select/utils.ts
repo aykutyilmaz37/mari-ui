@@ -1,5 +1,5 @@
 import type React from "react";
-import { foldForSearch } from "../autocomplete/utils";
+import { foldForSearch } from "../lib/search";
 import type { SelectOption, SelectOptionGroup, SelectValue } from "./types";
 
 /**

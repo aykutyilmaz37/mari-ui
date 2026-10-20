@@ -2,9 +2,10 @@ import { useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { Input } from "../Input";
-import { Textarea } from "../Textarea";
-import { getA11yViolations } from "../../testUtils/a11y";
+import { Input } from "../input/Input";
+import { MentionInput } from "./MentionInput";
+import { MentionTextarea } from "./MentionTextarea";
+import { getA11yViolations } from "../testUtils/a11y";
 import type { MentionsConfig } from "./types";
 
 const nextFrame = () => act(() => new Promise<void>((r) => requestAnimationFrame(() => r())));
@@ -17,12 +18,12 @@ const people: MentionsConfig = {
   ],
 };
 
-describe("mentions (Input/Textarea)", () => {
+describe("mentions (MentionInput/MentionTextarea)", () => {
   it("Input: @ yazınca combobox açılır, süzer; ↓ + Enter seçer, onPressEnter tetiklenmez", async () => {
     const user = userEvent.setup();
     const onPressEnter = vi.fn();
     const onSelect = vi.fn();
-    render(<Input aria-label="Yorum" mentions={{ ...people, onSelect }} onPressEnter={onPressEnter} />);
+    render(<MentionInput aria-label="Yorum" mentions={{ ...people, onSelect }} onPressEnter={onPressEnter} />);
     const input = screen.getByRole("combobox", { name: "Yorum" });
     expect(input).toHaveAttribute("aria-expanded", "false");
     await user.type(input, "Selam @");
@@ -48,7 +49,7 @@ describe("mentions (Input/Textarea)", () => {
     render(
       // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <div onKeyDown={(e) => e.key === "Escape" && outerEscape()}>
-        <Input aria-label="Yorum" mentions={people} />
+        <MentionInput aria-label="Yorum" mentions={people} />
       </div>
     );
     const input = screen.getByRole("combobox");
@@ -71,7 +72,7 @@ describe("mentions (Input/Textarea)", () => {
     function Controlled() {
       const [text, setText] = useState("");
       return (
-        <Textarea
+        <MentionTextarea
           aria-label="Not"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -92,7 +93,7 @@ describe("mentions (Input/Textarea)", () => {
   it("onSearch + filterOption=false (sunucu araması); loading göstergesi", async () => {
     const user = userEvent.setup();
     const onSearch = vi.fn();
-    render(<Input aria-label="Ara" mentions={{ options: [{ value: "x" }], filterOption: false, onSearch, loading: true }} />);
+    render(<MentionInput aria-label="Ara" mentions={{ options: [{ value: "x" }], filterOption: false, onSearch, loading: true }} />);
     await user.type(screen.getByRole("combobox"), "@ab");
     expect(onSearch).toHaveBeenLastCalledWith("ab", "@");
     expect(screen.getAllByRole("option")).toHaveLength(1);
@@ -103,7 +104,7 @@ describe("mentions (Input/Textarea)", () => {
     const user = userEvent.setup();
     render(
       <>
-        <Input aria-label="E-posta" mentions={people} />
+        <MentionInput aria-label="E-posta" mentions={people} />
         <Input aria-label="Düz" />
       </>
     );
@@ -114,7 +115,7 @@ describe("mentions (Input/Textarea)", () => {
 
   it("axe: açık liste ihlalsiz", async () => {
     const user = userEvent.setup();
-    render(<Textarea aria-label="Yorum" mentions={people} />);
+    render(<MentionTextarea aria-label="Yorum" mentions={people} />);
     await user.type(screen.getByRole("textbox"), "@");
     fireEvent.keyUp(screen.getByRole("textbox"), { key: "End" });
     expect(await getA11yViolations(document.body)).toEqual([]);

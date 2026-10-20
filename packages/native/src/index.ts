@@ -98,8 +98,10 @@ export type { TabsProps, TabsListProps, TabsTriggerProps, TabsTriggerState, Tabs
 export { Select } from "./Select";
 export type { SelectProps, SelectSingleProps, SelectMultipleProps, SelectOption, SelectOptionGroup, SelectValue } from "./Select";
 
-export { Image, ImageViewer, ImageGallery } from "./Image";
-export type { ImageProps, ImageSource, ImageStaticSource, ImageLoader, ImageLoaderParams, ImageFit, ImagePreviewConfig, ImageLoadInfo, ImageViewerProps, ImageViewerItem, ImageGalleryProps, ImageGalleryItem, GalleryView } from "./Image";
+export { Image, ImageViewer } from "./Image";
+export type { ImageProps, ImageSource, ImageStaticSource, ImageLoader, ImageLoaderParams, ImageFit, ImagePreviewConfig, ImageLoadInfo, ImageViewerProps, ImageViewerItem } from "./Image";
+export { ImageGallery } from "./ImageGallery";
+export type { ImageGalleryProps, ImageGalleryItem, GalleryView } from "./ImageGallery";
 
 export { Carousel } from "./Carousel";
 export type { CarouselProps, CarouselControls, DotPosition, ArrowsPlacement, DotsPlacement, ResponsiveItem, CarouselAlign } from "./Carousel";

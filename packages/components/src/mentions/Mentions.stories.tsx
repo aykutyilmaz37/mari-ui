@@ -1,23 +1,25 @@
 /**
- * Faz 16.4: Mention ayrı bir bileşen değil, Input/Textarea'nın `mentions`
- * özelliği (16.0 kararı). Senaryolar: yorumda kişi etiketleme (avatar),
+ * Faz 16.4: bahsetme, Input/Textarea'yla aynı görünümde iki bileşen:
+ * MentionInput ve MentionTextarea (Faz 4b'de Input'tan ayrıldı — öneri paneli
+ * düz Input'un bundle'ına girmesin diye; `@mari-ui/components/mentions`). Senaryolar: yorumda kişi etiketleme (avatar),
  * kişi + konu etiketi (iki tetik), sunucu araması (onSearch + loading),
  * tek satırlık sohbet kutusu. Story seviyesinde `parameters` YAZMAYIN.
  */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { baseSizeArgType } from "../lib/storybookArgTypes";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { Avatar } from "../avatar";
 import { Button } from "../button";
 import { Field } from "../field";
-import { Input } from "./Input";
-import { Textarea } from "./Textarea";
-import type { MentionOption } from "./mention/types";
+import { MentionInput } from "./MentionInput";
+import { MentionTextarea } from "./MentionTextarea";
+import type { MentionOption } from "./types";
 
-const meta: Meta<typeof Textarea> = {
+const meta: Meta<typeof MentionTextarea> = {
   title: "Veri Girişi/Mentions",
-  component: Textarea,
+  component: MentionTextarea,
   tags: ["autodocs"],
   parameters: {
     layout: "padded",
@@ -26,16 +28,16 @@ const meta: Meta<typeof Textarea> = {
       description: {
         component: componentDoc({
           summary:
-            "Input ve Textarea'nın `mentions` özelliği: tetik karakteri (`@`, istenirse `#` gibi başkaları) yazılınca imlecin " +
+            "`MentionInput` ve `MentionTextarea` (`@mari-ui/components/mentions`): Input/Textarea'yla aynı görünüm + `mentions`. Tetik karakteri (`@`, istenirse `#` gibi başkaları) yazılınca imlecin " +
             "hemen altında öneri listesi açılır, seçilen değer metne yazılır (`@ayse.demir `). Liste Select'in listesiyle aynı " +
             "görünüm; arama Türkçe/aksansız. Kelime içindeki `@` (e-posta) tetiklemez.",
           whenToUse: ["Yorum, görev açıklaması, sohbet gibi serbest metinde kişi ya da konu etiketlemek."],
           whenNotToUse: [
             "Alıcı/atanan kişi seçimi gibi metinden bağımsız bir alan — Select (`mode=\"multiple\"`) ya da AutoComplete.",
-            "Maskeli alan — `mask` ile birlikte çalışmaz.",
+            "Bahsetme gerekmeyen alan — düz Input/Textarea (öneri panelini taşımaz).",
           ],
           a11y:
-            "Input `role=\"combobox\"` + `aria-expanded`; Textarea `aria-autocomplete=\"list\"`. Odak hep alanda, aktif öneri " +
+            "MentionInput `role=\"combobox\"` + `aria-expanded`; MentionTextarea `aria-autocomplete=\"list\"`. Odak hep alanda, aktif öneri " +
             "`aria-activedescendant`. ↑/↓ gezinir (devre dışı atlanır), Enter/Tab seçer, Escape listeyi kapatır (Modal'ı değil). " +
             "Liste açıkken Enter formu göndermez.",
         }),
@@ -45,12 +47,37 @@ const meta: Meta<typeof Textarea> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Textarea>;
+type Story = StoryObj<typeof MentionTextarea>;
+
+// Playground kodlarında kopyalanabilir, kısa bir ekip listesi.
+const TEAM_CODE = `const team = [
+  { value: "ayse.demir", label: "Ayşe Demir", description: "Ürün tasarımcısı" },
+  { value: "mehmet.kaya", label: "Mehmet Kaya", description: "Arka uç geliştirici" },
+];`;
 
 export const Playground: Story = {
-  ...storyDoc("Textarea + `mentions`; kontrollerden satır sayısı ve yer tutucu. `@` yazın."),
+  ...storyDoc(
+    "MentionTextarea; kontrollerden satır sayısı ve yer tutucu. `@` yazın.",
+    (args) => `${TEAM_CODE}\n\n<MentionTextarea ${jsxProps(args)} mentions={{ options: team }} />`
+  ),
   args: { rows: 3, placeholder: "Yorum yazın, @ ile birini etiketleyin", "aria-label": "Yorum" },
-  render: (args) => <Textarea {...args} mentions={{ options: TEAM }} />,
+  render: (args) => <MentionTextarea {...args} mentions={{ options: TEAM }} />,
+};
+
+export const InputPlayground: StoryObj<typeof MentionInput> = {
+  name: "Playground (MentionInput)",
+  ...storyDoc(
+    "Tek satırlık MentionInput; Input'un tüm prop'ları (boyut, varyant, temizle) geçerli. `@` yazın.",
+    (args) => `${TEAM_CODE}\n\n<MentionInput ${jsxProps(args)} mentions={{ options: team }} />`
+  ),
+  argTypes: {
+    size: baseSizeArgType,
+    variant: { control: "select", options: ["outline", "soft", "ghost", "underlined"] },
+    allowClear: { control: "boolean" },
+  },
+  args: { "aria-label": "Görev başlığı", placeholder: "Görev başlığı, @ ile atayın", size: "md", variant: "outline", allowClear: true },
+  render: (args) => <MentionInput {...args} mentions={{ options: TEAM }} />,
+  decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
 };
 
 const TEAM: MentionOption[] = [
@@ -73,9 +100,9 @@ const TEAM: MentionOption[] = [
 export const Comment: Story = {
   name: "Yorumda Kişi Etiketleme",
   ...storyDoc(
-    "Textarea'da `@` yazınca ekip listesi; avatar `icon`, unvan `description`. `searchText` hem kullanıcı adında hem " +
+    "MentionTextarea'da `@` yazınca ekip listesi; avatar `icon`, unvan `description`. `searchText` hem kullanıcı adında hem " +
       "görünen adda aramayı sağlar (\"ayşe\", \"demir\", \"ayse.d\"). Bahsedilenler `onSelect` ile toplanır.",
-    `<Textarea value={text} onChange={(e) => setText(e.target.value)} mentions={{ options: team, onSelect: (o) => notify(o.value) }} />`
+    `<MentionTextarea value={text} onChange={(e) => setText(e.target.value)} mentions={{ options: team, onSelect: (o) => notify(o.value) }} />`
   ),
   render: () => {
     const [text, setText] = useState("Tasarım hazır, ");
@@ -83,7 +110,7 @@ export const Comment: Story = {
     return (
       <div className="flex max-w-lg flex-col gap-3">
         <Field label="Yorum" hint="Birini etiketlemek için @ yazın.">
-          <Textarea
+          <MentionTextarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             autoSize={{ minRows: 3, maxRows: 8 }}
@@ -107,12 +134,12 @@ export const PeopleAndTopics: Story = {
   name: "Kişi ve Konu (İki Tetik)",
   ...storyDoc(
     "`prefix={[\"@\", \"#\"]}` ve `options` fonksiyonu: hangi tetik yazıldıysa ona göre liste.",
-    `<Textarea mentions={{ prefix: ["@", "#"], options: (prefix) => (prefix === "#" ? topics : team) }} />`
+    `<MentionTextarea mentions={{ prefix: ["@", "#"], options: (prefix) => (prefix === "#" ? topics : team) }} />`
   ),
   render: () => (
     <div className="max-w-lg">
       <Field label="Destek notu" hint="@ kişi, # konu etiketi.">
-        <Textarea rows={4} defaultValue="Müşteri ikinci kez yazdı #" mentions={{ prefix: ["@", "#"], options: (prefix) => (prefix === "#" ? TOPICS : TEAM) }} />
+        <MentionTextarea rows={4} defaultValue="Müşteri ikinci kez yazdı #" mentions={{ prefix: ["@", "#"], options: (prefix) => (prefix === "#" ? TOPICS : TEAM) }} />
       </Field>
     </div>
   ),
@@ -125,7 +152,7 @@ export const ServerSearch: Story = {
   ...storyDoc(
     "Büyük kullanıcı tabanında liste sunucudan gelir: `filterOption: false` (yerel süzme kapalı), `onSearch` sorguyu " +
       "bildirir, sonuç gelene kadar `loading`.",
-    `<Textarea mentions={{ options: results, filterOption: false, loading, onSearch: (q) => fetchUsers(q) }} />`
+    `<MentionTextarea mentions={{ options: results, filterOption: false, loading, onSearch: (q) => fetchUsers(q) }} />`
   ),
   render: () => {
     const [query, setQuery] = useState<string | null>(null);
@@ -144,7 +171,7 @@ export const ServerSearch: Story = {
     return (
       <div className="max-w-lg">
         <Field label="Görev açıklaması">
-          <Textarea rows={3} placeholder="@ ile birini ekleyin" mentions={{ options: results, filterOption: false, loading, onSearch: (q) => setQuery(q) }} />
+          <MentionTextarea rows={3} placeholder="@ ile birini ekleyin" mentions={{ options: results, filterOption: false, loading, onSearch: (q) => setQuery(q) }} />
         </Field>
       </div>
     );
@@ -156,8 +183,8 @@ export const ServerSearch: Story = {
 export const ChatInput: Story = {
   name: "Sohbet Kutusu (Input)",
   ...storyDoc(
-    "Tek satırlık Input'ta da aynı özellik. Liste açıkken Enter öneriyi seçer; kapalıyken `onPressEnter` mesajı gönderir.",
-    `<Input mentions={{ options: team }} onPressEnter={send} />`
+    "Tek satırlık MentionInput'ta da aynı özellik. Liste açıkken Enter öneriyi seçer; kapalıyken `onPressEnter` mesajı gönderir.",
+    `<MentionInput mentions={{ options: team }} onPressEnter={send} />`
   ),
   render: () => {
     const [text, setText] = useState("");
@@ -178,7 +205,7 @@ export const ChatInput: Story = {
           ))}
         </ul>
         <div className="flex gap-2">
-          <Input aria-label="Mesaj" placeholder="Mesaj yazın, @ ile etiketleyin" value={text} onChange={(e) => setText(e.target.value)} onPressEnter={send} mentions={{ options: TEAM }} />
+          <MentionInput aria-label="Mesaj" placeholder="Mesaj yazın, @ ile etiketleyin" value={text} onChange={(e) => setText(e.target.value)} onPressEnter={send} mentions={{ options: TEAM }} />
           <Button onClick={send}>Gönder</Button>
         </div>
       </div>

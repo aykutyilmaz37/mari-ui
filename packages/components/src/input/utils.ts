@@ -104,6 +104,10 @@ export function isClearable(allowClear: boolean | { clearIcon?: React.ReactNode 
 export function clearNativeValue(el: HTMLInputElement | HTMLTextAreaElement | null): void {
   if (!el) return;
   const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+  // Önce tümünü seç: MaskedInput'un maske kütüphanesi değişikliği imleç/seçime göre
+  // yorumlar; seçimsiz boşaltmayı geri alıyordu (temizle butonu çalışmıyordu).
+  // `select()`, `setSelectionRange`'in aksine seçimsiz tiplerde (email, number) hata atmaz.
+  el.select();
   Object.getOwnPropertyDescriptor(proto, "value")?.set?.call(el, "");
   el.dispatchEvent(new Event("input", { bubbles: true }));
 }

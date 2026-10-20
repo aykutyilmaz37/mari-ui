@@ -1,4 +1,4 @@
-import { foldForSearch } from "../../autocomplete/utils";
+import { foldForSearch } from "../lib/search";
 import type { MentionOption } from "./types";
 
 export interface MentionMatch {

@@ -39,6 +39,7 @@ import { StepsContent } from "./_components/StepsContent";
 import type { StepItem } from "./types";
 import { Button } from "../button";
 import { Input } from "../input";
+import { MaskedInput } from "../masked-input";
 import { RadioGroup } from "../radio";
 import { Tag } from "../tag";
 import { colorArgType } from "../lib/storybookArgTypes";
@@ -302,7 +303,7 @@ const go = (next: number) => {
                     <Input placeholder="Ayşe Yılmaz" defaultValue="Ayşe Yılmaz" />
                   </Field>
                   <Field label="Telefon">
-                    <Input mask="(___) ___ __ __" replacement={{ _: /\d/ }} placeholder="(5__) ___ __ __" defaultValue="(532) 000 00 00" />
+                    <MaskedInput mask="(___) ___ __ __" replacement={{ _: /\d/ }} placeholder="(5__) ___ __ __" defaultValue="(532) 000 00 00" />
                   </Field>
                   <Field label="Adres" className="sm:col-span-2">
                     <Input placeholder="Mahalle, sokak, bina ve daire no" defaultValue="Moda Cd. No: 12 D: 4" />
@@ -326,13 +327,13 @@ const go = (next: number) => {
                     <Input placeholder="AYŞE YILMAZ" />
                   </Field>
                   <Field label="Kart numarası" className="sm:col-span-2" hint="Bu bir örnektir — gerçek kart bilgisi girmeyin.">
-                    <Input mask="____ ____ ____ ____" replacement={{ _: /\d/ }} placeholder="0000 0000 0000 0000" icon={<CreditCardIcon size={16} aria-hidden />} />
+                    <MaskedInput mask="____ ____ ____ ____" replacement={{ _: /\d/ }} placeholder="0000 0000 0000 0000" icon={<CreditCardIcon size={16} aria-hidden />} />
                   </Field>
                   <Field label="Son kullanma">
-                    <Input mask="__/__" replacement={{ _: /\d/ }} placeholder="AA/YY" />
+                    <MaskedInput mask="__/__" replacement={{ _: /\d/ }} placeholder="AA/YY" />
                   </Field>
                   <Field label="Güvenlik kodu">
-                    <Input mask="___" replacement={{ _: /\d/ }} placeholder="CVC" />
+                    <MaskedInput mask="___" replacement={{ _: /\d/ }} placeholder="CVC" />
                   </Field>
                 </div>
               </StepsContent>

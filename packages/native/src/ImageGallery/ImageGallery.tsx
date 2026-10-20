@@ -11,10 +11,10 @@ import { useControllable } from "../lib/useControllable";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { toPx } from "../theme/toPx";
 import { useTheme } from "../theme/useTheme";
-import { Image } from "./Image";
-import { ImageViewer, type ImageViewerItem, type ImageViewerProps } from "./ImageViewer";
-import type { ImageLoader, ImageSource } from "./types";
-import { imageButtonRole } from "./utils";
+import { Image } from "../Image/Image";
+import { ImageViewer, type ImageViewerItem, type ImageViewerProps } from "../Image/ImageViewer";
+import type { ImageLoader, ImageSource } from "../Image/types";
+import { imageButtonRole } from "../Image/utils";
 import {
   DRILL_DOWN,
   MAX_COLUMNS,

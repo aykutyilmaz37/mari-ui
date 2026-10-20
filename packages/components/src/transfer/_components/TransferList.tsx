@@ -4,7 +4,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { Checkbox } from "../../checkbox";
-import { PlainInput } from "../../input/PlainInput";
+import { Input } from "../../input/Input";
 import { borderStrongColorClass } from "../../lib/colorClasses";
 import { skeletonBoxProps } from "../../lib/skeleton";
 import { SkeletonSlot } from "../../lib/SkeletonSlot";
@@ -143,7 +143,7 @@ export function TransferList(props: Readonly<TransferListProps>) {
 
       {showSearch && (
         <div className="shrink-0 border-b border-mari-border p-2">
-          <PlainInput
+          <Input
             skeleton={skeleton}
             size="sm"
             aria-label={`${name} listesinde ara`}

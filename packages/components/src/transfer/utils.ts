@@ -1,4 +1,4 @@
-import { foldForSearch } from "../autocomplete/utils";
+import { foldForSearch } from "../lib/search";
 import type { TransferDirection, TransferItem } from "./types";
 
 /** Transfer'in saf mantığı (bileşenden bağımsız test edilir). */

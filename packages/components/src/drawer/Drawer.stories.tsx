@@ -36,6 +36,7 @@ import { Button } from "../button";
 import { Checkbox } from "../checkbox";
 import { Field } from "../field";
 import { Input } from "../input";
+import { MaskedInput } from "../masked-input";
 import { Slider } from "../slider";
 
 const meta: Meta<typeof Drawer> = {
@@ -504,7 +505,7 @@ export const EditRecord: Story = {
               <Input type="email" defaultValue="deniz@mari-ui.com" />
             </Field>
             <Field label="Telefon">
-              <Input mask="(___) ___ __ __" replacement={{ _: /\d/ }} defaultValue="(532) 000 00 00" />
+              <MaskedInput mask="(___) ___ __ __" replacement={{ _: /\d/ }} defaultValue="(532) 000 00 00" />
             </Field>
             <Field label="Şehir">
               <Input defaultValue="İstanbul" />

@@ -1,5 +1,4 @@
 import type React from "react";
-import type { MentionsConfig } from "./mention/types";
 import type { ColorRole, SlotClassNames, Size } from "@mari-ui/core";
 import type { SkeletonableProps } from "../lib/skeleton";
 
@@ -76,16 +75,8 @@ export interface InputProps extends InputNativeAttributes, SkeletonableProps {
   className?: string;
   /** Kutuya (sarmalayıcı) uygulanan satır içi stil — ör. içeriğe göre hesaplanan genişlik. */
   style?: React.CSSProperties;
-  mask?: string;
-  replacement?: Record<string, RegExp>;
   visibilityToggle?: boolean | { visible?: boolean };
   visibilityIconRender?: (visible: boolean) => React.ReactNode;
   max?: number;
   min?: number;
-  /**
-   * `@` ile bahsetme: tetik karakteri yazılınca imlecin
-   * altında öneri listesi açılır, seçilen değer metne yazılır. `mask` ile
-   * birlikte çalışmaz.
-   */
-  mentions?: MentionsConfig;
 }

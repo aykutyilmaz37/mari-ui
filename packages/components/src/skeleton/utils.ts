@@ -3,13 +3,14 @@ import { cn, type Size } from "@mari-ui/core";
 import type { SkeletonButtonShape } from "./types";
 import { skeletonFill } from "../lib/skeleton";
 
-export { getShapeClasses as getAvatarShapeClasses, getSizeStyle as getAvatarSizeStyle } from "../avatar/utils";
+// Avatar'la ortak geometri lib'den — `avatar/` import edilirse skeleton'ı kullanan her bileşen avatar'ı da taşır.
+export { getAvatarShapeClasses, getAvatarSizeStyle } from "../lib/avatarGeometry";
 
 /*
  * iskelet parçalarının geometrisi GERÇEK bileşenlerden gelir ki
  * yüklenince zıplamasın. Eskiden kendi tabloları vardı ve kaymıştı:
  * - Avatar iskeleti 32/48/64px, varsayılanı yuvarlatılmış kareydi; Avatar
- *  24/32/40px ve varsayılanı daire → artık `avatar/utils`'in kendisi.
+ *  24/32/40px ve varsayılanı daire → artık Avatar'la ortak `lib/avatarGeometry`.
  * - Button/Input `sm` iskeleti `rounded-md`, gerçeği `rounded-sm` (lib
  *  `sizeClass`).
  * - `SkeletonButton shape="circle"` 80×32 bir hap çiziyordu; Button'ın
