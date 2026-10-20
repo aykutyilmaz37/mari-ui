@@ -4,10 +4,13 @@
  * `@mari-ui/components/styles.css` artık yalnız dist JS'i tarıyor; bu sınıflar
  * tüketiciye gitmez, yalnız Storybook'a.
  *
- * preview.tsx'te `styles.css`ten ÖNCE import edilir: bileşenlerle ortak
- * sınıflar burada da üretilir ama sonra gelen yayın CSS'i kazanır → bileşen
- * sınıflarının sırası birebir yayınlanandaki gibi; önizleme gerçekten
- * tüketicinin CSS'ini gösterir. Preflight/token değişkenleri burada üretilmez
+ * preview.tsx'te `styles.css`ten SONRA import edilir. Bu dosya bileşen
+ * kaynağını da tarar → yayın CSS'inin üst kümesi, Tailwind'in kanonik
+ * sırasıyla; sonda gelince sıra tek bir derlemedeki gibidir. ÖNCE gelseydi
+ * (Faz 3'teki ilk hali) aynı `utilities` katmanında sonra gelen yayın CSS'i,
+ * story'deki varyantlı sınıfı medya sorgusundan bağımsız ezerdi: Card
+ * Pricing'de yayındaki `order-first`, story'nin `md:order-none`'ını 1280px'te
+ * de eziyordu (görsel testte 11 story). Preflight/token değişkenleri burada üretilmez
  * (yayın CSS'inden gelir); katman sırası yayınlananla aynı ilan edilir, yoksa
  * ilk görülen `utilities` katmanı `base`in önüne geçerdi.
  */
