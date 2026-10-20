@@ -64,7 +64,9 @@ const PACKAGES = {
         ["skeleton", "card", "modal", "drawer", "toast", "popover", "accordion", "alert", "timeline", "masonry", "tree", "statistic", "upload", "tour"].map((e) => [e, ["avatar"]]),
       ),
       // Faz 4b: foldForSearch lib'de; select autocomplete klasörünü çekmez.
-      select: ["autocomplete"],
+      // Faz 4c: çoklu seçim (etiketler) multi-select'te; tekli Select ve onu kullanan Calendar Tag taşımaz.
+      select: ["autocomplete", "tag"],
+      calendar: ["tag"],
     },
     // Faz 4b: maske kütüphanesi yalnız MaskedInput'ta.
     bannedDeps: Object.fromEntries(

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useControllableState } from "@mari-ui/core";
-import type { SelectOption, SelectProps, SelectValue } from "./types";
+import type { SelectBaseProps, SelectOption, SelectValue } from "./types";
 import { buildSections, firstEnabled, flattenOptions, lastEnabled, nextEnabled, typeAheadMatch } from "./utils";
 
 const TYPE_AHEAD_RESET_MS = 500;
@@ -12,7 +12,7 @@ const TYPE_AHEAD_RESET_MS = 500;
  * (klavyeyle/fareyle üzerinde durulan) seçenek ve bunları değiştiren
  * eylemler. Tekli ve çoklu mod içeride aynı dizi olarak tutulur.
  */
-export function useSelectState(props: SelectProps) {
+export function useSelectState(props: SelectBaseProps) {
   const multiple = props.mode === "multiple";
   const toArray = (v: SelectValue | SelectValue[] | null | undefined): SelectValue[] | undefined => {
     if (v === undefined) return undefined;

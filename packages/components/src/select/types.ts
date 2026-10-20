@@ -24,7 +24,7 @@ export interface SelectOptionGroup {
   options: SelectOption[];
 }
 
-interface SelectBaseProps extends SkeletonableProps {
+interface SelectCommonProps extends SkeletonableProps {
   options: Array<SelectOption | SelectOptionGroup>;
   placeholder?: string;
   /** Seçenekleri yazarak süz (Türkçe/aksansız). Varsayılan: `false`. */
@@ -64,16 +64,14 @@ interface SelectBaseProps extends SkeletonableProps {
   className?: string;
 }
 
-export interface SelectSingleProps extends SelectBaseProps {
-  mode?: undefined;
+export interface SelectProps extends SelectCommonProps {
   value?: SelectValue | null;
   defaultValue?: SelectValue | null;
   onChange?: (value: SelectValue | null, option: SelectOption | null) => void;
 }
 
-export interface SelectMultipleProps extends SelectBaseProps {
-  /** Çoklu seçim: seçilenler etiket olarak görünür, liste seçimden sonra açık kalır. */
-  mode: "multiple";
+/** `MultiSelect` (`@mari-ui/components/multi-select`): seçilenler etiket olarak görünür, liste seçimden sonra açık kalır. */
+export interface MultiSelectProps extends SelectCommonProps {
   value?: SelectValue[];
   defaultValue?: SelectValue[];
   onChange?: (value: SelectValue[], options: SelectOption[]) => void;
@@ -81,4 +79,5 @@ export interface SelectMultipleProps extends SelectBaseProps {
   maxTagCount?: number;
 }
 
-export type SelectProps = SelectSingleProps | SelectMultipleProps;
+/** İç: `SelectBase`in ortak gövdesi tekli ve çoklu modu birlikte taşır. */
+export type SelectBaseProps = (SelectProps & { mode?: undefined }) | (MultiSelectProps & { mode: "multiple" });

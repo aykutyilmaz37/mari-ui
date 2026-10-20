@@ -249,6 +249,10 @@
       "types": "./dist/select.d.ts",
       "import": "./dist/select.js"
     },
+    "./multi-select": {
+      "types": "./dist/multi-select.d.ts",
+      "import": "./dist/multi-select.js"
+    },
     "./carousel": {
       "types": "./dist/carousel.d.ts",
       "import": "./dist/carousel.js"
