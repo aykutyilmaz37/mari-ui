@@ -42,6 +42,13 @@ jobs:
       - name: Build, lint, typecheck (tüm workspace paketleri)
         run: pnpm turbo run build lint typecheck
 
+      # Bundle boyutu kilidi + sızıntı testi (bundle performansı Faz 1): her web
+      # subpath entry'si ve native paketin tamamı min+gz ölçülür, size-limits.json
+      # aşılırsa ya da bir entry kaynakta import etmediği bileşenin kodunu
+      # çekerse kırılır. Bilinçli büyüme: `pnpm size:update`.
+      - name: Bundle boyutu + sızıntı testi
+        run: pnpm size
+
       # Testler coverage ile ve paketler SIRAYLA koşar (her paketin vitest'i
       # kendi içinde paralel): hepsi lint/typecheck ile aynı anda koşunca az
       # çekirdekli runner'da testler zaman aşımına düşüyordu. Eşik

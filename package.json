@@ -20,10 +20,13 @@
     "audit": "pnpm audit --audit-level critical",
     "changeset": "changeset",
     "version-packages": "changeset version",
+    "size": "node scripts/size.mjs",
+    "size:update": "node scripts/size.mjs --update --report",
     "release": "turbo run build --filter=./packages/* && node scripts/stage-release.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",
+    "esbuild": "^0.28.2",
     "turbo": "^2.3.0",
     "typescript": "^5.7.0"
   },
