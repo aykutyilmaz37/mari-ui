@@ -52,16 +52,33 @@ const PACKAGES = {
     dir: join(ROOT, "packages/components"),
     folderToName: (f) => f,
     infra: [],
-    banned: { button: ["transfer", "tree", "carousel", "table", "date-picker"] },
-    // Faz 4b: Input'u yalnız iç alan olarak kullananlar maske kütüphanesini taşımaz (PlainInput).
-    bannedDeps: Object.fromEntries(["autocomplete", "slider", "transfer", "table", "color-picker"].map((e) => [e, ["@react-input/mask"]])),
+    banned: {
+      button: ["transfer", "tree", "carousel", "table", "date-picker"],
+      // Faz 4b: düz Input maske/bahsetme taşımaz (MaskedInput, MentionInput ayrı subpath'te).
+      input: ["select", "autocomplete", "mentions", "masked-input"],
+      // Faz 4b: avatar geometrisi lib'de; iskelet kullananlar avatar bileşenini taşımaz.
+      ...Object.fromEntries(
+        ["skeleton", "card", "modal", "drawer", "toast", "popover", "accordion", "alert", "timeline", "masonry", "tree", "statistic", "upload", "tour"].map((e) => [e, ["avatar"]]),
+      ),
+      // Faz 4b: foldForSearch lib'de; select autocomplete klasörünü çekmez.
+      select: ["autocomplete"],
+    },
+    // Faz 4b: maske kütüphanesi yalnız MaskedInput'ta.
+    bannedDeps: Object.fromEntries(
+      ["input", "autocomplete", "slider", "transfer", "table", "color-picker", "date-picker", "select", "mentions", "theme-customizer"].map((e) => [e, ["@react-input/mask"]]),
+    ),
     textMarker: (c) => `mari-${c}`,
   },
   native: {
     dir: join(ROOT, "packages/native"),
     folderToName: (f) => f.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(),
     infra: ["theme", "config"],
-    banned: { button: ["tree", "tree-select", "carousel", "qrcode", "image", "select", "upload", "sidebar"] },
+    banned: {
+      button: ["tree", "tree-select", "carousel", "qrcode", "image", "select", "upload", "sidebar"],
+      // Faz 4b: galeri (ve görünüm seçicisi Segmented) ayrı entry'de; Metro tree-shaking yapmaz.
+      image: ["image-gallery", "segmented"],
+      upload: ["image-gallery", "segmented"],
+    },
     bannedDeps: { button: ["qrcode-generator"] },
     mainFields: ["react-native", "browser", "module", "main"],
   },
@@ -176,7 +193,7 @@ async function measure(pkg) {
   return { rows, leaks };
 }
 
-// Elle yazılmış, açık sızıntı iddiası: button tek başına ağır bileşen, iç alanlar maske kütüphanesi getirmemeli.
+// Elle yazılmış, açık sınır iddiaları: kaynakta meşru olsa bile kesilmiş zincirler (Faz 4b) geri gelmesin.
 async function bannedCheck(pkg) {
   const problems = [];
   for (const entry of new Set([...Object.keys(pkg.banned), ...Object.keys(pkg.bannedDeps ?? {})])) {

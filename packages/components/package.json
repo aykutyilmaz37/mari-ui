@@ -101,6 +101,18 @@
       "types": "./dist/input.d.ts",
       "import": "./dist/input.js"
     },
+    "./image-gallery": {
+      "types": "./dist/image-gallery.d.ts",
+      "import": "./dist/image-gallery.js"
+    },
+    "./masked-input": {
+      "types": "./dist/masked-input.d.ts",
+      "import": "./dist/masked-input.js"
+    },
+    "./mentions": {
+      "types": "./dist/mentions.d.ts",
+      "import": "./dist/mentions.js"
+    },
     "./slider": {
       "types": "./dist/slider.d.ts",
       "import": "./dist/slider.js"

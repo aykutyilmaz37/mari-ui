@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import { skeletonBoxProps } from "../lib/skeleton";
 import { cn, useControllableState, type ColorRole, type Size } from "@mari-ui/core";
-import { PlainInput } from "../input/PlainInput";
+import { Input } from "../input/Input";
 import { bgSolidClass, textClass } from "../lib/colorClasses";
 import type { SliderProps, SliderValue } from "./types";
 import { getVerticalLength, nearestThumb, snap, THUMB_SIZE, toPercent, TRACK_HEIGHT, valueFromKey, valueFromPointer } from "./utils";
@@ -331,7 +331,7 @@ export function Slider({
               –
             </span>
           )}
-          <PlainInput
+          <Input
             type="number"
             size="sm"
             // Genişlik en uzun değerin hane sayısından (eskiden sabit w-16 —

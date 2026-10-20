@@ -1,16 +1,8 @@
+import { foldForSearch } from "../lib/search";
 import type { Option } from "./types";
 
-/*
- * Arama için katlama: Türkçe küçük harf + aksanları at + ı→i. Böylece
- * "istanbul" → "İstanbul", "sehir" → "Şehir", "IĞDIR" → "Iğdır" bulunur.
- * Eskiden düz `toLowerCase()` vardı: "İstanbul".toLowerCase() JS'te
- * "i̇stanbul" (i + birleşik nokta) verir ve "istanbul" ile HİÇ eşleşmezdi.
- * Karakter sayısını korur (NFC girişte her harf tek karaktere iner) — vurgu
- * aralıkları özgün metne aynı indekslerle uygulanabilir.
- */
-export function foldForSearch(text: string): string {
-  return text.toLocaleLowerCase("tr").normalize("NFD").replace(/\p{M}/gu, "").replace(/ı/g, "i");
-}
+// Asıl tanım lib'de (Select/Transfer/Mentions de kullanıyor); eski import yolu çalışsın.
+export { foldForSearch };
 
 export function getFilteredOption(options: Option[], searchText: string): Option[] {
   const query = foldForSearch(searchText.trim());

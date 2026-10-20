@@ -6,6 +6,7 @@ import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { Input } from "./index";
 import type { InputProps } from "./index";
+import { MaskedInput as MaskedField, type MaskedInputProps } from "../masked-input";
 
 const meta: Meta<typeof Input> = {
   title: "Veri Girişi/Input",
@@ -16,17 +17,19 @@ const meta: Meta<typeof Input> = {
       description: {
         component: componentDoc({
           summary:
-            "Tek satırlık metin girişi. Maske (`mask`), karakter sayacı (`showCount`), temizleme butonu " +
+            "Tek satırlık metin girişi. Karakter sayacı (`showCount`), temizleme butonu " +
             "(`allowClear`) ve şifre görünürlük toggle'ı destekler. `useControllableState` ile hem controlled hem " +
-            "uncontrolled kullanılabilir.",
+            "uncontrolled kullanılabilir. Biçimli giriş (telefon, kart) için `MaskedInput` (`@mari-ui/components/masked-input`), " +
+            "`@` ile bahsetme için `MentionInput` (`@mari-ui/components/mentions`) — ikisinin kodu düz Input'a girmez.",
           whenToUse: [
-            "Bir formda tek satırlık serbest metin, sayı, telefon (`mask`) veya şifre girişi için.",
+            "Bir formda tek satırlık serbest metin, sayı, e-posta veya şifre girişi için.",
             "Doğrulama durumunu görsel olarak göstermek için — `color=\"error\"`/`\"warning\"` (eski `status` prop'u hâlâ çalışır, deprecated).",
           ],
           whenNotToUse: [
             "Çok satırlı metin için — `Textarea`.",
             "Sabit uzunlukta kod/OTP girişi için — `OtpInput`.",
             "Bir listeden filtreli seçim için — `AutoComplete`.",
+            "Telefon/kart gibi biçimli giriş için — `MaskedInput`.",
           ],
           a11y:
             "Her alanın görünür bir etiketi olmalı (`<label htmlFor>` + `id`, ya da `aria-label`) — placeholder etiket sayılmaz. " +
@@ -43,7 +46,6 @@ const meta: Meta<typeof Input> = {
     variant: { control: "select", options: ["outline", "soft", "ghost", "underlined"], description: "Kenarlık/arka plan stili." },
     color: { control: "select", options: ["primary", "accent", "success", "error", "warning", "info", "neutral"], description: "Odak/kenarlık rengi. `error`/`warning` doğrulama durumu olarak da işlev görür." },
     shape: { control: "select", options: ["default", "pill", "square"], description: "Köşe geometrisi." },
-    mask: { control: "text", description: "Girişi belirli bir formata zorlar (örn. telefon numarası)." },
     disabled: disabledArgType,
     allowClear: { control: "boolean", description: "Doluyken bir temizleme (X) butonu gösterir." },
     type: { control: "select", options: ["text", "email", "password", "tel", "number"], description: "Native input tipi. `password` göster/gizle butonu ekler." },
@@ -55,7 +57,6 @@ const meta: Meta<typeof Input> = {
     onClear: { action: "onClear" },
     visibilityToggle: { control: "boolean", description: "`type=\"password\"` iken bir göster/gizle butonu ekler." },
     visibilityIconRender: { control: false },
-    replacement: { control: false },
   },
 };
 export default meta;
@@ -135,7 +136,7 @@ function SignUpFormDemo() {
       </div>
       <div className="sm:col-span-2">
         <Field id="signup-phone" label="Cep telefonu">
-          <Input id="signup-phone" type="tel" inputMode="tel" autoComplete="tel" mask="0(5__) ___ __ __" placeholder="0(5__) ___ __ __" icon={<PhoneIcon size={16} />} />
+          <MaskedField id="signup-phone" type="tel" inputMode="tel" autoComplete="tel" mask="0(5__) ___ __ __" placeholder="0(5__) ___ __ __" icon={<PhoneIcon size={16} />} />
         </Field>
       </div>
     </form>
@@ -197,9 +198,13 @@ export const CustomCountFormatter: StoryObj<InputProps> = {
   decorators: [(Story) => <div className="max-w-sm">{Story()}</div>],
 };
 
-export const MaskedInput: StoryObj<InputProps> = {
+export const MaskedInput: StoryObj<MaskedInputProps> = {
   name: "Maskeli",
-  ...storyDoc("`mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası). Mobilde sayısal klavye için `inputMode=\"tel\"`."),
+  ...storyDoc(
+    "`MaskedInput` (`@mari-ui/components/masked-input`): `mask`+`replacement` ile girişi bir formata zorlar (örn. telefon numarası). Mobilde sayısal klavye için `inputMode=\"tel\"`.",
+    (args) => `<MaskedInput ${jsxProps(args, { skip: ["icon"] })} icon={<PhoneIcon size={16} />} />`
+  ),
+  render: (args) => <MaskedField {...args} />,
   args: {
     "aria-label": "Cep telefonu",
     placeholder: "0(5__) ___ __ __",

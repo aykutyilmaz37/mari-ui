@@ -2,9 +2,9 @@
 
 import type React from "react";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { FloatingCoords } from "../../lib/useFloatingPosition";
-import { optionDomId, SelectPanel } from "../../select/_components/SelectPanel";
-import type { SelectOption } from "../../select/types";
+import type { FloatingCoords } from "../lib/useFloatingPosition";
+import { optionDomId, SelectPanel } from "../select/_components/SelectPanel";
+import type { SelectOption } from "../select/types";
 import type { MentionOption, MentionsConfig } from "./types";
 import { getCaretRect } from "./caret";
 import { filterMentionOptions, findMention, insertMention, type MentionMatch } from "./utils";

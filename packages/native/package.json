@@ -104,6 +104,11 @@
       "import": "./dist/image.js",
       "require": "./dist/image.cjs"
     },
+    "./image-gallery": {
+      "types": "./dist/image-gallery.d.ts",
+      "import": "./dist/image-gallery.js",
+      "require": "./dist/image-gallery.cjs"
+    },
     "./input": {
       "types": "./dist/input.d.ts",
       "import": "./dist/input.js",
@@ -387,6 +392,11 @@
         "types": "./dist/image.d.ts",
         "import": "./dist/image.js",
         "require": "./dist/image.cjs"
+      },
+      "./image-gallery": {
+        "types": "./dist/image-gallery.d.ts",
+        "import": "./dist/image-gallery.js",
+        "require": "./dist/image-gallery.cjs"
       },
       "./input": {
         "types": "./dist/input.d.ts",

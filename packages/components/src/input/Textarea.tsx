@@ -17,8 +17,9 @@ import {
   clearNativeValue,
   isClearable,
 } from "./utils";
-import type { MentionsConfig } from "./mention/types";
-import { useMention } from "./mention/useMention";
+import type { MentionsConfig } from "../mentions/types";
+import type { useMention } from "../mentions/useMention";
+import { useNoMention } from "./noMention";
 
 export interface TextareaProps extends SkeletonableProps {
   placeholder?: string;
@@ -59,8 +60,6 @@ export interface TextareaProps extends SkeletonableProps {
   autoSize?: TextareaAutoSize;
   /** Başlangıç yüksekliği (satır). `autoSize` yoksa elle dikey büyütülebilir. Varsayılan: 3. */
   rows?: number;
-  /** `@` ile bahsetme — Input'taki `mentions` ile aynı. */
-  mentions?: MentionsConfig;
 }
 
 /*
@@ -89,20 +88,34 @@ function fitHeight(el: HTMLTextAreaElement, autoSize: TextareaAutoSize) {
  * gerçek bir TS hatasıydı. Artık Textarea kendi tam
  * tip setini tanımlıyor, `Input`tan miras almıyor.
  */
+/** Textarea'nın isteğe bağlı özelliği: `mentions` (bkz. `createInput`, aynı ayrım). */
+export interface TextareaFeatures {
+  useMention?: typeof useMention;
+}
+
+/** `createTextarea`nın iç prop seti: public `TextareaProps` + `mentions` (özellik verildiyse). */
+export type TextareaFeatureProps = TextareaProps & { mentions?: MentionsConfig };
+
+export function createTextarea(features: TextareaFeatures, displayName = "Textarea") {
+  const Textarea = forwardRef<HTMLTextAreaElement, TextareaFeatureProps>((outerProps, ref) => {
+    // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
+    return <TextareaInner {...useFieldControl(outerProps)} forwardedRef={ref} features={features} />;
+  });
+  Textarea.displayName = displayName;
+  return Textarea;
+}
+
 /**
  * Çok satırlı metin alanı. `autoSize` ile içeriğe göre uzar (`{ minRows, maxRows }`
- * sınırlarıyla); Input ile aynı görünüm ve renk eksenleri.
+ * sınırlarıyla); Input ile aynı görünüm ve renk eksenleri. `@` ile bahsetme için
+ * `MentionTextarea` (`@mari-ui/components/mentions`).
  */
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>((outerProps, ref) => {
-  // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
-  return <TextareaInner {...useFieldControl(outerProps)} forwardedRef={ref} />;
-});
-
-Textarea.displayName = "Textarea";
+export const Textarea = /* @__PURE__ */ createTextarea({}) as React.ForwardRefExoticComponent<TextareaProps & React.RefAttributes<HTMLTextAreaElement>>;
 
 const TextareaInner = (
     {
       forwardedRef: ref,
+      features: { useMention: useMentionFeature = useNoMention },
       placeholder,
       allowClear = false,
       clearLabel = "Temizle",
@@ -135,7 +148,7 @@ const TextareaInner = (
       "aria-describedby": ariaDescribedBy,
       "aria-invalid": ariaInvalidProp,
       mentions,
-    }: TextareaProps & { forwardedRef: React.ForwardedRef<HTMLTextAreaElement> }
+    }: TextareaFeatureProps & { forwardedRef: React.ForwardedRef<HTMLTextAreaElement>; features: TextareaFeatures }
   ) => {
     // `color` varsayılansız: verilmezse dinlenmede nötr, odakta primary (bkz. `getVariantClasses`).
     const ariaInvalid = ariaInvalidProp ?? (color === "error" || undefined);
@@ -148,7 +161,7 @@ const TextareaInner = (
     const countLabel = maxLength ? `${charCount} / ${maxLength}` : `${charCount}`;
     const showClear = isClearable(allowClear) && Boolean(currentValue) && !disabled;
 
-    const mention = useMention(mentions, innerRef, currentValue, "textarea");
+    const mention = useMentionFeature(mentions, innerRef, currentValue, "textarea");
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setCurrentValue(e.target.value);
