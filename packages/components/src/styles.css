@@ -1,9 +1,16 @@
 /**
  * Kendi derlememiz → `dist/styles.css` (Tailwind'SİZ host'lar için hazır CSS).
  * Tailwind'li host'lar bunu DEĞİL `@mari-ui/components/tailwind.css`i kullanır
- * (bkz. `mari.css`). Tarama kaynak dosyalarda: `@source` açık yazılı çünkü
- * `@import "tailwindcss"` node_modules'tan çözülür, otomatik tarama `src`i bulmaz.
+ * (bkz. `mari.css`).
+ *
+ * Tarama yalnız derlenmiş `dist/*.js`te — `tailwind.css` (host modu) ile aynı küme:
+ * tüketiciye yalnız gerçekten yayınlanan kodun sınıfları gider. Kaynak taraması
+ * story/test dosyalarının, yorumlardaki örnek sınıfların ve tree-shake ile düşen
+ * kodun sınıflarını da yayınlıyordu (Faz 3). `source(none)`: otomatik tarama
+ * kapalı — açıkken paket kökündeki README/CHANGELOG/scripts de taranıyordu.
+ * Story'lerin sınıfları docs'un kendi girişinde (`apps/docs/.storybook/docs.css`).
+ * Bu yüzden `build:css`, tsup'tan SONRA çalışır.
  */
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @import "./mari.css";
-@source "./**/*.{ts,tsx}";
+@source "../dist/*.js";
