@@ -79,7 +79,7 @@ export function skeletonWidth(columnIndex: number, rowIndex = 0): string {
   return SKELETON_WIDTHS[(columnIndex + rowIndex) % SKELETON_WIDTHS.length]!;
 }
 
-/** Veri yokken iskelette çizilecek satır sayısı: sayfa boyu (en çok 10), yoksa 5. */
-export function skeletonRowCount(pageSize?: number): number {
-  return Math.min(pageSize ?? 5, 10);
+/** Veri yokken iskelette çizilecek satır sayısı: `skeletonRows` (en çok 10), yoksa 5. */
+export function skeletonRowCount(rows?: number): number {
+  return Math.min(rows ?? 5, 10);
 }

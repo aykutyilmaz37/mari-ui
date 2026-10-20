@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import { cn } from "@mari-ui/core";
 import { useScrollable } from "../lib/useScrollable";
 import { TableAccordion } from "./_components/TableAccordion";
 import { TableBody } from "./_components/TableBody";
 import { TableHeader } from "./_components/TableHeader";
-import { TablePagination } from "./_components/TablePagination";
 import type { TableProps } from "./types";
 
 export type { TableProps };
@@ -27,9 +26,9 @@ export type { TableProps };
  *  (`overflow-x-auto` + `<td>`/`<th>`'de `sticky right-0`).
  * - `responsive="accordion"` dar ekranda (`md` altı) satırları tablo yerine
  *  açılır/kapanır kartlar olarak gösterir (bkz. `TableAccordion`).
- * - `pagination` verilirse altta sayfalama kontrolleri render edilir;
- *  `paginationMode="client"` iken `Table` kendi diler, `"server"`
- *  (varsayılan) iken `data`'nın zaten o sayfaya ait dilim olduğu varsayılır.
+ * - Altta `footer` yuvası (tipik olarak `Pagination`); tablo veriyi dilimlemez,
+ *  `data` o sayfanın satırlarıdır. Sayfalama ve düzenleme çekmecesi tabloya
+ *  gömülü değil — yalnız kullanana gelsin diye (Faz 4c).
  */
 export function Table<T extends { id: string }>({
   data,
@@ -37,8 +36,8 @@ export function Table<T extends { id: string }>({
   className,
   emptyState,
   responsive = "scroll",
-  pagination,
-  paginationMode = "server",
+  footer,
+  skeletonRows,
   label,
   skeleton = false,
 }: Readonly<TableProps<T>>) {
@@ -47,12 +46,6 @@ export function Table<T extends { id: string }>({
   // sığan bir tabloya boşuna bir durak eklemesin.
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollable = useScrollable(scrollRef, "x");
-
-  const pageData = useMemo(() => {
-    if (!pagination || paginationMode !== "client") return data;
-    const start = (pagination.page - 1) * pagination.pageSize;
-    return data.slice(start, start + pagination.pageSize);
-  }, [data, pagination, paginationMode]);
 
   return (
     // Kullanıcı bulgusu: eskiden tablo dolu, kalın bir kutu (`border` + `bg-
@@ -74,20 +67,20 @@ export function Table<T extends { id: string }>({
         <table className="w-full min-w-[36rem]">
           {label && <caption className="sr-only">{label}</caption>}
           <TableHeader columns={columns} skeleton={skeleton} />
-          <TableBody data={pageData} columns={columns} emptyState={emptyState} skeleton={skeleton} pageSize={pagination?.pageSize} />
+          <TableBody data={data} columns={columns} emptyState={emptyState} skeleton={skeleton} skeletonRows={skeletonRows} />
         </table>
       </div>
       {responsive === "accordion" && (
         <TableAccordion
-          data={pageData}
+          data={data}
           columns={columns}
           emptyState={emptyState}
           skeleton={skeleton}
-          pageSize={pagination?.pageSize}
+          skeletonRows={skeletonRows}
           className="block border-0 md:hidden"
         />
       )}
-      {pagination && <TablePagination pagination={pagination} skeleton={skeleton} />}
+      {footer && <div className="border-t border-mari-border px-3 py-2.5">{footer}</div>}
     </div>
   );
 }

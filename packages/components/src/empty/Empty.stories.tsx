@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, Heart, RefreshCcw, SearchX, WifiOff } from "lucide-react";
 import { Empty } from "./Empty";
 import { Button } from "../button";
-import { componentDoc, storyDoc } from "../lib/storyMeta";
+import { componentDoc, jsxProps, storyDoc } from "../lib/storyMeta";
 import { SkeletonDemo } from "../lib/SkeletonDemo";
 import { SearchInput } from "../input";
 
@@ -25,8 +25,7 @@ const meta: Meta<typeof Empty> = {
   argTypes: {
     title: { control: "text", description: "Ana başlık." },
     description: { control: "text", description: "Açıklayıcı alt metin (opsiyonel)." },
-    buttonText: { control: "text", description: "Verilirse bir eylem butonu render edilir (örn. \"Tekrar Dene\")." },
-    onClick: { description: "Buton tıklamasında çağrılır. `onClick`/`href` yoksa buton çizilmez." },
+    actions: { control: false, description: "Eylem(ler) — tipik olarak `Button` (`size=\"sm\"` Empty'de `size=\"sm\"` buton)." },
     size: { control: "inline-radio", options: ["sm", "md"], description: "`sm`: kart/tablo/liste içi kompakt.", table: { defaultValue: { summary: "md" } } },
     titleAs: { control: "select", options: ["p", "h2", "h3", "h4"], description: "Başlık etiketi. Varsayılan `p` (boş durum bir belge bölümü değil).", table: { defaultValue: { summary: "p" } } },
     skeleton: { control: "boolean", description: "Yer tutucu.", table: { defaultValue: { summary: "false" } } },
@@ -34,9 +33,11 @@ const meta: Meta<typeof Empty> = {
   args: {
     title: "Veri Bulunamadı",
     description: "Kriterlerinize uyan herhangi bir veri bulamadık.",
-    buttonText: "Tekrar Dene",
-    buttonIcon: <RefreshCcw size={16} />,
-    onClick: () => {},
+    actions: (
+      <Button icon={<RefreshCcw size={16} />} onClick={() => {}}>
+        Tekrar Dene
+      </Button>
+    ),
     size: "md",
   },
 };
@@ -46,7 +47,10 @@ export default meta;
 type Story = StoryObj<typeof Empty>;
 
 export const Playground: Story = {
-  ...storyDoc("Tüm props'ları canlı deneyin."),
+  ...storyDoc(
+    "Tüm props'ları canlı deneyin.",
+    (args) => `<Empty ${jsxProps(args, { skip: ["actions"] })} actions={<Button icon={<RefreshCcw size={16} />} onClick={retry}>Tekrar Dene</Button>} />`
+  ),
 };
 
 export const SearchResults: Story = {
@@ -96,7 +100,7 @@ export const InCard: Story = {
       </div>
       <div className="rounded-lg border border-mari-border">
         <p className="border-b border-mari-border px-4 py-3 text-sm font-medium text-mari-foreground">Favoriler</p>
-        <Empty size="sm" icon={<Heart />} title="Favori ürününüz yok" buttonText="Alışverişe başla" href="#" />
+        <Empty size="sm" icon={<Heart />} title="Favori ürününüz yok" actions={<Button size="sm" href="#">Alışverişe başla</Button>} />
       </div>
     </div>
   ),
@@ -105,16 +109,16 @@ export const InCard: Story = {
 export const Varyantlar: Story = {
   name: "Varyantlar",
   ...storyDoc(
-    "`description` ve eylem opsiyoneldir — en yalın hâlden (sadece başlık) eylem butonlu tam hâle. Buton yalnızca `onClick` ya da `href` varsa çizilir.",
+    "`description` ve eylem opsiyoneldir — en yalın hâlden (sadece başlık) eylem butonlu tam hâle. Eylem `actions` yuvasına verilen `Button`'dır (Empty kendisi buton çizmez — Button yalnız eylem verene gelir).",
     `<Empty title="Henüz sipariş yok" />
 <Empty title="Henüz sipariş yok" description="İlk siparişinizi verdiğinizde burada listelenir." />
-<Empty title="Bağlantı kurulamadı" description="İnternet bağlantınızı kontrol edin." buttonText="Tekrar dene" onClick={retry} />`
+<Empty title="Bağlantı kurulamadı" description="İnternet bağlantınızı kontrol edin." actions={<Button icon={<RefreshCcw size={16} />} onClick={retry}>Tekrar dene</Button>} />`
   ),
   render: () => (
     <div className="flex flex-col gap-8">
       <Empty title="Henüz sipariş yok" />
       <Empty title="Henüz sipariş yok" description="İlk siparişinizi verdiğinizde burada listelenir." />
-      <Empty icon={<WifiOff />} title="Bağlantı kurulamadı" description="İnternet bağlantınızı kontrol edin." buttonText="Tekrar dene" buttonIcon={<RefreshCcw size={16} />} onClick={() => {}} />
+      <Empty icon={<WifiOff />} title="Bağlantı kurulamadı" description="İnternet bağlantınızı kontrol edin." actions={<Button icon={<RefreshCcw size={16} />} onClick={() => {}}>Tekrar dene</Button>} />
     </div>
   ),
 };

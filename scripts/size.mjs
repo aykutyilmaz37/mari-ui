@@ -67,6 +67,9 @@ const PACKAGES = {
       // Faz 4c: çoklu seçim (etiketler) multi-select'te; tekli Select ve onu kullanan Calendar Tag taşımaz.
       select: ["autocomplete", "tag"],
       calendar: ["tag"],
+      // Faz 4c: sayfalama `footer` yuvasında, düzenleme çekmecesi tüketicide; Empty eylemi `actions` yuvasında (Button çizmez).
+      table: ["drawer", "pagination"],
+      ...Object.fromEntries(["empty", "list", "chart"].map((e) => [e, ["button"]])),
     },
     // Faz 4b: maske kütüphanesi yalnız MaskedInput'ta.
     bannedDeps: Object.fromEntries(
@@ -85,6 +88,8 @@ const PACKAGES = {
       // Faz 4b: galeri (ve görünüm seçicisi Segmented) ayrı entry'de; Metro tree-shaking yapmaz.
       image: ["image-gallery", "segmented"],
       upload: ["image-gallery", "segmented"],
+      // Faz 4c: Empty eylemi `actions` yuvasında (web ile aynı).
+      empty: ["button"],
     },
     bannedDeps: { button: ["qrcode-generator"] },
     residueAllowed: ["qrcode"],

@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Table } from "./Table";
-import type { ColumnDef, TablePaginationConfig } from "./types";
+import type { ColumnDef } from "./types";
 import { getA11yViolations } from "../testUtils/a11y";
 
 interface Row {
@@ -71,25 +71,18 @@ describe("Table", () => {
     expect(toggle).toHaveAttribute("aria-expanded", "true");
   });
 
-  it("pagination verilince sayfa değiştirme onPageChange'i çağırır", async () => {
-    const user = userEvent.setup();
-    const onPageChange = vi.fn();
-    const manyRows: Row[] = Array.from({ length: 25 }, (_, i) => ({ id: String(i), name: `Satır ${i}`, age: i }));
-    const pagination: TablePaginationConfig = { page: 1, pageSize: 10, total: manyRows.length, onPageChange };
-    render(<Table data={manyRows.slice(0, 10)} columns={columns} pagination={pagination} />);
-
-    expect(screen.getByText("1-10 / 25 kayıt")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "2. sayfa" }));
-    expect(onPageChange).toHaveBeenCalledWith(2);
+  it("footer çerçevenin altında, ayırıcıyla çizilir (sayfalama yuvası)", () => {
+    render(<Table data={data} columns={columns} footer={<nav aria-label="Sayfalama">1 / 3</nav>} />);
+    const footer = screen.getByRole("navigation", { name: "Sayfalama" }).parentElement!;
+    expect(footer.className).toContain("border-t");
   });
 
-  it("paginationMode=\"client\" iken Table kendi veriyi diler", () => {
-    const manyRows: Row[] = Array.from({ length: 25 }, (_, i) => ({ id: String(i), name: `Satır ${i}`, age: i }));
-    const pagination: TablePaginationConfig = { page: 2, pageSize: 10, total: manyRows.length, onPageChange: () => {} };
-    render(<Table data={manyRows} columns={columns} pagination={pagination} paginationMode="client" />);
-
-    expect(screen.getByText("Satır 10")).toBeInTheDocument();
-    expect(screen.queryByText("Satır 0")).not.toBeInTheDocument();
+  it("editRow: Düzenle düğmesi satırın kendisiyle çağrılır", async () => {
+    const user = userEvent.setup();
+    const editRow = vi.fn();
+    render(<Table data={data} columns={[...columns, { header: "İşlemler", actions: { editRow } }]} />);
+    await user.click(screen.getByRole("button", { name: "Düzenle: Ada" }));
+    expect(editRow).toHaveBeenCalledWith(data[0]);
   });
 
   it("hücre metni en fazla 2 satıra kırpılır (Faz 13.4 kullanıcı bulgusu), truncate ile çelişmez (truncate tek satıra zorlayıp sarmayı engelliyordu)", () => {
@@ -134,9 +127,8 @@ describe("Table", () => {
     expect(container.firstElementChild).toHaveAttribute("aria-busy", "true");
   });
 
-  it("skeleton + veri yokken Empty yerine sayfa boyu kadar (en çok 10) sahte satır çizilir", () => {
-    const pagination: TablePaginationConfig = { page: 1, pageSize: 4, total: 0, onPageChange: () => {} };
-    const { container } = render(<Table skeleton data={[]} columns={columns} pagination={pagination} emptyState={{ title: "Kayıt Yok" }} />);
+  it("skeleton + veri yokken Empty yerine skeletonRows kadar (en çok 10) sahte satır çizilir", () => {
+    const { container } = render(<Table skeleton data={[]} columns={columns} skeletonRows={4} emptyState={{ title: "Kayıt Yok" }} />);
     expect(screen.queryByText("Kayıt Yok")).not.toBeInTheDocument();
     expect(container.querySelectorAll("tbody[aria-hidden] tr")).toHaveLength(4);
   });

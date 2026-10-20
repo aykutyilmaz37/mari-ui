@@ -565,7 +565,7 @@ export const EmptyState: Story = {
   header="Kayıtlı adresler"
   dataSource={[] as { id: number; title: string }[]}
   renderItem={(address) => <ListItem>{address.title}</ListItem>}
-  empty={<Empty size="sm" title="Kayıtlı adresiniz yok" description="Hızlı ödeme için bir teslimat adresi ekleyin." buttonText="Adres ekle" onClick={() => setAddressOpen(true)} />}
+  empty={<Empty size="sm" title="Kayıtlı adresiniz yok" description="Hızlı ödeme için bir teslimat adresi ekleyin." actions={<Button size="sm" onClick={() => setAddressOpen(true)}>Adres ekle</Button>} />}
 />`
   ),
   render: () => (

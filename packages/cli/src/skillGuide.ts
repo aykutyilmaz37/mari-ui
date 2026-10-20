@@ -138,7 +138,7 @@ Brief'i projenin README'sine (ya da bir \`docs/design-brief.md\`ye) kısa not ol
 
 ### Sayfa kalıpları
 
-- **Liste/tablo sayfası:** başlık satırı (\`Title\` + birincil eylem \`Button\`), filtre satırı (\`Input\` arama, \`Select\`, \`Segmented\`), \`Table\` ya da \`List\`, altta \`Pagination\` (sunucu sayfalaması için Table \`paginationMode="server"\`). Uzun ve sürekli akışta \`List\` \`onLoadMore\`.
+- **Liste/tablo sayfası:** başlık satırı (\`Title\` + birincil eylem \`Button\`), filtre satırı (\`Input\` arama, \`Select\`, \`Segmented\`), \`Table\` ya da \`List\`, altta \`Pagination\` (Table'da \`footer\` yuvasına; tablo veriyi dilimlemez). Uzun ve sürekli akışta \`List\` \`onLoadMore\`.
 - **Detay sayfası:** \`Breadcrumb\`, başlık + eylemler, içerik \`Card\`'larda; ilgili alt kümeler \`Tabs\` ile.
 - **Form sayfası:** her alan \`Field\` içinde (etiket, ipucu, hata metni); uzun formu \`Card\` bölümlerine ayır; çok adımlıysa \`Steps\`; kaydet/vazgeç düğmeleri en altta, birincil eylem tek.
 - **Panel (dashboard):** üstte \`Statistic\` kartları (\`grid sm:grid-cols-2 lg:grid-cols-4\`, eğilim için altına \`Sparkline\`), altında grafik/tablo kartları; farklı yükseklikte kartlar için \`Masonry\`.

@@ -2,10 +2,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Avatar } from "../avatar";
+import { Button } from "../button";
+import { Drawer } from "../drawer";
+import { Field } from "../field";
+import { Input } from "../input";
+import { Pagination } from "../pagination";
 import { Switch } from "../switch";
 import { Tag } from "../tag";
 import { Table } from "./Table";
-import type { ColumnDef, TablePaginationConfig } from "./types";
+import type { ColumnDef } from "./types";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { SkeletonDemo } from "../lib/SkeletonDemo";
 
@@ -47,8 +52,9 @@ const meta: Meta<typeof Table<DataType>> = {
           summary:
             "Tip güvenli veri tablosu. Her sütun bir `ColumnDef<T>` ile tanımlanır: `header` başlık metni, " +
             "`columnName` verinin hangi alandan okunacağı (`keyof T`), `render` hücrenin özel içeriği (Tag, Avatar, " +
-            "tutar…), `actions` satır içi düzenleme/silme, `info` " +
-            "değeri bir tooltip içinde de gösterir, `align` metin hizalamasını belirler (varsayılan `\"start\"`).",
+            "tutar…), `actions` satır içi düzenleme, düzenleme çağrısı (`editRow`), silme ve detay, `info` " +
+            "değeri bir tooltip içinde de gösterir, `align` metin hizalamasını belirler (varsayılan `\"start\"`). Sayfalama " +
+            "`footer` yuvasına verilen `Pagination`; tablo veriyi dilimlemez.",
           whenToUse: ["Satır/sütun yapısında, tipik olarak sıralanabilir/eylem içeren tablo verisi göstermek için."],
           whenNotToUse: ["Basit bir liste yeterliyse — bir tablo overhead getirir, `Card`/düz liste daha sade olabilir."],
           a11y:
@@ -247,48 +253,155 @@ export const Accordion: Story = {
   },
 };
 
+const EditInDrawerStory = () => {
+  const [data, setData] = useState(users);
+  const [editing, setEditing] = useState<UserRow | null>(null);
+  const [draftName, setDraftName] = useState("");
+
+  const save = () => {
+    if (editing) setData((prev) => prev.map((row) => (row.id === editing.id ? { ...row, name: draftName } : row)));
+    setEditing(null);
+  };
+
+  return (
+    <>
+      <Table<UserRow>
+        label="Kullanıcılar"
+        data={data}
+        columns={userColumns({
+          editRow: (row) => {
+            setDraftName(row.name);
+            setEditing(row);
+          },
+        })}
+      />
+      <Drawer
+        open={editing !== null}
+        onClose={() => setEditing(null)}
+        title="Kullanıcıyı düzenle"
+        description={editing?.email}
+        footer={
+          <>
+            <Button variant="outline" color="neutral" onClick={() => setEditing(null)}>
+              Vazgeç
+            </Button>
+            <Button onClick={save}>Kaydet</Button>
+          </>
+        }
+      >
+        <Field label="Ad soyad">
+          <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} />
+        </Field>
+      </Drawer>
+    </>
+  );
+};
+
+export const EditInDrawer: Story = {
+  name: "Çekmecede Düzenleme",
+  ...storyDoc(
+    "`actions.editRow` \"Düzenle\" düğmesini satırla çağırır; düzenleme yüzeyini (Drawer, Modal, ayrı sayfa) tüketici " +
+      "açar — tablo kendi çekmecesini taşımaz, `Drawer` yalnız onu kullanana gelir.",
+    `
+import { Table } from "@mari-ui/components/table";
+import { Drawer } from "@mari-ui/components/drawer";
+import { Button } from "@mari-ui/components/button";
+import { Field } from "@mari-ui/components/field";
+import { Input } from "@mari-ui/components/input";
+
+const [editing, setEditing] = useState(null);
+const [draftName, setDraftName] = useState("");
+
+const columns = [
+  { header: "Kullanıcı", columnName: "name" },
+  {
+    header: "İşlemler",
+    align: "end",
+    actions: {
+      editRow: (row) => {
+        setDraftName(row.name);
+        setEditing(row);
+      },
+    },
+  },
+];
+
+<Table label="Kullanıcılar" data={users} columns={columns} />
+<Drawer
+  open={editing !== null}
+  onClose={() => setEditing(null)}
+  title="Kullanıcıyı düzenle"
+  description={editing?.email}
+  footer={
+    <>
+      <Button variant="outline" color="neutral" onClick={() => setEditing(null)}>Vazgeç</Button>
+      <Button onClick={() => { save(editing.id, draftName); setEditing(null); }}>Kaydet</Button>
+    </>
+  }
+>
+  <Field label="Ad soyad">
+    <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} />
+  </Field>
+</Drawer>`
+  ),
+  render: () => <EditInDrawerStory />,
+};
+
 const PaginationClientStory = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const rows = largeData.slice((page - 1) * pageSize, page * pageSize);
 
-  const pagination: TablePaginationConfig = {
-    page,
-    pageSize,
-    total: largeData.length,
-    onPageChange: setPage,
-    onPageSizeChange: (size) => {
-      setPageSize(size);
-      setPage(1);
-    },
-  };
-
-  return <Table<DataType> data={largeData} columns={responsiveColumns} pagination={pagination} paginationMode="client" />;
+  return (
+    <Table<DataType>
+      data={rows}
+      columns={responsiveColumns}
+      footer={
+        <Pagination
+          currentPage={page}
+          pageSize={pageSize}
+          totalItems={largeData.length}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
+          showTotal
+        />
+      }
+    />
+  );
 };
 
 export const PaginationClient: Story = {
   name: "Sayfalama — İstemci Taraflı",
   ...storyDoc(
-    "`paginationMode=\"client\"` iken `Table` TÜM veriyi (`largeData`, 47 satır) alır ve `page`/`pageSize`'a göre " +
-      "kendi diler — sunucuya istek atmadan, sadece sayfa state'i güncellenir. `onPageSizeChange` verildiğinde " +
-      "sayfa başına satır sayısı seçilebilir.",
+    "Sayfalama `footer` yuvasına verilen `Pagination`'dır — tablo veriyi dilimlemez, yalnız o sayfanın satırlarını " +
+      "alır. İstemci taraflıda tüm veri elde: tek satırlık `slice` yeter, sunucuya istek yok. `onPageSizeChange` " +
+      "verildiğinde sayfa başına satır sayısı seçilebilir. `Pagination` yalnız onu kullanan tabloya gelir.",
     `
+import { Table } from "@mari-ui/components/table";
+import { Pagination } from "@mari-ui/components/pagination";
+
 const [page, setPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
 
 <Table
-  data={allUsers}
+  data={allUsers.slice((page - 1) * pageSize, page * pageSize)}
   columns={columns}
-  paginationMode="client"
-  pagination={{
-    page,
-    pageSize,
-    total: allUsers.length,
-    onPageChange: setPage,
-    onPageSizeChange: (size) => {
-      setPageSize(size);
-      setPage(1);
-    },
-  }}
+  footer={
+    <Pagination
+      currentPage={page}
+      pageSize={pageSize}
+      totalItems={allUsers.length}
+      onPageChange={setPage}
+      onPageSizeChange={(size) => {
+        setPageSize(size);
+        setPage(1);
+      }}
+      showTotal
+    />
+  }
 />`
   ),
   render: () => <PaginationClientStory />,
@@ -301,34 +414,34 @@ const PaginationServerStory = () => {
   // Gerçek kullanımda bu, `page` değiştiğinde bir API çağrısıyla gelir
   // (örn. `fetch(`/api/users?page=${page}&pageSize=${pageSize}`)`) — burada
   // simüle etmek için aynı diziden dilimleniyor, ama `Table`'a SADECE o
-  // sayfanın verisi veriliyor (component kendi dilimlemiyor).
+  // sayfanın verisi veriliyor.
   const currentPageData = largeData.slice(start, start + pageSize);
 
-  const pagination: TablePaginationConfig = {
-    page,
-    pageSize,
-    total: largeData.length,
-    onPageChange: setPage,
-  };
-
-  return <Table<DataType> data={currentPageData} columns={responsiveColumns} pagination={pagination} paginationMode="server" />;
+  return (
+    <Table<DataType>
+      data={currentPageData}
+      columns={responsiveColumns}
+      footer={<Pagination currentPage={page} pageSize={pageSize} totalItems={largeData.length} onPageChange={setPage} showTotal />}
+    />
+  );
 };
 
 export const PaginationServer: Story = {
   name: "Sayfalama — Sunucu Taraflı",
   ...storyDoc(
-    "`paginationMode=\"server\"` (varsayılan) iken `Table` hiçbir dilimleme yapmaz — `data` her zaman zaten o " +
-      "sayfaya ait dilim olarak verilir. `onPageChange`'de tüketici yeni sayfanın verisini kendisi getirir (API " +
-      "çağrısı vb.); burada gösterim amaçlı yerel diziden simüle edildi.",
+    "Sunucu taraflıda `data` her zaman o sayfanın dilimidir; `onPageChange`'de tüketici yeni sayfanın verisini kendisi " +
+      "getirir (API çağrısı vb.), toplamı `totalItems`'a verir. Burada gösterim amaçlı yerel diziden simüle edildi.",
     `
+import { Table } from "@mari-ui/components/table";
+import { Pagination } from "@mari-ui/components/pagination";
+
 const [page, setPage] = useState(1);
 const { data, total } = useUsers({ page, pageSize: 10 }); // sunucudan yalnız bu sayfa
 
 <Table
   data={data}
   columns={columns}
-  paginationMode="server"
-  pagination={{ page, pageSize: 10, total, onPageChange: setPage }}
+  footer={<Pagination currentPage={page} pageSize={10} totalItems={total} onPageChange={setPage} showTotal />}
 />`
   ),
   render: () => <PaginationServerStory />,
@@ -337,11 +450,18 @@ const { data, total } = useUsers({ page, pageSize: 10 }); // sunucudan yalnız b
 export const SkeletonState: Story = {
   name: "İskelet",
   ...storyDoc(
-    "`skeleton` başlıkları, hücreleri, işlemler sütununu ve sayfalamayı iskelete çevirir. Veri varken (yenileme) " +
+    "`skeleton` başlıkları, hücreleri ve işlemler sütununu iskelete çevirir (sayfalamaya da aynı `skeleton`'ı verin). Veri varken (yenileme) " +
       "gerçek hücreler görünmez olarak yerinde kalır → satır yükseklikleri korunur, zıplama olmaz. Veri henüz yokken " +
-      "(ilk yükleme) sayfa boyu kadar (en çok 10, varsayılan 5) tek satırlık sahte satır çizilir. Tablo `aria-busy` alır.",
+      "(ilk yükleme) `skeletonRows` kadar (en çok 10, varsayılan 5) tek satırlık sahte satır çizilir. Tablo `aria-busy` alır.",
     `
-<Table label="Kullanıcılar" skeleton={isLoading} data={data ?? []} columns={columns} pagination={pagination} />`
+<Table
+  label="Kullanıcılar"
+  skeleton={isLoading}
+  skeletonRows={4}
+  data={data ?? []}
+  columns={columns}
+  footer={<Pagination skeleton={isLoading} currentPage={page} pageSize={4} totalItems={total} onPageChange={setPage} showTotal />}
+/>`
   ),
   render: () => {
     const [firstLoad, setFirstLoad] = useState(true);
@@ -356,7 +476,8 @@ export const SkeletonState: Story = {
               skeleton={skeleton}
               data={skeleton && firstLoad ? [] : users}
               columns={userColumns({ deleteRow: () => {} })}
-              pagination={{ page, pageSize: 4, total: users.length, onPageChange: setPage }}
+              skeletonRows={4}
+              footer={<Pagination skeleton={skeleton} currentPage={page} pageSize={4} totalItems={users.length} onPageChange={setPage} showTotal />}
             />
           </div>
         )}
