@@ -81,5 +81,3 @@ export function RadioGroup({
     </div>
   );
 }
-
-RadioGroup.displayName = "RadioGroup";

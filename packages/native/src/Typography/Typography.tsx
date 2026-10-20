@@ -17,7 +17,7 @@ const WEIGHT: Record<TextWeight, TextStyle["fontWeight"]> = { normal: "400", med
  * `Text` (ör. paragraf içinde kalın bir kelime) boyut/satır yüksekliğini
  * ebeveynden alsın diye kendi ölçeğini yazmaz — yalnız rengi/ağırlığı değiştirir.
  */
-const InsideText = createContext(false);
+const InsideText = /* @__PURE__ */ createContext(false);
 
 function numberOfLines(ellipsis: TypographyEllipsis | undefined): number | undefined {
   if (!ellipsis) return undefined;

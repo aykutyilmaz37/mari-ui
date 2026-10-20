@@ -18,7 +18,7 @@ export interface TableAccordionProps<T extends { id: string }> {
   emptyState?: TableEmptyStateConfig;
   className?: string;
   skeleton?: boolean;
-  pageSize?: number;
+  skeletonRows?: number;
 }
 
 /*
@@ -44,7 +44,7 @@ function renderValue<T extends { id: string }>(col: ColumnDef<T>, value: T[keyof
   return <TableInfoValue info={col.info} value={value != null ? String(value) : "-"} />;
 }
 
-export function TableAccordion<T extends { id: string }>({ data, columns, emptyState, className, skeleton = false, pageSize }: Readonly<TableAccordionProps<T>>) {
+export function TableAccordion<T extends { id: string }>({ data, columns, emptyState, className, skeleton = false, skeletonRows }: Readonly<TableAccordionProps<T>>) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<T>>>({});
@@ -57,7 +57,7 @@ export function TableAccordion<T extends { id: string }>({ data, columns, emptyS
     // Veri henüz yok: kapalı satır başlıklarıyla aynı yükseklikte sahte satırlar.
     return (
       <div aria-hidden className={cn("flex flex-col divide-y divide-mari-border rounded-md border border-mari-border", className)}>
-        {Array.from({ length: skeletonRowCount(pageSize) }, (_, i) => (
+        {Array.from({ length: skeletonRowCount(skeletonRows) }, (_, i) => (
           // h-6 = başlık düğmesinin satır yüksekliği, h-8 = `sm` eylem düğmesi.
           <div key={i} className="flex items-center gap-2 px-3 py-2.5">
             <TableCellSkeleton width={skeletonWidth(0, i)} className="h-6 flex-1" />

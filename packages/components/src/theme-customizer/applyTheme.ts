@@ -11,7 +11,7 @@ interface AppliedState {
   stopListening?: () => void;
 }
 
-const appliedStates = new WeakMap<HTMLElement, AppliedState>();
+const appliedStates = /* @__PURE__ */ new WeakMap<HTMLElement, AppliedState>();
 
 /** "system" tercihini o anki işletim sistemi ayarına çözer (SSR'da "light"). */
 export function resolveColorScheme(mode: ThemeSettings["mode"]): ThemeMode {

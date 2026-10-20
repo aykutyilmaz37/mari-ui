@@ -51,7 +51,7 @@ export interface AppBarActionProps {
   badge?: number | boolean;
 }
 
-const AppBarContext = React.createContext<{ skeleton: boolean; m: NativeAppBarSize; theme: Theme } | null>(null);
+const AppBarContext = /* @__PURE__ */ React.createContext<{ skeleton: boolean; m: NativeAppBarSize; theme: Theme } | null>(null);
 
 /**
  * Sayfa kaydırmasını AppBar'a bağlar:

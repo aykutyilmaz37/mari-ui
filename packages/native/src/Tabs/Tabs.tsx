@@ -89,7 +89,7 @@ interface TabsContextValue {
   report: (value: string, rect: LayoutRectangle) => void;
 }
 
-const TabsContext = createContext<TabsContextValue | null>(null);
+const TabsContext = /* @__PURE__ */ createContext<TabsContextValue | null>(null);
 
 function useTabs(): TabsContextValue {
   const ctx = useContext(TabsContext);

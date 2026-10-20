@@ -1,20 +1,16 @@
 import React from "react";
 import { InboxIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
-import { Button } from "../button";
 import { skeletonBoxProps, type SkeletonableProps } from "../lib/skeleton";
 
 export interface EmptyProps extends SkeletonableProps {
   title: string;
   description?: React.ReactNode;
-  /** Tek birincil eylem. `onClick` (ya da `href`) olmadan buton çizilmez. */
-  buttonText?: string;
-  onClick?: () => void;
-  /** Butonu bağlantı olarak çizer (başka sayfaya götüren eylem). */
-  href?: string;
   icon?: React.ReactNode;
-  buttonIcon?: React.ReactNode;
-  /** Birden çok ya da özel eylem (ör. birincil + ikincil buton). Verilirse `buttonText` yok sayılır. */
+  /**
+   * Eylem(ler) — tipik olarak `Button` (`size="sm"` boyunda `sm`). Hazır
+   * buton kısayolu yok: Button yalnız eylem veren kullanıcıya gelsin diye (Faz 4c).
+   */
   actions?: React.ReactNode;
   /** `md` (varsayılan): sayfa/bölüm. `sm`: kart, tablo, liste içi — daha az boşluk, küçük ikon. */
   size?: "sm" | "md";
@@ -35,18 +31,13 @@ const SIZE = {
 /**
  * Varsayılan ikon `FileWarning` idi — boş durum bir HATA değil
  * (`InboxIcon`). İkon yumuşak bir daire içinde; başlık `h2` yerine `p`
- * (`titleAs`); `onClick` olmadan `buttonText` verilince işe yaramaz, devre dışı
- * bir buton çiziliyordu — artık buton yalnızca bir eylem varsa çıkar.
+ * (`titleAs`). Eylem `actions` yuvasıyla verilir (Empty kendisi Button çizmez).
  */
 // Hook yok, browser API yok — saf sunum, "use client" gerekmiyor.
 export function Empty({
   title,
   description,
-  buttonText,
-  onClick,
-  href,
   icon,
-  buttonIcon,
   actions,
   size = "md",
   titleAs: TitleTag = "p",
@@ -65,8 +56,6 @@ export function Empty({
     );
   }
 
-  const hasButton = Boolean(buttonText && (onClick || href));
-
   return (
     <div className={cn("flex flex-col items-center justify-center text-center", s.root, className)}>
       <div aria-hidden className={cn("mb-1 flex items-center justify-center rounded-full bg-mari-surface-alt text-mari-muted", s.icon)}>
@@ -74,17 +63,7 @@ export function Empty({
       </div>
       <TitleTag className={cn("font-semibold text-balance text-mari-foreground", s.title)}>{title}</TitleTag>
       {description && <p className={cn("max-w-md text-pretty text-mari-muted", s.description)}>{description}</p>}
-      {actions ? (
-        <div className={cn("flex flex-wrap items-center justify-center gap-2", s.actionGap)}>{actions}</div>
-      ) : (
-        hasButton && (
-          <div className={s.actionGap}>
-            <Button color="primary" size={size === "sm" ? "sm" : "md"} onClick={onClick} href={href} icon={buttonIcon}>
-              {buttonText}
-            </Button>
-          </div>
-        )
-      )}
+      {actions && <div className={cn("flex flex-wrap items-center justify-center gap-2", s.actionGap)}>{actions}</div>}
     </div>
   );
 }

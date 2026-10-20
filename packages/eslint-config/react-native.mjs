@@ -8,6 +8,7 @@
 // `no-restricted-imports` de yok — bu paketin var oluş sebebi tam olarak bu.
 import reactHooks from "eslint-plugin-react-hooks";
 import { baseConfig } from "./base.mjs";
+import { treeShakingConfig } from "./tree-shaking.mjs";
 
 /** @type {import('eslint').Linter.Config[]} */
 export const reactNativeConfig = [
@@ -21,6 +22,7 @@ export const reactNativeConfig = [
       ...reactHooks.configs.recommended.rules,
     },
   },
+  ...treeShakingConfig,
 ];
 
 export default reactNativeConfig;

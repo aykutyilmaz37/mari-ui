@@ -114,7 +114,7 @@ function Stepper({ onStart, onStop, canIncrement, canDecrement, incrementLabel, 
  * Klavye: ↑/↓ adım (Shift ×10), PageUp/PageDown ×10, Home/End min/max, Enter
  * onaylar. `aria-valuenow/min/max` + `aria-valuetext` (önek/sonekle, ör. "1.234,50 ₺").
  */
-export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(function InputNumber(outerProps, ref) {
+export const InputNumber = /* @__PURE__ */ forwardRef<HTMLInputElement, InputNumberProps>(function InputNumber(outerProps, ref) {
   // Field içindeyse id / aria-describedby / hata / required / disabled oradan tamamlanır.
   return <InputNumberInner {...useFieldControl(outerProps)} forwardedRef={ref} />;
 });

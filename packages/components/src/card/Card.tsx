@@ -21,8 +21,8 @@ export type { CardProps, CardMetaProps };
  *
  * Hook yok — sunucu bileşeni olarak render edilebilir.
  */
-export const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
+export const Card = /* @__PURE__ */ forwardRef<HTMLDivElement, CardProps>(
+  function Card(
     {
       children,
       title,
@@ -42,7 +42,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       onClick,
     },
     ref
-  ) => {
+  ) {
     // İskeletteyken kart gezinmez/tıklanmaz: henüz var olmayan bir kaydın
     // sayfasına gitmek ya da onClick'i veri yokken çağırmak yanlış.
     const isLink = !skeleton && Boolean(href);
@@ -155,8 +155,6 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     );
   }
 );
-
-Card.displayName = "Card";
 
 /*
  * ant.design `Card.Meta`: avatar + başlık + açıklama.

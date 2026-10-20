@@ -69,7 +69,7 @@ interface GroupCtx {
   menu: boolean;
   onItemPress?: () => void;
 }
-const GroupContext = createContext<GroupCtx | null>(null);
+const GroupContext = /* @__PURE__ */ createContext<GroupCtx | null>(null);
 
 /** Kapsayıcının köşesine yerleşim; alt / üst güvenli alan payı eklenir (ev çubuğu, çentik). */
 function cornerStyle(placement: FloatButtonPlacement, offset: number, insets: { top: number; bottom: number; left: number; right: number }): ViewStyle {

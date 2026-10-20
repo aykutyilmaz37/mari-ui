@@ -44,8 +44,9 @@ export interface GaugeProps extends SkeletonableProps {
   animated?: boolean;
 }
 
-const START = -Math.PI * 0.75;
-const END = Math.PI * 0.75;
+// ±3π/4 sayı olarak: modül seviyesinde `Math.PI` erişimi yan etkili sayılır (tree-shaking, Faz 4c).
+const START = -2.356194490192345;
+const END = 2.356194490192345;
 
 // viewBox sabit: yay, kalınlık ve yazı birlikte ölçeklenir (göstergenin kendisi bir figür).
 const R = 80;
@@ -71,9 +72,9 @@ function gaugeMask(withValue: boolean): React.CSSProperties {
   );
 }
 
-const SKELETON_MASK = gaugeMask(true);
+const SKELETON_MASK = /* @__PURE__ */ gaugeMask(true);
 /** Boş hal: ortadaki değer yerine uyarı durduğu için değer çubuğu yok. */
-const EMPTY_MASK = gaugeMask(false);
+const EMPTY_MASK = /* @__PURE__ */ gaugeMask(false);
 
 /**
  * Gösterge (270° yay). Tek bir değerin aralıktaki yeri: doluluk,

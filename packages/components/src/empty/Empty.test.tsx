@@ -11,20 +11,12 @@ describe("Empty", () => {
     expect(screen.getByRole("heading", { level: 2, name: "Sipariş yok" })).toBeInTheDocument();
   });
 
-  it("onClick/href olmadan buttonText devre dışı bir buton ÇİZMEZ", () => {
-    render(<Empty title="Boş" buttonText="Tekrar dene" />);
+  it("eylem yalnız actions ile çizilir; yoksa eylem alanı da yok", () => {
+    const { rerender, container } = render(<Empty title="Boş" />);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
-  });
-
-  it("href verilince eylem bir bağlantıdır", () => {
-    render(<Empty title="Boş" buttonText="Alışverişe başla" href="/urunler" />);
-    expect(screen.getByRole("link", { name: "Alışverişe başla" })).toHaveAttribute("href", "/urunler");
-  });
-
-  it("actions verilince buttonText yok sayılır", () => {
-    render(<Empty title="Boş" buttonText="Tek" onClick={() => {}} actions={<button type="button">Özel</button>} />);
-    expect(screen.getByRole("button", { name: "Özel" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Tek" })).not.toBeInTheDocument();
+    expect(container.firstElementChild!.children).toHaveLength(2);
+    rerender(<Empty title="Boş" actions={<button type="button">Tekrar dene</button>} />);
+    expect(screen.getByRole("button", { name: "Tekrar dene" })).toBeInTheDocument();
   });
 
   it("skeleton: metin yok, gizli", () => {
@@ -34,7 +26,7 @@ describe("Empty", () => {
   });
 
   it("erişilebilirlik ihlali içermez (axe-core)", async () => {
-    const { container } = render(<Empty title="Sipariş yok" description="İlk siparişiniz burada listelenir." buttonText="Keşfet" onClick={() => {}} />);
+    const { container } = render(<Empty title="Sipariş yok" description="İlk siparişiniz burada listelenir." actions={<button type="button">Keşfet</button>} />);
     expect(await getA11yViolations(container)).toEqual([]);
   });
 });

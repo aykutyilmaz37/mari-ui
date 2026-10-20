@@ -19,7 +19,7 @@ export interface FieldContextValue {
   skeleton: boolean;
 }
 
-export const FieldContext = createContext<FieldContextValue | null>(null);
+export const FieldContext = /* @__PURE__ */ createContext<FieldContextValue | null>(null);
 
 export interface FieldControlInput {
   disabled?: boolean;

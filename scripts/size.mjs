@@ -16,6 +16,9 @@
 // Native'de ayrıca: `createContext` çağıran her kaynak modül, her formatta (ESM/CJS)
 // TEK bir dist dosyasında olmalı — iki kopya = iki ayrı context (Provider görünmez).
 //
+// Artık kod testi (Faz 4c): entry'yi hiçbir export'u kullanmadan import etmek paketin
+// kendi kodundan hiçbir şey bırakmamalı — yoksa tek named import da kardeş export'ları taşır.
+//
 // CSS (Faz 3): web paketinin yayınlanan hazır CSS'i (`dist/styles.css`, zaten
 // minify) gzip'lenip ölçülür. Tailwind'li host modu (`tailwind.css`) aynı
 // `dist/*.js` taramasını kullandığı için bu sayı onun da vekili.
@@ -61,13 +64,20 @@ const PACKAGES = {
         ["skeleton", "card", "modal", "drawer", "toast", "popover", "accordion", "alert", "timeline", "masonry", "tree", "statistic", "upload", "tour"].map((e) => [e, ["avatar"]]),
       ),
       // Faz 4b: foldForSearch lib'de; select autocomplete klasörünü çekmez.
-      select: ["autocomplete"],
+      // Faz 4c: çoklu seçim (etiketler) multi-select'te; tekli Select ve onu kullanan Calendar Tag taşımaz.
+      select: ["autocomplete", "tag"],
+      calendar: ["tag"],
+      // Faz 4c: sayfalama `footer` yuvasında, düzenleme çekmecesi tüketicide; Empty eylemi `actions` yuvasında (Button çizmez).
+      table: ["drawer", "pagination"],
+      ...Object.fromEntries(["empty", "list", "chart"].map((e) => [e, ["button"]])),
     },
     // Faz 4b: maske kütüphanesi yalnız MaskedInput'ta.
     bannedDeps: Object.fromEntries(
       ["input", "autocomplete", "slider", "transfer", "table", "color-picker", "date-picker", "select", "mentions", "theme-customizer"].map((e) => [e, ["@react-input/mask"]]),
     ),
     textMarker: (c) => `mari-${c}`,
+    // qrcode-generator CommonJS: tüketicinin bundler'ı `__commonJS` sarmalayıcısını modül seviyesinde çağırır.
+    residueAllowed: ["qrcode"],
   },
   native: {
     dir: join(ROOT, "packages/native"),
@@ -78,8 +88,11 @@ const PACKAGES = {
       // Faz 4b: galeri (ve görünüm seçicisi Segmented) ayrı entry'de; Metro tree-shaking yapmaz.
       image: ["image-gallery", "segmented"],
       upload: ["image-gallery", "segmented"],
+      // Faz 4c: Empty eylemi `actions` yuvasında (web ile aynı).
+      empty: ["button"],
     },
     bannedDeps: { button: ["qrcode-generator"] },
+    residueAllowed: ["qrcode"],
     mainFields: ["react-native", "browser", "module", "main"],
   },
 };
@@ -210,6 +223,52 @@ async function bannedCheck(pkg) {
   return problems;
 }
 
+// Entry içi tree-shaking (Faz 4c): entry'yi hiçbir export'unu kullanmadan import
+// edince paketin KENDİ kodundan hiçbir şey kalmamalı. `sideEffects` beyanı modülü
+// bütünüyle atmaya yeter ama tek bir export import edildiğinde modülün geri
+// kalanı ancak modül seviyesindeki her ifade saf görünüyorsa atılır. Bunu
+// ölçmek için paketin dist dosyaları burada `sideEffects: true` sayılır; kalan
+// kod = işaretsiz `forwardRef(...)`/`createContext(...)`/`cn(...)`, `X.displayName = …`,
+// `Platform.OS` gibi yan etkili görünen bir ifade (bkz. eslint `pure-module-scope`).
+async function residueCheck(pkg) {
+  const distDir = join(pkg.dir, "dist");
+  const forceSideEffects = {
+    name: "dist-side-effects",
+    setup(b) {
+      b.onResolve({ filter: new RegExp(`^(${pkg.name.replace("/", "\\/")}/|\\./chunk-)`) }, async (a) => {
+        if (a.pluginData) return undefined;
+        const r = await b.resolve(a.path, { kind: a.kind, resolveDir: a.resolveDir, pluginData: true });
+        return r.path.startsWith(distDir) ? { ...r, sideEffects: true } : r;
+      });
+    },
+  };
+  const problems = [];
+  for (const name of pkg.entries) {
+    const result = await build({
+      stdin: { contents: `import ${JSON.stringify(`${pkg.name}/${name}`)};`, resolveDir: pkg.dir, loader: "js" },
+      bundle: true,
+      minify: true,
+      format: "esm",
+      platform: "browser",
+      ...(pkg.mainFields && { mainFields: pkg.mainFields }),
+      write: false,
+      external: pkg.external,
+      logLevel: "silent",
+      loader: { ".css": "empty" },
+      define: { "process.env.NODE_ENV": '"production"' },
+      plugins: [forceSideEffects],
+    });
+    const residue = result.outputFiles[0].text
+      .replace(/import\s*[^;]*;/g, "")
+      .replace(/"use client";/g, "")
+      .trim();
+    if (residue && !pkg.residueAllowed?.includes(name)) {
+      problems.push(`${pkg.name}/${name}: hiçbir export kullanılmadan ${residue.length} bayt kod kalıyor (modül seviyesinde yan etkili ifade; eslint pure-module-scope) → …${residue.slice(-160)}`);
+    }
+  }
+  return problems;
+}
+
 // createContext çağıran her native kaynak modülü her formatta tek bir dist dosyasında mı?
 function contextDuplicates(pkg) {
   const src = join(pkg.dir, "src");
@@ -304,6 +363,7 @@ async function main() {
   const nativeAll = await measureNativeAll();
   const banned = [...(await bannedCheck(PACKAGES.components)), ...(await bannedCheck(PACKAGES.native))];
   const contexts = contextDuplicates(PACKAGES.native);
+  const residue = [...(await residueCheck(PACKAGES.components)), ...(await residueCheck(PACKAGES.native))];
   const css = measureCss();
 
   const current = {
@@ -333,7 +393,7 @@ async function main() {
     for (const [f, v] of Object.entries(css)) console.log(`Web CSS \`${f}\`: ${kb(v.gz)} min+gz (${kb(v.min)} min)\n`);
   }
 
-  const errors = [...banned, ...contexts.problems];
+  const errors = [...banned, ...residue, ...contexts.problems];
   for (const { name, leaked } of [...web.leaks.map((l) => ({ ...l, pkg: "components" })), ...native.leaks.map((l) => ({ ...l, pkg: "native" }))]) {
     errors.push(`${name}: kaynakta import etmediği bileşen kodu dist'e sızmış → ${leaked.join(", ")}`);
   }

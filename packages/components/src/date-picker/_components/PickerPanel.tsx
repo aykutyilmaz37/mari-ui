@@ -86,7 +86,7 @@ function Footer({ state, showNow, needsConfirm }: Readonly<{ state: PickerState;
  * alt çubuk (Bugün/Şimdi, Tamam). Aralık gün modunda iki ay yan yana.
  * `role="dialog"` (modal değil); fareyle tıklama alanın odağını almaz.
  */
-export const PickerPanel = forwardRef<HTMLDivElement, PickerPanelProps>(function PickerPanel({ id, coords, state, props, takeFocus, onFocusOut }, ref) {
+export const PickerPanel = /* @__PURE__ */ forwardRef<HTMLDivElement, PickerPanelProps>(function PickerPanel({ id, coords, state, props, takeFocus, onFocusOut }, ref) {
   const { mode, picker, range, draft, slot } = state;
   const hasDate = mode !== "time";
   const hasTime = mode !== "date";

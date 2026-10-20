@@ -2,17 +2,17 @@ import type React from "react";
 import type { SkeletonableProps } from "../lib/skeleton";
 
 export interface ActionProps<T> {
-  onEditWithDrawer?: {
-    form: React.ComponentType<{ refetch: () => void; initialData: T; closeModal: () => void }>;
-    title: string;
-    description: string;
-  };
+  /**
+   * "Düzenle" düğmesi bu satırla çağrılır — düzenleme yüzeyini (Drawer, Modal,
+   * ayrı sayfa) tüketici açar. Tablo kendi çekmecesini taşımaz (Faz 4c: Drawer
+   * yalnız onu kullanana gelsin).
+   */
+  editRow?: (item: T) => void;
   editRowInInline?: {
     onChange: (item: T) => void;
   };
   deleteRow?: (id: string) => void;
   navigateRow?: (id: string) => void;
-  refetch?: () => void;
 }
 
 export type TableColumnAlign = "start" | "center" | "end";
@@ -56,18 +56,6 @@ export interface TableEmptyStateConfig {
   description?: string;
 }
 
-export interface TablePaginationConfig {
-  /** 1 tabanlı geçerli sayfa. */
-  page: number;
-  pageSize: number;
-  /** Tüm sayfalardaki toplam satır sayısı. */
-  total: number;
-  /** Varsayılan: `[10, 20, 50, 100, 1000]`. */
-  pageSizeOptions?: number[];
-  onPageChange: (page: number) => void;
-  onPageSizeChange?: (pageSize: number) => void;
-}
-
 export interface TableProps<T extends { id: string }> extends SkeletonableProps {
   data: T[];
   /**
@@ -86,15 +74,14 @@ export interface TableProps<T extends { id: string }> extends SkeletonableProps 
    * ekranda hâlâ normal tablo render edilir.
    */
   responsive?: "scroll" | "accordion";
-  /** Verildiğinde tablonun altında sayfalama kontrolleri render edilir. */
-  pagination?: TablePaginationConfig;
   /**
-   * `"server"` (varsayılan): `data` zaten o sayfaya ait dilim olarak
-   * verilir, `Table` hiçbir dilimleme yapmaz — `onPageChange`'de tüketici
-   * yeni veriyi kendi getirir (API çağrısı vb.). `"client"`: `Table`,
-   * `data`'nın TAMAMINI alır ve `pagination.page`/`pageSize`'a göre kendi
-   * dilimler — tüketici sadece sayfa state'ini günceller, sunucu isteği
-   * gerekmez.
+   * Tablonun altında, çerçevenin içinde (üstte ince ayırıcıyla) gösterilir —
+   * tipik olarak `Pagination` (`@mari-ui/components/pagination`). Tablo veriyi
+   * dilimlemez: `data` o sayfanın satırlarıdır (istemci taraflıda
+   * `rows.slice((page - 1) * pageSize, page * pageSize)`). Sayfalama bileşeni
+   * yalnız onu kullanana gelir (Faz 4c).
    */
-  paginationMode?: "client" | "server";
+  footer?: React.ReactNode;
+  /** `skeleton` + veri yokken çizilecek sahte satır sayısı (en çok 10). Varsayılan: 5 — sayfalıda sayfa boyunu verin. */
+  skeletonRows?: number;
 }

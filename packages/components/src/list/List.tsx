@@ -21,7 +21,7 @@ interface ListContextValue {
   skeleton: boolean;
 }
 
-const ListContext = createContext<ListContextValue>({ size: "md", bordered: false, itemLayout: "horizontal", grid: false, skeleton: false });
+const ListContext = /* @__PURE__ */ createContext<ListContextValue>({ size: "md", bordered: false, itemLayout: "horizontal", grid: false, skeleton: false });
 
 /*
  * ant.design ölçüleri: sm 8/16, md 12/24, lg 16/24px (çerçevesizde yatay dolgu yok).

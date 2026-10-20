@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { CheckIcon, ChevronRightIcon, PencilIcon, Trash2Icon, XIcon } from "lucide-react";
 import { Button } from "../../button";
-import { TableEditDrawer } from "./TableEditDrawer";
 import type { ActionProps } from "../types";
 
 export interface TableRowActionsProps<T> {
@@ -31,8 +30,6 @@ export function TableRowActions<T extends { id: string }>({
   onSaveInlineEdit,
   onCancelInlineEdit,
 }: Readonly<TableRowActionsProps<T>>) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
   // Faz 15: her satırın düğmesi eskiden aynı adı ("Sil") taşıyordu — ekran
   // okuyucuda hangi satırın silineceği belli değildi. Silme ikonu da bir
   // silgiydi (Eraser); evrensel karşılığı çöp kutusu. Düzenle/detay nötr,
@@ -49,13 +46,8 @@ export function TableRowActions<T extends { id: string }>({
         ) : (
           <Button variant="ghost" color="neutral" size="sm" onClick={onStartInlineEdit} icon={<PencilIcon size={16} aria-hidden />} aria-label={name("Düzenle")} />
         ))}
-      {actions.onEditWithDrawer && (
-        <>
-          <Button variant="ghost" color="neutral" size="sm" onClick={() => setDrawerOpen(true)} icon={<PencilIcon size={16} aria-hidden />} aria-label={name("Düzenle")} />
-          <TableEditDrawer title={actions.onEditWithDrawer.title} description={actions.onEditWithDrawer.description} open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-            <actions.onEditWithDrawer.form refetch={actions.refetch ?? (() => {})} initialData={item} closeModal={() => setDrawerOpen(false)} />
-          </TableEditDrawer>
-        </>
+      {actions.editRow && (
+        <Button variant="ghost" color="neutral" size="sm" onClick={() => actions.editRow?.(item)} icon={<PencilIcon size={16} aria-hidden />} aria-label={name("Düzenle")} />
       )}
       {actions.navigateRow && (
         <Button variant="ghost" color="neutral" size="sm" onClick={() => actions.navigateRow?.(item.id)} icon={<ChevronRightIcon size={16} aria-hidden />} aria-label={name("Detaya git")} />

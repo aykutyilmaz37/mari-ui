@@ -23,6 +23,7 @@ import type { Page } from "playwright";
  */
 const VISUAL = process.env.VISUAL === "1";
 const SNAPSHOT_DIR = path.join(process.cwd(), "__visual__");
+const FIXED_NOW = new Date("2026-01-15T10:30:00Z");
 // Story'lerin örnek medyası (picsum, pravatar, MDN videosu) her koşuda farklı/geç gelir ve
 // dış servise bağımlıdır: görsel modda hepsi bu sabit yerel görsele yönlenir, video ve diğer
 // dış istekler reddedilir (`invalid.example` gibi bilerek bozuk adresler yine hata verir).
@@ -68,7 +69,19 @@ const config: TestRunnerConfig = {
   async preVisit(page) {
     // Azaltılmış hareket: giriş animasyonları (Toast vb.) anında biter, axe ara karede (saydam) kontrast ölçmez.
     await page.emulateMedia({ reducedMotion: "reduce" });
-    if (VISUAL) await routeExternalMedia(page);
+    if (VISUAL) {
+      await routeExternalMedia(page);
+      // Saat gösteren story'ler (Clock/World Clocks) her koşuda farklı çizmesin: Date sabit,
+      // zamanlayıcılar çalışmaya devam eder.
+      await page.clock.setFixedTime(FIXED_NOW);
+    }
+    // Önceki story'nin `play`'i fareyi bir hover bileşeninin (Sidebar variant="hover")
+    // üstünde bırakabiliyor; yeni story yüklenince Chromium fare olayını yeniden gönderir ve
+    // ray görüntüden önce açılıyordu. Fare, story çizilmeden görünür alanın DIŞINA çekilir: köşe
+    // gibi bir iç nokta sağ kenara oturan (HoverRight) ya da ekranı dolduran (Calendar, galeri)
+    // bileşenlerin üstüne düşüp onları hover eder; (-1,-1) hiçbir öğeyi hover etmez.
+    await page.mouse.move(-1, -1);
+    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => done(undefined))));
     await injectAxe(page);
   },
   async postVisit(page, context) {

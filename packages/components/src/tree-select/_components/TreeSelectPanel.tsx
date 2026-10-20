@@ -98,7 +98,7 @@ function Row({ entry, state, treeId, treeLine, titleRender }: Readonly<{ entry: 
  * vurgusu). Panelde `mousedown` engellenir — tıklamak combobox'un odağını
  * (dolayısıyla açık paneli) kaybettirmesin.
  */
-export const TreeSelectPanel = forwardRef<HTMLDivElement, TreeSelectPanelProps>(function TreeSelectPanel(
+export const TreeSelectPanel = /* @__PURE__ */ forwardRef<HTMLDivElement, TreeSelectPanelProps>(function TreeSelectPanel(
   { treeId, coords, state, notFoundContent, listHeight, treeLine, titleRender, labelledBy, label },
   ref
 ) {

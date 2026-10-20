@@ -19,8 +19,8 @@ export type { CheckboxProps };
  */
 const DESCRIPTION_INDENT_CLASS = { sm: "pl-5", md: "pl-6", lg: "pl-7" } as const;
 
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  (
+export const Checkbox = /* @__PURE__ */ forwardRef<HTMLInputElement, CheckboxProps>(
+  function Checkbox(
     {
       autoFocus = false,
       checked,
@@ -45,7 +45,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       skeleton = false,
     },
     ref
-  ) => {
+  ) {
     // `color` varsayılansız: "renk açıkça verilmedi" ile "primary seçildi"
     // ayrımı dinlenme halindeki kenarlığın nötr mü renkli mi olacağını
     // belirler (Faz 13 — checked OLMAYAN kutucuk mavi görünmemeli).
@@ -130,5 +130,3 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     );
   }
 );
-
-Checkbox.displayName = "Checkbox";

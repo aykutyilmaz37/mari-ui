@@ -42,7 +42,7 @@ function getWidthClass(shape: MegaShape, count: number): string {
 }
 
 /** `mega` modunda sidebar'ın yanında tam yükseklikte açılan panel. */
-export const SidebarMegaPanel = React.forwardRef<HTMLDivElement, SidebarMegaPanelProps>(function SidebarMegaPanel(
+export const SidebarMegaPanel = /* @__PURE__ */ React.forwardRef<HTMLDivElement, SidebarMegaPanelProps>(function SidebarMegaPanel(
   { item, activeKey, setActiveKey, color, position, onClose, onMouseEnter, onMouseLeave, onNavigate, currentPath },
   ref
 ) {

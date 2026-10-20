@@ -51,7 +51,8 @@ const SPACING_OPTIONS: Array<{ value: SpacingDensity; label: string }> = [
 ];
 
 const HEX6 = /^#[0-9a-f]{6}$/i;
-const DEFAULT_SWATCH = lightTheme.color.primary.solid;
+// Fonksiyon: modül seviyesindeki özellik erişimi yan etkili sayılır (tree-shaking, Faz 4c).
+const defaultSwatch = () => lightTheme.color.primary.solid;
 
 interface SwatchProps {
   name: string;
@@ -169,7 +170,7 @@ export function ThemeCustomizer({
     }
 
     const swatches: Array<{ value: HexColor | undefined; color: HexColor; label: string }> = [
-      { value: undefined, color: DEFAULT_SWATCH, label: "Varsayılan" },
+      { value: undefined, color: defaultSwatch(), label: "Varsayılan" },
       ...colors.map((c) => ({ value: c.value, color: c.value, label: c.label })),
     ];
     return (
@@ -197,7 +198,7 @@ export function ThemeCustomizer({
                 disabledAlpha
                 // Boşken "renk yok" (çizgili) simgesi yanıltıcıydı: seçici o anki
                 // renkten başlar; halka yalnız özel renk seçiliyken.
-                value={customValue ?? primary ?? DEFAULT_SWATCH}
+                value={customValue ?? primary ?? defaultSwatch()}
                 onChange={(next) => {
                   if (next && HEX6.test(next)) update({ primary: next.toLowerCase() as HexColor });
                 }}

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -106,25 +105,6 @@ describe("Select", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Sonuç bulunamadı");
   });
 
-  it("çoklu: seçim listeyi açık tutar, etiket olur, etiket kaldırılır, Backspace son etiketi siler", async () => {
-    const user = userEvent.setup();
-    function Multi() {
-      const [value, setValue] = useState<(string | number)[]>([]);
-      return <Select aria-label="Şehirler" mode="multiple" showSearch options={cities} value={value} onChange={(v) => setValue(v)} />;
-    }
-    render(<Multi />);
-    await user.click(combobox());
-    await user.click(screen.getByRole("option", { name: "Ankara" }));
-    await user.click(screen.getByRole("option", { name: "İzmir" }));
-    expect(screen.getByRole("listbox")).toHaveAttribute("aria-multiselectable", "true");
-    expect(screen.getByRole("option", { name: "Ankara" })).toHaveAttribute("aria-selected", "true");
-    await user.click(screen.getByRole("button", { name: "Ankara seçimini kaldır" }));
-    expect(screen.queryByRole("button", { name: "Ankara seçimini kaldır" })).not.toBeInTheDocument();
-    combobox().focus();
-    await user.keyboard("{Backspace}");
-    expect(screen.queryByRole("button", { name: "İzmir seçimini kaldır" })).not.toBeInTheDocument();
-  });
-
   it("gruplar role=group ve başlık adıyla", async () => {
     const user = userEvent.setup();
     render(<Select aria-label="Ürün" options={grouped} />);
@@ -143,14 +123,14 @@ describe("Select", () => {
     expect(combobox()).toHaveTextContent("Seçin");
   });
 
-  it("native form: name ile gizli alan(lar) gönderilir", () => {
+  it("native form: name ile gizli alan gönderilir", () => {
     const { container } = render(
       <form>
-        <Select aria-label="Şehirler" name="city" mode="multiple" options={cities} defaultValue={["ist", "ank"]} />
+        <Select aria-label="Şehir" name="city" options={cities} defaultValue="ank" />
       </form>
     );
     const data = new FormData(container.querySelector("form")!);
-    expect(data.getAll("city")).toEqual(["ist", "ank"]);
+    expect(data.getAll("city")).toEqual(["ank"]);
   });
 
   it("disabled: odaklanamaz ve açılmaz", async () => {
@@ -183,7 +163,7 @@ describe("Select", () => {
     render(
       <>
         <Select aria-label="Şehir" options={cities} defaultValue="ank" allowClear />
-        <Select aria-label="Ürünler" mode="multiple" showSearch options={grouped} defaultValue={["elma"]} />
+        <Select aria-label="Ürün" showSearch options={grouped} defaultValue="elma" />
       </>
     );
     expect(await getA11yViolations(document.body)).toEqual([]);

@@ -1,6 +1,6 @@
 /**
- * Faz 16.1: gerçek senaryolar — bağımlı il/ilçe seçimi (yükleniyor), göreve
- * kişi atama (çoklu, avatar + açıklama), gruplu kategori. "Show code" her
+ * Faz 16.1: gerçek senaryolar — bağımlı il/ilçe seçimi (yükleniyor), gruplu
+ * kategori (çoklu kişi atama: MultiSelect.stories). "Show code" her
  * story'de `storyDoc`'un 2. argümanıyla verilen kopyalanabilir kod.
  * Story seviyesinde `parameters` YAZMAYIN — `...storyDoc`'u ezer.
  */
@@ -11,7 +11,6 @@ import { BanknoteIcon, CreditCardIcon, LandmarkIcon, WalletIcon } from "lucide-r
 import { baseSizeArgType, colorArgType } from "../lib/storybookArgTypes";
 import { componentDoc, storyDoc } from "../lib/storyMeta";
 import { SKELETON_STORY_DOC, SkeletonDemo } from "../lib/SkeletonDemo";
-import { Avatar } from "../avatar";
 import { Field } from "../field";
 import { Select } from "./Select";
 import type { SelectOption, SelectOptionGroup, SelectValue } from "./types";
@@ -28,14 +27,14 @@ const meta: Meta<typeof Select> = {
       description: {
         component: componentDoc({
           summary:
-            "Sabit bir listeden bir ya da birden çok değer seçtiren alan. Görünümü Input'la birebir aynı (boyut, varyant, " +
-            "doğrulama rengi). `showSearch` ile yazarak süzülür (Türkçe/aksansız: \"izmir\" → İzmir). `mode=\"multiple\"` " +
-            "seçimleri etiket olarak gösterir, liste seçimden sonra açık kalır. Seçenekler gruplanabilir, ikon ve açıklama " +
+            "Sabit bir listeden tek bir değer seçtiren alan. Görünümü Input'la birebir aynı (boyut, varyant, " +
+            "doğrulama rengi). `showSearch` ile yazarak süzülür (Türkçe/aksansız: \"izmir\" → İzmir). Çoklu seçim (etiketler) ayrı bileşen: `MultiSelect` " +
+            "(`@mari-ui/components/multi-select`). Seçenekler gruplanabilir, ikon ve açıklama " +
             "taşıyabilir; `optionRender` ile satır tamamen özelleştirilir. `name` verilirse native form'a gizli alan(lar)la katılır.",
           whenToUse: [
             "5'ten fazla seçenek arasından seçim (az seçenekte Radio/Segmented daha hızlı okunur).",
             "Uzun listeler (il, ülke, kategori) — `showSearch` ile.",
-            "Birden çok değer (etiket, atanan kişiler) — `mode=\"multiple\"`.",
+            "Birden çok değer (etiket, atanan kişiler) — `MultiSelect`.",
           ],
           whenNotToUse: [
             "Kullanıcı listede olmayan bir değer de yazabilecekse — AutoComplete.",
@@ -59,7 +58,6 @@ const meta: Meta<typeof Select> = {
     onSearch: { table: { category: "Olaylar" } },
     onOpenChange: { table: { category: "Olaylar" } },
     optionRender: { control: false },
-    mode: { control: "inline-radio", options: [undefined, "multiple"], description: "`multiple`: çoklu seçim, etiketler." },
     placeholder: { control: "text" },
     showSearch: { control: "boolean", description: "Yazarak süz. Varsayılan: `false`." },
     allowClear: { control: "boolean", description: "Temizle düğmesi. Varsayılan: `false`." },
@@ -166,63 +164,7 @@ export const DependentAddress: Story = {
   },
 };
 
-/* ─────────────────────────── 2. Kişi atama (çoklu) ─────────────────────────── */
-
-const people = [
-  { value: "dk", name: "Deniz Kaya", role: "Ürün Tasarımcısı" },
-  { value: "ec", name: "Elif Can", role: "Frontend Geliştirici" },
-  { value: "mo", name: "Mert Özdemir", role: "Backend Geliştirici" },
-  { value: "sa", name: "Selin Aydın", role: "Ürün Yöneticisi" },
-  { value: "bt", name: "Burak Tekin", role: "QA Mühendisi" },
-  { value: "zy", name: "Zeynep Yıldız", role: "Veri Analisti" },
-];
-const peopleOptions: SelectOption[] = people.map((p) => ({
-  value: p.value,
-  label: p.name,
-  description: p.role,
-  icon: <Avatar size="sm" alt={p.name} />,
-}));
-
-export const AssignPeople: Story = {
-  name: "Göreve Kişi Atama (Çoklu)",
-  ...storyDoc(
-    "`mode=\"multiple\"` + `showSearch`: seçimden sonra liste açık kalır, seçilenler etiket olur (✕ ya da Backspace ile " +
-      "kaldırılır). Seçenekte avatar (`icon`) ve rol (`description`). `maxTagCount={3}` fazlasını \"+N\" yapar.",
-    `
-<Select
-  mode="multiple"
-  showSearch
-  allowClear
-  maxTagCount={3}
-  placeholder="Kişi ekleyin"
-  options={people.map((p) => ({ value: p.id, label: p.name, description: p.role, icon: <Avatar size="sm" alt={p.name} /> }))}
-  value={assignees}
-  onChange={setAssignees}
-/>`
-  ),
-  render: () => {
-    const [value, setValue] = useState<SelectValue[]>(["dk", "ec"]);
-    return (
-      <div className="max-w-md">
-        <Field label="Atananlar" hint={`${value.length} kişi atandı`}>
-          <Select
-            id="assignees"
-            mode="multiple"
-            showSearch
-            allowClear
-            maxTagCount={3}
-            placeholder="Kişi ekleyin"
-            options={peopleOptions}
-            value={value}
-            onChange={(v) => setValue(v)}
-          />
-        </Field>
-      </div>
-    );
-  },
-};
-
-/* ─────────────────────────── 3. Gruplu + ikonlu ─────────────────────────── */
+/* ─────────────────────────── 2. Gruplu + ikonlu ─────────────────────────── */
 
 const paymentOptions: Array<SelectOption | SelectOptionGroup> = [
   {

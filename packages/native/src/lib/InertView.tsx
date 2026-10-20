@@ -19,7 +19,7 @@ function assign<T>(ref: ForwardedRef<T>, value: T | null) {
  * içteki düğmeleri Tab sırasından çıkarmaz (axe `aria-hidden-focus`) ve
  * react-native-web `inert`i DOM'a geçirmediği için ref üzerinden konur.
  */
-export const InertView: ForwardRefExoticComponent<InertViewProps & RefAttributes<ViewRef>> = forwardRef<ViewRef, InertViewProps>(function InertView({ hidden, ...rest }, ref) {
+export const InertView: ForwardRefExoticComponent<InertViewProps & RefAttributes<ViewRef>> = /* @__PURE__ */ forwardRef<ViewRef, InertViewProps>(function InertView({ hidden, ...rest }, ref) {
   const node = useRef<ViewRef | null>(null);
   const setRef = useCallback(
     (value: ViewRef | null) => {

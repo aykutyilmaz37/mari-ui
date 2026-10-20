@@ -4,7 +4,7 @@ import { defaultNativeConfig, type NativeConfig, type NativeControlSize } from "
 import { toPx } from "./toPx";
 
 /**
- * NATIVE boyut ölçeği. Web ölçeği (20/24/32/40/48, masaüstü yoğunluğu) telefonda küçük
+ * NATIVE boyut ölçeği (`defaultNativeConfig.sizes`). Web ölçeği (20/24/32/40/48, masaüstü yoğunluğu) telefonda küçük
  * kalıyordu; native kendi ölçeğini kullanır — renk, varyant, davranış web ile
  * aynı kalır.
  *
@@ -18,7 +18,6 @@ import { toPx } from "./toPx";
  *
  * Köşe sabit sayı değil, temanın radius anahtarı — `density.radius` native'de de geçerli.
  */
-export const NATIVE_SIZE = defaultNativeConfig.sizes;
 
 export interface ResolvedNativeSize extends Omit<NativeControlSize, "radius"> {
   borderRadius: number;
@@ -29,6 +28,3 @@ export function nativeSize(theme: Theme, size: ExtendedSize, config: NativeConfi
   const { radius, ...rest } = config.sizes[size];
   return { ...rest, borderRadius: toPx(theme.radius[radius]) };
 }
-
-/** Kart yerleşimi de ayrı native config'ten gelir; kontrol yüksekliği kart yüksekliği değildir. */
-export const NATIVE_CARD_SIZE = defaultNativeConfig.card;

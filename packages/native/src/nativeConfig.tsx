@@ -386,7 +386,7 @@ export function mergeNativeConfig(base: NativeConfig, overrides?: NativeConfigOv
   };
 }
 
-const NativeConfigContext = createContext<NativeConfig>(defaultNativeConfig);
+const NativeConfigContext = /* @__PURE__ */ createContext<NativeConfig>(defaultNativeConfig);
 
 /** Native ölçü ve tipografisini bağımsız olarak özelleştirir; iç içe kullanıldığında üst ayarları korur. */
 export function NativeConfigProvider({ config, children }: Readonly<{ config?: NativeConfigOverrides; children: ReactNode }>) {

@@ -15,7 +15,7 @@ export const monthlyRevenue = [
   { month: "Ara", gelir: 361000, gider: 179000, hedef: 225000 },
 ];
 
-export const dailyVisitors = Array.from({ length: 30 }, (_, i) => ({
+export const dailyVisitors = /* @__PURE__ */ Array.from({ length: 30 }, (_, i) => ({
   day: `${i + 1} Eyl`,
   ziyaret: Math.round(4200 + Math.sin(i / 3) * 900 + i * 45 + (i % 7 === 5 || i % 7 === 6 ? -1300 : 0)),
 }));

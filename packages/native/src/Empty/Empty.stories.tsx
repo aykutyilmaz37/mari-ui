@@ -16,16 +16,16 @@ const meta: Meta<typeof Empty> = {
     summary: "Boş durum: neden boş ve ne yapılabilir.",
     whenToUse: ["Sonuçsuz arama, boş sepet, henüz kayıt yok.", "Liste/kart içinde küçük (`sm`)."],
     whenNotToUse: ["Veri henüz yükleniyorken — `skeleton`.", "Hata — Alert."],
-    vsWeb: "Prop'lar aynı; `onClick`/`href` yerine `onPress`, `titleAs` yerine `heading` (ekran okuyucuda başlık). Başlık md = Title 3 20/25, sm = Subheadline 15/20.",
+    vsWeb: "Prop'lar aynı (eylem `actions` yuvasında `Button`); `titleAs` yerine `heading` (ekran okuyucuda başlık). Başlık md = Title 3 20/25, sm = Subheadline 15/20.",
   }) } } },
   argTypes: {
     title: { control: "text" },
     description: { control: "text" },
-    buttonText: { control: "text" },
+    actions: { control: false },
     size: { control: "select", options: ["sm", "md"] },
     skeleton: { control: "boolean" },
   },
-  args: { title: "Sepetiniz boş", description: "Beğendiğiniz ürünleri sepete ekleyin, burada görünsün.", buttonText: "Alışverişe başla", size: "md", skeleton: false },
+  args: { title: "Sepetiniz boş", description: "Beğendiğiniz ürünleri sepete ekleyin, burada görünsün.", size: "md", skeleton: false },
 };
 export default meta;
 type Story = StoryObj<typeof Empty>;
@@ -33,7 +33,7 @@ type Story = StoryObj<typeof Empty>;
 export const Playground: Story = {
   ...storyDoc("Başlık, açıklama, düğme ve boyutu deneyin."),
   decorators: [withStretch],
-  render: (args) => <Empty {...args} icon={<ShoppingCart />} onPress={() => undefined} />,
+  render: (args) => <Empty {...args} icon={<ShoppingCart />} actions={<Button skeleton={args.skeleton} onPress={() => undefined}>Alışverişe başla</Button>} />,
 };
 
 function SearchDemo() {
@@ -73,22 +73,22 @@ export const SearchResult: Story = {
 export const InCard: Story = {
   name: "Kart İçinde (sm)",
   ...storyDoc("Kart/liste içinde küçük boş durum.", `<Card title="Son siparişler">
-  <Empty size="sm" title="Henüz sipariş yok" buttonText="Ürünlere göz at" onPress={browse} />
+  <Empty size="sm" title="Henüz sipariş yok" actions={<Button size="sm" onPress={browse}>Ürünlere göz at</Button>} />
 </Card>`),
   decorators: [withStretch],
   render: () => (
     <Card title="Son siparişler">
-      <Empty size="sm" title="Henüz sipariş yok" description="İlk siparişiniz burada görünecek." buttonText="Ürünlere göz at" onPress={() => undefined} />
+      <Empty size="sm" title="Henüz sipariş yok" description="İlk siparişiniz burada görünecek." actions={<Button size="sm" onPress={() => undefined}>Ürünlere göz at</Button>} />
     </Card>
   ),
 };
 
 export const Skeleton: Story = {
   name: "İskelet",
-  ...storyDoc(SKELETON_STORY_DOC, `<Empty skeleton={isLoading} icon={<ShoppingCart />} title="Sepetiniz boş" description="Beğendiğiniz ürünleri sepete ekleyin, burada görünsün." buttonText="Alışverişe başla" onPress={goShopping} />`),
+  ...storyDoc(SKELETON_STORY_DOC, `<Empty skeleton={isLoading} icon={<ShoppingCart />} title="Sepetiniz boş" description="Beğendiğiniz ürünleri sepete ekleyin, burada görünsün." actions={<Button skeleton={isLoading} onPress={goShopping}>Alışverişe başla</Button>} />`),
   render: () => (
     <SkeletonDemo>
-      {(skeleton) => <Empty skeleton={skeleton} icon={<ShoppingCart />} title="Sepetiniz boş" description="Beğendiğiniz ürünleri sepete ekleyin, burada görünsün." buttonText="Alışverişe başla" onPress={() => undefined} />}
+      {(skeleton) => <Empty skeleton={skeleton} icon={<ShoppingCart />} title="Sepetiniz boş" description="Beğendiğiniz ürünleri sepete ekleyin, burada görünsün." actions={<Button skeleton={skeleton} onPress={() => undefined}>Alışverişe başla</Button>} />}
     </SkeletonDemo>
   ),
 };

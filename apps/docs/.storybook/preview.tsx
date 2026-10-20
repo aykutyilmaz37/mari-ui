@@ -6,10 +6,10 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 // Component'lerin gerçekten DERLENMİŞ CSS'i — tüketicinin de import edeceği
 // aynı dosya. Kaynak Tailwind class'larını değil, tam olarak paketin
 // yayınlayacağı çıktıyı önizliyoruz. Story'lerin kendi sınıfları (yayına
-// girmez) `stories.css`ten, ÖNCE gelir — bkz. o dosya.
+// girmez) `stories.css`ten, SONRA gelir — bkz. o dosya.
 import "@mari-ui/tokens/fonts.css";
-import "./stories.css";
 import "@mari-ui/components/styles.css";
+import "./stories.css";
 import "./preview.css";
 import { DocsContainer } from "./DocsContainer";
 import { listenPersonaGlobals, personaToolbar, withPersona } from "./withPersona";

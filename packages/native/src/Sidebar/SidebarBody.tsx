@@ -16,11 +16,10 @@ import type { SidebarBaseProps, SidebarHeaderInk, SidebarItem } from "./types";
 /** Sidebar ve SidebarLayout'un ortak iç parçaları (paket dışına açılmaz). */
 
 const OPEN_MS = 260;
-const FALLBACK_TOP = Platform.OS === "ios" ? 54 : (StatusBar.currentHeight ?? 24);
-const FALLBACK_BOTTOM = Platform.OS === "ios" ? 28 : 0;
+// Fonksiyonlar: modül seviyesindeki `Platform.OS` erişimi yan etkili sayılır (tree-shaking, Faz 4c).
+const fallbackTop = () => (Platform.OS === "ios" ? 54 : (StatusBar.currentHeight ?? 24));
+const fallbackBottom = () => (Platform.OS === "ios" ? 28 : 0);
 const SWIPE_CLOSE_RATIO = 0.33;
-export const isWeb = Platform.OS === "web";
-
 /**
  * Açılma ilerlemesi 0 → 1 (yerel sürücü: transform + opaklık).
  * HER AÇILIŞTA TAZE değer — BottomSheet'teki iOS hatası: Modal sökülünce
@@ -326,7 +325,7 @@ export type SidebarState = ReturnType<typeof useSidebarState>;
 /** Güvenli alan: prop → ThemeProvider insets → platform tahmini. */
 export function useSidebarInsets(props: SidebarBaseProps) {
   const safe = useSafeInsets();
-  return { top: props.topInset ?? safe?.top ?? FALLBACK_TOP, bottom: props.bottomInset ?? safe?.bottom ?? FALLBACK_BOTTOM };
+  return { top: props.topInset ?? safe?.top ?? fallbackTop(), bottom: props.bottomInset ?? safe?.bottom ?? fallbackBottom() };
 }
 
 /** Panelin içi: başlık bandı + kayan seviye + alt bölüm. */

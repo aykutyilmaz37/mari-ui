@@ -26,7 +26,7 @@ export interface TableBodyProps<T extends { id: string }> {
   emptyState?: TableEmptyStateConfig;
   skeleton?: boolean;
   /** Veri yokken iskelette kaç sahte satır çizileceği (sayfa boyu). */
-  pageSize?: number;
+  skeletonRows?: number;
 }
 
 /**
@@ -114,13 +114,13 @@ function PlaceholderRows<T extends { id: string }>({ columns, count }: Readonly<
   );
 }
 
-export function TableBody<T extends { id: string }>({ data, columns, emptyState, skeleton = false, pageSize }: Readonly<TableBodyProps<T>>) {
+export function TableBody<T extends { id: string }>({ data, columns, emptyState, skeleton = false, skeletonRows }: Readonly<TableBodyProps<T>>) {
   // Satır içi düzenleme durumu satır seviyesinde: aksiyon hücresindeki
   // "düzenle" AYNI satırdaki veri hücrelerini de <Input>'a çeviriyor.
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<T>>>({});
 
-  if (skeleton && data.length === 0) return <PlaceholderRows columns={columns} count={skeletonRowCount(pageSize)} />;
+  if (skeleton && data.length === 0) return <PlaceholderRows columns={columns} count={skeletonRowCount(skeletonRows)} />;
 
   if (data.length === 0) {
     // `text-start` açıkça: colSpan hücresi hizayı miras almıyordu (kullanıcı bulgusu).

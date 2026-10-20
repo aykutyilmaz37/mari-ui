@@ -51,7 +51,7 @@ function OptionContent({ option, selected, multiple }: Readonly<{ option: Select
  * Seçenekler `onMouseDown` ile `preventDefault` — tıklamak tetikleyicinin
  * odağını (dolayısıyla açık listeyi) kaybettirmesin.
  */
-export const SelectPanel = forwardRef<HTMLDivElement, SelectPanelProps>(function SelectPanel(
+export const SelectPanel = /* @__PURE__ */ forwardRef<HTMLDivElement, SelectPanelProps>(function SelectPanel(
   { listboxId, coords, sections, flatOptions, activeIndex, isSelected, multiple, loading, notFoundContent, listHeight, optionRender, labelledBy, label, onPick, onHover },
   ref
 ) {

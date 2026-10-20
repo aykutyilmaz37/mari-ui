@@ -3,18 +3,17 @@ import { Text, View, type StyleProp, type ViewStyle } from "react-native";
 import { useNativeConfig } from "../nativeConfig";
 import { nativeFontFamily } from "../theme/fontFamily";
 import { useTheme } from "../theme/useTheme";
-import { Button } from "../Button";
 import { InboxIcon } from "../lib/icons";
 import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
 
 export interface EmptyProps extends SkeletonableProps {
   title: string;
   description?: React.ReactNode;
-  /** Tek ana eylem; `onPress` ile birlikte. */
-  buttonText?: string;
-  onPress?: () => void;
-  buttonIcon?: React.ReactNode;
-  /** Birden çok eylem (verilirse `buttonText` yok sayılır). */
+  /**
+   * Eylem(ler) — tipik olarak `Button` (`sm` boş durumda `size="sm"`; iskelette
+   * `skeleton`'ı ona da verin). Hazır düğme kısayolu yok: Button yalnız eylem
+   * verene gelsin diye (Faz 4c, web ile aynı).
+   */
   actions?: React.ReactNode;
   /** Varsayılan: gelen kutusu. */
   icon?: React.ReactNode;
@@ -37,7 +36,7 @@ function Line({ children, style, skeleton }: { children: React.ReactNode; style:
 }
 
 /** Boş durum: neden boş + ne yapılabilir. Liste, arama sonucu, sepet. */
-export function Empty({ title, description, buttonText, onPress, buttonIcon, actions, icon, size = "md", heading = false, skeleton = false, style }: Readonly<EmptyProps>) {
+export function Empty({ title, description, actions, icon, size = "md", heading = false, skeleton = false, style }: Readonly<EmptyProps>) {
   const theme = useTheme();
   const t = useNativeConfig().typography;
   const s = SIZE[size];
@@ -47,9 +46,7 @@ export function Empty({ title, description, buttonText, onPress, buttonIcon, act
   const descriptionStyle = { fontFamily: font, fontSize: size === "md" ? 15 : 13, lineHeight: size === "md" ? 20 : 18, color: theme.color.canvas.muted, textAlign: "center" as const };
   const glyph = isValidElement<{ size?: number; color?: string }>(icon) ? cloneElement(icon, { size: icon.props.size ?? s.glyph, color: icon.props.color ?? theme.color.canvas.muted }) : (icon ?? <InboxIcon size={s.glyph} color={theme.color.canvas.muted} />);
 
-  let action: React.ReactNode = null;
-  if (actions) action = <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8 }}>{actions}</View>;
-  else if (buttonText && onPress) action = <Button size={size === "sm" ? "sm" : "md"} icon={buttonIcon} onPress={onPress} skeleton={skeleton}>{buttonText}</Button>;
+  const action = actions ? <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8 }}>{actions}</View> : null;
 
   return (
     <View
