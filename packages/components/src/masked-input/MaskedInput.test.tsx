@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Input } from "../input/Input";
 import { clearNativeValue } from "../input/utils";
 import { getA11yViolations } from "../testUtils/a11y";
@@ -13,10 +13,18 @@ import { MaskedInput } from "./MaskedInput";
  * kütüphanesinin seçim takibiyle uyuşmuyor (gerçek tarayıcıda sorun yok).
  */
 describe("MaskedInput", () => {
-  // Maske kütüphanesi odaktaki alanın imlecini setTimeout döngüsüyle izler ve döngüyü
-  // yalnız blur'da durdurur; test bitince jsdom kapanırken döngü "window is not defined" atardı.
+  // Maske kütüphanesi odaktaki alanın imlecini setTimeout döngüsüyle izler; odakta döngü
+  // birden çok kez başlayabiliyor ve unmount zamanlayıcıyı temizlemiyor → blur yetmiyor,
+  // döngü jsdom kapandıktan sonra "window is not defined" atıyordu (coverage modunda CI'da).
+  // Sahte saat (gerçek zamanla ilerler: user-event ve axe çalışır) + her testten sonra
+  // bekleyen tüm zamanlayıcıları sil.
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
   afterEach(() => {
     (document.activeElement as HTMLElement | null)?.blur();
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   it.each([
