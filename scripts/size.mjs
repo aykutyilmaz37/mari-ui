@@ -1,16 +1,20 @@
 #!/usr/bin/env node
-// Bundle boyutu ölçümü + kilit + sızıntı testi (bundle performansı Faz 1).
+// Bundle boyutu ölçümü + kilit + sızıntı testi (bundle performansı Faz 1, native: Faz 2).
 //
-// Web: `@mari-ui/components` package.json `exports`'undaki HER JS subpath'i
-// tüketici gibi bundle'lanır (`export * from "@mari-ui/components/<ad>"`),
-// minify + gzip boyutu ölçülür. Peer'lar (react, react-dom, embla…) external;
-// dependency'ler (core, tokens, lucide…) bundle'a girer — tüketici onları da öder.
-// Native: `@mari-ui/native` tek bundle olarak ölçülür (Faz 2'nin taban çizgisi).
+// Her paket (`@mari-ui/components`, `@mari-ui/native`) için package.json
+// `exports`'undaki HER JS subpath'i tüketici gibi bundle'lanır
+// (`export * from "<paket>/<ad>"`), minify + gzip boyutu ölçülür. Peer'lar
+// (react, react-dom, react-native, react-native-svg, embla…) external;
+// dependency'ler (core, tokens, lucide, qrcode-generator…) bundle'a girer —
+// tüketici onları da öder. Native'in kök barrel'ı (`@mari-ui/native`) ayrıca
+// "tamamı" olarak ölçülür (Faz 2 öncesi her native tüketicinin ödediği bedel).
 //
 // Sızıntı testi: bir entry'nin dist bundle'ına giren chunk'ların sourcemap'lerinden
 // hangi `src/<bileşen>/` klasörlerinin geldiği çıkarılır; bu küme, entry'nin
-// KAYNAK import grafiğiyle (src/<ad>/index.ts'in esbuild metafile'ı) karşılaştırılır.
+// KAYNAK import grafiğiyle (src/<klasör>/index.ts'in esbuild metafile'ı) karşılaştırılır.
 // Kaynakta import edilmeyen bir bileşenin kodu dist'e giriyorsa = chunk sızıntısı.
+// Native'de ayrıca: `createContext` çağıran her kaynak modül, her formatta (ESM/CJS)
+// TEK bir dist dosyasında olmalı — iki kopya = iki ayrı context (Provider görünmez).
 //
 // Kullanım:
 //   pnpm size              → ölç, limit + sızıntı kontrolü (CI)
@@ -19,39 +23,74 @@
 // Önce `pnpm turbo run build --filter=@mari-ui/components --filter=@mari-ui/native`.
 
 import { build } from "esbuild";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const WEB = join(ROOT, "packages/components");
-const NATIVE = join(ROOT, "packages/native");
 const LIMITS_FILE = join(ROOT, "size-limits.json");
 const HEADROOM = 1.1;
 
 const args = new Set(process.argv.slice(2));
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 
-function peersOf(pkgDir) {
-  return Object.keys(readJson(join(pkgDir, "package.json")).peerDependencies ?? {});
-}
-
 // Peer'ların alt yollarını da (react/jsx-runtime, react-dom/client…) dışarıda tut.
 const externalize = (peers) => peers.flatMap((p) => [p, `${p}/*`]);
 
-async function bundle({ contents, resolveDir, external, platform = "browser", metafile = false, mainFields }) {
+/**
+ * Ölçülen paketler. `folderToName`: src klasör adı → subpath adı (native'de
+ * PascalCase klasörler kebab-case subpath; bkz. packages/native/scripts/entries.ts).
+ * `infra`: bileşen sayılmayan entry'ler (bileşim/sızıntı listesine girmez).
+ */
+const PACKAGES = {
+  components: {
+    dir: join(ROOT, "packages/components"),
+    folderToName: (f) => f,
+    infra: [],
+    banned: { button: ["transfer", "tree", "carousel", "table", "date-picker"] },
+    textMarker: (c) => `mari-${c}`,
+  },
+  native: {
+    dir: join(ROOT, "packages/native"),
+    folderToName: (f) => f.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase(),
+    infra: ["theme", "config"],
+    banned: { button: ["tree", "tree-select", "carousel", "qrcode", "image", "select", "upload", "sidebar"] },
+    bannedDeps: { button: ["qrcode-generator"] },
+    mainFields: ["react-native", "browser", "module", "main"],
+  },
+};
+
+for (const pkg of Object.values(PACKAGES)) {
+  const json = readJson(join(pkg.dir, "package.json"));
+  pkg.name = json.name;
+  pkg.external = externalize(Object.keys(json.peerDependencies ?? {}));
+  pkg.entries = Object.entries(json.exports)
+    .filter(([key, v]) => key !== "." && typeof v === "object" && v.import?.endsWith(".js"))
+    .map(([key]) => key.replace(/^\.\//, ""));
+  pkg.components = new Set(pkg.entries.filter((e) => !pkg.infra.includes(e)));
+  // subpath adı → kaynak entry (src/<klasör>/index.ts)
+  pkg.sourceEntry = new Map();
+  for (const folder of readdirSync(join(pkg.dir, "src"))) {
+    const index = join(pkg.dir, "src", folder, "index.ts");
+    if (statSync(join(pkg.dir, "src", folder)).isDirectory() && existsSync(index)) {
+      pkg.sourceEntry.set(pkg.folderToName(folder), index);
+    }
+  }
+}
+
+async function bundle({ contents, pkg, metafile = false }) {
   const result = await build({
-    stdin: { contents, resolveDir, loader: "js" },
+    stdin: { contents, resolveDir: pkg.dir, loader: "js" },
     bundle: true,
     minify: true,
     format: "esm",
-    platform,
-    ...(mainFields && { mainFields }),
+    platform: "browser",
+    ...(pkg.mainFields && { mainFields: pkg.mainFields }),
     target: "es2020",
     write: false,
     metafile,
-    external,
+    external: pkg.external,
     logLevel: "silent",
     loader: { ".css": "empty" },
     define: { "process.env.NODE_ENV": '"production"' },
@@ -60,29 +99,17 @@ async function bundle({ contents, resolveDir, external, platform = "browser", me
   return { code, gz: gzipSync(code, { level: 9 }).length, min: code.length, metafile: result.metafile };
 }
 
-// ---- web ------------------------------------------------------------------
-
-function webEntries() {
-  const { exports } = readJson(join(WEB, "package.json"));
-  return Object.entries(exports)
-    .filter(([, v]) => typeof v === "object" && v.import?.endsWith(".js"))
-    .map(([key, v]) => ({ name: key.replace(/^\.\//, ""), file: join(WEB, v.import) }));
-}
-
-const srcComponents = new Set(
-  webEntries().map((e) => e.name),
-);
-
 // dist chunk → içerdiği src/<bileşen> klasörleri (sourcemap'ten)
 const chunkOwners = new Map();
-function ownersOf(distFile) {
+function ownersOf(pkg, distFile) {
   if (chunkOwners.has(distFile)) return chunkOwners.get(distFile);
   const owners = new Set();
   const mapFile = `${distFile}.map`;
   if (existsSync(mapFile)) {
     for (const src of readJson(mapFile).sources) {
       const m = /(?:^|\/)src\/([^/]+)\//.exec(src);
-      if (m && srcComponents.has(m[1])) owners.add(m[1]);
+      const name = m && pkg.folderToName(m[1]);
+      if (name && pkg.components.has(name)) owners.add(name);
     }
   }
   chunkOwners.set(distFile, owners);
@@ -90,9 +117,9 @@ function ownersOf(distFile) {
 }
 
 // Kaynakta gerçekten import edilen bileşen klasörleri (meşru kompozisyon).
-async function sourceComponents(name, external) {
-  const entry = join(WEB, "src", name, "index.ts");
-  if (!existsSync(entry)) return null;
+async function sourceComponents(pkg, name) {
+  const entry = pkg.sourceEntry.get(name);
+  if (!entry) return null;
   const result = await build({
     entryPoints: [entry],
     bundle: true,
@@ -104,43 +131,38 @@ async function sourceComponents(name, external) {
     loader: { ".css": "empty" },
     // Bağımlılıklar ölçüme değil grafiğe dair: hepsi dışarıda.
     packages: "external",
-    external,
+    external: pkg.external,
   });
   const found = new Set();
   for (const input of Object.keys(result.metafile.inputs)) {
-    const m = /^src\/([^/]+)\//.exec(relative(WEB, resolve(process.cwd(), input)));
-    if (m && srcComponents.has(m[1])) found.add(m[1]);
+    const m = /^src\/([^/]+)\//.exec(relative(pkg.dir, resolve(process.cwd(), input)));
+    const comp = m && pkg.folderToName(m[1]);
+    if (comp && pkg.components.has(comp)) found.add(comp);
   }
   return found;
 }
 
-async function measureWeb() {
-  const external = externalize(peersOf(WEB));
+const distInputsOf = (pkg, metafile) =>
+  Object.keys(metafile.inputs)
+    .map((p) => resolve(process.cwd(), p))
+    .filter((p) => p.startsWith(join(pkg.dir, "dist")));
+
+async function measure(pkg) {
   const rows = [];
   const leaks = [];
-  for (const { name, file } of webEntries()) {
-    const spec = `@mari-ui/components/${name}`;
-    const { gz, min, metafile } = await bundle({
-      contents: `export * from ${JSON.stringify(spec)};`,
-      resolveDir: WEB,
-      external,
-      metafile: true,
-    });
-    const distInputs = Object.keys(metafile.inputs)
-      .map((p) => resolve(process.cwd(), p))
-      .filter((p) => p.startsWith(join(WEB, "dist")));
-    const chunks = distInputs
-      .filter((p) => /\/chunk-[^/]+\.js$/.test(p))
-      .map((p) => p.slice(p.lastIndexOf("/") + 1));
-    const pulled = new Set(distInputs.flatMap((p) => [...ownersOf(p)]));
+  for (const name of pkg.entries) {
+    const { gz, min, metafile } = await bundle({ contents: `export * from ${JSON.stringify(`${pkg.name}/${name}`)};`, pkg, metafile: true });
+    const distInputs = distInputsOf(pkg, metafile);
+    const chunks = distInputs.filter((p) => /\/chunk-[^/]+\.js$/.test(p));
+    const pulled = new Set(distInputs.flatMap((p) => [...ownersOf(pkg, p)]));
     pulled.delete(name);
-    const legit = await sourceComponents(name, external);
+    const legit = await sourceComponents(pkg, name);
     if (legit) {
       const leaked = [...pulled].filter((c) => !legit.has(c));
       if (leaked.length) leaks.push({ name, leaked });
     }
     const heavy = Object.entries(Object.values(metafile.outputs)[0].inputs)
-      .filter(([p, v]) => v.bytesInOutput >= 2048 && !p.startsWith("packages/components/"))
+      .filter(([p, v]) => v.bytesInOutput >= 2048 && !p.startsWith(`${relative(ROOT, pkg.dir)}/`))
       .sort((a, b) => b[1].bytesInOutput - a[1].bytesInOutput)
       .map(([p, v]) => `${p.replace(/^(node_modules|packages)\//, "").replace(/\/dist\/.*/, "")} ${(v.bytesInOutput / 1024).toFixed(0)}K`);
     rows.push({ name, gz, min, chunks, composes: [...pulled].sort(), heavy });
@@ -149,43 +171,69 @@ async function measureWeb() {
 }
 
 // Elle yazılmış, açık sızıntı iddiası: button tek başına ağır bileşen getirmemeli.
-async function buttonLeakCheck() {
-  const { metafile, code } = await bundle({
-    contents: 'export * from "@mari-ui/components/button";',
-    resolveDir: WEB,
-    external: externalize(peersOf(WEB)),
-    metafile: true,
-  });
-  const owners = new Set(
-    Object.keys(metafile.inputs).flatMap((p) => [...ownersOf(resolve(process.cwd(), p))]),
-  );
-  const text = new TextDecoder().decode(code);
-  const banned = ["transfer", "tree", "carousel", "table", "date-picker"];
-  return banned.filter((c) => owners.has(c) || text.includes(`mari-${c}`));
+async function bannedCheck(pkg) {
+  const problems = [];
+  for (const [entry, banned] of Object.entries(pkg.banned)) {
+    const { metafile, code } = await bundle({ contents: `export * from "${pkg.name}/${entry}";`, pkg, metafile: true });
+    const owners = new Set(distInputsOf(pkg, metafile).flatMap((p) => [...ownersOf(pkg, p)]));
+    const text = new TextDecoder().decode(code);
+    const hits = banned.filter((c) => owners.has(c) || (pkg.textMarker && text.includes(pkg.textMarker(c))));
+    const deps = (pkg.bannedDeps?.[entry] ?? []).filter((d) =>
+      Object.keys(metafile.inputs).some((p) => p.includes(`node_modules/${d}/`)),
+    );
+    if (hits.length || deps.length) problems.push(`${pkg.name}/${entry} başka bileşen kodu içeriyor: ${[...hits, ...deps].join(", ")}`);
+  }
+  return problems;
 }
 
-// ---- native ---------------------------------------------------------------
+// createContext çağıran her native kaynak modülü her formatta tek bir dist dosyasında mı?
+function contextDuplicates(pkg) {
+  const src = join(pkg.dir, "src");
+  const contextFiles = [];
+  const walk = (dir) => {
+    for (const f of readdirSync(dir)) {
+      const p = join(dir, f);
+      if (statSync(p).isDirectory()) {
+        if (f !== "__tests__") walk(p);
+      } else if (/\.tsx?$/.test(f) && !/\.(stories|test)\.tsx?$/.test(f) && /\bcreateContext[<(]/.test(readFileSync(p, "utf8"))) {
+        contextFiles.push(relative(pkg.dir, p));
+      }
+    }
+  };
+  walk(src);
+  const dist = join(pkg.dir, "dist");
+  const problems = [];
+  for (const ext of [".js", ".cjs"]) {
+    const holders = new Map(contextFiles.map((f) => [f, []]));
+    for (const file of readdirSync(dist).filter((f) => f.endsWith(`${ext}.map`))) {
+      for (const s of readJson(join(dist, file)).sources) {
+        const rel = relative(pkg.dir, resolve(dist, s));
+        holders.get(rel)?.push(file.replace(/\.map$/, ""));
+      }
+    }
+    for (const [f, files] of holders) {
+      if (files.length !== 1) problems.push(`${f}: context ${ext} çıktısında ${files.length} kopya (${files.join(", ") || "yok"}) — tek olmalı`);
+    }
+  }
+  return { count: contextFiles.length, problems };
+}
 
-async function measureNative() {
-  const { gz, min } = await bundle({
-    contents: 'export * from "@mari-ui/native";',
-    resolveDir: NATIVE,
-    external: externalize(peersOf(NATIVE)),
-    platform: "browser",
-    mainFields: ["react-native", "browser", "module", "main"],
-  });
-  return { name: "@mari-ui/native (tamamı)", gz, min };
+async function measureNativeAll() {
+  const { gz, min } = await bundle({ contents: 'export * from "@mari-ui/native";', pkg: PACKAGES.native });
+  return { gz, min };
 }
 
 // ---- rapor / limit --------------------------------------------------------
 
 const kb = (n) => `${(n / 1024).toFixed(2)} KB`;
 
-function report(rows, native) {
+function report(title, rows) {
   const sorted = [...rows].sort((a, b) => b.gz - a.gz);
   const median = sorted[Math.floor(sorted.length / 2)].gz;
   const lines = [
-    "| # | Bileşen | min+gz | min | Paylaşılan chunk | Bileşimindeki bileşenler | Ağır dış girdiler (min) |",
+    `### ${title}`,
+    "",
+    "| # | Entry | min+gz | min | Paylaşılan chunk | Bileşimindeki bileşenler | Ağır dış girdiler (min) |",
     "|---:|---|---:|---:|---:|---|---|",
   ];
   sorted.forEach((r, i) => {
@@ -195,39 +243,59 @@ function report(rows, native) {
     );
   });
   lines.push("", `Medyan: ${kb(median)} · ⚠️ = medyanın 3 katından ağır (Faz 4 adayı)`);
-  lines.push("", `Native: \`@mari-ui/native\` tamamı ${kb(native.gz)} min+gz (${kb(native.min)} min)`);
   return lines.join("\n");
 }
 
+const sortedLimits = (obj) =>
+  Object.fromEntries(
+    Object.entries(obj)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => [k, Math.ceil(v * HEADROOM)]),
+  );
+
+function checkLimits(errors, label, current, limits) {
+  for (const [name, gz] of Object.entries(current)) {
+    const limit = limits?.[name];
+    if (limit == null) errors.push(`${label}/${name}: limit yok — \`pnpm size --update\` çalıştırın.`);
+    else if (gz > limit) errors.push(`${label}/${name}: ${kb(gz)} > limit ${kb(limit)}`);
+  }
+  for (const name of Object.keys(limits ?? {})) {
+    if (!(name in current)) errors.push(`${label}/${name}: limit var ama entry yok — \`pnpm size --update\`.`);
+  }
+}
+
 async function main() {
-  const { rows, leaks } = await measureWeb();
-  const native = await measureNative();
-  const buttonLeaks = await buttonLeakCheck();
+  const web = await measure(PACKAGES.components);
+  const native = await measure(PACKAGES.native);
+  const nativeAll = await measureNativeAll();
+  const banned = [...(await bannedCheck(PACKAGES.components)), ...(await bannedCheck(PACKAGES.native))];
+  const contexts = contextDuplicates(PACKAGES.native);
 
   const current = {
-    components: Object.fromEntries(rows.map((r) => [r.name, r.gz])),
-    native: native.gz,
+    components: Object.fromEntries(web.rows.map((r) => [r.name, r.gz])),
+    native: Object.fromEntries(native.rows.map((r) => [r.name, r.gz])),
+    nativeAll: nativeAll.gz,
   };
 
   if (args.has("--update")) {
     const limits = {
-      $comment: "Bayt, min+gz. `pnpm size --update` bugünkü boyut +%10 ile yeniden yazar.",
-      components: Object.fromEntries(
-        Object.entries(current.components)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([k, v]) => [k, Math.ceil(v * HEADROOM)]),
-      ),
-      native: Math.ceil(current.native * HEADROOM),
+      $comment: "Bayt, min+gz. `pnpm size --update` bugünkü boyut +%10 ile yeniden yazar. nativeAll = kök barrel (@mari-ui/native) tamamı.",
+      components: sortedLimits(current.components),
+      native: sortedLimits(current.native),
+      nativeAll: Math.ceil(current.nativeAll * HEADROOM),
     };
     writeFileSync(LIMITS_FILE, `${JSON.stringify(limits, null, 2)}\n`);
     console.log(`Limitler yazıldı: ${relative(ROOT, LIMITS_FILE)}`);
   }
 
-  if (args.has("--report")) console.log(`${report(rows, native)}\n`);
+  if (args.has("--report")) {
+    console.log(`${report("Web (@mari-ui/components)", web.rows)}\n`);
+    console.log(`${report("Native (@mari-ui/native)", native.rows)}\n`);
+    console.log(`Native kök barrel \`@mari-ui/native\` tamamı: ${kb(nativeAll.gz)} min+gz (${kb(nativeAll.min)} min)\n`);
+  }
 
-  const errors = [];
-  if (buttonLeaks.length) errors.push(`button bundle'ı başka bileşen kodu içeriyor: ${buttonLeaks.join(", ")}`);
-  for (const { name, leaked } of leaks) {
+  const errors = [...banned, ...contexts.problems];
+  for (const { name, leaked } of [...web.leaks.map((l) => ({ ...l, pkg: "components" })), ...native.leaks.map((l) => ({ ...l, pkg: "native" }))]) {
     errors.push(`${name}: kaynakta import etmediği bileşen kodu dist'e sızmış → ${leaked.join(", ")}`);
   }
 
@@ -235,24 +303,20 @@ async function main() {
   if (!limits) {
     errors.push(`${relative(ROOT, LIMITS_FILE)} yok — \`pnpm size --update\` çalıştırın.`);
   } else {
-    for (const [name, gz] of Object.entries(current.components)) {
-      const limit = limits.components[name];
-      if (limit == null) errors.push(`${name}: limit yok — \`pnpm size --update\` çalıştırın.`);
-      else if (gz > limit) errors.push(`${name}: ${kb(gz)} > limit ${kb(limit)}`);
-    }
-    for (const name of Object.keys(limits.components)) {
-      if (!(name in current.components)) errors.push(`${name}: limit var ama entry yok — \`pnpm size --update\`.`);
-    }
-    if (native.gz > limits.native) errors.push(`@mari-ui/native: ${kb(native.gz)} > limit ${kb(limits.native)}`);
+    checkLimits(errors, "components", current.components, limits.components);
+    checkLimits(errors, "native", current.native, typeof limits.native === "object" ? limits.native : null);
+    if (limits.nativeAll == null) errors.push("nativeAll: limit yok — `pnpm size --update` çalıştırın.");
+    else if (nativeAll.gz > limits.nativeAll) errors.push(`@mari-ui/native (tamamı): ${kb(nativeAll.gz)} > limit ${kb(limits.nativeAll)}`);
   }
 
-  const total = rows.length;
-  console.log(`${total} web entry + native ölçüldü. Native: ${kb(native.gz)} min+gz.`);
+  console.log(
+    `${web.rows.length} web + ${native.rows.length} native entry ölçüldü, ${contexts.count} native context tekilliği denetlendi. Native tamamı: ${kb(nativeAll.gz)} min+gz.`,
+  );
   if (errors.length) {
     console.error(`\n✖ ${errors.length} sorun:\n  ${errors.join("\n  ")}`);
     process.exit(1);
   }
-  console.log("✔ Limitler ve sızıntı testi temiz.");
+  console.log("✔ Limitler, sızıntı ve context testi temiz.");
 }
 
 await main();

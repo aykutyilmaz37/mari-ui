@@ -89,6 +89,16 @@ const styles = useStyles("button", { color: "primary", variant: "solid", size: "
 
 Elle `StyleSheet.create` objesi kurulmaz; `color`/`variant` kombinasyonu `@mari-ui/core`'un `resolveColorVariant()`ından gelen SOYUT token referanslarına, `size` `componentSize` tablosuna göre çözülür — web'in Tailwind class'larıyla YAPTIĞI İŞİN AYNISINI burada `StyleSheet` nesneleri yapar, ikisi de aynı `@mari-ui/core`/`@mari-ui/tokens` kaynağından beslenir.
 
+## Entry'ler ve subpath export'ları
+
+`src/` altında `index.ts`i olan her klasör ayrı bir build entry'si ve subpath export'udur (`src/InputNumber` → `dist/input-number.{js,cjs,d.ts}` → `@mari-ui/native/input-number`). Kaynak tek yer: `scripts/entries.ts` (`tsup.config.ts`, `scripts/sync-exports.mjs` ve `src/__tests__/exports.test.ts` onu kullanır). Yeni bileşen klasörü eklenince:
+
+```bash
+pnpm --filter @mari-ui/native sync:exports
+```
+
+Unutulursa `exports.test.ts` kırılır; `pnpm size` yeni entry'nin limiti yok diye kırılır (`pnpm size:update`). Ortak modüller (theme, lib, nativeConfig…) paylaşılan chunk'lara bölünür (ESM ve CJS ikisinde de `splitting`); `pnpm size`, `createContext` çağıran her modülün her formatta TEK dist dosyasında kaldığını da denetler — iki kopya, Provider'ın öbür kopyayı görmemesi demek.
+
 ## Metro + pnpm monorepo çözümlemesi
 
 Kök `pnpm-workspace.yaml` zaten `nodeLinker: hoisted` (Metro'nun symlink hassasiyeti için — bkz. [Expo'nun monorepo dokümantasyonu](https://docs.expo.dev/guides/monorepos/)). Bu paketi tüketen bir Expo/bare RN uygulaması bu monorepo'nun İÇİNDE yaşıyorsa, `metro.config.js`'e workspace kökünü eklemeniz gerekir:

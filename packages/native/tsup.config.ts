@@ -1,4 +1,6 @@
+import { join } from "node:path";
 import { defineConfig } from "tsup";
+import { discoverEntries } from "./scripts/entries";
 
 /**
  * Web'in aksine burada `esbuild-plugin-preserve-directives` YOK — "use
@@ -8,9 +10,20 @@ import { defineConfig } from "tsup";
  * karşılaşacağımız bilinmediği için ikisini birden üretiyoruz — `components`
  * paketinin aksine burada `cjs` formatı gerçek bir ihtiyaç, gösteriş değil.
  */
+/**
+ * Bundle performansı Faz 2: her bileşen klasörü kendi entry'si
+ * (dist/button.js|.cjs, `@mari-ui/native/button`) — Metro tree-shake
+ * yapmadığı için tek entry'de Button'lık bir uygulama tüm paketi taşıyordu.
+ * Ortak modüller (theme, lib, nativeConfig…) paylaşılan chunk'lara ayrılır;
+ * context'ler (ThemeContext, NativeConfig, Toast…) böylece TEK modül örneği
+ * olarak kalır — iki entry aynı context'i iki kopya halinde taşımaz.
+ * `splitting` esbuild'de yalnız ESM'de var; tsup CJS için ESM split çıktısını
+ * CJS'ye çevirir (`splitting: true` ile açılan, tsup'ın kendi desteği).
+ */
 export default defineConfig((options) => ({
-  entry: ["src/index.ts"],
+  entry: discoverEntries(join(__dirname, "src")),
   format: ["esm", "cjs"],
+  splitting: true,
   dts: true,
   sourcemap: true,
   // Watch modunda clean kapalı — bkz. `packages/core/tsup.config.ts`teki

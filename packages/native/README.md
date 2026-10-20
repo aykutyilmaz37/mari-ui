@@ -18,7 +18,9 @@ Peer bağımlılıklar: `react` ≥ 18.2, `react-native` ≥ 0.76, `react-native
 ## Kullanım
 
 ```tsx
-import { Button, Input, Field } from "@mari-ui/native";
+import { Button } from "@mari-ui/native/button";
+import { Input } from "@mari-ui/native/input";
+import { Field } from "@mari-ui/native/field";
 
 <Field label="E-posta">
   <Input type="email" placeholder="ornek@mari-ui.com" />
@@ -28,10 +30,25 @@ import { Button, Input, Field } from "@mari-ui/native";
 
 `ThemeProvider` isteğe bağlıdır; verilmezse tema cihazın açık/koyu ayarını izler.
 
+### Bileşen başına import (önerilen)
+
+Metro tree-shaking yapmaz: `import { Button } from "@mari-ui/native"` tüm paketi (~45 bileşen, ~96 KB min+gz) uygulamaya katar. Her bileşenin kendi subpath'i vardır ve yalnız o bileşeni (ve kullandığı ortak modülleri) getirir — Button tek başına ~9 KB min+gz. Yalnız Button kullanan bir Expo uygulamasında JS bundle'ı ~1,37 MB'tan ~0,91 MB'a iner.
+
+| Subpath | İçerik |
+|---|---|
+| `@mari-ui/native/<bileşen>` | Klasör adının kebab-case'i: `button`, `input` (Textarea, SearchInput, OtpInput dahil), `input-number`, `tree-select`, `bottom-sheet` (ActionSheet dahil), `qrcode`, `toast` (ToastProvider, useToast)… |
+| `@mari-ui/native/theme` | `ThemeProvider`, `useTheme`, `SafeAreaInsetsProvider`, `useSafeInsets`, `withFonts`, `useStyles`, `SkeletonBox` |
+| `@mari-ui/native/config` | `NativeConfigProvider`, `useNativeConfig` |
+| `@mari-ui/native` | Hepsi (geriye uyumlu barrel) |
+
+Kök barrel ile subpath'ler aynı derlenmiş modülleri paylaşır; ikisini birlikte kullanmak context'i (tema, config, Toast) çoğaltmaz.
+
+Subpath'ler package.json `exports` ile çözülür: Metro'da varsayılan olarak açık (React Native 0.79+ / Expo SDK 53+). Daha eski bir sürümde `metro.config.js`e `config.resolver.unstable_enablePackageExports = true` ekleyin ya da kök barrel'ı kullanın.
+
 ## Tema
 
 ```tsx
-import { ThemeProvider } from "@mari-ui/native";
+import { ThemeProvider } from "@mari-ui/native/theme";
 import { darkTheme, resolveThemeConfig } from "@mari-ui/tokens";
 
 // Her zaman koyu:
@@ -65,7 +82,8 @@ Tasarım kişilikleri renk, köşe, gölge ve hareketi uygular; native'de font d
 ### Güvenli alan ve ölçüler
 
 ```tsx
-import { NativeConfigProvider, ThemeProvider } from "@mari-ui/native";
+import { NativeConfigProvider } from "@mari-ui/native/config";
+import { ThemeProvider } from "@mari-ui/native/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 <ThemeProvider theme={theme} insets={useSafeAreaInsets()}>
