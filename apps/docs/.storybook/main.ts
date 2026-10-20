@@ -1,4 +1,5 @@
 import path from "node:path";
+import tailwindcss from "@tailwindcss/vite";
 import type { StorybookConfig } from "@storybook/react-vite";
 
 /**
@@ -53,6 +54,8 @@ const config: StorybookConfig = {
     const optimize = viteConfig.optimizeDeps as { rolldownOptions?: { resolve?: Record<string, unknown> } };
     optimize.rolldownOptions = { ...optimize.rolldownOptions, resolve: { ...optimize.rolldownOptions?.resolve, extensions: webFirst } };
     viteConfig.define = { ...viteConfig.define, __DEV__: JSON.stringify(process.env.NODE_ENV !== "production") };
+    // Faz 3: story sınıfları yayın CSS'inde değil, docs'un kendi girişinde (`stories.css`).
+    viteConfig.plugins = [...(viteConfig.plugins ?? []), tailwindcss()];
     // Prop tablosu üreten react-docgen, native tiplerini izlerken `react-native`in
     // Flow sözdizimli kaynağına iniyor ve ayrıştıramıyor (story yüklenmiyordu).
     // Yalnız packages/native için atlanır; native kontrolleri story `argTypes`ından gelir.

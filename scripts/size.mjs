@@ -16,6 +16,10 @@
 // Native'de ayrıca: `createContext` çağıran her kaynak modül, her formatta (ESM/CJS)
 // TEK bir dist dosyasında olmalı — iki kopya = iki ayrı context (Provider görünmez).
 //
+// CSS (Faz 3): web paketinin yayınlanan hazır CSS'i (`dist/styles.css`, zaten
+// minify) gzip'lenip ölçülür. Tailwind'li host modu (`tailwind.css`) aynı
+// `dist/*.js` taramasını kullandığı için bu sayı onun da vekili.
+//
 // Kullanım:
 //   pnpm size              → ölç, limit + sızıntı kontrolü (CI)
 //   pnpm size --update     → limitleri bugünkü boyut +%10 olarak yaz
@@ -226,6 +230,16 @@ async function measureNativeAll() {
   return { gz, min };
 }
 
+const CSS_FILES = ["styles.css"];
+function measureCss() {
+  return Object.fromEntries(
+    CSS_FILES.map((f) => {
+      const code = readFileSync(join(PACKAGES.components.dir, "dist", f));
+      return [f, { gz: gzipSync(code, { level: 9 }).length, min: code.length }];
+    }),
+  );
+}
+
 // ---- rapor / limit --------------------------------------------------------
 
 const kb = (n) => `${(n / 1024).toFixed(2)} KB`;
@@ -273,19 +287,23 @@ async function main() {
   const nativeAll = await measureNativeAll();
   const banned = [...(await bannedCheck(PACKAGES.components)), ...(await bannedCheck(PACKAGES.native))];
   const contexts = contextDuplicates(PACKAGES.native);
+  const css = measureCss();
 
   const current = {
     components: Object.fromEntries(web.rows.map((r) => [r.name, r.gz])),
     native: Object.fromEntries(native.rows.map((r) => [r.name, r.gz])),
     nativeAll: nativeAll.gz,
+    css: Object.fromEntries(Object.entries(css).map(([f, v]) => [f, v.gz])),
   };
 
   if (args.has("--update")) {
     const limits = {
-      $comment: "Bayt, min+gz. `pnpm size --update` bugünkü boyut +%10 ile yeniden yazar. nativeAll = kök barrel (@mari-ui/native) tamamı.",
+      $comment:
+        "Bayt, min+gz. `pnpm size --update` bugünkü boyut +%10 ile yeniden yazar. nativeAll = kök barrel (@mari-ui/native) tamamı. css = @mari-ui/components dist CSS'i.",
       components: sortedLimits(current.components),
       native: sortedLimits(current.native),
       nativeAll: Math.ceil(current.nativeAll * HEADROOM),
+      css: sortedLimits(current.css),
     };
     writeFileSync(LIMITS_FILE, `${JSON.stringify(limits, null, 2)}\n`);
     console.log(`Limitler yazıldı: ${relative(ROOT, LIMITS_FILE)}`);
@@ -295,6 +313,7 @@ async function main() {
     console.log(`${report("Web (@mari-ui/components)", web.rows)}\n`);
     console.log(`${report("Native (@mari-ui/native)", native.rows)}\n`);
     console.log(`Native kök barrel \`@mari-ui/native\` tamamı: ${kb(nativeAll.gz)} min+gz (${kb(nativeAll.min)} min)\n`);
+    for (const [f, v] of Object.entries(css)) console.log(`Web CSS \`${f}\`: ${kb(v.gz)} min+gz (${kb(v.min)} min)\n`);
   }
 
   const errors = [...banned, ...contexts.problems];
@@ -310,10 +329,13 @@ async function main() {
     checkLimits(errors, "native", current.native, typeof limits.native === "object" ? limits.native : null);
     if (limits.nativeAll == null) errors.push("nativeAll: limit yok — `pnpm size --update` çalıştırın.");
     else if (nativeAll.gz > limits.nativeAll) errors.push(`@mari-ui/native (tamamı): ${kb(nativeAll.gz)} > limit ${kb(limits.nativeAll)}`);
+    checkLimits(errors, "css", current.css, limits.css);
   }
 
   console.log(
-    `${web.rows.length} web + ${native.rows.length} native entry ölçüldü, ${contexts.count} native context tekilliği denetlendi. Native tamamı: ${kb(nativeAll.gz)} min+gz.`,
+    `${web.rows.length} web + ${native.rows.length} native entry ölçüldü, ${contexts.count} native context tekilliği denetlendi. Native tamamı: ${kb(nativeAll.gz)} min+gz. Web CSS: ${Object.entries(css)
+      .map(([f, v]) => `${f} ${kb(v.gz)}`)
+      .join(", ")} min+gz.`,
   );
   if (errors.length) {
     console.error(`\n✖ ${errors.length} sorun:\n  ${errors.join("\n  ")}`);

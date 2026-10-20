@@ -1,5 +1,5 @@
 {
-  "$comment": "Bayt, min+gz. `pnpm size --update` bugünkü boyut +%10 ile yeniden yazar. nativeAll = kök barrel (@mari-ui/native) tamamı.",
+  "$comment": "Bayt, min+gz. `pnpm size --update` bugünkü boyut +%10 ile yeniden yazar. nativeAll = kök barrel (@mari-ui/native) tamamı. css = @mari-ui/components dist CSS'i.",
   "components": {
     "accordion": 12669,
     "alert": 12216,
@@ -108,5 +108,8 @@
     "typography": 4920,
     "upload": 16911
   },
-  "nativeAll": 105360
+  "nativeAll": 105360,
+  "css": {
+    "styles.css": 20759
+  }
 }

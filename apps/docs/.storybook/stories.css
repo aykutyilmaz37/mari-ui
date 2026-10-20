@@ -1,0 +1,18 @@
+/**
+ * Docs'a özel Tailwind girişi (Faz 3): story'lerin, demo yardımcılarının
+ * (`lib/SkeletonDemo` …) ve foundations sayfalarının sınıfları. Yayınlanan
+ * `@mari-ui/components/styles.css` artık yalnız dist JS'i tarıyor; bu sınıflar
+ * tüketiciye gitmez, yalnız Storybook'a.
+ *
+ * preview.tsx'te `styles.css`ten ÖNCE import edilir: bileşenlerle ortak
+ * sınıflar burada da üretilir ama sonra gelen yayın CSS'i kazanır → bileşen
+ * sınıflarının sırası birebir yayınlanandaki gibi; önizleme gerçekten
+ * tüketicinin CSS'ini gösterir. Preflight/token değişkenleri burada üretilmez
+ * (yayın CSS'inden gelir); katman sırası yayınlananla aynı ilan edilir, yoksa
+ * ilk görülen `utilities` katmanı `base`in önüne geçerdi.
+ */
+@layer properties, theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "../../../packages/components/src/mari.css" reference;
+@source "../../../packages/components/src/**/*.{ts,tsx}";
