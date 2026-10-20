@@ -40,6 +40,7 @@
   "scripts": {
     "build": "tsup && tsx scripts/build-css.ts && tsx scripts/build-schema.ts",
     "dev": "concurrently -n tsup,css,schema -c blue,magenta,green \"tsup --watch\" \"tsx watch scripts/build-css.ts\" \"tsx watch scripts/build-schema.ts\"",
+    "generate:default-themes": "tsx scripts/build-default-themes.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

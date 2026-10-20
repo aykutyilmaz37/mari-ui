@@ -72,7 +72,8 @@ export interface SemanticColorTokens {
   canvas: CanvasTokens;
 }
 
-const LIGHT_SURFACE = neutralRamp[50];
+// Modül seviyesindeki özellik erişimi bundler'a yan etkili görünür; `@__PURE__` IIFE kullanılmadığında düşer.
+const LIGHT_SURFACE = /* @__PURE__ */ (() => neutralRamp[50])();
 /*
  * Puan yıldızı sarısı — rol paletinden bağımsız sabit. Kullanıcı kararı
  * (2026-09-28): kontur DOLGUYLA AYNI renk — koyu konturlu denemeler (#a16207,
@@ -82,7 +83,7 @@ const LIGHT_SURFACE = neutralRamp[50];
  * yıldızlar gri konturla ayrışır. Token ayrı tutuldu — tema bunu değiştirebilir.
  */
 const RATING_YELLOW: HexColor = "#facc15";
-const DARK_SURFACE: HexColor = neutralRamp[950];
+const DARK_SURFACE: HexColor = /* @__PURE__ */ (() => neutralRamp[950])();
 
 function buildCanvas(mode: ThemeMode): CanvasTokens {
   if (mode === "light") {

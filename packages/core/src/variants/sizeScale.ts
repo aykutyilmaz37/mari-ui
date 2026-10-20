@@ -103,4 +103,4 @@ export function buildComponentSize(radiusDensity: RadiusScale = DEFAULT_DENSITY)
 }
 
 /** Varsayılan yoğunluk (`"md"`) ile önceden hesaplanmış tablo — mevcut tüm çağıranlar (29 web component'i) değişmeden çalışmaya devam eder. */
-export const componentSize: Record<ExtendedSize, ComponentSizeTokens> = buildComponentSize();
+export const componentSize: Record<ExtendedSize, ComponentSizeTokens> = /* @__PURE__ */ buildComponentSize();

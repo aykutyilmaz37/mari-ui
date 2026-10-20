@@ -7,8 +7,9 @@ import { themeToCssVariables } from "../cssVariables";
 describe("resolveThemeConfig", () => {
   it("boş config: lightTheme/darkTheme ile BİREBİR aynı sonucu üretir (regresyon — override yoksa davranış değişmemeli)", () => {
     const resolved = resolveThemeConfig();
-    expect(resolved.light).toEqual(lightTheme);
-    expect(resolved.dark).toEqual(darkTheme);
+    // lightTheme/darkTheme düz veri (defaultThemes.generated.ts); `resolveThemeConfig` taze kurar → üretilmiş dosya güncel mi?
+    expect(resolved.light).toStrictEqual(lightTheme);
+    expect(resolved.dark).toStrictEqual(darkTheme);
     expect(resolved.radiusDensity).toBe("md");
   });
 
