@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@mari-ui/core";
 import { Empty } from "../../empty";
-import { Input } from "../../input";
+import { PlainInput } from "../../input/PlainInput";
 import { SkeletonSlot } from "../../lib/SkeletonSlot";
 import { clearRowDraft, getRowLabel, setRowDraftValue, skeletonRowCount, skeletonWidth } from "../utils";
 import { TableCellSkeleton } from "./TableCellSkeleton";
@@ -139,7 +139,7 @@ export function TableAccordion<T extends { id: string }>({ data, columns, emptyS
                       <dt className="text-mari-muted">{col.header}</dt>
                       <dd className="text-mari-foreground">
                         {isEditing && columnName ? (
-                          <Input
+                          <PlainInput
                             aria-label={typeof col.header === "string" ? col.header : undefined}
                             value={draftValue !== undefined ? String(draftValue) : displayValue}
                             onChange={(e) => {

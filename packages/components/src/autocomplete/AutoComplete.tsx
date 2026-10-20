@@ -2,7 +2,7 @@
 
 import React, { useEffect, useId, useRef, useState } from "react";
 import { cn, useControllableState } from "@mari-ui/core";
-import { Input } from "../input";
+import { PlainInput } from "../input/PlainInput";
 import { elevationClass } from "../lib/elevationClass";
 import type { AutoCompleteProps } from "./types";
 import { getFilteredOption, splitMatch } from "./utils";
@@ -68,7 +68,7 @@ export function AutoComplete({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- yalnızca aktif seçenek değişince
   }, [activeOption?.id]);
 
-  if (skeleton) return <Input skeleton size={size} className={className} />;
+  if (skeleton) return <PlainInput skeleton size={size} className={className} />;
 
   const handleSelect = (optionValue: string) => {
     setSearchText(optionValue);
@@ -96,7 +96,7 @@ export function AutoComplete({
 
   return (
     <div className={cn("relative", className)}>
-      <Input
+      <PlainInput
         id={id}
         name={name}
         value={searchText}

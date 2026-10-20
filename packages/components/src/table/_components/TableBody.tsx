@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { cn } from "@mari-ui/core";
-import { Input } from "../../input";
+import { PlainInput } from "../../input/PlainInput";
 import { Empty } from "../../empty";
 import { SkeletonSlot } from "../../lib/SkeletonSlot";
 import {
@@ -64,7 +64,7 @@ function DataCell<T extends { id: string }>({ col, item, rowIndex, columnIndex, 
   if (isEditing && columnName) {
     const draftValue = draft[columnName];
     content = (
-      <Input
+      <PlainInput
         aria-label={typeof col.header === "string" ? col.header : undefined}
         // Değeri kesmeden gösterecek asgari genişlik — tablo zaten yatay kayabiliyor.
         className="min-w-36"
@@ -116,7 +116,7 @@ function PlaceholderRows<T extends { id: string }>({ columns, count }: Readonly<
 
 export function TableBody<T extends { id: string }>({ data, columns, emptyState, skeleton = false, pageSize }: Readonly<TableBodyProps<T>>) {
   // Satır içi düzenleme durumu satır seviyesinde: aksiyon hücresindeki
-  // "düzenle" AYNI satırdaki veri hücrelerini de <Input>'a çeviriyor.
+  // "düzenle" AYNI satırdaki veri hücrelerini de <PlainInput>'a çeviriyor.
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, Partial<T>>>({});
 
