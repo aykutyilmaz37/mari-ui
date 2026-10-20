@@ -77,9 +77,10 @@ const config: TestRunnerConfig = {
     }
     // Önceki story'nin `play`'i fareyi bir hover bileşeninin (Sidebar variant="hover")
     // üstünde bırakabiliyor; yeni story yüklenince Chromium fare olayını yeniden gönderir ve
-    // ray görüntüden önce açılıyordu. Fare, story çizilmeden nötr köşeye çekilir.
-    const viewport = page.viewportSize();
-    if (viewport) await page.mouse.move(viewport.width - 1, viewport.height - 1);
+    // ray görüntüden önce açılıyordu. Fare, story çizilmeden görünür alanın DIŞINA çekilir: köşe
+    // gibi bir iç nokta sağ kenara oturan (HoverRight) ya da ekranı dolduran (Calendar, galeri)
+    // bileşenlerin üstüne düşüp onları hover eder; (-1,-1) hiçbir öğeyi hover etmez.
+    await page.mouse.move(-1, -1);
     await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => done(undefined))));
     await injectAxe(page);
   },
