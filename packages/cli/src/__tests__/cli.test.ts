@@ -80,10 +80,37 @@ describe("cli", () => {
     expect(process.exitCode).toBeUndefined();
   });
 
-  it("bilinmeyen komut: yardım + çıkış kodu 1; bilinmeyen bayrak uyarı verir", async () => {
-    const { out, warned } = await runCli("nope", "--garip");
+  it("bilinmeyen komut: yardım + çıkış kodu 1", async () => {
+    const { out } = await runCli("nope");
     expect(out).toContain("Komutlar:");
-    expect(warned).toContain("--garip");
+    expect(process.exitCode).toBe(1);
+  });
+
+  it.each([["init"], ["sync"], ["theme"]])("%s --help / -h: yardım basar, komut çalışmaz", async (command) => {
+    for (const flag of ["--help", "-h"]) {
+      const { out } = await runCli(command, flag);
+      expect(out).toContain("Komutlar:");
+    }
+    expect(mocks.runInit).not.toHaveBeenCalled();
+    expect(mocks.syncAgentRules).not.toHaveBeenCalled();
+    expect(mocks.runThemeCommand).not.toHaveBeenCalled();
+    expect(mocks.writeConfig).not.toHaveBeenCalled();
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("--help komut yerine verilirse yardım basar", async () => {
+    const { out } = await runCli("--help");
+    expect(out).toContain("Komutlar:");
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it.each([["init"], ["sync"], ["theme"]])("%s bilinmeyen bayrak: hata + çıkış 1, hiçbir şey yazılmaz", async (command) => {
+    const { err } = await runCli(command, "--bilinmeyen");
+    expect(err).toContain("--bilinmeyen");
+    expect(mocks.runInit).not.toHaveBeenCalled();
+    expect(mocks.syncAgentRules).not.toHaveBeenCalled();
+    expect(mocks.runThemeCommand).not.toHaveBeenCalled();
+    expect(mocks.writeConfig).not.toHaveBeenCalled();
     expect(process.exitCode).toBe(1);
   });
 

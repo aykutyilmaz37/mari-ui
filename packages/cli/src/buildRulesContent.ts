@@ -33,7 +33,7 @@ const ANTI_PATTERNS = [
   },
   {
     title: "Runtime'da Tailwind class string'i üretme",
-    wrong: '`bg-mari-${color}-solid`  (template literal ile class ismi kurma)',
+    wrong: '`bg-mari-${color}-solid` (template literal ile class ismi kurma)',
     right: "Literal bir Record<ColorRole, string> lookup tablosu kullan (ya da doğrudan mari-ui component'inin kendi color/variant prop'unu kullan)",
     why: 'Tailwind derleme-zamanı statik tarayıcıdır — template literal ile kurulan class asla üretilmez. Bu, projenin kendi geçmişinde Skeleton/Tag/Loading\'i SESSİZCE bozan gerçek bir bug\'dı (plan Faz 3).',
   },

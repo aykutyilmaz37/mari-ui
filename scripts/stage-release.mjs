@@ -33,13 +33,45 @@ function isPublished(name, version) {
 
 /** Bu sürüm onay bekleyen bir taslak olarak zaten var mı? Okunamazsa `null`. */
 function isStaged(name, version) {
+  let out = "";
   try {
-    const list = JSON.parse(run("npm", ["stage", "list", name, "--json"], { stdio: ["ignore", "pipe", "ignore"] }) || "[]");
+    out = run("npm", ["stage", "list", name, "--json"], { stdio: ["ignore", "pipe", "pipe"] });
+    const list = JSON.parse(out || "[]");
     const entries = Array.isArray(list) ? list : Object.values(list).flat();
     return entries.some((e) => e && (e.version === version || e.packageVersion === version));
-  } catch {
+  } catch (error) {
+    // CI'da liste hiç okunamıyor; nedenini görebilmek için çıkış kodu ve çıktı log'a.
+    const detail = [`çıkış kodu: ${error.status ?? "-"}`, error.stderr?.trim(), (error.stdout ?? out)?.trim()].filter(Boolean);
+    console.log(`  npm stage list ${name}: ${detail.join(" | ")}`);
     return null;
   }
+}
+
+/**
+ * Tarball'da package.json'ın vaat ettiği dosyalardan eksik olanlar: `bin`, `main`, `types`,
+ * `exports` hedefleri ve `files` girdileri. `pnpm pack` .gitignore yüzünden dosya
+ * düşürebiliyor; eksik paket yüklenirse `npx` / import kullanıcıda kırılır.
+ * package.json tarball'dan okunur: `publishConfig` (ör. native'in `./stories`suz
+ * exports'u) orada uygulanmış hâldedir.
+ */
+function missingFiles(tarball) {
+  const pkg = JSON.parse(run("tar", ["-xzOf", tarball, "package/package.json"]));
+  const entries = run("tar", ["-tzf", tarball]).split("\n").map((e) => e.replace(/^package\//, ""));
+  const norm = (p) => p.replace(/^\.\//, "").replace(/\/$/, "");
+  const has = (p) => {
+    const target = norm(p);
+    // `fonts/*` gibi kalıplarda ve klasörlerde altında en az bir dosya yeterli.
+    const prefix = target.includes("*") ? target.slice(0, target.indexOf("*")) : `${target}/`;
+    return entries.includes(target) || entries.some((e) => e.startsWith(prefix));
+  };
+  const leaves = (v) => (typeof v === "string" ? [v] : v && typeof v === "object" ? Object.values(v).flatMap(leaves) : []);
+  const required = [
+    ...leaves(pkg.bin),
+    ...[pkg.main, pkg.types].filter(Boolean),
+    ...leaves(pkg.exports),
+    ...(pkg.files ?? []),
+  ];
+  return [...new Set(required.map(norm))].filter((p) => !has(p));
 }
 
 const packages = readdirSync(join(ROOT, "packages"))
@@ -68,8 +100,14 @@ for (const dir of packages) {
   }
   if (already === null) console.log(`! ${name}: taslak listesi okunamadı, yine de yükleniyor.`);
   const tarball = run("pnpm", ["pack", "--pack-destination", outDir], { cwd: dir }).split("\n").pop();
+  const missing = missingFiles(tarball);
+  if (missing.length) {
+    throw new Error(`${name}@${version} tarball'ında eksik dosya var, yüklenmedi: ${missing.join(", ")}`);
+  }
   try {
-    run("npm", ["stage", "publish", tarball, "--access", "public", "--tag", "latest"], { stdio: "inherit" });
+    // Çıktı doğrudan log'a gider; `run` kullanılmaz: stdio inherit'te dönüş null olur ve
+    // `.trim()` başarılı yüklemeyi hata sanıp "yüklenemedi" yazdırıyordu.
+    execFileSync("npm", ["stage", "publish", tarball, "--access", "public", "--tag", "latest"], { stdio: "inherit" });
   } catch (error) {
     // Liste okunamadıysa en olası neden, sürümün zaten taslakta beklemesi: onaylanana
     // kadar her main push'unda iş akışı kırmızıya dönmesin. Liste okunduysa gerçek hata.

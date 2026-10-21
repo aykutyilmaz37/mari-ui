@@ -48,7 +48,8 @@ export function planAgentRuleTargets(agents: readonly AgentName[], bodies: Agent
 function applyFileTarget(existingContent: string, target: FileTarget): string {
   if (!target.prefix) return upsertMarkerBlock(existingContent, target.body, target.relativePath);
   const existingWithoutPrefix = existingContent.startsWith(target.prefix) ? existingContent.slice(target.prefix.length) : existingContent;
-  return target.prefix + upsertMarkerBlock(existingWithoutPrefix, target.body, target.relativePath);
+  // Frontmatter'dan sonra boş satır: Prettier'ın biçimi.
+  return `${target.prefix}\n${upsertMarkerBlock(existingWithoutPrefix.replace(/^\n+/, ""), target.body, target.relativePath)}`;
 }
 
 function isFileTargetUpToDate(existingContent: string, target: FileTarget): boolean {

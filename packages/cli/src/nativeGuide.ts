@@ -155,7 +155,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   const scheme = useColorScheme();
   const insets = useSafeAreaInsets();
   return (
-    <ThemeProvider theme={scheme === "dark" ? mariTheme.dark : mariTheme.light} insets={insets}>
+    <ThemeProvider
+      theme={scheme === "dark" ? mariTheme.dark : mariTheme.light}
+      insets={insets}
+    >
       <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
   );
@@ -170,7 +173,10 @@ Token boyutları \`"1rem"\`, \`"8px"\` gibi string'dir; React Native sayı ister
 
 \`\`\`ts
 // src/theme/px.ts
-export const px = (value: string) => (value.endsWith("rem") ? Number.parseFloat(value) * 16 : Number.parseFloat(value));
+export const px = (value: string) =>
+  value.endsWith("rem")
+    ? Number.parseFloat(value) * 16
+    : Number.parseFloat(value);
 \`\`\`
 
 \`\`\`tsx
@@ -183,9 +189,21 @@ import { px } from "../theme/px";
 export function EmptyCart({ onShop }: { onShop: () => void }) {
   const theme = useTheme();
   return (
-    <View style={[styles.box, { backgroundColor: theme.color.canvas.surfaceAlt, gap: px(theme.spacing[3]), padding: px(theme.spacing[4]), borderRadius: px(theme.radius.lg) }]}>
+    <View
+      style={[
+        styles.box,
+        {
+          backgroundColor: theme.color.canvas.surfaceAlt,
+          gap: px(theme.spacing[3]),
+          padding: px(theme.spacing[4]),
+          borderRadius: px(theme.radius.lg),
+        },
+      ]}
+    >
       <Text muted>Sepetiniz boş.</Text>
-      <Button color="primary" onPress={onShop}>Alışverişe başla</Button>
+      <Button color="primary" onPress={onShop}>
+        Alışverişe başla
+      </Button>
     </View>
   );
 }
