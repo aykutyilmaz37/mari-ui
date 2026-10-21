@@ -32,6 +32,8 @@ interface ParsedArgs {
   platform?: Platform;
   /** Soru sorma: bayraklar ya da mevcut config kullanılır. */
   yes: boolean;
+  /** `--help` / `-h`: yardımı bas, komutu çalıştırma. */
+  help: boolean;
 }
 
 function parsePersona(value: string | undefined): PersonaName | "default" | undefined {
@@ -44,7 +46,7 @@ function parsePersona(value: string | undefined): PersonaName | "default" | unde
 
 function parseArgs(argv: string[]): ParsedArgs {
   const [command = "help", ...rest] = argv;
-  const parsed: ParsedArgs = { command, dir: process.cwd(), check: false, yes: false };
+  const parsed: ParsedArgs = { command, dir: process.cwd(), check: false, yes: false, help: command === "--help" || command === "-h" };
 
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
@@ -96,8 +98,14 @@ function parseArgs(argv: string[]): ParsedArgs {
       case "-y":
         parsed.yes = true;
         break;
+      case "--help":
+      case "-h":
+        parsed.help = true;
+        break;
       default:
-        console.warn(`[@mari-ui/cli] Bilinmeyen bayrak yok sayıldı: ${arg}`);
+        // Dosya yazan komutlar yanlış bayrakla çalışmasın: hata, komut çalıştırılmaz.
+        console.error(`[@mari-ui/cli] Bilinmeyen bayrak: ${arg} — yardım için: mari-ui ${command} --help`);
+        process.exitCode = 1;
     }
   }
 
@@ -153,7 +161,6 @@ function flagChoice(args: ParsedArgs): ThemeChoice | undefined {
 }
 
 async function runInitCommand(args: ParsedArgs) {
-  if (process.exitCode) return;
   // Platform önce sorulur: hangi paketlerin kurulacağını ve kuralları belirler.
   let platform = args.platform ?? configuredPlatform(args.dir);
   if (!platform && canAsk(args)) platform = await askPlatformChoice(detectPlatform(readPackageJson(args.dir)));
@@ -202,7 +209,6 @@ function runSyncCommand(args: ParsedArgs) {
  * ve büyük ekran (`scale`) korunur. `--config` verildiyse o dosya kullanılır, sorulmaz.
  */
 async function runThemeCliCommand(args: ParsedArgs) {
-  if (process.exitCode) return;
   if (!args.config && !args.check) {
     const current = readConfigIfExists(args.dir);
     const choice = flagChoice(args) ?? (canAsk(args) ? await askThemeChoice(current) : undefined);
@@ -235,6 +241,12 @@ async function runThemeCliCommand(args: ParsedArgs) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    printHelp();
+    return;
+  }
+  // Geçersiz bayrak/değer (mesajı parseArgs bastı): hiçbir komut dosyaya dokunmaz.
+  if (process.exitCode) return;
 
   switch (args.command) {
     case "init":
