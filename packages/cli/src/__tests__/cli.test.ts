@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   readConfigIfExists: vi.fn(),
   writeConfig: vi.fn(),
   askThemeChoice: vi.fn(),
+  askPlatformChoice: vi.fn(async () => "web"),
 }));
 
 vi.mock("../init", () => ({ runInit: mocks.runInit }));
@@ -15,7 +16,7 @@ vi.mock("../theme", () => ({ runThemeCommand: mocks.runThemeCommand }));
 vi.mock("../configFile", () => ({ readConfigIfExists: mocks.readConfigIfExists, writeConfig: mocks.writeConfig }));
 vi.mock("../themeWizard", async () => {
   class WizardCancelled extends Error {}
-  return { askThemeChoice: mocks.askThemeChoice, WizardCancelled };
+  return { askThemeChoice: mocks.askThemeChoice, askPlatformChoice: mocks.askPlatformChoice, WizardCancelled };
 });
 
 let log: ReturnType<typeof vi.spyOn>;
@@ -39,6 +40,8 @@ function setTTY(value: boolean) {
 }
 
 const initResult = {
+  platform: "web",
+  foreignDependencies: [] as string[],
   addedDependencies: ["@mari-ui/components"],
   configCreated: true,
   configUpdated: false,

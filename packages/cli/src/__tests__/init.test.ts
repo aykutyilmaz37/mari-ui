@@ -82,13 +82,13 @@ describe("runInit — kişilik (Faz 21)", () => {
     writeFileSync(join(dir, "mari-ui.config.json"), JSON.stringify({ persona: "luxury" }), "utf8");
     const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "default" } });
     expect(result.configUpdated).toBe(false);
-    expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "luxury" });
+    expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "luxury", platform: "web" });
   });
 
   it("config yoksa yalnız { persona } yazar", () => {
     const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "persona", name: "playful" } });
     expect(result.configCreated).toBe(true);
-    expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "playful" });
+    expect(JSON.parse(readFileSync(result.configPath, "utf8"))).toEqual({ persona: "playful", platform: "web" });
   });
 
   it("config varsa yalnız persona alanını ekler, diğer seçimlere dokunmaz", () => {
@@ -96,7 +96,7 @@ describe("runInit — kişilik (Faz 21)", () => {
     const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, theme: { kind: "persona", name: "minimal" } });
     expect(result.configUpdated).toBe(true);
     const config = JSON.parse(readFileSync(result.configPath, "utf8"));
-    expect(config).toEqual({ persona: "minimal", color: { primary: "#059669" }, density: { radius: "lg" } });
+    expect(config).toEqual({ persona: "minimal", color: { primary: "#059669" }, density: { radius: "lg" }, platform: "web" });
     expect(Object.keys(config)[0]).toBe("persona");
   });
 

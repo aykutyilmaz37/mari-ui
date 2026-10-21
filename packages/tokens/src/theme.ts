@@ -156,6 +156,12 @@ export interface MariUiThemeConfig {
    */
   persona?: PersonaName;
   /**
+   * Projenin hedef platformu — yalnız `@mari-ui/cli` okur (hangi paketlerin
+   * kurulacağı ve hangi AI kurallarının yazılacağı). Tema çözümlemesini etkilemez.
+   * Yoksa CLI `package.json`dan tahmin eder.
+   */
+  platform?: "web" | "native" | "both";
+  /**
    * Büyük ekran ölçeği. `fluid: true` iken kök yazı boyutu 1920px'ten
    * itibaren ekran genişliğiyle büyür, 3840px'te (4K) `max` px'e ulaşıp durur.
    * Her şey rem tabanlı olduğu için tüm arayüz orantılı büyür. 1920px ve altı
@@ -178,7 +184,7 @@ export const defaultThemeConfig = /* @__PURE__ */ (() =>
     density: { radius: "md", spacing: "normal", shadow: "normal" },
     motion: "normal",
     scale: { fluid: false as boolean, max: 22 },
-  }) satisfies Required<Omit<MariUiThemeConfig, "themes" | "persona">>)();
+  }) satisfies Required<Omit<MariUiThemeConfig, "themes" | "persona" | "platform">>)();
 
 export interface NamedThemeInput {
   base: ThemeMode;

@@ -14,9 +14,9 @@ describe("runThemeCommand", () => {
 
   it("config yokken bile (varsayılan tema) CSS + TS token dosyalarını üretir", () => {
     const result = runThemeCommand({ targetDir: dir });
-    expect(existsSync(result.cssPath)).toBe(true);
+    expect(existsSync(result.cssPath!)).toBe(true);
     expect(existsSync(result.themeTsPath)).toBe(true);
-    expect(readFileSync(result.cssPath, "utf8")).toContain(":root {");
+    expect(readFileSync(result.cssPath!, "utf8")).toContain(":root {");
     expect(readFileSync(result.themeTsPath, "utf8")).toContain("export const mariTheme");
   });
 
@@ -29,7 +29,7 @@ describe("runThemeCommand", () => {
   it("check: true iken dosya yazmadan bayat olup olmadığını raporlar", () => {
     const first = runThemeCommand({ targetDir: dir, check: true });
     expect(first.stale).toBe(true);
-    expect(existsSync(first.cssPath)).toBe(false);
+    expect(existsSync(first.cssPath!)).toBe(false);
 
     runThemeCommand({ targetDir: dir });
     const second = runThemeCommand({ targetDir: dir, check: true });
@@ -40,7 +40,7 @@ describe("runThemeCommand", () => {
     const outDir = makeTempDir();
     try {
       const result = runThemeCommand({ targetDir: dir, outDir });
-      expect(result.cssPath.startsWith(outDir)).toBe(true);
+      expect(result.cssPath?.startsWith(outDir)).toBe(true);
     } finally {
       cleanupTempDir(outDir);
     }

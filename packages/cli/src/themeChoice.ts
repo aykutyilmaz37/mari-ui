@@ -31,13 +31,14 @@ export function isHexColor(value: string): value is HexColor {
 
 /**
  * Seçimi `mari-ui.config.json`a çevirir. Tema dışı alanlar (`themes` — ek
- * temalar, `scale` — büyük ekran) mevcut config'ten korunur; tema alanları
+ * temalar, `scale` — büyük ekran, `platform`) mevcut config'ten korunur; tema alanları
  * (kişilik, renk, font, yoğunluk, hareket) seçime göre baştan yazılır.
  */
 export function configFromChoice(choice: ThemeChoice, current: MariUiThemeConfig = {}): MariUiThemeConfig {
   const kept: MariUiThemeConfig = {};
   if (current.scale) kept.scale = current.scale;
   if (current.themes) kept.themes = current.themes;
+  if (current.platform) kept.platform = current.platform;
   // Elle ezilen token'lar (`color.tokens`/`darkTokens`) sihirbaz seçiminden bağımsız ince ayardır; korunur.
   const { tokens, darkTokens } = current.color ?? {};
   const keptColor = { ...(tokens && { tokens }), ...(darkTokens && { darkTokens }) };

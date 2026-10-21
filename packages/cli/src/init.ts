@@ -2,12 +2,11 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { ALL_AGENTS, syncAgentRules, type AgentName, type SyncResult } from "./sync";
-import { configFilePath, writeConfig, writeDefaultConfigIfMissing, writePersonaConfig } from "./configFile";
+import { configFilePath, writeConfig, writeDefaultConfigIfMissing, writePersonaConfig, writePlatformConfig } from "./configFile";
 import { configFromChoice, type ThemeChoice } from "./themeChoice";
 import { ManifestNotFoundError } from "./manifest";
 import { detectTailwind, type TailwindSetup } from "./tailwindSetup";
-
-const REQUIRED_DEPENDENCIES = ["@mari-ui/components", "@mari-ui/core", "@mari-ui/tokens"] as const;
+import { configuredPlatform, dependenciesFor, detectPlatform, foreignPackagesFor, type Platform } from "./platform";
 
 /**
  * Eklenen bağımlılıkların sürüm aralığı: CLI'ın kendi sürümü. Beş paket birlikte
@@ -26,9 +25,14 @@ export interface InitOptions {
    * ekler/değiştirir (diğer alanlara dokunmaz); temayı baştan değiştirmek `theme` komutunun işi.
    */
   theme?: ThemeChoice;
+  /** Sihirbaz ya da `--platform`. Yoksa config'teki değer, o da yoksa `package.json` tahmini. */
+  platform?: Platform;
 }
 
 export interface InitResult {
+  platform: Platform;
+  /** Platforma ait olmayıp yine de kurulu olan mari-ui paketleri (ör. native projede `@mari-ui/components`). Silinmez, uyarılır. */
+  foreignDependencies: string[];
   addedDependencies: string[];
   alreadyHadDependencies: string[];
   configCreated: boolean;
@@ -57,7 +61,8 @@ interface PackageJsonShape {
 }
 
 /*
- * Tüketici projeye üç bağımlılığı ekler, `mari-ui.config.json`ı (varsa
+ * Tüketici projeye seçilen platformun bağımlılıklarını ekler (diğer platformun
+ * paketi hiç eklenmez), `mari-ui.config.json`ı (varsa
  * DOKUNMADAN) oluşturur ve AI ajan kural dosyalarını yazar. Plan'ın kendi
  * ilkesi burada da geçerli: **component seçtirmez** — tek paket kurulur,
  * kullanılmayan component'ler zaten tree-shaking ile bundle'a girmez (bkz.
@@ -77,14 +82,17 @@ export function runInit(options: InitOptions): InitResult {
 
   const addedDependencies: string[] = [];
   const alreadyHadDependencies: string[] = [];
+  const foreignDependencies: string[] = [];
   let tailwind: TailwindSetup = "none";
+  const pkg = packageJsonMissing ? null : (JSON.parse(readFileSync(packageJsonPath, "utf8")) as PackageJsonShape);
+  const platform = options.platform ?? configuredPlatform(targetDir) ?? detectPlatform(pkg);
 
-  if (!packageJsonMissing) {
-    const raw = readFileSync(packageJsonPath, "utf8");
-    const pkg = JSON.parse(raw) as PackageJsonShape;
+  if (pkg) {
     tailwind = detectTailwind(pkg);
+    const existing = { ...pkg.devDependencies, ...pkg.dependencies };
+    foreignDependencies.push(...foreignPackagesFor(platform).filter((dep) => existing[dep]));
     pkg.dependencies ??= {};
-    for (const dep of REQUIRED_DEPENDENCIES) {
+    for (const dep of dependenciesFor(platform)) {
       if (pkg.dependencies[dep]) {
         alreadyHadDependencies.push(dep);
       } else {
@@ -99,6 +107,8 @@ export function runInit(options: InitOptions): InitResult {
 
   const written = writeInitialConfig(targetDir, theme);
   const { created: configCreated, path: configPath, updated: configUpdated } = written;
+  // `sync` platformu config'ten okur; bu yüzden kurallardan ÖNCE yazılır.
+  writePlatformConfig(targetDir, platform);
 
   let ruleFiles: SyncResult | null;
   try {
@@ -111,7 +121,7 @@ export function runInit(options: InitOptions): InitResult {
     }
   }
 
-  return { addedDependencies, alreadyHadDependencies, configCreated, configUpdated, configPath, ruleFiles, packageJsonMissing, tailwind };
+  return { platform, foreignDependencies, addedDependencies, alreadyHadDependencies, configCreated, configUpdated, configPath, ruleFiles, packageJsonMissing, tailwind };
 }
 
 function writeInitialConfig(targetDir: string, theme: ThemeChoice | undefined): { created: boolean; updated: boolean; path: string } {

@@ -11,6 +11,7 @@ import { buildCopilotTargets } from "./writers/copilot";
 import { buildCursorTargets } from "./writers/cursor";
 import { buildGeminiTargets } from "./writers/gemini";
 import type { FileTarget } from "./writers/types";
+import { resolvePlatform, type Platform } from "./platform";
 
 export const ALL_AGENTS = ["claude", "codex", "cursor", "gemini", "copilot"] as const;
 export type AgentName = (typeof ALL_AGENTS)[number];
@@ -66,6 +67,12 @@ export interface SyncResult {
   /** `check: true` iken: güncel olmayıp YAZILACAK OLAN dosyalar. `check` yokken: fiilen yazılan dosyalar. */
   changed: string[];
   upToDate: string[];
+  platform: Platform;
+  /**
+   * `true`: platform `native` ve native kural içeriği henüz yok — web kuralları
+   * mobil projeyi yanıltacağı için HİÇBİR DOSYA yazılmadı.
+   */
+  skipped: boolean;
 }
 
 /*
@@ -76,13 +83,16 @@ export interface SyncResult {
  */
 export function syncAgentRules(options: SyncOptions): SyncResult {
   const { targetDir, agents = ALL_AGENTS, manifestPath, configPath, check = false } = options;
+  const platform = resolvePlatform(targetDir);
+  // Geçici koruma (plan Faz A → C): native kuralları gelene kadar native projeye web kuralı yazılmaz.
+  if (platform === "native") return { changed: [], upToDate: [], platform, skipped: true };
 
   const manifest = loadManifestSafe(targetDir, manifestPath);
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
   const contentOptions = { manifest, theme: resolved.light, persona: config.persona };
   const targets = planAgentRuleTargets(agents, { rules: buildRulesContent(contentOptions), skill: buildSkillContent(contentOptions) });
-  const result: SyncResult = { changed: [], upToDate: [] };
+  const result: SyncResult = { changed: [], upToDate: [], platform, skipped: false };
 
   for (const target of targets) {
     const filePath = join(targetDir, target.relativePath);

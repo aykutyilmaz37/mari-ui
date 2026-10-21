@@ -52,6 +52,18 @@ export function writePersonaConfig(targetDir: string, persona: PersonaName): { c
   return { created: false, updated: true, path };
 }
 
+/**
+ * `init`in platform seçimini yazar. Yalnız `platform` alanı eklenir/değişir;
+ * dosya yoksa `{ "platform": … }` olarak oluşturulur (tema alanları varsayılandan gelir).
+ */
+export function writePlatformConfig(targetDir: string, platform: NonNullable<MariUiThemeConfig["platform"]>): boolean {
+  const path = configFilePath(targetDir);
+  const current = existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as MariUiThemeConfig) : {};
+  if (current.platform === platform) return false;
+  writeFileSync(path, `${JSON.stringify({ ...current, platform }, null, 2)}\n`, "utf8");
+  return true;
+}
+
 /** Config dosyası varsa okur, yoksa `undefined` (sihirbazın "mevcut ayarı koru" seçeneği için). */
 export function readConfigIfExists(targetDir: string): MariUiThemeConfig | undefined {
   const path = configFilePath(targetDir);

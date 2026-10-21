@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { buildPlainThemeCss, personaFontsUrl, resolveThemeConfig } from "@mari-ui/tokens";
 import { readConfig } from "./configFile";
+import { resolvePlatform } from "./platform";
 
 export const THEME_CSS_FILE_NAME = "mari-ui-theme.css";
 export const THEME_TS_FILE_NAME = "mari-ui-theme.ts";
@@ -15,9 +16,10 @@ export interface ThemeCommandOptions {
 }
 
 export interface ThemeCommandResult {
-  cssPath: string;
+  /** Native projede `undefined`: CSS yalnız web içindir, yalnız `mari-ui-theme.ts` üretilir. */
+  cssPath?: string;
   themeTsPath: string;
-  cssContent: string;
+  cssContent?: string;
   themeTsContent: string;
   /** `check: true` iken: iki dosyadan en az biri bayatsa `true`. */
   stale?: boolean;
@@ -61,21 +63,23 @@ export function runThemeCommand(options: ThemeCommandOptions): ThemeCommandResul
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
 
-  const cssContent = buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER, spacingDensity: resolved.spacingDensity, fluidRootMax: resolved.fluidRootMax });
+  const web = resolvePlatform(targetDir) !== "native";
+  const cssContent = web ? buildPlainThemeCss({ default: resolved.light, named: { dark: resolved.dark, ...resolved.themes } }, { header: HEADER, spacingDensity: resolved.spacingDensity, fluidRootMax: resolved.fluidRootMax }) : undefined;
   const themeTsContent = buildThemeTsContent(resolved);
 
-  const cssPath = join(outDir, THEME_CSS_FILE_NAME);
+  const cssPath = web ? join(outDir, THEME_CSS_FILE_NAME) : undefined;
   const themeTsPath = join(outDir, THEME_TS_FILE_NAME);
-  const fontsUrl = config.persona ? personaFontsUrl(config.persona) : undefined;
+  // Google Fonts `<link>` önerisi yalnız web'e anlamlı.
+  const fontsUrl = web && config.persona ? personaFontsUrl(config.persona) : undefined;
 
   if (check) {
-    const cssStale = !existsSync(cssPath) || readFileSync(cssPath, "utf8") !== cssContent;
+    const cssStale = cssPath !== undefined && (!existsSync(cssPath) || readFileSync(cssPath, "utf8") !== cssContent);
     const tsStale = !existsSync(themeTsPath) || readFileSync(themeTsPath, "utf8") !== themeTsContent;
     return { cssPath, themeTsPath, cssContent, themeTsContent, stale: cssStale || tsStale, fontsUrl };
   }
 
-  mkdirSync(dirname(cssPath), { recursive: true });
-  writeFileSync(cssPath, cssContent, "utf8");
+  mkdirSync(dirname(themeTsPath), { recursive: true });
+  if (cssPath && cssContent) writeFileSync(cssPath, cssContent, "utf8");
   writeFileSync(themeTsPath, themeTsContent, "utf8");
 
   return { cssPath, themeTsPath, cssContent, themeTsContent, fontsUrl };

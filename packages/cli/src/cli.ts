@@ -6,7 +6,8 @@ import { tailwindInstructions } from "./tailwindSetup";
 import { personaNames, personas, type PersonaName } from "@mari-ui/tokens";
 import { readConfigIfExists, writeConfig } from "./configFile";
 import { choiceFromFlags, configFromChoice, describeConfig, parsePersonaFlag, type ThemeChoice } from "./themeChoice";
-import { askThemeChoice, WizardCancelled } from "./themeWizard";
+import { askPlatformChoice, askThemeChoice, WizardCancelled } from "./themeWizard";
+import { configuredPlatform, detectPlatform, isPlatform, PLATFORM_LABELS, PLATFORMS, readPackageJson, type Platform } from "./platform";
 
 /*
  * Kasıtlı olarak hiçbir argv-parsing kütüphanesi (commander/yargs/...) YOK —
@@ -27,6 +28,7 @@ interface ParsedArgs {
   persona?: PersonaName | "default";
   primary?: string;
   accent?: string;
+  platform?: Platform;
   /** Soru sorma: bayraklar ya da mevcut config kullanılır. */
   yes: boolean;
 }
@@ -76,6 +78,16 @@ function parseArgs(argv: string[]): ParsedArgs {
       case "--accent":
         parsed.accent = rest[++i];
         break;
+      case "--platform": {
+        const value = rest[++i];
+        if (isPlatform(value)) {
+          parsed.platform = value;
+        } else {
+          console.warn(`[@mari-ui/cli] Bilinmeyen platform: ${value ?? "(boş)"}. Geçerli: ${PLATFORMS.join(", ")}`);
+          process.exitCode = 1;
+        }
+        break;
+      }
       case "--yes":
       case "-y":
         parsed.yes = true;
@@ -100,6 +112,7 @@ function printHelp() {
       "",
       "Ortak bayraklar:",
       "  --dir <yol>       Hedef proje kökü (varsayılan: mevcut dizin)",
+      "  --platform <ad>   web | native | both — init'te sorulmaz; seçilmeyen platformun paketi kurulmaz",
       "  --agents <liste>  Virgülle ayrılmış: claude,codex,cursor,gemini,copilot (varsayılan: hepsi)",
       "  --check           Hiçbir şey YAZMAZ; bayat dosya varsa çıkış kodu 1 (CI için)",
       "",
@@ -135,21 +148,33 @@ function flagChoice(args: ParsedArgs): ThemeChoice | undefined {
 
 async function runInitCommand(args: ParsedArgs) {
   if (process.exitCode) return;
+  // Platform önce sorulur: hangi paketlerin kurulacağını ve kuralları belirler.
+  let platform = args.platform ?? configuredPlatform(args.dir);
+  if (!platform && canAsk(args)) platform = await askPlatformChoice(detectPlatform(readPackageJson(args.dir)));
   let theme = flagChoice(args);
   // Config yoksa ve bayrak verilmediyse temayı sor; varsa init ona dokunmaz (değiştirmek: `theme`).
   if (!theme && canAsk(args) && !readConfigIfExists(args.dir)) theme = (await askThemeChoice(undefined)) ?? undefined;
-  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, theme });
+  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, theme, platform });
+  console.log(`✓ Platform: ${PLATFORM_LABELS[result.platform]}`);
+  if (result.foreignDependencies.length > 0) {
+    console.log(`⚠ Bu platforma ait olmayan paket kurulu: ${result.foreignDependencies.join(", ")} — gerekmiyorsa kaldırın (ör. pnpm remove ${result.foreignDependencies.join(" ")}).`);
+  }
   if (result.addedDependencies.length > 0) {
     console.log(`✓ package.json'a eklendi: ${result.addedDependencies.join(", ")}`);
   }
   console.log(configMessage(result));
-  if (result.ruleFiles) {
+  if (result.ruleFiles?.skipped) {
+    console.log(NATIVE_RULES_PENDING);
+  } else if (result.ruleFiles) {
     console.log(`✓ AI ajan kural dosyaları yazıldı: ${result.ruleFiles.changed.join(", ") || "(hepsi zaten güncel)"}`);
   } else {
-    console.log("⚠ @mari-ui/components henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx @mari-ui/cli sync");
+    console.log("⚠ mari-ui paketleri henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx @mari-ui/cli sync");
   }
-  console.log(`\n${tailwindInstructions(result.tailwind).join("\n")}`);
+  if (result.platform !== "native") console.log(`\n${tailwindInstructions(result.tailwind).join("\n")}`);
 }
+
+const NATIVE_RULES_PENDING =
+  "• Native proje: AI kural dosyaları henüz yazılmıyor (web kuralları React Native kodunu yanıltır). Native kuralları sonraki sürümde gelecek.";
 
 function configMessage(result: ReturnType<typeof runInit>): string {
   if (result.configCreated) return `✓ ${result.configPath} oluşturuldu.`;
@@ -159,6 +184,10 @@ function configMessage(result: ReturnType<typeof runInit>): string {
 
 function runSyncCommand(args: ParsedArgs) {
   const result = syncAgentRules({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, check: args.check });
+  if (result.skipped) {
+    console.log(NATIVE_RULES_PENDING);
+    return;
+  }
   if (!args.check) {
     console.log(result.changed.length > 0 ? `✓ Güncellendi: ${result.changed.join(", ")}` : "• Zaten güncel, değişiklik yok.");
     return;
@@ -190,6 +219,10 @@ async function runThemeCliCommand(args: ParsedArgs) {
   }
   const result = runThemeCommand({ targetDir: args.dir, configPath: args.config, outDir: args.out, check: args.check });
   if (!args.check) {
+    if (!result.cssPath) {
+      console.log(`✓ Yazıldı: ${result.themeTsPath}  (native: CSS üretilmez)`);
+      return;
+    }
     console.log(`✓ Yazıldı: ${result.cssPath}`);
     console.log(`✓ Yazıldı: ${result.themeTsPath}`);
     console.log(`\nGlobal CSS'inizde mari-ui CSS'inden SONRA import edin (örnek: src/index.css içinden):\n  @import "../mari-ui-theme.css";`);
@@ -197,7 +230,7 @@ async function runThemeCliCommand(args: ParsedArgs) {
     return;
   }
   if (result.stale) {
-    console.error(`✗ Bayat: ${result.cssPath}, ${result.themeTsPath}`);
+    console.error(`✗ Bayat: ${[result.cssPath, result.themeTsPath].filter(Boolean).join(", ")}`);
     process.exit(1);
   }
   console.log("✓ Tema çıktıları güncel.");
