@@ -13,3 +13,6 @@ export function cleanupTempDir(dir: string): void {
 
 /** Gerçek `@mari-ui/components` build'inin ürettiği manifest — testler node_modules çözümlemesi kurmadan buna karşı çalışır. */
 export const REAL_MANIFEST_PATH = join(__dirname, "../../../components/dist/manifest.json");
+
+/** Gerçek `@mari-ui/native` build'inin ürettiği manifest (`pnpm --filter @mari-ui/native build:manifest`). */
+export const REAL_NATIVE_MANIFEST_PATH = join(__dirname, "../../../native/dist/manifest.json");

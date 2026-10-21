@@ -29,33 +29,38 @@ export interface Manifest {
   components: ManifestComponentInfo[];
 }
 
+/** Kural gövdesinin hedefi: `both` platformu bu ikisinden birer gövde üretir. */
+export type RulesPlatform = "web" | "native";
+
+/** Platformun manifest'ini taşıyan paket (bkz. `platform.ts` `WEB_PACKAGE`/`NATIVE_PACKAGE`). */
+export const MANIFEST_PACKAGE: Record<RulesPlatform, string> = { web: "@mari-ui/components", native: "@mari-ui/native" };
+
 /**
- * `@mari-ui/components/manifest.json`ı tüketici projesinin (`fromDir`)
+ * Platformun paketindeki `manifest.json`ı tüketici projesinin (`fromDir`)
  * `node_modules`ünden Node'un GERÇEK modül çözümlemesiyle bulur — `npx
  * mari-ui` gerçek bir tüketici projesinde çalıştığında bu, o projenin kendi
  * kurduğu sürümü okur. `explicitPath` sadece testler ve `--manifest` flag'i
  * için (bkz. `cli.ts`) — bir dosya sistemi node_modules çözümlemesi
  * kurmadan gerçek manifest içeriğine karşı test etmeyi sağlar.
  */
-export function loadManifest(fromDir: string, explicitPath?: string): Manifest {
-  const manifestPath = explicitPath ?? createRequire(`${fromDir}/`).resolve("@mari-ui/components/manifest.json");
+export function loadManifest(fromDir: string, explicitPath?: string, platform: RulesPlatform = "web"): Manifest {
+  const manifestPath = explicitPath ?? createRequire(`${fromDir}/`).resolve(`${MANIFEST_PACKAGE[platform]}/manifest.json`);
   return JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
 }
 
 export class ManifestNotFoundError extends Error {
-  constructor(fromDir: string, cause: unknown) {
-    super(
-      `[@mari-ui/cli] "@mari-ui/components" bulunamadı (${fromDir} içinden aranırken). Önce "pnpm add @mari-ui/components @mari-ui/core @mari-ui/tokens" ile kurun, sonra tekrar deneyin.`
-    );
+  constructor(fromDir: string, cause: unknown, platform: RulesPlatform = "web") {
+    const pkg = MANIFEST_PACKAGE[platform];
+    super(`[@mari-ui/cli] "${pkg}" bulunamadı (${fromDir} içinden aranırken). Önce "pnpm add ${pkg} @mari-ui/core @mari-ui/tokens" ile kurun, sonra tekrar deneyin.`);
     this.name = "ManifestNotFoundError";
     this.cause = cause;
   }
 }
 
-export function loadManifestSafe(fromDir: string, explicitPath?: string): Manifest {
+export function loadManifestSafe(fromDir: string, explicitPath?: string, platform: RulesPlatform = "web"): Manifest {
   try {
-    return loadManifest(fromDir, explicitPath);
+    return loadManifest(fromDir, explicitPath, platform);
   } catch (err) {
-    throw new ManifestNotFoundError(fromDir, err);
+    throw new ManifestNotFoundError(fromDir, err, platform);
   }
 }

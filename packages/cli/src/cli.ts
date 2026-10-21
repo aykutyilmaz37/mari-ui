@@ -25,6 +25,7 @@ interface ParsedArgs {
   config?: string;
   out?: string;
   manifest?: string;
+  nativeManifest?: string;
   persona?: PersonaName | "default";
   primary?: string;
   accent?: string;
@@ -68,6 +69,9 @@ function parseArgs(argv: string[]): ParsedArgs {
         break;
       case "--manifest":
         parsed.manifest = rest[++i];
+        break;
+      case "--native-manifest":
+        parsed.nativeManifest = rest[++i];
         break;
       case "--persona":
         parsed.persona = parsePersona(rest[++i]);
@@ -114,6 +118,8 @@ function printHelp() {
       "  --dir <yol>       Hedef proje kökü (varsayılan: mevcut dizin)",
       "  --platform <ad>   web | native | both — init'te sorulmaz; seçilmeyen platformun paketi kurulmaz",
       "  --agents <liste>  Virgülle ayrılmış: claude,codex,cursor,gemini,copilot (varsayılan: hepsi)",
+      "  --manifest <yol>  Manifest dosyası (varsayılan: kurulu paketten; both'ta web manifest'i)",
+      "  --native-manifest <yol>  both'ta @mari-ui/native manifest'i",
       "  --check           Hiçbir şey YAZMAZ; bayat dosya varsa çıkış kodu 1 (CI için)",
       "",
       "Tema bayrakları (init / theme — verilirse soru sorulmaz):",
@@ -154,7 +160,7 @@ async function runInitCommand(args: ParsedArgs) {
   let theme = flagChoice(args);
   // Config yoksa ve bayrak verilmediyse temayı sor; varsa init ona dokunmaz (değiştirmek: `theme`).
   if (!theme && canAsk(args) && !readConfigIfExists(args.dir)) theme = (await askThemeChoice(undefined)) ?? undefined;
-  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, theme, platform });
+  const result = runInit({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, nativeManifestPath: args.nativeManifest, theme, platform });
   console.log(`✓ Platform: ${PLATFORM_LABELS[result.platform]}`);
   if (result.foreignDependencies.length > 0) {
     console.log(`⚠ Bu platforma ait olmayan paket kurulu: ${result.foreignDependencies.join(", ")} — gerekmiyorsa kaldırın (ör. pnpm remove ${result.foreignDependencies.join(" ")}).`);
@@ -163,18 +169,13 @@ async function runInitCommand(args: ParsedArgs) {
     console.log(`✓ package.json'a eklendi: ${result.addedDependencies.join(", ")}`);
   }
   console.log(configMessage(result));
-  if (result.ruleFiles?.skipped) {
-    console.log(NATIVE_RULES_PENDING);
-  } else if (result.ruleFiles) {
+  if (result.ruleFiles) {
     console.log(`✓ AI ajan kural dosyaları yazıldı: ${result.ruleFiles.changed.join(", ") || "(hepsi zaten güncel)"}`);
   } else {
     console.log("⚠ mari-ui paketleri henüz kurulu değil — önce paket yöneticinizle kurulumu tamamlayın, sonra: npx @mari-ui/cli sync");
   }
   if (result.platform !== "native") console.log(`\n${tailwindInstructions(result.tailwind).join("\n")}`);
 }
-
-const NATIVE_RULES_PENDING =
-  "• Native proje: AI kural dosyaları henüz yazılmıyor (web kuralları React Native kodunu yanıltır). Native kuralları sonraki sürümde gelecek.";
 
 function configMessage(result: ReturnType<typeof runInit>): string {
   if (result.configCreated) return `✓ ${result.configPath} oluşturuldu.`;
@@ -183,11 +184,7 @@ function configMessage(result: ReturnType<typeof runInit>): string {
 }
 
 function runSyncCommand(args: ParsedArgs) {
-  const result = syncAgentRules({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, check: args.check });
-  if (result.skipped) {
-    console.log(NATIVE_RULES_PENDING);
-    return;
-  }
+  const result = syncAgentRules({ targetDir: args.dir, agents: args.agents, manifestPath: args.manifest, nativeManifestPath: args.nativeManifest, check: args.check });
   if (!args.check) {
     console.log(result.changed.length > 0 ? `✓ Güncellendi: ${result.changed.join(", ")}` : "• Zaten güncel, değişiklik yok.");
     return;

@@ -1,6 +1,6 @@
 # Plan: CLI'da web / native ayrımı
 
-Durum: Faz A tamamlandı (2026-10-21); B, C, D bekliyor.
+Durum: Faz C tamamlandı (2026-10-21; A ve B de tamam); D bekliyor.
 
 ## Sorun
 

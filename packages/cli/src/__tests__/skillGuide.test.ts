@@ -36,7 +36,7 @@ describe("Faz 17 — kesin kurallar ve skill rehberi", () => {
   });
 
   it("Claude: SKILL.md zengin içerik, CLAUDE.md kesin kuralları ve skill işaretçisini taşır", () => {
-    const [skillFile, claudeMd] = buildClaudeTargets(buildSkillContent(options)) as [FileTarget, FileTarget];
+    const [skillFile, claudeMd] = buildClaudeTargets({ web: buildSkillContent(options) }) as [FileTarget, FileTarget];
     expect(skillFile.body).toContain("## Sayfa kurma rehberi");
     expect(claudeMd.relativePath).toBe("CLAUDE.md");
     expect(claudeMd.body).toContain(".claude/skills/mari-ui/SKILL.md");

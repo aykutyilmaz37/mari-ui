@@ -19,6 +19,8 @@ export interface InitOptions {
   targetDir: string;
   agents?: readonly AgentName[];
   manifestPath?: string;
+  /** Yalnız `both`ta: `@mari-ui/native` manifest'i (bkz. `SyncOptions`). */
+  nativeManifestPath?: string;
   /**
    * Tema seçimi (sihirbaz ya da `--persona` / `--primary`). Config yoksa bu
    * seçimle oluşturulur. Config varsa yalnız kişilik seçimi `persona` alanını
@@ -76,7 +78,7 @@ interface PackageJsonShape {
  * (bkz. `cli.ts`teki `runInitCommand` çağrısının çıktısı).
  */
 export function runInit(options: InitOptions): InitResult {
-  const { targetDir, agents = ALL_AGENTS, manifestPath, theme } = options;
+  const { targetDir, agents = ALL_AGENTS, manifestPath, nativeManifestPath, theme } = options;
   const packageJsonPath = join(targetDir, "package.json");
   const packageJsonMissing = !existsSync(packageJsonPath);
 
@@ -112,7 +114,7 @@ export function runInit(options: InitOptions): InitResult {
 
   let ruleFiles: SyncResult | null;
   try {
-    ruleFiles = syncAgentRules({ targetDir, agents, manifestPath });
+    ruleFiles = syncAgentRules({ targetDir, agents, manifestPath, nativeManifestPath });
   } catch (err) {
     if (err instanceof ManifestNotFoundError) {
       ruleFiles = null;
