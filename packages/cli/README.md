@@ -5,13 +5,27 @@
 ## Hızlı başlangıç
 
 ```bash
-npx @mari-ui/cli init      # temayı sorar: Varsayılan, hazır kişilik ya da Özel
+npx @mari-ui/cli init      # platformu (web / native / ikisi) ve temayı sorar
 pnpm install
 npx @mari-ui/cli sync
 npx @mari-ui/cli theme     # tema dosyalarını üretir (temayı değiştirmek için de bu)
 ```
 
-`init`; `@mari-ui/components`, `@mari-ui/core` ve `@mari-ui/tokens`ı `package.json`a ekler, `mari-ui.config.json`ı oluşturur, AI kural dosyalarını yazar ve projenize uygun CSS girişini (Tailwind v4'lü ya da Tailwind'siz) söyler. Paket yöneticisini kendisi çalıştırmaz; kurulumdan sonra `sync` kuralları yüklenen sürüme göre tazeler.
+`init`; seçilen platformun paketlerini `package.json`a ekler (aşağıdaki tablo), `mari-ui.config.json`ı oluşturur, AI kural dosyalarını yazar ve web'de projenize uygun CSS girişini (Tailwind v4'lü ya da Tailwind'siz) söyler. Paket yöneticisini kendisi çalıştırmaz; kurulumdan sonra `sync` kuralları yüklenen sürüme göre tazeler.
+
+## Platform seçimi
+
+`init` önce platformu sorar; sorulamıyorsa (CI, `--yes`) `mari-ui.config.json`daki `platform`, o da yoksa `package.json` tahmini kullanılır (`react-native`/`expo` → `native`, yoksa `web`; `both` tahmin edilmez). Seçim config'e `platform` olarak yazılır.
+
+| Platform | Komut | Eklenen paketler |
+|---|---|---|
+| Web | `init --platform web` | `@mari-ui/components`, `@mari-ui/core`, `@mari-ui/tokens` |
+| Mobil (React Native / Expo) | `init --platform native` | `@mari-ui/native`, `@mari-ui/core`, `@mari-ui/tokens` |
+| İkisi (tek `package.json`) | `init --platform both` | ikisi + `@mari-ui/core`, `@mari-ui/tokens` |
+
+Seçilmeyen platformun paketi eklenmez; kurulu yabancı mari-ui paketi uyarılır (silinmez). Native'de `theme` CSS üretmez. Ayrı web ve mobil uygulamaları olan monorepo'da her uygulamayı kendi klasöründe kurun: `init --platform web --dir apps/web`, `init --platform native --dir apps/mobile`.
+
+Karar tablosu, yazılan dosyalar ve yanlış kurulumu düzeltme: [docs/kurulum-platformlar.md](https://github.com/aykutyilmaz37/mari-ui/blob/main/docs/kurulum-platformlar.md).
 
 ## Komutlar
 
@@ -24,6 +38,9 @@ npx @mari-ui/cli theme     # tema dosyalarını üretir (temayı değiştirmek i
 | Bayrak | |
 |---|---|
 | `--dir <yol>` | Hedef proje kökü (varsayılan: bulunulan dizin) |
+| `--platform <ad>` | `web`, `native` ya da `both` — `init`te sorulmaz |
+| `--manifest <yol>` | Manifest dosyası (varsayılan: kurulu paketten; `both`ta web manifest'i) |
+| `--native-manifest <yol>` | `both`ta `@mari-ui/native` manifest'i |
 | `--agents <liste>` | `claude,codex,cursor,gemini,copilot` (varsayılan: hepsi) |
 | `--check` | Hiçbir şey yazmaz; dosyalar bayatsa çıkış kodu `1` — CI için |
 | `--persona <ad>` | `default` (Yumuşak iris) ya da kişilik: `corporate` (Kurumsal), `playful` (Oyunbaz), `minimal`, `editorial` (Editoryal), `luxury` (Lüks) |
@@ -68,7 +85,7 @@ Kişilik taban olur, yazdığınız her alan onu ezer. `themes` altındaki her e
 Kurallar elle yazılmaz: kütüphanenin derlenmiş manifest'inden (component'ler, gerçek prop'lar, renk/boyut/variant eksenleri) ve projenizin çözümlenmiş temasından üretilir. Böylece asistan var olmayan bir prop'u ya da sabit bir rengi önermez.
 
 - Kısa **kesin kurallar** (önce mari-ui component'i, sabit renk/px yok, yüklenmede `skeleton`, erişilebilirlik…) tüm araçların dosyasına girer.
-- Uzun **sayfa kurma rehberi** (uygulama iskeleti, sayfa kalıpları, "hangi durumda hangi component", tasarım brief'i) Claude skill'ine (`.claude/skills/mari-ui/SKILL.md`) girer.
+- Uzun **sayfa kurma rehberi** (uygulama iskeleti, sayfa kalıpları, "hangi durumda hangi component", tasarım brief'i) Claude skill'ine girer: web'de `.claude/skills/mari-ui/SKILL.md`, native'de `.claude/skills/mari-ui-native/SKILL.md`, `both`ta `mari-ui-web` ve `mari-ui-native`.
 - `AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md` gibi paylaşılan dosyalarda yalnız `<!-- mari-ui:start -->` / `<!-- mari-ui:end -->` arası değişir; kendi içeriğiniz korunur.
 
 CI'da kuralların güncel kaldığını denetlemek için: `npx @mari-ui/cli sync --check`.
