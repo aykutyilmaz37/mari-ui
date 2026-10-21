@@ -1,5 +1,16 @@
 # @mari-ui/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- ee5a702: `--help` / `-h` her komutta yardımı basıp çıkar. Bilinmeyen bayrak artık yok sayılmıyor: hata verir (çıkış kodu 1) ve komut çalışmaz — önceden `init --help` init'i çalıştırıp dosya yazıyordu.
+
+### Patch Changes
+
+- ee5a702: `sync` kural dosyalarını Prettier'ın varsayılan biçiminde yazar (işaretlerin ve frontmatter'ın çevresinde boş satır, hizalı tablolar, 80 sütuna sığan kod örnekleri); Prettier kullanan projelerde `prettier --check` artık kırılmıyor. `sync --check` biçim farkını (boş satır, tablo hizası) bayatlık saymaz; eski biçimde yazılmış dosyalar CI'ı kırmaz.
+- @mari-ui/tokens@0.6.0
+
 ## 0.5.0
 
 ### Minor Changes

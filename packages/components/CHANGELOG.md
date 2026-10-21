@@ -1,5 +1,12 @@
 # @mari-ui/components
 
+## 0.6.0
+
+### Patch Changes
+
+- @mari-ui/core@0.6.0
+  - @mari-ui/tokens@0.6.0
+
 ## 0.5.0
 
 ### Patch Changes
