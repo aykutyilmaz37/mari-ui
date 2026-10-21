@@ -1,5 +1,6 @@
 import { personas, type PersonaName, type Theme } from "@mari-ui/tokens";
-import type { Manifest } from "./manifest";
+import type { Manifest, RulesPlatform } from "./manifest";
+import { NATIVE_ANTI_PATTERNS, NATIVE_FREE_AREAS, NATIVE_SKILL_GUIDE, formatNativeMustRules } from "./nativeGuide";
 import { SKILL_GUIDE, formatMustRules } from "./skillGuide";
 
 /*
@@ -55,9 +56,10 @@ function formatAxes(axes: Record<string, string[]>): string {
   return `| Eksen | Geçerli değerler |\n|---|---|\n${rows}`;
 }
 
-function formatComponentInventory(manifest: Manifest): string {
+function formatComponentInventory(manifest: Manifest, platform: RulesPlatform): string {
   return manifest.components
     .map((c) => {
+      if (platform === "native") return `- \`${c.name}\` → \`import { ${c.name} } from "${c.importPath}"\``;
       const clientNote = c.requiresUseClient ? ' — `"use client"` gerektirir (sunucu bileşeninde doğrudan render edilemez)' : " — sunucu bileşeni (RSC) olarak da render edilebilir";
       return `- \`${c.name}\` → \`import { ${c.name} } from "${c.importPath}"\`${clientNote}`;
     })
@@ -98,16 +100,27 @@ export interface BuildRulesContentOptions {
   theme: Theme;
   /** `mari-ui.config.json` `persona`; yoksa varsayılan kişilik (Yumuşak iris). */
   persona?: PersonaName;
+  /** Varsayılan `web`. `native` gövdesi `@mari-ui/native` manifest'iyle çağrılır. */
+  platform?: RulesPlatform;
 }
 
 const firstFamily = (stack: string) => stack.split(",")[0]?.trim().replace(/^["']|["']$/g, "") ?? stack;
 
 /** Projenin tasarım kişiliği: AI düzeni ve tonu buna göre seçsin. */
-function formatPersona(theme: Theme, persona: PersonaName | undefined): string {
+function formatPersona(theme: Theme, persona: PersonaName | undefined, platform: RulesPlatform): string {
   const head = persona
     ? `**${personas[persona].label}** (\`${persona}\`) — ${personas[persona].description}`
     : "**Varsayılan (Yumuşak iris)** — yumuşak mor marka rengi, Geist arayüz + Manrope başlık; genel amaçlı, sakin ve modern.";
   const f = theme.fontFamily;
+  if (platform === "native") {
+    return [
+      head,
+      "",
+      `- Fontlar: gövde \`${firstFamily(f.sans)}\`, başlık \`${firstFamily(f.heading ?? f.sans)}\`, kod \`${firstFamily(f.mono)}\` (\`ThemeProvider fonts="brand"\` ile; vermezsen platform fontu)`,
+      `- Köşe: \`theme.radius.md\` = ${theme.radius.md} · hareket: ${theme.effects.motion}`,
+      "- Bu değerler `useTheme()` / `mari-ui-theme.ts`den gelir; kodda tekrar yazma. Kişiliğin karakterini düzen ve içerik diliyle destekle (bkz. Serbest alanlar).",
+    ].join("\n");
+  }
   return [
     head,
     "",
@@ -122,8 +135,35 @@ function formatPersona(theme: Theme, persona: PersonaName | undefined): string {
  * bu repo'nun tüm dokümantasyonu (Storybook, plan) Türkçe, aynı dil burada
  * da tutarlı.
  */
-export function buildRulesContent({ manifest, theme, persona }: BuildRulesContentOptions): string {
-  return `# mari-ui Tasarım Sistemi Kuralları
+const WEB_FREE_AREAS = `Kesin kurallar yalnız component kullanımı, token'lar ve erişilebilirlik içindir. Bunların dışı **serbest** — her projeyi aynı iskelete dökme:
+
+- **Sayfa düzeni ve kompozisyon:** grid, sütun sayısı, asimetri, bölüm sırası, yoğunluk ritmi projeye göre seçilir; "başlık + kart grid'i + tablo" tek kalıp değildir.
+- **İfade alanları:** hero, arka plan desenleri/degradeleri, illüstrasyon ve görsel alanları, tipografi ağırlıklı büyük başlıklar, giriş hareketleri kalıplaşmaz — token renkleri (\`bg-mari-*\`, \`from-mari-primary-solid/…\`), font değişkenleri (\`font-heading\`) ve \`duration-*\` sınıflarıyla özgürce kurulur.
+- **İçerik dili:** metinler, görsel seçimi ve ton projenin hedef kitlesine göre; kişiliğin karakterini taşır.`;
+
+interface PlatformSection {
+  title: string;
+  mustRules: () => string;
+  freeAreas: string;
+  antiPatterns: ReadonlyArray<{ title: string; wrong: string; right: string; why: string }>;
+  skillGuide: string;
+}
+
+/** Platforma özel kısım; geri kalan (kişilik, envanter, eksenler, token'lar, deprecated) ortak. */
+const PLATFORM_SECTIONS: Record<RulesPlatform, PlatformSection> = {
+  web: { title: "# mari-ui Tasarım Sistemi Kuralları", mustRules: formatMustRules, freeAreas: WEB_FREE_AREAS, antiPatterns: ANTI_PATTERNS, skillGuide: SKILL_GUIDE },
+  native: {
+    title: "# mari-ui Tasarım Sistemi Kuralları — React Native (`@mari-ui/native`)",
+    mustRules: formatNativeMustRules,
+    freeAreas: NATIVE_FREE_AREAS,
+    antiPatterns: NATIVE_ANTI_PATTERNS,
+    skillGuide: NATIVE_SKILL_GUIDE,
+  },
+};
+
+export function buildRulesContent({ manifest, theme, persona, platform = "web" }: BuildRulesContentOptions): string {
+  const section = PLATFORM_SECTIONS[platform];
+  return `${section.title}
 
 Bu dosya \`npx @mari-ui/cli sync\` ile OTOMATİK üretilir — \`manifest.json\` (component envanteri + prop sözleşmesi) ve projenin çözümlenmiş temasından türetilir. Elle düzenlemeyin; değişiklik için \`mari-ui.config.json\`ı güncelleyip \`npx @mari-ui/cli sync\`i tekrar çalıştırın.
 
@@ -131,23 +171,19 @@ Bu dosya \`npx @mari-ui/cli sync\` ile OTOMATİK üretilir — \`manifest.json\`
 
 Bunlar her zaman geçerli; sapma yok.
 
-${formatMustRules()}
+${section.mustRules()}
 
 ## Serbest alanlar
 
-Kesin kurallar yalnız component kullanımı, token'lar ve erişilebilirlik içindir. Bunların dışı **serbest** — her projeyi aynı iskelete dökme:
-
-- **Sayfa düzeni ve kompozisyon:** grid, sütun sayısı, asimetri, bölüm sırası, yoğunluk ritmi projeye göre seçilir; "başlık + kart grid'i + tablo" tek kalıp değildir.
-- **İfade alanları:** hero, arka plan desenleri/degradeleri, illüstrasyon ve görsel alanları, tipografi ağırlıklı büyük başlıklar, giriş hareketleri kalıplaşmaz — token renkleri (\`bg-mari-*\`, \`from-mari-primary-solid/…\`), font değişkenleri (\`font-heading\`) ve \`duration-*\` sınıflarıyla özgürce kurulur.
-- **İçerik dili:** metinler, görsel seçimi ve ton projenin hedef kitlesine göre; kişiliğin karakterini taşır.
+${section.freeAreas}
 
 ## Tasarım kişiliği
 
-${formatPersona(theme, persona)}
+${formatPersona(theme, persona, platform)}
 
 ## Component envanteri
 
-${formatComponentInventory(manifest)}
+${formatComponentInventory(manifest, platform)}
 
 ## Prop API sözleşmesi
 
@@ -161,7 +197,7 @@ ${formatThemeTokens(theme)}
 
 ## Anti-pattern'ler
 
-${ANTI_PATTERNS.map((p) => `### ${p.title}\n\n- ❌ \`${p.wrong}\`\n- ✅ \`${p.right}\`\n- Neden: ${p.why}`).join("\n\n")}
+${section.antiPatterns.map((p) => `### ${p.title}\n\n- ❌ \`${p.wrong}\`\n- ✅ \`${p.right}\`\n- Neden: ${p.why}`).join("\n\n")}
 `;
 }
 
@@ -171,5 +207,5 @@ ${ANTI_PATTERNS.map((p) => `### ${p.title}\n\n- ❌ \`${p.wrong}\`\n- ✅ \`${p.
  * (her istekte okunuyorlar); Claude skill'i yalnız ilgili işte yükler.
  */
 export function buildSkillContent(options: BuildRulesContentOptions): string {
-  return `${buildRulesContent(options)}\n${SKILL_GUIDE}`;
+  return `${buildRulesContent(options)}\n${PLATFORM_SECTIONS[options.platform ?? "web"].skillGuide}`;
 }

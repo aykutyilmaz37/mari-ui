@@ -3,23 +3,27 @@ import { dirname, join } from "node:path";
 import { resolveThemeConfig } from "@mari-ui/tokens";
 import { buildRulesContent, buildSkillContent } from "./buildRulesContent";
 import { readConfig } from "./configFile";
-import { loadManifestSafe } from "./manifest";
+import { loadManifestSafe, type RulesPlatform } from "./manifest";
 import { isMarkerBlockUpToDate, upsertMarkerBlock } from "./markerBlock";
 import { buildAgentsTargets } from "./writers/agents";
 import { buildClaudeTargets } from "./writers/claude";
 import { buildCopilotTargets } from "./writers/copilot";
 import { buildCursorTargets } from "./writers/cursor";
 import { buildGeminiTargets } from "./writers/gemini";
+import type { PlatformBodies } from "./writers/scope";
 import type { FileTarget } from "./writers/types";
 import { resolvePlatform, type Platform } from "./platform";
 
 export const ALL_AGENTS = ["claude", "codex", "cursor", "gemini", "copilot"] as const;
 export type AgentName = (typeof ALL_AGENTS)[number];
 
-/** `rules`: kısa içerik (her istekte okunan dosyalar). `skill`: Claude skill'inin zengin içeriği. */
+/**
+ * `rules`: kısa içerik (her istekte okunan dosyalar). `skill`: Claude skill'inin
+ * zengin içeriği. Platform başına birer gövde; `both`ta ikisi de dolu.
+ */
 export interface AgentRuleBodies {
-  rules: string;
-  skill: string;
+  rules: PlatformBodies;
+  skill: PlatformBodies;
 }
 
 const AGENT_BUILDERS: Record<AgentName, (bodies: AgentRuleBodies) => FileTarget[]> = {
@@ -56,8 +60,14 @@ function isFileTargetUpToDate(existingContent: string, target: FileTarget): bool
 export interface SyncOptions {
   targetDir: string;
   agents?: readonly AgentName[];
-  /** Testler ve `--manifest` flag'i için — gerçek node_modules çözümlemesini atlar. */
+  /**
+   * Testler ve `--manifest` flag'i için — gerçek node_modules çözümlemesini atlar.
+   * Platformun kendi manifest'i: web → `@mari-ui/components`, native → `@mari-ui/native`.
+   * `both`ta web manifest'i; native'inki `nativeManifestPath`.
+   */
   manifestPath?: string;
+  /** Yalnız `both`ta: `@mari-ui/native` manifest'i (`--native-manifest`). */
+  nativeManifestPath?: string;
   configPath?: string;
   /** `true`: hiçbir şey YAZMAZ, sadece hangi dosyaların bayat olduğunu raporlar (CI). */
   check?: boolean;
@@ -68,12 +78,9 @@ export interface SyncResult {
   changed: string[];
   upToDate: string[];
   platform: Platform;
-  /**
-   * `true`: platform `native` ve native kural içeriği henüz yok — web kuralları
-   * mobil projeyi yanıltacağı için HİÇBİR DOSYA yazılmadı.
-   */
-  skipped: boolean;
 }
+
+const RULES_PLATFORMS: Record<Platform, readonly RulesPlatform[]> = { web: ["web"], native: ["native"], both: ["web", "native"] };
 
 /*
  * Faz 7'nin çekirdek fonksiyonu: manifest + tema → tek gövde içerik → beş
@@ -82,17 +89,21 @@ export interface SyncResult {
  * `mari-ui.config.json`ı ve bağımlılıkları da kurmasıdır (bkz. `init.ts`).
  */
 export function syncAgentRules(options: SyncOptions): SyncResult {
-  const { targetDir, agents = ALL_AGENTS, manifestPath, configPath, check = false } = options;
+  const { targetDir, agents = ALL_AGENTS, manifestPath, nativeManifestPath, configPath, check = false } = options;
   const platform = resolvePlatform(targetDir);
-  // Geçici koruma (plan Faz A → C): native kuralları gelene kadar native projeye web kuralı yazılmaz.
-  if (platform === "native") return { changed: [], upToDate: [], platform, skipped: true };
-
-  const manifest = loadManifestSafe(targetDir, manifestPath);
   const config = readConfig(targetDir, configPath);
   const resolved = resolveThemeConfig(config);
-  const contentOptions = { manifest, theme: resolved.light, persona: config.persona };
-  const targets = planAgentRuleTargets(agents, { rules: buildRulesContent(contentOptions), skill: buildSkillContent(contentOptions) });
-  const result: SyncResult = { changed: [], upToDate: [], platform, skipped: false };
+  const bodies: AgentRuleBodies = { rules: {}, skill: {} };
+  // Her gövde yalnız kendi paketinin manifest'inden; paket yoksa açık hata (yanlış platformun kuralı asla yazılmaz).
+  for (const rulesPlatform of RULES_PLATFORMS[platform]) {
+    const explicitPath = rulesPlatform === "native" && platform === "both" ? nativeManifestPath : manifestPath;
+    const manifest = loadManifestSafe(targetDir, explicitPath, rulesPlatform);
+    const contentOptions = { manifest, theme: resolved.light, persona: config.persona, platform: rulesPlatform };
+    bodies.rules[rulesPlatform] = buildRulesContent(contentOptions);
+    bodies.skill[rulesPlatform] = buildSkillContent(contentOptions);
+  }
+  const targets = planAgentRuleTargets(agents, bodies);
+  const result: SyncResult = { changed: [], upToDate: [], platform };
 
   for (const target of targets) {
     const filePath = join(targetDir, target.relativePath);

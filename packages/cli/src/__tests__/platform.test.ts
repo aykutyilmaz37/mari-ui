@@ -6,7 +6,7 @@ import { dependenciesFor, detectPlatform, resolvePlatform } from "../platform";
 import { syncAgentRules } from "../sync";
 import { runThemeCommand } from "../theme";
 import { configFromChoice } from "../themeChoice";
-import { cleanupTempDir, makeTempDir, REAL_MANIFEST_PATH } from "./testUtils";
+import { cleanupTempDir, makeTempDir, REAL_MANIFEST_PATH, REAL_NATIVE_MANIFEST_PATH } from "./testUtils";
 
 describe("platform tahmini ve paket listesi", () => {
   it("react-native ya da expo varsa native, yoksa web", () => {
@@ -37,30 +37,30 @@ describe("platforma göre init / sync / theme", () => {
   const writePkg = (pkg: object) => writeFileSync(join(dir, "package.json"), JSON.stringify(pkg), "utf8");
   const readPkg = () => JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
 
-  it("Expo projesinde: native paketi eklenir, web paketi EKLENMEZ, kural dosyası yazılmaz", () => {
+  it("Expo projesinde: native paketi eklenir, web paketi EKLENMEZ, native kuralları yazılır", () => {
     writePkg({ dependencies: { expo: "~52.0.0" } });
-    const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH });
+    const result = runInit({ targetDir: dir, manifestPath: REAL_NATIVE_MANIFEST_PATH });
 
     expect(result.platform).toBe("native");
     expect(readPkg().dependencies).toHaveProperty("@mari-ui/native");
     expect(readPkg().dependencies).not.toHaveProperty("@mari-ui/components");
-    expect(result.ruleFiles?.skipped).toBe(true);
-    for (const file of ["AGENTS.md", "CLAUDE.md", "GEMINI.md", ".cursor", ".github", ".claude"]) expect(existsSync(join(dir, file))).toBe(false);
+    expect(result.ruleFiles?.platform).toBe("native");
+    expect(readFileSync(join(dir, "AGENTS.md"), "utf8")).toContain("@mari-ui/native/button");
     expect(JSON.parse(readFileSync(result.configPath, "utf8")).platform).toBe("native");
   });
 
   it("açık seçim tahmini ezer ve config'e yazılır; sonraki sync/theme onu kullanır", () => {
     writePkg({ dependencies: { react: "19" } });
-    runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH, platform: "native" });
+    runInit({ targetDir: dir, manifestPath: REAL_NATIVE_MANIFEST_PATH, platform: "native" });
     expect(resolvePlatform(dir)).toBe("native");
-    expect(syncAgentRules({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH }).skipped).toBe(true);
+    expect(syncAgentRules({ targetDir: dir, manifestPath: REAL_NATIVE_MANIFEST_PATH, check: true }).changed).toEqual([]);
   });
 
   it("web projesinde native paketi eklenmez; kurallar yazılır", () => {
     writePkg({ dependencies: { react: "19", "react-dom": "19" } });
     const result = runInit({ targetDir: dir, manifestPath: REAL_MANIFEST_PATH });
     expect(readPkg().dependencies).not.toHaveProperty("@mari-ui/native");
-    expect(result.ruleFiles?.skipped).toBe(false);
+    expect(result.ruleFiles?.platform).toBe("web");
     expect(existsSync(join(dir, "AGENTS.md"))).toBe(true);
   });
 
