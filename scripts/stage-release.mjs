@@ -51,9 +51,11 @@ function isStaged(name, version) {
  * Tarball'da package.json'ın vaat ettiği dosyalardan eksik olanlar: `bin`, `main`, `types`,
  * `exports` hedefleri ve `files` girdileri. `pnpm pack` .gitignore yüzünden dosya
  * düşürebiliyor; eksik paket yüklenirse `npx` / import kullanıcıda kırılır.
+ * package.json tarball'dan okunur: `publishConfig` (ör. native'in `./stories`suz
+ * exports'u) orada uygulanmış hâldedir.
  */
-function missingFiles(dir, tarball) {
-  const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+function missingFiles(tarball) {
+  const pkg = JSON.parse(run("tar", ["-xzOf", tarball, "package/package.json"]));
   const entries = run("tar", ["-tzf", tarball]).split("\n").map((e) => e.replace(/^package\//, ""));
   const norm = (p) => p.replace(/^\.\//, "").replace(/\/$/, "");
   const has = (p) => {
@@ -98,7 +100,7 @@ for (const dir of packages) {
   }
   if (already === null) console.log(`! ${name}: taslak listesi okunamadı, yine de yükleniyor.`);
   const tarball = run("pnpm", ["pack", "--pack-destination", outDir], { cwd: dir }).split("\n").pop();
-  const missing = missingFiles(dir, tarball);
+  const missing = missingFiles(tarball);
   if (missing.length) {
     throw new Error(`${name}@${version} tarball'ında eksik dosya var, yüklenmedi: ${missing.join(", ")}`);
   }

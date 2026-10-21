@@ -1,9 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
-    "paths": {
-      "@mari-ui/native/stories": ["../../packages/native/src/stories/registry.ts"]
-    }
+    "strict": true
   }
 }
