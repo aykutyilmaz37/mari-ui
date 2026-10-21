@@ -1,6 +1,6 @@
 # Plan: CLI'da web / native ayrımı
 
-Durum: Faz C tamamlandı (2026-10-21; A ve B de tamam); D bekliyor.
+Durum: Faz A–D tamamlandı (2026-10-21).
 
 ## Sorun
 
@@ -75,3 +75,5 @@ Her faz kendi branch'inde, güncel `main`'den açılır. Her faz sonunda durulur
 
 - Native'de tema kişiliği fontları nasıl yüklenecek (`expo-font`)? Kural metninde sadece belirtilecek mi, yoksa CLI bir talimat mı basacak?
 - `core` paketinin `clsx` / `tailwind-merge` bağımlılıkları native'de gereksiz. Ayrı bir iş olarak ele alınabilir.
+- `toPx` `@mari-ui/native`'den export edilmeli mi? Native rehber şu an projeye bir `px()` yardımcısı yazdırıyor.
+- Platform değişince bayat kural dosyaları (ör. native'e geçince `.claude/skills/mari-ui/`) için CLI uyarı versin mi? Şu an dosyalar silinmiyor ve uyarılmıyor; elle temizlik `docs/kurulum-platformlar.md`de.

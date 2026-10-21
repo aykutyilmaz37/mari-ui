@@ -13,14 +13,18 @@ Faz 17 — iki katman (`src/skillGuide.ts`, elle yazılı tasarım kararları): 
 ## Komutlar
 
 ```bash
-npx @mari-ui/cli init [--agents claude,codex,cursor,gemini,copilot] [--dir <yol>]
-npx @mari-ui/cli sync [--agents ...] [--dir <yol>] [--check]
+npx @mari-ui/cli init [--platform web|native|both] [--agents claude,codex,cursor,gemini,copilot] [--dir <yol>]
+npx @mari-ui/cli sync [--agents ...] [--manifest <yol>] [--native-manifest <yol>] [--dir <yol>] [--check]
 npx @mari-ui/cli theme [--dir <yol>] [--config <yol>] [--out <yol>] [--check]
 ```
 
-- **`init`** — `package.json`a `@mari-ui/components`/`@mari-ui/core`/`@mari-ui/tokens`i ekler (zaten varsa dokunmaz), `mari-ui.config.json`ı varsayılan değerlerle oluşturur (zaten varsa dokunmaz — kullanıcının tema seçimini silmez), ve AI ajan kural dosyalarını yazar. **Component seçtirmez** — tek paket kurulur, kullanılmayan component'ler zaten `@mari-ui/components`in subpath export mimarisiyle bundle'a girmez.
+- **`init`** — platformu belirler (`--platform` → config'teki `platform` → etkileşimli soru → `package.json` tahmini; bkz. `src/platform.ts`), `package.json`a o platformun paketlerini (`dependenciesFor`: web → `@mari-ui/components`, native → `@mari-ui/native`, both → ikisi; hepsinde `@mari-ui/core`/`@mari-ui/tokens`) ekler (zaten varsa dokunmaz), `mari-ui.config.json`ı varsayılan değerlerle oluşturur (zaten varsa dokunmaz — kullanıcının tema seçimini silmez), ve AI ajan kural dosyalarını yazar. **Component seçtirmez** — tek paket kurulur, kullanılmayan component'ler zaten `@mari-ui/components`in subpath export mimarisiyle bundle'a girmez.
 - **`sync`** — Sadece kural dosyalarını tazeler (paket sürümü veya tema değişince). `--check` hiçbir şey YAZMAZ, bayat bir dosya varsa çıkış kodu `1` verir (CI için).
 - **`theme`** — `mari-ui.config.json`dan `mari-ui-theme.css` (`:root`/`[data-theme="dark"]` CSS değişkenleri) ve `mari-ui-theme.ts` (native/başka platformlar için TS token objesi) üretir. `resolveThemeConfig`/`buildPlainThemeCss` — `@mari-ui/tokens`ın KENDİ varsayılan temasını üreten build script'iyle (`packages/tokens/scripts/build-css.ts`) AYNI fonksiyonlar; mantık ikinci kez yazılmadı. **Faz 10** — config'e opsiyonel bir `themes` alanı eklenirse (`{"themes": {"brand": {"base": "light", "color": {"primary": "#a21caf"}}}}`), light/dark'ın ÖTESİNDE HER girdi de kendi `[data-theme="<isim>"]` bloğu olarak aynı CSS'e yazılır — bkz. `packages/tokens/README.md`.
+
+## Platform ayrımı (Faz A–D)
+
+`mari-ui.config.json`daki `platform` (`web | native | both`) `sync` ve `theme`in tek kaynağıdır; yoksa `package.json`dan tahmin edilir (`both` asla). Her kural gövdesi yalnız kendi paketinin manifest'inden üretilir; paket yoksa `ManifestNotFoundError` — yanlış platformun kuralı yazılmaz. `both`ta yazıcılar ikili çıktı üretir (`writers/scope.ts`: `PLATFORM_GLOBS`, `SCOPE_NOTES`). Seçilmeyen platformun paketi `foreignPackagesFor` ile yalnız uyarılır. Platform değişince eski yoldaki dosyalar silinmez. Monorepo'da her uygulama `--dir` ile ayrı kurulur. Kullanıcı dokümanı: [docs/kurulum-platformlar.md](../../docs/kurulum-platformlar.md).
 
 ## `<!-- mari-ui:start -->` / `<!-- mari-ui:end -->` işaretleri
 

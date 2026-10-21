@@ -16,7 +16,22 @@ npx @mari-ui/cli sync --check   # hiçbir şey yazmaz; bayat dosya varsa çıkı
 
 Belirli araçlar için: `--agents claude,cursor`. Tasarım kişiliğiyle başlamak için: `npx @mari-ui/cli init --persona editorial` (bkz. Tema). `init` paket yöneticisini kendisi çalıştırmaz: kurulumdan sonra `npx @mari-ui/cli sync` ile kuralları gerçek manifest'ten tazeleyin.
 
+## Platform: web / native / ikisi
+
+`init` platformu sorar ya da `--platform web|native|both` ile alır; seçim `mari-ui.config.json`a `platform` olarak yazılır.
+
+| Proje | Komut | Paketler |
+|---|---|---|
+| Web | `init --platform web` | `@mari-ui/components` + `core` + `tokens` |
+| Mobil (React Native / Expo) | `init --platform native` | `@mari-ui/native` + `core` + `tokens` |
+| Tek pakette web + mobil | `init --platform both` | ikisi + `core` + `tokens` |
+| Ayrı uygulamalı monorepo | her uygulamada ayrı: `init --platform web --dir apps/web`, `init --platform native --dir apps/mobile` | uygulamanın kendi platformu |
+
+Native projeye `@mari-ui/components` kurulmaz ve web kuralı mobil kodda kullanılmaz. Platform değişince eski kural dosyaları silinmez; elle temizlenecek dosyalar ve düzeltme adımları: [docs/kurulum-platformlar.md](https://github.com/aykutyilmaz37/mari-ui/blob/main/docs/kurulum-platformlar.md).
+
 ## Yazılan dosyalar
+
+Aşağıdaki tablo web içindir. Native'de Claude skill'i `.claude/skills/mari-ui-native/SKILL.md`; `both`ta skill'ler `mari-ui-web` / `mari-ui-native`, Cursor `.cursor/rules/mari-ui-web.mdc` / `mari-ui-native.mdc`, Copilot `.github/instructions/mari-ui-web.instructions.md` / `mari-ui-native.instructions.md` olur.
 
 | Araç | Dosya |
 |---|---|

@@ -24,6 +24,8 @@ Türkçe, token tabanlı, framework'ten bağımsız React tasarım sistemi. Web 
 npx @mari-ui/cli init
 ```
 
+`init` platformu (web / native / ikisi) sorar ya da `--platform` ile alır; mobil projede `@mari-ui/components` değil `@mari-ui/native` kurulur. Ayrı uygulamalı monorepo'da her uygulamayı `--dir apps/x` ile ayrı kurun. Ayrıntı: [docs/kurulum-platformlar.md](docs/kurulum-platformlar.md).
+
 ya da elle:
 
 ```bash
