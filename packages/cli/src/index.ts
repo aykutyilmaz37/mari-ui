@@ -6,3 +6,4 @@ export { readConfig, writeDefaultConfigIfMissing, DEFAULT_CONFIG, CONFIG_FILE_NA
 export { loadManifest, loadManifestSafe, ManifestNotFoundError, type Manifest } from "./manifest";
 export { buildRulesContent } from "./buildRulesContent";
 export { upsertMarkerBlock, isMarkerBlockUpToDate, MARKER_START, MARKER_END } from "./markerBlock";
+export { PLATFORMS, dependenciesFor, detectPlatform, resolvePlatform, type Platform } from "./platform";

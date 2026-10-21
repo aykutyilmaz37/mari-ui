@@ -1,5 +1,6 @@
 import { cancel, isCancel, select, text } from "@clack/prompts";
 import { defaultThemeConfig, personaNames, personas, radiusDensities, spacingDensities, type HexColor, type MariUiThemeConfig, type RadiusDensity, type SpacingDensity } from "@mari-ui/tokens";
+import { PLATFORM_LABELS, PLATFORMS, type Platform } from "./platform";
 import { DEFAULT_THEME_DESCRIPTION, DEFAULT_THEME_LABEL, describeConfig, isHexColor, type ThemeChoice } from "./themeChoice";
 
 const RADIUS_LABELS: Record<RadiusDensity, string> = { none: "Keskin", sm: "Az yuvarlak", md: "Orta", lg: "Çok yuvarlak" };
@@ -14,6 +15,23 @@ function orCancel<T>(value: T): Exclude<T, symbol> {
     throw new WizardCancelled();
   }
   return value as Exclude<T, symbol>;
+}
+
+const PLATFORM_HINTS: Record<Platform, string> = {
+  web: "@mari-ui/components kurulur; mobil paketi kurulmaz.",
+  native: "@mari-ui/native kurulur; web paketi kurulmaz.",
+  both: "İki paket de kurulur. Ayrı web ve mobil uygulamalarınız varsa her birinde ayrı çalıştırıp tek platform seçin.",
+};
+
+/** Etkileşimli platform seçimi; `detected` (`package.json` tahmini) önceden seçili gelir. */
+export async function askPlatformChoice(detected: Platform): Promise<Platform> {
+  return orCancel(
+    await select({
+      message: "Bu proje hangi platform için?",
+      options: PLATFORMS.map((value) => ({ value, label: PLATFORM_LABELS[value], hint: PLATFORM_HINTS[value] })),
+      initialValue: detected,
+    })
+  );
 }
 
 /**
