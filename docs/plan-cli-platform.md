@@ -1,6 +1,6 @@
 # Plan: CLI'da web / native ayrımı
 
-Durum: Faz A, B ve C tamamlandı (2026-10-21); Faz C tamamlandı — native projelere native AI kuralları yazılıyor. D bekliyor.
+Durum: Faz C tamamlandı (2026-10-21; A ve B de tamam); D bekliyor.
 
 ## Sorun
 
