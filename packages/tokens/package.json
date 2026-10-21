@@ -1,6 +1,6 @@
 {
   "name": "@mari-ui/tokens",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "mari-ui design system'inin platform-agnostic token kaynağı (renk, spacing, radius, typography, shadow, z-index, motion).",
   "license": "MIT",
   "author": "Aykut Yılmaz",

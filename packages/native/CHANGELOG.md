@@ -1,5 +1,17 @@
 # @mari-ui/native
 
+## 0.5.0
+
+### Minor Changes
+
+- cb40f31: `dist/manifest.json` eklendi (`@mari-ui/native/manifest.json`): web manifest'iyle aynı şemada component, `importPath`, prop ve eksen listesi. CLI'ın native kural üretimi (Faz C) bunu okuyacak.
+
+### Patch Changes
+
+- Updated dependencies [f89e31e]
+  - @mari-ui/tokens@0.5.0
+  - @mari-ui/core@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @mari-ui/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- 82f1cd7: `sync` artık React Native projelerine native'e özgü AI kuralları yazıyor (`@mari-ui/native` manifest'inden): `StyleSheet` + token objesi, `onPress`, `accessibilityRole`/`accessibilityLabel`, metin `Text` içinde, router ile gezinme, web paketinden import yok. `both` platformunda iki gövde birden: Claude'da `mari-ui-web` ve `mari-ui-native` skill'leri, Cursor `.mdc` ve Copilot `applyTo` dosyaları glob'la ayrılır, AGENTS.md ve GEMINI.md'de iki bölüm alt alta. `both` için yeni `--native-manifest` bayrağı. Web projelerinin çıktısı değişmedi.
+- f89e31e: CLI artık platform ayırıyor (web / native / ikisi). `init` platformu sorar (`--platform web|native|both`; sorulamıyorsa `package.json`dan tahmin eder) ve seçimi `mari-ui.config.json`a `platform` olarak yazar. Seçilmeyen platformun paketi kurulmaz: native projeye `@mari-ui/components` yerine `@mari-ui/native` eklenir. Native projede `sync` web kurallarını artık yazmaz (React Native kodunu yanıltıyordu), `theme` CSS üretmez ve Tailwind talimatı basılmaz. Native kural içeriği sonraki sürümde.
+
+### Patch Changes
+
+- 8b05157: README: platform seçimi (web / native / ikisi), `--platform` ve `--native-manifest` bayrakları, paket tablosu ve monorepo kullanımı.
+- Updated dependencies [f89e31e]
+  - @mari-ui/tokens@0.5.0
+
 ## 0.4.0
 
 ### Patch Changes
