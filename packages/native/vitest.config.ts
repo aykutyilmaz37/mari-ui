@@ -12,7 +12,7 @@ export default defineConfig({
       thresholds: { lines: 18, statements: 19, branches: 15, functions: 17 },
     },
     environment: "node",
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx", "scripts/**/*.test.ts"],
     globals: false,
   },
 });

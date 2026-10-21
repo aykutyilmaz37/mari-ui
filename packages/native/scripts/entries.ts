@@ -59,16 +59,18 @@ export function publishedExports(srcDir: string): Record<string, ExportTarget | 
   for (const name of Object.keys(discoverEntries(srcDir))) {
     if (name !== "index") exports[`./${name}`] = target(name);
   }
+  exports["./manifest.json"] = "./dist/manifest.json";
   exports["./package.json"] = "./package.json";
   return exports;
 }
 
 /** Workspace içi `exports`: yayınlananlar + `./stories` (kaynak). */
 export function workspaceExports(srcDir: string): Record<string, unknown> {
-  const { "./package.json": pkgJson, ...rest } = publishedExports(srcDir);
+  const { "./manifest.json": manifest, "./package.json": pkgJson, ...rest } = publishedExports(srcDir);
   return {
     ...rest,
     "./stories": { types: "./src/stories/registry.ts", default: "./src/stories/registry.ts" },
+    "./manifest.json": manifest,
     "./package.json": pkgJson,
   };
 }

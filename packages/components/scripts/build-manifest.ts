@@ -63,8 +63,21 @@ export function cleanTypeText(raw: string): string {
   return raw.replace(/import\([^)]*\)\./g, "");
 }
 
-export function isOwnDeclaration(sourceFilePath: string): boolean {
-  return sourceFilePath.includes("/packages/components/src/") || sourceFilePath.includes("/packages/core/src/");
+/** Manifest'i üreten paket — `@mari-ui/native` da aynı fonksiyonları bu ayarla çağırır (`packages/native/scripts/build-manifest.ts`). */
+export interface ManifestTarget {
+  /** `importPath` öneki — `@mari-ui/components`, `@mari-ui/native`. */
+  packageName: string;
+  /** Prop deklarasyonu bu klasörlerden birindeyse "kendi" prop'udur. */
+  ownSrcDirs: string[];
+}
+
+export const COMPONENTS_TARGET: ManifestTarget = {
+  packageName: "@mari-ui/components",
+  ownSrcDirs: ["/packages/components/src/", "/packages/core/src/"],
+};
+
+export function isOwnDeclaration(sourceFilePath: string, target: ManifestTarget = COMPONENTS_TARGET): boolean {
+  return target.ownSrcDirs.some((dir) => sourceFilePath.includes(dir));
 }
 
 export function hasUseClientDirective(filePath: string, project: Project): boolean {
@@ -74,12 +87,12 @@ export function hasUseClientDirective(filePath: string, project: Project): boole
   return Boolean(first && Node.isExpressionStatement(first) && first.getText().replace(/['";]/g, "") === "use client");
 }
 
-export function extractProps(paramType: Type, atNode: Node): PropInfo[] {
+export function extractProps(paramType: Type, atNode: Node, target: ManifestTarget = COMPONENTS_TARGET): PropInfo[] {
   const props: PropInfo[] = [];
   for (const symbol of paramType.getProperties()) {
     const decl = symbol.getDeclarations()[0];
     if (!decl) continue;
-    if (!isOwnDeclaration(decl.getSourceFile().getFilePath())) continue;
+    if (!isOwnDeclaration(decl.getSourceFile().getFilePath(), target)) continue;
 
     const type = symbol.getTypeAtLocation(decl);
     const deprecatedTag = symbol.getJsDocTags().find((tag) => tag.getName() === "deprecated");
@@ -102,7 +115,12 @@ export function extractProps(paramType: Type, atNode: Node): PropInfo[] {
   return props;
 }
 
-export function resolveComponents(project: Project, folderName: string, indexPath: string): ComponentInfo[] {
+export function resolveComponents(
+  project: Project,
+  folderName: string,
+  indexPath: string,
+  target: ManifestTarget = COMPONENTS_TARGET,
+): ComponentInfo[] {
   const indexFile = project.addSourceFileAtPath(indexPath);
   const components: ComponentInfo[] = [];
 
@@ -124,9 +142,9 @@ export function resolveComponents(project: Project, folderName: string, indexPat
 
     components.push({
       name: exportName,
-      importPath: `@mari-ui/components/${folderName}`,
+      importPath: `${target.packageName}/${folderName}`,
       requiresUseClient: hasUseClientDirective(decl.getSourceFile().getFilePath(), project),
-      props: extractProps(firstParam.getTypeAtLocation(decl), decl),
+      props: extractProps(firstParam.getTypeAtLocation(decl), decl, target),
     });
   }
 
