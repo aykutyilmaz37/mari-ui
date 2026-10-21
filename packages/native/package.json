@@ -259,10 +259,6 @@
       "import": "./dist/config.js",
       "require": "./dist/config.cjs"
     },
-    "./stories": {
-      "types": "./src/stories/registry.ts",
-      "default": "./src/stories/registry.ts"
-    },
     "./manifest.json": "./dist/manifest.json",
     "./package.json": "./package.json"
   },
