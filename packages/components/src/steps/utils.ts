@@ -6,7 +6,7 @@ import {
   textClass,
   textSolidContrastClass,
 } from "../lib/colorClasses";
-import type { StepItem, StepStatus, StepsVariant } from "./types";
+import type { StepItem, StepStatus, StepsLabels, StepsVariant } from "./types";
 
 export function getStepNumber(item: StepItem, index: number): number {
   return item.step ?? index + 1;
@@ -86,9 +86,18 @@ export function getRailClass(status: StepStatus, color: ColorRole): string {
 }
 
 /** Ekran okuyucu için durum eki — renk/ikon tek başına anlam taşımasın. */
-export const statusLabel: Record<StepStatus, string> = {
+export const defaultStatusLabels: Record<StepStatus, string> = {
   wait: "bekliyor",
   process: "devam ediyor",
   finish: "tamamlandı",
   error: "hata",
+};
+
+export const defaultStepsLabels: StepsLabels = {
+  status: defaultStatusLabels,
+  percent: (p) => `%${p}`,
+  stepOf: (current, total) => `Adım ${current}/${total}`,
+  back: "Geri",
+  next: "İleri",
+  complete: "Tamamla",
 };

@@ -5,15 +5,16 @@ import { CheckIcon, XIcon } from "lucide-react";
 import { cn, type ColorRole } from "@mari-ui/core";
 import { Button } from "../button";
 import { skeletonFill } from "../lib/skeleton";
-import type { StepItem, StepStatus, StepsProps, StepsSize } from "./types";
+import type { StepItem, StepStatus, StepsLabels, StepsProps, StepsSize } from "./types";
 import {
   getDotClass,
   getIndicatorClass,
   getRailClass,
   getStepNumber,
   getTitleClass,
+  defaultStatusLabels,
+  defaultStepsLabels,
   resolveStepStatus,
-  statusLabel,
 } from "./utils";
 
 export type { StepsProps };
@@ -121,10 +122,12 @@ export function Steps({
   responsive = 520,
   responsiveLayout = "vertical",
   content,
+  labels: labelsProp,
   className,
   "aria-label": ariaLabel = "İlerleme adımları",
   skeleton = false,
 }: Readonly<StepsProps>) {
+  const labels: StepsLabels = { ...defaultStepsLabels, ...labelsProp, status: { ...defaultStatusLabels, ...labelsProp?.status } };
   const [rootRef, width] = useContainerWidth(!vertical && responsive !== false);
   const isNarrow = responsive !== false && width !== undefined && width < responsive;
   const layout = resolveLayout(vertical, isNarrow, responsiveLayout, dot, labelPlacement);
@@ -214,7 +217,7 @@ export function Steps({
       <div aria-hidden className="-mt-3 flex flex-col gap-0.5">
         <p className={cn("flex flex-wrap items-baseline gap-x-2", titleSizeClass[size])}>
           <span className={cn("text-mari-muted", descSizeClass[size], skeleton && skeletonTextClass)}>
-            Adım {index + 1}/{data.length}
+            {labels.stepOf(index + 1, data.length)}
           </span>
           <span className={cn(getTitleClass(status), skeleton && skeletonTextClass)}>{item.title}</span>
           {item.subTitle && <span className={cn("text-mari-muted", descSizeClass[size], skeleton && skeletonTextClass)}>{item.subTitle}</span>}
@@ -244,8 +247,8 @@ export function Steps({
           {item.title}
           <span className="sr-only">
             {" "}
-            ({statusLabel[status]}
-            {status === "process" && percent !== undefined ? `, %${Math.round(percent)}` : ""})
+            ({labels.status[status]}
+            {status === "process" && percent !== undefined ? `, ${labels.percent(Math.round(percent))}` : ""})
           </span>
         </span>
         {item.subTitle && <span className={cn("whitespace-nowrap text-mari-muted", descSizeClass[size], skeleton && skeletonTextClass)}>{item.subTitle}</span>}
@@ -289,7 +292,7 @@ export function Steps({
           }
         : {},
       interactiveClass: cn(
-        "group rounded-md text-left",
+        "group rounded-md text-start",
         clickable && "cursor-pointer",
         item.disabled && "cursor-not-allowed opacity-50",
         skeleton && "pointer-events-none",
@@ -306,7 +309,7 @@ export function Steps({
       <Wrapper {...wrapperProps} className={cn(interactiveClass, "-m-1.5 shrink-0 rounded-full p-1.5")}>
         {renderIndicator(item, index, status)}
         <span className="sr-only">
-          {item.title} ({statusLabel[status]})
+          {item.title} ({labels.status[status]})
         </span>
       </Wrapper>
       {!isLast && <span aria-hidden className={cn("mx-3 h-px min-w-3 flex-1", railClass)} />}
@@ -353,7 +356,7 @@ export function Steps({
     <li key={step} aria-current={liCurrent} className={cn("flex min-w-0", isLast ? "flex-none" : "flex-1")}>
       <Wrapper {...wrapperProps} className={cn(interactiveClass, "flex min-w-0 flex-1 items-start gap-3")}>
         {renderIndicator(item, index, status)}
-        {renderText(item, status, isCurrent, !isLast && <span aria-hidden className={cn("ml-1 mr-3 h-px min-w-6 flex-1", railClass)} />)}
+        {renderText(item, status, isCurrent, !isLast && <span aria-hidden className={cn("ms-1 me-3 h-px min-w-6 flex-1", railClass)} />)}
       </Wrapper>
     </li>
   );
@@ -376,15 +379,15 @@ export function Steps({
       {onChange && actionsVisible && (
         <div className="flex justify-between gap-4 border-t border-mari-border pt-6">
           <Button skeleton={skeleton} color="neutral" variant="outline" disabled={isFirstStep} onClick={() => onChange(currentStep - 1)}>
-            Geri
+            {labels.back}
           </Button>
           {isLastStep ? (
             <Button skeleton={skeleton} color={color} disabled={!onComplete} onClick={onComplete}>
-              Tamamla
+              {labels.complete}
             </Button>
           ) : (
             <Button skeleton={skeleton} color={color} onClick={() => onChange(currentStep + 1)}>
-              İleri
+              {labels.next}
             </Button>
           )}
         </div>
