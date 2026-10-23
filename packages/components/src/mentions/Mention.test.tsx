@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { Input } from "../input/Input";
@@ -95,7 +95,7 @@ describe("mentions (MentionInput/MentionTextarea)", () => {
     const onSearch = vi.fn();
     render(<MentionInput aria-label="Ara" mentions={{ options: [{ value: "x" }], filterOption: false, onSearch, loading: true }} />);
     await user.type(screen.getByRole("combobox"), "@ab");
-    expect(onSearch).toHaveBeenLastCalledWith("ab", "@");
+    await waitFor(() => expect(onSearch).toHaveBeenLastCalledWith("ab", "@"));
     expect(screen.getAllByRole("option")).toHaveLength(1);
     expect(screen.getByRole("status")).toHaveTextContent("Yükleniyor");
   });

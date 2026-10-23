@@ -312,7 +312,7 @@
   "devDependencies": {
     "@mari-ui/eslint-config": "workspace:*",
     "@mari-ui/tsconfig": "workspace:*",
-    "@storybook/react": "^8.6.18",
+    "@storybook/react": "^8.6.19",
     "@tailwindcss/cli": "^4.1.7",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -335,7 +335,7 @@
     "tsup": "^8.3.5",
     "tsx": "^4.23.13",
     "typescript": "^5.7.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "publishConfig": {
     "access": "public",

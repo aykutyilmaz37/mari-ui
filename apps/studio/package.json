@@ -15,7 +15,7 @@
     "@mari-ui/components": "workspace:*",
     "@mari-ui/core": "workspace:*",
     "@mari-ui/tokens": "workspace:*",
-    "next": "^16.4.0",
+    "next": "^16.4.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
