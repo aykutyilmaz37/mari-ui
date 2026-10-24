@@ -1,5 +1,15 @@
 # @mari-ui/native
 
+## 0.6.1
+
+### Patch Changes
+
+- 26bec4c: Güvenlik: storybook 8.6.19, next 16.4.1 ve vitest 4.1.12'ye yükseltildi (audit'teki kritik/yüksek/orta bulgular kapandı).
+- 37a3ec9: native: AppBar başlığı RTL'de yön duyarlı (`textAlign: auto`, `paddingStart`); AppBar (`1.5`) ve BottomNavigation (`1.3`) için `maxFontSizeMultiplier` eklendi.
+  native + web: Steps'e `labels` prop'u — durum, "Adım 2/4", yüzde ve Geri/İleri/Tamamla metinleri çevrilebilir (varsayılanlar Türkçe). Web Steps'te yön bağımlı `text-left` / `ml-1 mr-3` mantıksal `text-start` / `ms-1 me-3` oldu.
+- @mari-ui/core@0.6.1
+  - @mari-ui/tokens@0.6.1
+
 ## 0.6.0
 
 ### Patch Changes
