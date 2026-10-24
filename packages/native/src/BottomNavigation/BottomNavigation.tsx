@@ -51,6 +51,8 @@ export interface BottomNavigationProps extends SkeletonableProps {
   /** Üst ayırıcı çizgi. Varsayılan: `true`. */
   bordered?: boolean;
   accessibilityLabel?: string;
+  /** Sistem yazı ölçeğinin üst sınırı (etiketler kesilmesin). Varsayılan: `1.3`. */
+  maxFontSizeMultiplier?: number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -77,6 +79,7 @@ interface ItemProps {
   color: ColorRole;
   hideLabels: boolean;
   skeleton: boolean;
+  maxScale: number;
   m: NativeBottomNavigationSize;
   theme: Theme;
 }
@@ -91,7 +94,7 @@ function labelColor(variant: BottomNavigationVariant, active: boolean, color: Co
   return variant === "pill" ? theme.color.canvas.foreground : theme.color[color].text;
 }
 
-function NavItem({ item, active, onPress, variant, color, hideLabels, skeleton, m, theme }: Readonly<ItemProps>) {
+function NavItem({ item, active, onPress, variant, color, hideLabels, skeleton, maxScale, m, theme }: Readonly<ItemProps>) {
   const pill = usePillAnim(active);
   const ink = iconColor(variant, active, color, theme);
   const disabled = item.disabled ?? false;
@@ -102,7 +105,7 @@ function NavItem({ item, active, onPress, variant, color, hideLabels, skeleton, 
 
   const isPill = variant === "pill";
   const label = hideLabels ? null : (
-    <Text numberOfLines={1} style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: m.labelFontSize, lineHeight: m.labelLineHeight, fontWeight: active ? "600" : "500", color: labelColor(variant, active, color, theme) }}>
+    <Text numberOfLines={1} maxFontSizeMultiplier={maxScale} style={{ fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: m.labelFontSize, lineHeight: m.labelLineHeight, fontWeight: active ? "600" : "500", color: labelColor(variant, active, color, theme) }}>
       {item.label}
     </Text>
   );
@@ -145,6 +148,7 @@ export function BottomNavigation({
   bordered = true,
   skeleton = false,
   accessibilityLabel,
+  maxFontSizeMultiplier = 1.3,
   style,
 }: Readonly<BottomNavigationProps>) {
   const theme = useTheme();
@@ -171,7 +175,7 @@ export function BottomNavigation({
       style={[{ alignSelf: "stretch", flexDirection: "row", height: m.height + bottomInset, paddingBottom: bottomInset, paddingHorizontal: 4, backgroundColor: c.surface }, bordered ? { borderTopWidth: 1, borderTopColor: c.border } : null, style]}
     >
       {items.map((item) => (
-        <NavItem key={item.key} item={item} active={item.key === active} onPress={() => press(item.key)} variant={variant} color={color} hideLabels={hideLabels} skeleton={skeleton} m={m} theme={theme} />
+        <NavItem key={item.key} item={item} active={item.key === active} onPress={() => press(item.key)} variant={variant} color={color} hideLabels={hideLabels} skeleton={skeleton} maxScale={maxFontSizeMultiplier} m={m} theme={theme} />
       ))}
     </View>
   );

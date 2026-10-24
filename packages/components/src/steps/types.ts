@@ -32,6 +32,19 @@ export type StepsVariant = "filled" | "outlined";
 export type StepsSize = "sm" | "md";
 export type StepsLabelPlacement = "horizontal" | "vertical";
 
+/** Steps'in yerleşik metinleri — varsayılanlar Türkçe; başka dilde hepsini verin. */
+export interface StepsLabels {
+  /** Ekran okuyucu durum eki. */
+  status: Record<StepStatus, string>;
+  /** Ekran okuyucu yüzde eki: `%40` gibi. */
+  percent: (percent: number) => string;
+  /** Kompakt başlık: "Adım 2/4". */
+  stepOf: (current: number, total: number) => string;
+  back: string;
+  next: string;
+  complete: string;
+}
+
 /**
  * `skeleton`: göstergeler aynı dairelerde, başlık/açıklama kendi metin
  * kutularında yer tutucu; çizgiler nötr; eylem düğmeleri iskelet; etkileşimsiz.
@@ -88,6 +101,8 @@ export interface StepsProps extends SkeletonableProps {
   responsiveLayout?: "vertical" | "compact";
   /** Adımların altında, eylem çubuğunun üstünde render edilir (bkz. `StepsContent`). */
   content?: React.ReactNode;
+  /** Yerleşik metinler (durum, "Adım 2/4", Geri/İleri/Tamamla); verilmeyen Türkçe varsayılanı kullanır. */
+  labels?: Partial<StepsLabels>;
   className?: string;
   /** Varsayılan: `"İlerleme adımları"`. */
   "aria-label"?: string;

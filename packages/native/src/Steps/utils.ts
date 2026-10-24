@@ -70,8 +70,8 @@ export function railColor(theme: Theme, status: StepStatus, color: ColorRole): s
   return status === "finish" ? theme.color[color].solid : theme.color.canvas.border;
 }
 
-/** Ekran okuyucu durum eki — renk/ikon tek başına anlam taşımasın. */
-export const statusLabel: Record<StepStatus, string> = {
+/** Ekran okuyucu durum eki (varsayılan Türkçe; `Steps` `labels` ile değişir) — renk/ikon tek başına anlam taşımasın. */
+export const defaultStatusLabels: Record<StepStatus, string> = {
   wait: "bekliyor",
   process: "devam ediyor",
   finish: "tamamlandı",

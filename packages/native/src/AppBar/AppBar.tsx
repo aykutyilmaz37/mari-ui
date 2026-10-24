@@ -33,6 +33,8 @@ export interface AppBarProps extends SkeletonableProps {
   scrollY?: Animated.Value;
   /** Alt ayırıcı çizgi. Varsayılan: `scrollY` varsa kaydırınca belirir, yoksa yok. */
   bordered?: boolean;
+  /** Sistem yazı ölçeğinin üst sınırı (başlıklar çubuğa sığsın). Varsayılan: `1.5`. */
+  maxFontSizeMultiplier?: number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -91,10 +93,10 @@ export function AppBarAction({ icon, accessibilityLabel, onPress, disabled = fal
   );
 }
 
-function titleText(node: React.ReactNode, style: object, lines = 1, header = false) {
+function titleText(node: React.ReactNode, style: object, maxScale: number, lines = 1, header = false) {
   if (typeof node !== "string" && typeof node !== "number") return node;
   return (
-    <Text numberOfLines={lines} accessibilityRole={header ? "header" : undefined} style={style}>
+    <Text numberOfLines={lines} maxFontSizeMultiplier={maxScale} accessibilityRole={header ? "header" : undefined} style={style}>
       {node}
     </Text>
   );
@@ -140,15 +142,17 @@ interface TitleBlockProps {
   skeleton: boolean;
   m: NativeAppBarSize;
   theme: Theme;
+  maxScale: number;
 }
 
-function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hidden, header, skeleton, m, theme }: Readonly<TitleBlockProps>) {
+function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hidden, header, skeleton, m, theme, maxScale }: Readonly<TitleBlockProps>) {
   if (title == null && subtitle == null) return null;
   const c = theme.color.canvas;
   const font = nativeFontFamily(theme.fontFamily.sans);
-  const textAlign = centered ? ("center" as const) : ("left" as const);
+  // "auto": RTL'de başlık sağa yaslanır (sabit "left" yönü yok sayardı).
+  const textAlign = centered ? ("center" as const) : ("auto" as const);
   const align = centered ? "center" : "flex-start";
-  const frame: ViewStyle = centered ? { position: "absolute", left: inset, right: inset, top: 0, bottom: 0, alignItems: "center" } : { flex: 1, minWidth: 0, paddingLeft: hasLeading ? 4 : 12 };
+  const frame: ViewStyle = centered ? { position: "absolute", left: inset, right: inset, top: 0, bottom: 0, alignItems: "center" } : { flex: 1, minWidth: 0, paddingStart: hasLeading ? 4 : 12 };
   return (
     <Animated.View
       // Ortalıda başlık iki ucun üstüne yerleşir; uçlara dokunuşlar geçsin.
@@ -156,17 +160,17 @@ function TitleBlock({ title, subtitle, centered, inset, hasLeading, opacity, hid
       style={[frame, { justifyContent: "center", opacity }]}
       {...(hidden ? { accessibilityElementsHidden: true, importantForAccessibility: "no-hide-descendants" as const } : null)}
     >
-      {sk(skeleton, titleText(title, { fontFamily: font, fontSize: m.titleFontSize, lineHeight: m.titleLineHeight, fontWeight: "600", color: c.foreground, textAlign }, 1, header), m.titleFontSize, align)}
-      {subtitle == null ? null : sk(skeleton, titleText(subtitle, { fontFamily: font, fontSize: m.subtitleFontSize, lineHeight: m.subtitleLineHeight, color: c.muted, textAlign }), m.subtitleFontSize, align)}
+      {sk(skeleton, titleText(title, { fontFamily: font, fontSize: m.titleFontSize, lineHeight: m.titleLineHeight, fontWeight: "600", color: c.foreground, textAlign }, maxScale, 1, header), m.titleFontSize, align)}
+      {subtitle == null ? null : sk(skeleton, titleText(subtitle, { fontFamily: font, fontSize: m.subtitleFontSize, lineHeight: m.subtitleLineHeight, color: c.muted, textAlign }, maxScale), m.subtitleFontSize, align)}
     </Animated.View>
   );
 }
 
-function LargeTitle({ title, height, opacity, skeleton, m, theme }: Readonly<{ title: React.ReactNode; height: Animatable; opacity: Animatable; skeleton: boolean; m: NativeAppBarSize; theme: Theme }>) {
+function LargeTitle({ title, height, opacity, skeleton, m, theme, maxScale }: Readonly<{ title: React.ReactNode; height: Animatable; opacity: Animatable; skeleton: boolean; m: NativeAppBarSize; theme: Theme; maxScale: number }>) {
   const style = { fontFamily: nativeFontFamily(theme.fontFamily.sans), fontSize: m.largeTitleFontSize, lineHeight: m.largeTitleLineHeight, fontWeight: "700", color: theme.color.canvas.foreground };
   return (
     <Animated.View style={{ height, overflow: "hidden", justifyContent: "flex-end", paddingHorizontal: 16 }}>
-      <Animated.View style={{ opacity, paddingBottom: 8 }}>{sk(skeleton, titleText(title, style, 1, true), m.largeTitleFontSize)}</Animated.View>
+      <Animated.View style={{ opacity, paddingBottom: 8 }}>{sk(skeleton, titleText(title, style, maxScale, 1, true), m.largeTitleFontSize)}</Animated.View>
     </Animated.View>
   );
 }
@@ -189,6 +193,7 @@ export function AppBar({
   topInset,
   scrollY,
   bordered,
+  maxFontSizeMultiplier = 1.5,
   skeleton = false,
   style,
 }: Readonly<AppBarProps>) {
@@ -223,6 +228,7 @@ export function AppBar({
       skeleton={skeleton}
       m={m}
       theme={theme}
+      maxScale={maxFontSizeMultiplier}
     />
   );
   const sideStyle: ViewStyle = { flexDirection: "row", alignItems: "center", minWidth: centered ? m.actionSize : 0 };
@@ -242,7 +248,7 @@ export function AppBar({
             {actions}
           </View>
         </View>
-        {large ? <LargeTitle title={title} height={anim ? anim.areaHeight : m.largeAreaHeight} opacity={anim ? anim.largeOpacity : 1} skeleton={skeleton} m={m} theme={theme} /> : null}
+        {large ? <LargeTitle title={title} height={anim ? anim.areaHeight : m.largeAreaHeight} opacity={anim ? anim.largeOpacity : 1} skeleton={skeleton} m={m} theme={theme} maxScale={maxFontSizeMultiplier} /> : null}
         {showBorder ? <Animated.View pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 1, backgroundColor: c.border, opacity: borderOpacity }} /> : null}
       </View>
     </AppBarContext.Provider>

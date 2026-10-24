@@ -86,8 +86,8 @@ export type { SliderProps, SliderValue, SliderIconItem, SliderIconPosition } fro
 export { Statistic, Countdown, Clock, Stopwatch } from "./Statistic";
 export type { StatisticProps, StatisticTrend, StatisticSize, CountdownProps, ClockProps, StopwatchProps } from "./Statistic";
 
-export { Steps, StepsContent } from "./Steps";
-export type { StepsProps, StepItem, StepData, StepStatus, StepsVariant, StepsSize, StepsLabelPlacement, StepsContentProps } from "./Steps";
+export { Steps, StepsContent, defaultStepsLabels } from "./Steps";
+export type { StepsProps, StepItem, StepData, StepStatus, StepsVariant, StepsSize, StepsLabelPlacement, StepsContentProps, StepsLabels } from "./Steps";
 
 export { Accordion } from "./Accordion";
 export type { AccordionProps, AccordionItem, AccordionVariant } from "./Accordion";

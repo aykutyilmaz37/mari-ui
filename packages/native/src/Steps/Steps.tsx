@@ -9,7 +9,7 @@ import { useTheme } from "../theme/useTheme";
 import { Button } from "../Button";
 import { CheckIcon, XIcon } from "../lib/icons";
 import { SkeletonBox, type SkeletonableProps } from "../lib/Skeleton";
-import { dotColor, getStepNumber, indicatorColors, railColor, resolveLayout, resolveStepStatus, statusLabel, titleStyle, type StepStatus, type StepsLayout, type StepsVariant } from "./utils";
+import { dotColor, getStepNumber, indicatorColors, railColor, resolveLayout, resolveStepStatus, defaultStatusLabels, titleStyle, type StepStatus, type StepsLayout, type StepsVariant } from "./utils";
 
 export type { StepStatus, StepsVariant };
 export type StepsSize = "sm" | "md";
@@ -30,6 +30,28 @@ export interface StepItem {
 }
 
 export type StepData = StepItem[];
+
+/** Steps'in yerleşik metinleri — varsayılanlar Türkçe; başka dilde hepsini verin. */
+export interface StepsLabels {
+  /** Ekran okuyucu durum eki. */
+  status: Record<StepStatus, string>;
+  /** Ekran okuyucu yüzde eki: `%40` gibi. */
+  percent: (percent: number) => string;
+  /** Kompakt başlık: "Adım 2/4". */
+  stepOf: (current: number, total: number) => string;
+  back: string;
+  next: string;
+  complete: string;
+}
+
+export const defaultStepsLabels: StepsLabels = {
+  status: defaultStatusLabels,
+  percent: (p) => `%${p}`,
+  stepOf: (current, total) => `Adım ${current}/${total}`,
+  back: "Geri",
+  next: "İleri",
+  complete: "Tamamla",
+};
 
 export interface StepsProps extends SkeletonableProps {
   data: StepData;
@@ -60,6 +82,8 @@ export interface StepsProps extends SkeletonableProps {
   responsiveLayout?: "vertical" | "compact";
   /** Adımların altında, eylem çubuğunun üstünde (bkz. `StepsContent`). */
   content?: React.ReactNode;
+  /** Yerleşik metinler (durum, "Adım 2/4", Geri/İleri/Tamamla); verilmeyen Türkçe varsayılanı kullanır. */
+  labels?: Partial<StepsLabels>;
   /** Varsayılan: "İlerleme adımları". */
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
@@ -160,6 +184,7 @@ export function Steps({
   responsive = 520,
   responsiveLayout = "vertical",
   content,
+  labels: labelsProp,
   accessibilityLabel = "İlerleme adımları",
   skeleton = false,
   style,
@@ -168,6 +193,7 @@ export function Steps({
   const m = useNativeConfig().steps[size];
   const font = nativeFontFamily(theme.fontFamily.sans);
   const c = theme.color.canvas;
+  const labels: StepsLabels = { ...defaultStepsLabels, ...labelsProp, status: { ...defaultStatusLabels, ...labelsProp?.status } };
   const [width, setWidth] = useState<number>();
   const [itemWidth, setItemWidth] = useState(0);
   const isNarrow = !vertical && responsive !== false && width !== undefined && width < responsive;
@@ -215,8 +241,8 @@ export function Steps({
   /** Adım kabuğu: dokunulabilirse düğme (doğrudan atlama), değilse tek parça okunan öğe; durum adında. */
   const wrap = (ctx: Ctx, inner: React.ReactNode, wrapStyle: StyleProp<ViewStyle>) => {
     const { item, step, status, isCurrent } = ctx;
-    const extra = status === "process" && percent !== undefined ? `, %${Math.round(percent)}` : "";
-    const label = plain(item.title) ? `${plain(item.title)} (${statusLabel[status]}${extra})` : undefined;
+    const extra = status === "process" && percent !== undefined ? `, ${labels.percent(Math.round(percent))}` : "";
+    const label = plain(item.title) ? `${plain(item.title)} (${labels.status[status]}${extra})` : undefined;
     if (!interactive) {
       return (
         <View accessible={!skeleton} accessibilityLabel={label} aria-label={label} aria-current={isCurrent ? "step" : undefined} style={wrapStyle}>
@@ -304,7 +330,7 @@ export function Steps({
       <View accessibilityElementsHidden aria-hidden importantForAccessibility="no-hide-descendants" style={{ marginTop: -12, gap: 2 }}>
         <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "baseline", columnGap: 8 }}>
           <SkText skeleton={skeleton}>
-            <Text style={descText}>{`Adım ${ctx.index + 1}/${data.length}`}</Text>
+            <Text style={descText}>{labels.stepOf(ctx.index + 1, data.length)}</Text>
           </SkText>
           <SkText skeleton={skeleton}>
             <Text style={[titleText, { color: t.color, fontWeight: t.fontWeight }]}>{ctx.item.title}</Text>
@@ -327,15 +353,15 @@ export function Steps({
   const actions = onChange && actionsVisible ? (
     <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 16, borderTopWidth: 1, borderTopColor: c.border, paddingTop: 24 }}>
       <Button skeleton={skeleton} color="neutral" variant="outline" disabled={isFirstStep} onPress={() => onChange(currentStep - 1)}>
-        Geri
+        {labels.back}
       </Button>
       {isLastStep ? (
         <Button skeleton={skeleton} color={color} disabled={!onComplete} onPress={onComplete}>
-          Tamamla
+          {labels.complete}
         </Button>
       ) : (
         <Button skeleton={skeleton} color={color} onPress={() => onChange(currentStep + 1)}>
-          İleri
+          {labels.next}
         </Button>
       )}
     </View>
